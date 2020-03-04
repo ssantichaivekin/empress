@@ -4,8 +4,8 @@
 
 import matplotlib.pyplot as plt
 from shapely.geometry import *
-from CostVector import *
-from commonAnalytic import *
+from .CostVector import *
+from .commonAnalytic import *
 
 def plotcosts(CVlist, switchMin, switchMax, lossMin, lossMax, outfile,
               log=True, display=False):
@@ -35,28 +35,28 @@ def plotcosts(CVlist, switchMin, switchMax, lossMin, lossMax, outfile,
         region = regions[cv_str]
         
         # output
-        print "Cost vector ", cv
+        print("Cost vector ", cv)
         color = colorMap[CVlist.index(cv)]
         label = cv_str
         if isinstance(region, Polygon):       # non-degenerate
             coords = list(region.exterior.coords)
             plt.gca().add_patch(plt.Polygon(coords,
                                             color = color, label = label))
-            print "  Polygon vertices: ", coords
-            print "  Polygon area: ", region.area
+            print("  Polygon vertices: ", coords)
+            print("  Polygon area: ", region.area)
         elif isinstance(region, LineString):  # degenerate
             coords = list(region.coords)
             plt.plot([coords[0][0], coords[1][0]],
                      [coords[0][1], coords[1][1]],
                      linewidth = 4,
                      color = color, label = label)
-            print "  Line vertices: ", coords
+            print("  Line vertices: ", coords)
         elif isinstance(region, Point):       # degenerate
             coords = list(region.coords)
             plt.plot(coords[0][0], coords[0][1],
                      'o', markersize = 4,
                      color = color, label = label)
-            print "  Point vertex: ", coords
+            print("  Point vertex: ", coords)
         else:                                 # non-degenerate (collection)
             try:
                 area = 0
@@ -65,25 +65,25 @@ def plotcosts(CVlist, switchMin, switchMax, lossMin, lossMax, outfile,
                         coords = list(r.exterior.coords)
                         plt.gca().add_patch(plt.Polygon(coords,
                                                         color = color, label = label))
-                        print "  Polygon vertices: ", coords
-                        print "  Polygon area: ", r.area
+                        print("  Polygon vertices: ", coords)
+                        print("  Polygon area: ", r.area)
                     elif isinstance(r, LineString):    # degenerate
                         coords = list(r.coords)
                         plt.plot([coords[0][0], coords[1][0]],
 	                         [coords[0][1], coords[1][1]],
                                  linewidth = 4,
                                  color = color, label = label)
-                        print "  Line vertices: ", coords
+                        print("  Line vertices: ", coords)
                     elif isinstance(r, Point):         # degenerate
                         coords = list(r.coords)
                         plt.plot(coords[0][0], coords[0][1],
                                  'o', markersize = 4,
                                  color = color, label = label)
-                        print "  Point vertex: ", coords
+                        print("  Point vertex: ", coords)
                     else:
                          raise Exception("cost vector (%s) has invalid subregion (%s)" % (str(cv), str(type(r))))
                     area += r.area
-                    print "  Total area: ", area
+                    print("  Total area: ", area)
             except:
                 raise Exception("cost vector (%s) has invalid region (%s)" % (str(cv), str(type(region))))
     

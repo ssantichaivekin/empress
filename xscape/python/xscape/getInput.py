@@ -3,23 +3,23 @@
 # Main input function for xscape tools
 
 # xscape libraries
-from common import *
-from newickFormatReader import *
+from .common import *
+from .newickFormatReader import *
 
 def getInput(outputExtension, allowEmptyOutfile=False):
     """ outputExtension is the output file extension (e.g, pdf or csv) """
     
     # Get input file name and try to open it
     while True:
-        fileName = raw_input("Enter .newick input file name: ")
+        fileName = input("Enter .newick input file name: ")
         if fileName.endswith(".newick"):
             try:
                 fileHandle = open(fileName, 'r')
                 break
             except IOError:
-                print "Error reading file.  Please try again."
+                print("Error reading file.  Please try again.")
         else:
-            print "File name must end in .newick.  Please try again."
+            print("File name must end in .newick.  Please try again.")
     
     hostTree, parasiteTree, phi = newickFormatReader(fileHandle)
     fileHandle.close()
@@ -27,14 +27,14 @@ def getInput(outputExtension, allowEmptyOutfile=False):
     # Get output file name
     while True:
         if allowEmptyOutfile:
-            outfile = raw_input("Enter ." + outputExtension + " name for output file (or Return): ")
+            outfile = input("Enter ." + outputExtension + " name for output file (or Return): ")
             if outfile == "": break
         else:
-            outfile = raw_input("Enter ." + outputExtension + " name for output file: ")
+            outfile = input("Enter ." + outputExtension + " name for output file: ")
         if outfile.endswith(outputExtension):
             break
         else:
-            print "File name must end in ." + outputExtension + ".  Please try again."   
+            print("File name must end in ." + outputExtension + ".  Please try again.")   
     
     # Get parameter value ranges            
     switchLo = floatInput("Enter transfer low value: ", min_val=0)
@@ -56,26 +56,26 @@ def numericInput(prompt, data_type, min_val=-INF, max_val=INF):
         the given dataType is "float" or "int" '''
     while True:
         try:
-	    if data_type == "float":
-                val = float(raw_input(prompt))
+            if data_type == "float":
+                val = float(input(prompt))
             elif data_type == "int":
-                val = int(raw_input(prompt))
+                val = int(input(prompt))
             else:
                 raise Exception("invalid data_type")
             
             if (val < min_val) or (val > max_val):
-                print "Input falls outside valid range.  Please try again."
-	    return val
+                print("Input falls outside valid range.  Please try again.")
+            return val
         except ValueError:
-            print "Non-numeric input.  Please try again."
+            print("Non-numeric input.  Please try again.")
 
 def boolInput(prompt):
     '''Query user for Y/N input'''
     while True:
-        val = raw_input(prompt)
+        val = input(prompt)
         if val[0] in ['y', 'Y', 'n', 'N']:
             break
         else:
-            print "Input must begin with Y, y, N, or N.  Please try again."
+            print("Input must begin with Y, y, N, or N.  Please try again.")
     return val[0] == 'Y' or val[0] == 'y' 
 

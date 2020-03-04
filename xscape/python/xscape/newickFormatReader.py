@@ -16,7 +16,7 @@
 # (topVertex, bottomVertex, leftEdgeName, rightEdgeName)
 
 # python libraries
-from cStringIO import StringIO
+from io import StringIO
 
 # BioPython libraries
 from Bio import Phylo
@@ -30,7 +30,7 @@ def newickFormatReader(fileHandle):
         used by xscape and the tip associations are returned as a dictionary
         with parasite names as keys and host tips as values. """
     
-    if isinstance(fileHandle, basestring):
+    if isinstance(fileHandle, str):
         fileHandle = open(fileHandle, 'r')
         autoclose = True
     else:

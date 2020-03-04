@@ -17,10 +17,10 @@
 
 # python libraries
 from collections import *
-
+from functools import cmp_to_key   # required for cmp_to_key
 # xscape libraries
-from common import *
-from CostVector import *
+from .common import *
+from .CostVector import *
 
 # The three dictionaries below correspond to the A, C, and Best DP tables
 # described in the technical report.  These are set to None here but initialized
@@ -183,7 +183,7 @@ def paretoFilter(CVlist):
     ''' Returns the Pareto front for the given list of CostVectors. '''
     CVlist = CVfilter(CVlist)
     uniqueCVlist = coalesceDuplicates(CVlist)
-    uniqueCVlist.sort(CostVector.lex)
+    uniqueCVlist.sort(key = cmp_to_key(CostVector.lex))
     if len(uniqueCVlist) == 1: return uniqueCVlist
     lexlist = [uniqueCVlist[0]]
     for i in range(1, len(uniqueCVlist)):
