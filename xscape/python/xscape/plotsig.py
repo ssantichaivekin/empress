@@ -9,8 +9,8 @@ import random
 import matplotlib.pyplot as plt
 
 # xscape libraries
-from common import *
-from CostVector import *
+from .common import *
+from .CostVector import *
 import collections
 
 def plotsig(CVlist, randomTrialsCVlist,
@@ -55,18 +55,18 @@ def plotsig(CVlist, randomTrialsCVlist,
             pts[pColor].append((x,y))
 
     # plot
-    for pColor, p in pts.iteritems():
-        x, y = zip(*p)
+    for pColor, p in pts.items():
+        x, y = list(zip(*p))
         plt.plot(x, y, "o", color=pColor)
 
     # statistics
-    print "Using ", str(numTrials), " trials"
-    print "  Percentage green (p-value < 0.01): %.2f" % \
-          (100.0 * greenCounter / totalSamples)
-    print "  Percentage yellow (0.01 <= p-value < 0.05): %.2f" % \
-          (100.0 * yellowCounter / totalSamples)
-    print "  Percentage red (0.05 <= p-value): %.2f" % \
-          (100.0 * redCounter / totalSamples)   
+    print("Using ", str(numTrials), " trials")
+    print("  Percentage green (p-value < 0.01): %.2f" % \
+          (100.0 * greenCounter / totalSamples))
+    print("  Percentage yellow (0.01 <= p-value < 0.05): %.2f" % \
+          (100.0 * yellowCounter / totalSamples))
+    print("  Percentage red (0.05 <= p-value): %.2f" % \
+          (100.0 * redCounter / totalSamples))   
 
     plt.title("Sigscape:  " + outfile)
 
