@@ -11,6 +11,7 @@
 # python libraries
 from collections import *
 import copy
+from functools import cmp_to_key   # required for cmp_to_key
 
 # xscape libraries
 from common import *
@@ -280,7 +281,7 @@ def paretoFilter(CVlist):
     CVlist = CVfilter(CVlist)
     if CVlist == []: return []
     uniqueCVlist = coalesceDuplicates(CVlist)
-    uniqueCVlist.sort(CostVector.lex)
+    uniqueCVlist.sort(key = cmp_to_key(CostVector.lex))
     if len(uniqueCVlist) == 1: return uniqueCVlist
     lexlist = [uniqueCVlist[0]]
     for i in range(1, len(uniqueCVlist)):
