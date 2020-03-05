@@ -1,7 +1,7 @@
 # commonAnalytic.py
 
 from shapely.geometry import *
-from CostVector import *
+from .CostVector import *
 import random
 
 def getRegions(CVlist, switchMin, switchMax, lossMin, lossMax,
