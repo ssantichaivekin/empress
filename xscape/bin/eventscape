@@ -16,7 +16,7 @@ try:
 except ImportError:
     import sys
     from os.path import realpath, dirname, join
-    sys.path.append(join(realpath(dirname(dirname(__file__))), "python"))
+    sys.path.append('../python')
     import xscape
 from xscape.commonAnalytic import *
 from xscape import getInput 
@@ -26,34 +26,34 @@ from xscape.reconcileEvents import *
 def main():
     global CandidateCVlist
     
-    print "Eventscape %s" % xscape.PROGRAM_VERSION_TEXT
+    print("Eventscape %s" % xscape.PROGRAM_VERSION_TEXT)
     hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, outfile = \
         getInput.getInput(outputExtension = "csv")
 
     while True:
-        merge_type = raw_input("[U]nion or [I]ntersection? ")
+        merge_type = input("[U]nion or [I]ntersection? ")
         if merge_type == "U" or merge_type == "I":
             break
-        print "Invalid input.  Please try again."
+        print("Invalid input.  Please try again.")
     CONFIG.intersection = merge_type == "I"
         
-    print "Reconciling trees..."
+    print("Reconciling trees...")
     startTime = time.time()
     
-    print "  Preprocessing..."
+    print("  Preprocessing...")
     preCVlist = reconcile.reconcile(parasiteTree, hostTree, phi, \
                                     switchLo, switchHi, lossLo, lossHi)
     CandidateCVlist.extend(restrict(preCVlist, \
                                     switchLo, switchHi, lossLo, lossHi))
-    print "  Solving..."
+    print("  Solving...")
     CVlist = reconcileEvents(parasiteTree, hostTree, phi, \
                              switchLo, switchHi, lossLo, lossHi)
     endTime = time.time()
     elapsedTime = endTime- startTime
-    print "Elapsed time %.2f seconds" % elapsedTime
+    print("Elapsed time %.2f seconds" % elapsedTime)
     output(outfile, CVlist, hostTree, switchLo, switchHi, lossLo, lossHi,
            root=parasiteTree["pTop"][1])
-    print "Output written to file ", outfile
+    print("Output written to file ", outfile)
 
 def restrict(CVlist, switchLo, switchHi, lossLo, lossHi, regions=None):
     restrictedList = []
@@ -77,8 +77,7 @@ def output(outfile, CVlist, hostTree, switchMin, switchMax, lossMin, lossMax,
     
     if regions is None:
         regions = getRegions(CVlist, switchMin, switchMax, lossMin, lossMax)
-    
-    ofile = open(outfile, "wb")
+    ofile = open(outfile, "w")
     writer = csv.writer(ofile, delimiter = ",")
     optimalCVlist = restrict(CVlist, switchMin, switchMax, lossMin, lossMax,
                              regions=regions)

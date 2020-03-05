@@ -14,8 +14,8 @@ import copy
 from functools import cmp_to_key   # required for cmp_to_key
 
 # xscape libraries
-from common import *
-from CostVector import *
+from .common import *
+from .CostVector import *
 
 # The three dictionaries below correspond to the A, C, and Best DP tables
 # described in the technical report.

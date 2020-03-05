@@ -15,7 +15,7 @@ try:
 except ImportError:
     import sys
     from os.path import realpath, dirname, join
-    sys.path.append(join(realpath(dirname(dirname(__file__))), "python"))
+    sys.path.append('../python')
     import xscape
 from xscape.common import *
 from xscape.CostVector import *
@@ -27,7 +27,7 @@ DOTS = 100  # DOTS data points per dimension;
             # Increase this value for higher resolution plottin
 
 def main():
-    print "Sigscape %s" % xscape.PROGRAM_VERSION_TEXT
+    print("Sigscape %s" % xscape.PROGRAM_VERSION_TEXT)
     hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, \
         outfile = getInput.getInput(outputExtension = "pdf", allowEmptyOutfile = True)
     log = getInput.boolInput("Display in log coordinates? ")
@@ -42,7 +42,7 @@ def main():
     if seed:
         random.seed(seed)
 
-    print "Reconciling trees..."
+    print("Reconciling trees...")
     CVlist = reconcile.reconcile(parasiteTree, hostTree, phi, \
                                  switchLo, switchHi, lossLo, lossHi)  
     startTime = time.time()
@@ -58,25 +58,25 @@ def main():
                                             lossLo, lossHi)
     endTime = time.time()
     elapsedTime = endTime- startTime
-    print "\nElapsed time %.2f seconds" % elapsedTime   
+    print("\nElapsed time %.2f seconds" % elapsedTime)   
 
-    print "Plotting..."
+    print("Plotting...")
     plotsig.plotsig(CVlist, randomTrialsCVlist, switchLo, switchHi, \
                     lossLo, lossHi, DOTS, outfile, \
                     log, display)
-    if outfile != "": print "Output written in file ", outfile
+    if outfile != "": print("Output written in file ", outfile)
 
 def getSeed(prompt):
     while True:
         try:
-            s = raw_input(prompt)
+            s = input(prompt)
             if s == "":
                 return None
             else:
                 val = int(s)
-	        return val
-	except ValueError:
-            print "Non-numeric input.  Please try again."
+            return val
+        except ValueError:
+            print("Non-numeric input.  Please try again.")
 
 def seqTrials(parasiteTree, hostTree, phi, numTrials, 
               switchLo, switchHi, lossLo, lossHi,
@@ -89,14 +89,14 @@ def seqTrials(parasiteTree, hostTree, phi, numTrials,
     output = []
     for t in range(numTrials):
         if verbose:
-            print ".",      # Progress indicator!
+            print(".", end=' ')      # Progress indicator!
         sys.stdout.flush()
         newPhi = randomizeTips(parasiteTips, hostTips)
         output.append(reconcile.reconcile(parasiteTree, hostTree, newPhi, 
                                           switchLo, switchHi, lossLo, lossHi))
     
     if verbose:
-        print               # Newline
+        print()               # Newline
     return output
 
 def parTrials(parasiteTree, hostTree, phi, numTrials,  \
@@ -107,7 +107,7 @@ def parTrials(parasiteTree, hostTree, phi, numTrials,  \
     output = []
     for t in range(numTrials):
         if verbose:
-            print ".",      # Progress indicator!
+            print(".", end=' ')      # Progress indicator!
             sys.stdout.flush()
         newPhi = randomizeTips(parasiteTips, hostTips)
         output.append(reconcile.reconcile(parasiteTree, hostTree, newPhi, \
@@ -139,7 +139,7 @@ def parallelTrials(parasiteTree, hostTree, phi, numTrials, numProcs, \
     
 def getTipLists(parasiteTree, hostTree, phi):
     ''' Return the lists of tips in the given parasite and host trees.'''
-    parasiteTips = phi.keys()
+    parasiteTips = list(phi.keys())
     hostTips = []
     for p in parasiteTips:
         h = phi[p]
