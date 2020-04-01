@@ -586,12 +586,9 @@ def build_dtl_recon_graph(best_roots, event_dict, unique_dict):
     return unique_dict
 
 
-def reconcile(file_name, dup_cost, transfer_cost, loss_cost):
+def reconcile(newick_data, dup_cost, transfer_cost, loss_cost):
     """
-    :param file_name: the file in which the desired data set it stored, passed as
-    a string. For Ran Libeskind-Hadas's/Jessica Wu's group, our data files were almost exclusively
-    .newick files once we were sure our algorithm worked correctly, which needed to use
-    the newick format reader to correctly read in the data.
+    :param newick_data: Triple of output to newickFormatReader.getInput()
     :param dup_cost: the cost associated with a duplication event
     :param transfer_cost: the cost associated with a transfer event
     :param loss_cost: the cost associated with a loss event
@@ -600,7 +597,7 @@ def reconcile(file_name, dup_cost, transfer_cost, loss_cost):
     for details on the format of the host and parasite trees as well as the DTLReconGraph
     """
     # Note: I have made modifications to the return statement to make Diameter.py possible without re-reconciling.
-    host, paras, phi = newickFormatReader.getInput(file_name)
+    host, paras, phi = newick_data
     graph, best_cost, num_recon, best_roots = DP(host, paras, phi, dup_cost, transfer_cost, loss_cost)
     return host, paras, graph, num_recon, best_roots
 
