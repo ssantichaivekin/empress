@@ -31,6 +31,7 @@ from numpy import median as md
 
 import Greedy
 import newickFormatReader
+import ReconcileMainInput
 
 Infinity = float('inf')
 
@@ -611,6 +612,16 @@ def usage():
     return ('usage: DTLReconGraph filename D_cost T_cost L_cost\n\t  filename: the name of the file that contains'
             ' the data \n\t  D_cost, T_cost, L_cost: costs for duplication, transfer, and loss events,'
             ' respectively')
+            
+# This should be called in empress.py when the user wants to run reconcile
+def main(newick_data):
+    """ Inputs: newick data 
+        print out the values from reconcile
+    """
+    duplication, transfer, loss = ReconcileMainInput.get_inputs()
+    result = reconcile(newick_data, duplication, transfer, loss)
+    for i in range(len(result)):
+        print((str(result[i]) + '\n'))
 
 # If the user runs this from the command line
 if __name__ == "__main__":  # Only run if this has been called
@@ -635,3 +646,4 @@ if __name__ == "__main__":  # Only run if this has been called
                 print((usage()))
     else:  # Show the user usage anyway, in case they happen to just call the file name wanting usage info
         print((usage()))
+    
