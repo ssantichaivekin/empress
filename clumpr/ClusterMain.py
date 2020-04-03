@@ -27,43 +27,6 @@ import matplotlib.pyplot as plt
 
 # Improvement vs. number of clusters, but improvement is vs. 1 cluster only
 
-'''
-def process_args():
-    # Required arguments - input file, D T L costs
-    parser = argparse.ArgumentParser("")
-    parser.add_argument("--input", metavar="<filename>", required=True,
-        help="The path to a .newick file with the input trees and tip mapping.")
-    parser.add_argument("-d", type=int, metavar="<duplication_cost>", required=True,
-        help="The relative cost of a duplication.")
-    parser.add_argument("-t", type=int, metavar="<transfer_cost>", required=True,
-        help="The relative cost of a transfer.")
-    parser.add_argument("-l", type=int, metavar="<loss_cost>", required=True,
-        help="The relative cost of a loss.")
-    parser.add_argument("-k", type=int, metavar="<number_of_clusters>", required=True,
-        help="How many clusters to create.")
-    parser.add_argument("--medians", action="store_true", required=False,
-        help="Whether or not to print out medians for each cluster.")
-    # Specifies how far down to go when finding splits
-    depth_or_n = parser.add_mutually_exclusive_group(required=True)
-    depth_or_n.add_argument("--depth", type=int, metavar="<tree_depth>",
-        help="How far down the graph to consider event splits.")
-    depth_or_n.add_argument("--nmprs", type=int, metavar="<tree_depth>",
-        help="How many MPRs to consider")
-    # What visualizations to produce
-    vis_type = parser.add_mutually_exclusive_group(required=False)
-    vis_type.add_argument("--pdv-vis", action="store_true",
-        help="Visualize the resulting clusters using the PDV.")
-    vis_type.add_argument("--support-vis", action="store_true",
-        help="Visualize the resulting clusters using a histogram of the event supports.")
-    # Which objective function to use
-    score = parser.add_mutually_exclusive_group(required=True)
-    score.add_argument("--pdv", action="store_true",
-        help="Use the weighted average distance to evaluate clusters.")
-    score.add_argument("--support", action="store_true",
-        help="Use the weighted average event support to evaluate clusters.")
-    args = parser.parse_args()
-    return args
-'''
 # The width parameter is unused -- it's here to maintain compatibility with HistogramDisplay.plot_histogram
 def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):
     hist, bins = hist_def
@@ -86,17 +49,17 @@ def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x
 # manner regardless of which type of plot to use...
 def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max):
     get_hist = mk_get_hist(species_tree, gene_tree, gene_root)
-    cost_suffix = ".{}-{}-{}".format(args.d, args.t, args.l)
-    p = Path(args.input)
+    cost_suffix = ".{}-{}-{}".format(args["d"], args["t"], args["l"])
+    p = Path(newick_data)
     orig_p = str(p.with_suffix(cost_suffix + ".pdf"))
     orig_h = get_hist(recon_g)
     max_x, max_y = get_max(orig_h)
-    plot_f(orig_p, orig_h, 1, Path(args.input).stem, args.d, args.t, args.l, max_x, max_y, False)
+    plot_f(orig_p, orig_h, 1, Path(newick_data).stem, args["d"], args["t"], args["l"], max_x, max_y, False)
     for i, g in enumerate(cluster_gs):
-        g_i = "-{}cluster{}".format(args.k, i)
+        g_i = "-{}cluster{}".format(args["k"], i)
         g_p = str(p.with_suffix("." + g_i + cost_suffix + ".pdf"))
         g_h = get_hist(g)
-        plot_f(g_p, g_h, 1, Path(args.input).stem + g_i, args.d, args.t, args.l, max_x, max_y, False)
+        plot_f(g_p, g_h, 1, Path(newick_data).stem + g_i, args["d"], args["t"], args["l"], max_x, max_y, False)
 
 def support_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args):
     mk_get_hist = ClusterUtil.mk_get_support_hist
@@ -133,11 +96,11 @@ def main(filename, newick_data):
         assert False
     # Get the recon graph + other info
     gene_tree, species_tree, gene_root, recon_g, mpr_count, best_roots = \
-        ClusterUtil.get_tree_info(args.input, args.d,args.t,args.l)
+        ClusterUtil.get_tree_info(newick_data, args["d"],args["t"],args["l"])
 
     # Visualize the graphs
     #RV.visualizeAndSave(recon_g, "original.png")
-    #gs = ClusterUtil.full_split(recon_g, gene_root, args.depth)
+    #gs = ClusterUtil.full_split(recon_g, gene_root, args["depth"])
     #for i, g in enumerate(gs):
     #    RV.visualizeAndSave(g, "{}.png".format(i))
     
@@ -146,9 +109,9 @@ def main(filename, newick_data):
     score = mk_score(species_tree, gene_tree, gene_root)
     # Actually perform the clustering
     if args["depth"] is not None:
-        graphs,scores,_ = ClusterUtil.cluster_graph(recon_g, gene_root, score, args.depth, args.k, 200)
+        graphs,scores,_ = ClusterUtil.cluster_graph(recon_g, gene_root, score, args["depth"], args["k"], 200)
     elif args["nmprs"] is not None:
-        graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args.nmprs, mpr_count, args.k, 200)
+        graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args["nmprs"], mpr_count, args["k"], 200)
     else:
         assert False
     # Visualization
@@ -175,11 +138,8 @@ def main(filename, newick_data):
 def main2():
     args = process_args()
     gene_tree, species_tree, gene_root, recon_g, mpr_count = \
-        ClusterUtil.get_tree_info(args.input, args.d,args.t,args.l)
+        ClusterUtil.get_tree_info(newick_data, args["d"],args["t"],args["l"])
     RV.visualizeAndSave(recon_g, "original.png")
-    gs = ClusterUtil.full_split(recon_g, gene_root, args.depth)
+    gs = ClusterUtil.full_split(recon_g, gene_root, args["depth"])
     for i, g in enumerate(gs):
         RV.visualizeAndSave(g, "{}.png".format(i))
-
-if __name__ == "__main__":
-    main()
