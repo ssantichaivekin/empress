@@ -14,6 +14,7 @@ def getInput(filename):
         duplication = input("Enter relative cost of a duplication event: ")
         try:
             inputs["d"] = int(duplication)
+            break
         except ValueError:
             print("Duplication cost must be integer number. Please try again.")
     
@@ -21,13 +22,15 @@ def getInput(filename):
         transfer = input("Enter relative cost of a transfer event: ")
         try:
             inputs["t"] = int(transfer)
+            break
         except ValueError:
             print("Transfer cost must be integer number. Please try again.")
     
     while True:
-        loss = input("Enter the relative cost of a loss event")
+        loss = input("Enter relative cost of a loss event: ")
         try:
             inputs["l"] = int(loss)
+            break
         except ValueError:
             print("Loss cost must be integer number. Please try again.")
 
@@ -57,17 +60,24 @@ def getOptionalInput():
     :return: dictionary of arguments where key is parameter name and value is parameter value.
     """
     inputs = {}
+    valid_params = ["histogram", "xnorm", "ynorm", "omit_zeros", "cumulative", "csv", "stats", "time"]
+    for param in valid_params:
+        inputs[param] = None
+
     print("Enter additional input in the form <parameter name> <value>")
     print("Enter 'Done' when you have no additional input to enter.")
     print("Enter '?' if you would like to see additional input options.")
     while True:
         user_input = input().split()
-        if user_input[0] == "?":
+        if user_input[0] == "Done":
+            break
+        elif user_input[0] == "?":
             print_usage()
-        elif user_input[0] in ["histogram", "xnorm", "ynorm", "omit_zeros", "cumulative", "csv", "stats", "time"]:
+        elif user_input[0] in valid_params:
             inputs[user_input[0]] = user_input[1]
         else:
             print("That is not a valid parameter name. Please try again.")
+    
     return inputs
         
 def print_usage():
@@ -75,17 +85,17 @@ def print_usage():
     Print information on all optional parameter inputs.
     """
     data = [
-        ("histogram", "Output the histogram at the path provided. \
-        If no filename is provided, outputs to a filename based on the input .newick file."),
+        ("histogram", ("Output the histogram at the path provided. ",
+        "If no filename is provided, outputs to a filename based on the input .newick file.")),
         ("xnorm", "Normalize the x-axis so that the distances range between 0 and 1."),
         ("ynorm", "Normalize the y-axis so that the histogram is a probability distribution."),
-        ("omit_zeros", "Omit the zero column of the histogram, \
-        which will always be the total number of reconciliations."),
+        ("omit_zeros", ("Omit the zero column of the histogram, ",
+        "which will always be the total number of reconciliations.")),
         ("cumulative", "Make the histogram cumulative."),
-        ("csv", "Output the histogram as a .csv file at the path provided. \
-        If no filename is provided, outputs to a filename based on the input .newick file."),
-        ("stats", "Output statistics including the total number of MPRs, \
-        the diameter of MPR-space, and the average distance between MPRs."),
+        ("csv", ("Output the histogram as a .csv file at the path provided. ",
+        "If no filename is provided, outputs to a filename based on the input .newick file.")),
+        ("stats", ("Output statistics including the total number of MPRs, ",
+        "the diameter of MPR-space, and the average distance between MPRs.")),
         ("time", "Time the diameter algorithm.")
     ]
     col_width = max(len(x) for x,y in data) + 2
