@@ -2,8 +2,11 @@
 # Adrian Garcia, March 2020
 # Main input function for HistogramMain
 
-def getInput(filename, outputExtension, allowEmptyOutfile=False):
-    """ outputExtension is the output file extension (e.g, pdf or csv) """
+def getInput(filename):
+    """ 
+    :param filename: the path to a .newick file with the input trees and tip mapping.
+    :return: dictionary of arguments where key is parameter name and value is parameter value.
+    """
     
     inputs = {}
     # Get input file name and try to open it
@@ -50,21 +53,27 @@ def getInput(filename, outputExtension, allowEmptyOutfile=False):
     return inputs
 
 def getOptionalInput():
+    """ 
+    :return: dictionary of arguments where key is parameter name and value is parameter value.
+    """
     inputs = {}
     print("Enter additional input in the form <parameter name> <value>")
     print("Enter 'Done' when you have no additional input to enter.")
     print("Enter '?' if you would like to see additional input options.")
     while True:
-        userInput = input().split()
-        if userInput[0] == "?":
+        user_input = input().split()
+        if user_input[0] == "?":
             print_usage()
-        elif userInput[0] in ["histogram", "xnorm", "ynorm", "omit_zeros", "cumulative", "csv", "stats", "time"]:
-            inputs[userInput[0]] = userInput[1]
+        elif user_input[0] in ["histogram", "xnorm", "ynorm", "omit_zeros", "cumulative", "csv", "stats", "time"]:
+            inputs[user_input[0]] = user_input[1]
         else:
             print("That is not a valid parameter name. Please try again.")
     return inputs
         
 def print_usage():
+    """
+    prints information on all optional parameter inputs
+    """
     data = [
         ("histogram", "Output the histogram at the path provided. \
         If no filename is provided, outputs to a filename based on the input .newick file."),
