@@ -1,0 +1,2594 @@
+=== Mismatch of tree size 4 ===
+=== Mismatch of tree size 5 ===
+ID =  0
+mpr 1
+ID =  1
+mpr 1
+ID =  2
+mpr 2
+ID =  3
+mpr 2
+ID =  4
+mpr 2
+ID =  5
+mpr 2
+ID =  6
+mpr 2
+ID =  7
+mpr 2
+ID =  8
+mpr 1
+ID =  9
+mpr 1
+ID =  10
+mpr 1
+ID =  11
+mpr 1
+ID =  12
+mpr 2
+ID =  13
+mpr 2
+ID =  14
+mpr 6
+Failed enter ('n2', 'm4') ('n2', 'm2')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 2, 7: 2}
+Histogram from Brute Force: {1: 3, 7: 3, 5: 3, 9: 3}
+Failed enter ('n2', 'm2') ('n2', 'm4')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 2, 7: 2}
+Histogram from Brute Force: {1: 3, 7: 3, 5: 3, 9: 3}
+ID =  15
+mpr 6
+Failed enter ('n2', 'm4') ('n2', 'm2')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 2, 7: 2}
+Histogram from Brute Force: {1: 3, 7: 3, 5: 3, 9: 3}
+Failed enter ('n2', 'm2') ('n2', 'm4')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 2, 7: 2}
+Histogram from Brute Force: {1: 3, 7: 3, 5: 3, 9: 3}
+ID =  16
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm6') ('n2', 'm2')
+Histogram from Algorithm  : {8: 2, 2: 2, 6: 3}
+Histogram from Brute Force: {8: 2, 2: 2, 6: 4}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm2')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 1, 7: 3}
+Histogram from Brute Force: {1: 3, 7: 4, 5: 2, 9: 3}
+Failed enter ('n2', 'm2') ('n2', 'm6')
+Histogram from Algorithm  : {8: 2, 2: 2, 6: 3}
+Histogram from Brute Force: {8: 2, 2: 2, 6: 4}
+Failed enter ('n2', 'm2') ('n2', 'm4')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 1, 7: 3}
+Histogram from Brute Force: {1: 3, 7: 4, 5: 2, 9: 3}
+Failed enter ('n0', 'm1') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm1') ('n0', 'm0')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm1')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm1')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+ID =  16
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 3, 8: 11, 10: 5} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 2, 8: 9, 10: 5} pairs:  25
+ID =  17
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm6') ('n2', 'm2')
+Histogram from Algorithm  : {8: 2, 2: 2, 6: 3}
+Histogram from Brute Force: {8: 2, 2: 2, 6: 4}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm2')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 1, 7: 3}
+Histogram from Brute Force: {1: 3, 7: 4, 5: 2, 9: 3}
+Failed enter ('n2', 'm2') ('n2', 'm6')
+Histogram from Algorithm  : {8: 2, 2: 2, 6: 3}
+Histogram from Brute Force: {8: 2, 2: 2, 6: 4}
+Failed enter ('n2', 'm2') ('n2', 'm4')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 1, 7: 3}
+Histogram from Brute Force: {1: 3, 7: 4, 5: 2, 9: 3}
+Failed enter ('n0', 'm1') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm1') ('n0', 'm0')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm1')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm1')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+ID =  17
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 3, 8: 11, 10: 5} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 2, 8: 9, 10: 5} pairs:  25
+ID =  18
+mpr 2
+ID =  19
+mpr 2
+ID =  20
+mpr 6
+Failed enter ('n2', 'm4') ('n2', 'm2')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 2, 7: 2}
+Histogram from Brute Force: {1: 3, 7: 3, 5: 3, 9: 3}
+Failed enter ('n2', 'm2') ('n2', 'm4')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 2, 7: 2}
+Histogram from Brute Force: {1: 3, 7: 3, 5: 3, 9: 3}
+ID =  21
+mpr 6
+Failed enter ('n2', 'm4') ('n2', 'm2')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 2, 7: 2}
+Histogram from Brute Force: {1: 3, 7: 3, 5: 3, 9: 3}
+Failed enter ('n2', 'm2') ('n2', 'm4')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 2, 7: 2}
+Histogram from Brute Force: {1: 3, 7: 3, 5: 3, 9: 3}
+ID =  22
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm6') ('n2', 'm2')
+Histogram from Algorithm  : {8: 2, 2: 2, 6: 3}
+Histogram from Brute Force: {8: 2, 2: 2, 6: 4}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm2')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 1, 7: 3}
+Histogram from Brute Force: {1: 3, 7: 4, 5: 2, 9: 3}
+Failed enter ('n2', 'm2') ('n2', 'm6')
+Histogram from Algorithm  : {8: 2, 2: 2, 6: 3}
+Histogram from Brute Force: {8: 2, 2: 2, 6: 4}
+Failed enter ('n2', 'm2') ('n2', 'm4')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 1, 7: 3}
+Histogram from Brute Force: {1: 3, 7: 4, 5: 2, 9: 3}
+Failed enter ('n0', 'm1') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm1') ('n0', 'm0')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm1')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm1')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+ID =  22
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 3, 8: 11, 10: 5} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 2, 8: 9, 10: 5} pairs:  25
+ID =  23
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm6') ('n2', 'm2')
+Histogram from Algorithm  : {8: 2, 2: 2, 6: 3}
+Histogram from Brute Force: {8: 2, 2: 2, 6: 4}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm2')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 1, 7: 3}
+Histogram from Brute Force: {1: 3, 7: 4, 5: 2, 9: 3}
+Failed enter ('n2', 'm2') ('n2', 'm6')
+Histogram from Algorithm  : {8: 2, 2: 2, 6: 3}
+Histogram from Brute Force: {8: 2, 2: 2, 6: 4}
+Failed enter ('n2', 'm2') ('n2', 'm4')
+Histogram from Algorithm  : {9: 2, 1: 3, 5: 1, 7: 3}
+Histogram from Brute Force: {1: 3, 7: 4, 5: 2, 9: 3}
+Failed enter ('n0', 'm1') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm1') ('n0', 'm0')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm1')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm1')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 3, 10: 2, 4: 2}
+Histogram from Brute Force: {8: 4, 10: 2, 4: 2}
+ID =  23
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 3, 8: 11, 10: 5} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 2, 8: 9, 10: 5} pairs:  25
+ID =  24
+mpr 1
+ID =  25
+mpr 1
+ID =  26
+mpr 4
+ID =  27
+mpr 4
+ID =  28
+mpr 4
+ID =  29
+mpr 4
+ID =  30
+mpr 1
+ID =  31
+mpr 1
+ID =  32
+mpr 1
+ID =  33
+mpr 1
+ID =  34
+mpr 1
+ID =  35
+mpr 1
+ID =  36
+mpr 2
+ID =  37
+mpr 2
+ID =  38
+mpr 3
+ID =  39
+mpr 3
+ID =  40
+mpr 3
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+ID =  41
+mpr 3
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+ID =  42
+mpr 2
+ID =  43
+mpr 2
+ID =  44
+mpr 3
+ID =  45
+mpr 3
+ID =  46
+mpr 3
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+ID =  47
+mpr 3
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+ID =  48
+mpr 1
+ID =  49
+mpr 1
+ID =  50
+mpr 1
+ID =  51
+mpr 1
+ID =  52
+mpr 1
+ID =  53
+mpr 1
+ID =  54
+mpr 1
+ID =  55
+mpr 1
+ID =  56
+mpr 1
+ID =  57
+mpr 1
+ID =  58
+mpr 1
+ID =  59
+mpr 1
+ID =  60
+mpr 1
+ID =  61
+mpr 1
+ID =  62
+mpr 1
+ID =  63
+mpr 1
+ID =  64
+mpr 2
+ID =  65
+mpr 2
+ID =  66
+mpr 1
+ID =  67
+mpr 1
+ID =  68
+mpr 1
+ID =  69
+mpr 1
+ID =  70
+mpr 2
+ID =  71
+mpr 2
+ID =  72
+mpr 2
+ID =  73
+mpr 2
+ID =  74
+mpr 1
+ID =  75
+mpr 1
+ID =  76
+mpr 2
+ID =  77
+mpr 2
+ID =  78
+mpr 1
+ID =  79
+mpr 1
+ID =  80
+mpr 1
+ID =  81
+mpr 1
+ID =  82
+mpr 2
+ID =  83
+mpr 2
+ID =  84
+mpr 1
+ID =  85
+mpr 1
+ID =  86
+mpr 1
+ID =  87
+mpr 1
+ID =  88
+mpr 2
+ID =  89
+mpr 2
+ID =  90
+mpr 1
+ID =  91
+mpr 1
+ID =  92
+mpr 4
+ID =  93
+mpr 4
+ID =  94
+mpr 4
+ID =  95
+mpr 4
+ID =  96
+mpr 2
+ID =  97
+mpr 2
+ID =  98
+mpr 1
+ID =  99
+mpr 1
+ID =  100
+mpr 2
+ID =  101
+mpr 2
+ID =  102
+mpr 1
+ID =  103
+mpr 1
+ID =  104
+mpr 1
+ID =  105
+mpr 1
+ID =  106
+mpr 2
+ID =  107
+mpr 2
+ID =  108
+mpr 1
+ID =  109
+mpr 1
+ID =  110
+mpr 1
+ID =  111
+mpr 1
+ID =  112
+mpr 2
+ID =  113
+mpr 2
+ID =  114
+mpr 1
+ID =  115
+mpr 1
+ID =  116
+mpr 4
+ID =  117
+mpr 4
+ID =  118
+mpr 4
+ID =  119
+mpr 4
+ID =  120
+mpr 2
+ID =  121
+mpr 2
+ID =  122
+mpr 1
+ID =  123
+mpr 1
+ID =  124
+mpr 1
+ID =  125
+mpr 1
+ID =  126
+mpr 2
+ID =  127
+mpr 2
+ID =  128
+mpr 1
+ID =  129
+mpr 1
+ID =  130
+mpr 1
+ID =  131
+mpr 1
+ID =  132
+mpr 1
+ID =  133
+mpr 1
+ID =  134
+mpr 1
+ID =  135
+mpr 1
+ID =  136
+mpr 2
+ID =  137
+mpr 2
+ID =  138
+mpr 1
+ID =  139
+mpr 1
+ID =  140
+mpr 1
+ID =  141
+mpr 1
+ID =  142
+mpr 2
+ID =  143
+mpr 2
+ID =  144
+mpr 1
+ID =  145
+mpr 1
+ID =  146
+mpr 1
+ID =  147
+mpr 1
+ID =  148
+mpr 1
+ID =  149
+mpr 1
+ID =  150
+mpr 2
+ID =  151
+mpr 2
+ID =  152
+mpr 1
+ID =  153
+mpr 1
+ID =  154
+mpr 1
+ID =  155
+mpr 1
+ID =  156
+mpr 1
+ID =  157
+mpr 1
+ID =  158
+mpr 1
+ID =  159
+mpr 1
+ID =  160
+mpr 2
+ID =  161
+mpr 2
+ID =  162
+mpr 1
+ID =  163
+mpr 1
+ID =  164
+mpr 1
+ID =  165
+mpr 1
+ID =  166
+mpr 2
+ID =  167
+mpr 2
+ID =  168
+mpr 1
+ID =  169
+mpr 1
+ID =  170
+mpr 1
+ID =  171
+mpr 1
+ID =  172
+mpr 1
+ID =  173
+mpr 1
+ID =  174
+mpr 2
+ID =  175
+mpr 2
+ID =  176
+mpr 1
+ID =  177
+mpr 1
+ID =  178
+mpr 1
+ID =  179
+mpr 1
+ID =  180
+mpr 1
+ID =  181
+mpr 1
+ID =  182
+mpr 1
+ID =  183
+mpr 1
+ID =  184
+mpr 2
+ID =  185
+mpr 2
+ID =  186
+mpr 1
+ID =  187
+mpr 1
+ID =  188
+mpr 1
+ID =  189
+mpr 1
+ID =  190
+mpr 2
+ID =  191
+mpr 2
+ID =  192
+mpr 1
+ID =  193
+mpr 1
+ID =  194
+mpr 1
+ID =  195
+mpr 1
+ID =  196
+mpr 1
+ID =  197
+mpr 1
+ID =  198
+mpr 1
+ID =  199
+mpr 1
+ID =  200
+mpr 2
+ID =  201
+mpr 2
+ID =  202
+mpr 1
+ID =  203
+mpr 1
+ID =  204
+mpr 1
+ID =  205
+mpr 1
+ID =  206
+mpr 2
+ID =  207
+mpr 2
+ID =  208
+mpr 1
+ID =  209
+mpr 1
+ID =  210
+mpr 2
+ID =  211
+mpr 2
+ID =  212
+mpr 1
+ID =  213
+mpr 1
+ID =  214
+mpr 1
+ID =  215
+mpr 1
+ID =  216
+mpr 1
+ID =  217
+mpr 1
+ID =  218
+mpr 1
+ID =  219
+mpr 1
+ID =  220
+mpr 1
+ID =  221
+mpr 1
+ID =  222
+mpr 1
+ID =  223
+mpr 1
+ID =  224
+mpr 2
+ID =  225
+mpr 2
+ID =  226
+mpr 1
+ID =  227
+mpr 1
+ID =  228
+mpr 1
+ID =  229
+mpr 1
+ID =  230
+mpr 2
+ID =  231
+mpr 2
+ID =  232
+mpr 1
+ID =  233
+mpr 1
+ID =  234
+mpr 2
+ID =  235
+mpr 2
+ID =  236
+mpr 1
+ID =  237
+mpr 1
+ID =  238
+mpr 1
+ID =  239
+mpr 1
+ID =  240
+mpr 1
+ID =  241
+mpr 1
+ID =  242
+mpr 1
+ID =  243
+mpr 1
+ID =  244
+mpr 1
+ID =  245
+mpr 1
+ID =  246
+mpr 1
+ID =  247
+mpr 1
+ID =  248
+mpr 1
+ID =  249
+mpr 1
+ID =  250
+mpr 1
+ID =  251
+mpr 1
+ID =  252
+mpr 1
+ID =  253
+mpr 1
+ID =  254
+mpr 6
+ID =  255
+mpr 6
+ID =  256
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n0', 'm2') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm2') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm2')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm2')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+ID =  256
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 5, 8: 10, 10: 4} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 4, 8: 8, 10: 4} pairs:  25
+ID =  257
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n0', 'm2') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm2') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm2')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm2')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+ID =  257
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 5, 8: 10, 10: 4} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 4, 8: 8, 10: 4} pairs:  25
+ID =  258
+mpr 1
+ID =  259
+mpr 1
+ID =  260
+mpr 6
+ID =  261
+mpr 6
+ID =  262
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n0', 'm2') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm2') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm2')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm2')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+ID =  262
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 5, 8: 10, 10: 4} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 4, 8: 8, 10: 4} pairs:  25
+ID =  263
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n0', 'm2') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm2') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm2')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm2')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+ID =  263
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 5, 8: 10, 10: 4} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 4, 8: 8, 10: 4} pairs:  25
+ID =  264
+mpr 1
+ID =  265
+mpr 1
+ID =  266
+mpr 1
+ID =  267
+mpr 1
+ID =  268
+mpr 1
+ID =  269
+mpr 1
+ID =  270
+mpr 1
+ID =  271
+mpr 1
+ID =  272
+mpr 1
+ID =  273
+mpr 1
+ID =  274
+mpr 1
+ID =  275
+mpr 1
+ID =  276
+mpr 1
+ID =  277
+mpr 1
+ID =  278
+mpr 6
+ID =  279
+mpr 6
+ID =  280
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n0', 'm3') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm3') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm3')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm3')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+ID =  280
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 5, 8: 10, 10: 4} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 4, 8: 8, 10: 4} pairs:  25
+ID =  281
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n0', 'm3') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm3') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm3')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm3')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+ID =  281
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 5, 8: 10, 10: 4} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 4, 8: 8, 10: 4} pairs:  25
+ID =  282
+mpr 1
+ID =  283
+mpr 1
+ID =  284
+mpr 6
+ID =  285
+mpr 6
+ID =  286
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n0', 'm3') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm3') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm3')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm3')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+ID =  286
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 5, 8: 10, 10: 4} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 4, 8: 8, 10: 4} pairs:  25
+ID =  287
+mpr 8
+Failed enter ('n2', 'm6') ('n2', 'm4')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n2', 'm4') ('n2', 'm6')
+Histogram from Algorithm  : {1: 2, 5: 2, 7: 1}
+Histogram from Brute Force: {1: 2, 5: 3, 7: 1}
+Failed enter ('n0', 'm3') ('n0', 'm6')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm3') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm6') ('n0', 'm3')
+Histogram from Algorithm  : {2: 2, 6: 1}
+Histogram from Brute Force: {2: 2, 6: 2}
+Failed enter ('n0', 'm6') ('n0', 'm0')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm3')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+Failed enter ('n0', 'm0') ('n0', 'm6')
+Histogram from Algorithm  : {8: 2, 10: 1, 4: 2}
+Histogram from Brute Force: {8: 3, 10: 1, 4: 2}
+ID =  287
+Expected pairs  28
+Brute Force:  {0: 8, 2: 2, 4: 7, 6: 5, 8: 10, 10: 4} pairs:  28
+Diameter Alg:  {0: 8, 2: 2, 4: 7, 6: 4, 8: 8, 10: 4} pairs:  25
+ID =  288
+mpr 1
+ID =  289
+mpr 1
+ID =  290
+mpr 1
+ID =  291
+mpr 1
+ID =  292
+mpr 1
+ID =  293
+mpr 1
+ID =  294
+mpr 1
+ID =  295
+mpr 1
+ID =  296
+mpr 1
+ID =  297
+mpr 1
+ID =  298
+mpr 1
+ID =  299
+mpr 1
+ID =  300
+mpr 1
+ID =  301
+mpr 1
+ID =  302
+mpr 1
+ID =  303
+mpr 1
+ID =  304
+mpr 1
+ID =  305
+mpr 1
+ID =  306
+mpr 1
+ID =  307
+mpr 1
+ID =  308
+mpr 1
+ID =  309
+mpr 1
+ID =  310
+mpr 1
+ID =  311
+mpr 1
+ID =  312
+mpr 3
+ID =  313
+mpr 3
+ID =  314
+mpr 4
+ID =  315
+mpr 4
+ID =  316
+mpr 5
+ID =  317
+mpr 5
+ID =  318
+mpr 3
+ID =  319
+mpr 3
+ID =  320
+mpr 4
+ID =  321
+mpr 4
+ID =  322
+mpr 5
+ID =  323
+mpr 5
+ID =  324
+mpr 1
+ID =  325
+mpr 1
+ID =  326
+mpr 1
+ID =  327
+mpr 1
+ID =  328
+mpr 1
+ID =  329
+mpr 1
+ID =  330
+mpr 1
+ID =  331
+mpr 1
+ID =  332
+mpr 1
+ID =  333
+mpr 1
+ID =  334
+mpr 2
+ID =  335
+mpr 2
+ID =  336
+mpr 3
+ID =  337
+mpr 3
+ID =  338
+mpr 4
+ID =  339
+mpr 4
+ID =  340
+mpr 5
+ID =  341
+mpr 5
+ID =  342
+mpr 3
+ID =  343
+mpr 3
+ID =  344
+mpr 4
+ID =  345
+mpr 4
+ID =  346
+mpr 5
+ID =  347
+mpr 5
+ID =  348
+mpr 1
+ID =  349
+mpr 1
+ID =  350
+mpr 1
+ID =  351
+mpr 1
+ID =  352
+mpr 1
+ID =  353
+mpr 1
+ID =  354
+mpr 1
+ID =  355
+mpr 1
+ID =  356
+mpr 1
+ID =  357
+mpr 1
+ID =  358
+mpr 2
+ID =  359
+mpr 2
+ID =  360
+mpr 2
+ID =  361
+mpr 2
+ID =  362
+mpr 1
+ID =  363
+mpr 1
+ID =  364
+mpr 1
+ID =  365
+mpr 1
+ID =  366
+mpr 2
+ID =  367
+mpr 2
+ID =  368
+mpr 1
+ID =  369
+mpr 1
+ID =  370
+mpr 1
+ID =  371
+mpr 1
+ID =  372
+mpr 1
+ID =  373
+mpr 1
+ID =  374
+mpr 1
+ID =  375
+mpr 1
+ID =  376
+mpr 2
+ID =  377
+mpr 2
+ID =  378
+mpr 1
+ID =  379
+mpr 1
+ID =  380
+mpr 1
+ID =  381
+mpr 1
+ID =  382
+mpr 2
+ID =  383
+mpr 2
+ID =  384
+mpr 1
+ID =  385
+mpr 1
+ID =  386
+mpr 4
+ID =  387
+mpr 4
+ID =  388
+mpr 4
+ID =  389
+mpr 4
+ID =  390
+mpr 1
+ID =  391
+mpr 1
+ID =  392
+mpr 4
+ID =  393
+mpr 4
+ID =  394
+mpr 4
+ID =  395
+mpr 4
+ID =  396
+mpr 4
+ID =  397
+mpr 4
+ID =  398
+mpr 4
+ID =  399
+mpr 4
+ID =  400
+mpr 1
+ID =  401
+mpr 1
+ID =  402
+mpr 4
+ID =  403
+mpr 4
+ID =  404
+mpr 4
+ID =  405
+mpr 4
+ID =  406
+mpr 1
+ID =  407
+mpr 1
+ID =  408
+mpr 2
+ID =  409
+mpr 2
+ID =  410
+mpr 1
+ID =  411
+mpr 1
+ID =  412
+mpr 1
+ID =  413
+mpr 1
+ID =  414
+mpr 2
+ID =  415
+mpr 2
+ID =  416
+mpr 1
+ID =  417
+mpr 1
+ID =  418
+mpr 1
+ID =  419
+mpr 1
+ID =  420
+mpr 1
+ID =  421
+mpr 1
+ID =  422
+mpr 1
+ID =  423
+mpr 1
+ID =  424
+mpr 2
+ID =  425
+mpr 2
+ID =  426
+mpr 1
+ID =  427
+mpr 1
+ID =  428
+mpr 1
+ID =  429
+mpr 1
+ID =  430
+mpr 2
+ID =  431
+mpr 2
+ID =  432
+mpr 2
+ID =  433
+mpr 2
+ID =  434
+mpr 2
+ID =  435
+mpr 2
+ID =  436
+mpr 2
+ID =  437
+mpr 2
+ID =  438
+mpr 2
+ID =  439
+mpr 2
+ID =  440
+mpr 2
+ID =  441
+mpr 2
+ID =  442
+mpr 2
+ID =  443
+mpr 2
+ID =  444
+mpr 2
+ID =  445
+mpr 2
+ID =  446
+mpr 2
+ID =  447
+mpr 2
+ID =  448
+mpr 2
+ID =  449
+mpr 2
+ID =  450
+mpr 2
+ID =  451
+mpr 2
+ID =  452
+mpr 2
+ID =  453
+mpr 2
+ID =  454
+mpr 2
+ID =  455
+mpr 2
+ID =  456
+mpr 2
+ID =  457
+mpr 2
+ID =  458
+mpr 2
+ID =  459
+mpr 2
+ID =  460
+mpr 2
+ID =  461
+mpr 2
+ID =  462
+mpr 2
+ID =  463
+mpr 2
+ID =  464
+mpr 2
+ID =  465
+mpr 2
+ID =  466
+mpr 2
+ID =  467
+mpr 2
+ID =  468
+mpr 2
+ID =  469
+mpr 2
+ID =  470
+mpr 2
+ID =  471
+mpr 2
+ID =  472
+mpr 2
+ID =  473
+mpr 2
+ID =  474
+mpr 2
+ID =  475
+mpr 2
+ID =  476
+mpr 2
+ID =  477
+mpr 2
+ID =  478
+mpr 2
+ID =  479
+mpr 2
+ID =  480
+mpr 1
+ID =  481
+mpr 1
+ID =  482
+mpr 3
+ID =  483
+mpr 3
+ID =  484
+mpr 3
+ID =  485
+mpr 3
+ID =  486
+mpr 1
+ID =  487
+mpr 1
+ID =  488
+mpr 3
+ID =  489
+mpr 3
+ID =  490
+mpr 3
+ID =  491
+mpr 3
+ID =  492
+mpr 3
+ID =  493
+mpr 3
+ID =  494
+mpr 3
+ID =  495
+mpr 3
+ID =  496
+mpr 1
+ID =  497
+mpr 1
+ID =  498
+mpr 3
+ID =  499
+mpr 3
+ID =  500
+mpr 3
+ID =  501
+mpr 3
+ID =  502
+mpr 1
+ID =  503
+mpr 1
+ID =  504
+mpr 1
+ID =  505
+mpr 1
+ID =  506
+mpr 1
+ID =  507
+mpr 1
+ID =  508
+mpr 1
+ID =  509
+mpr 1
+ID =  510
+mpr 1
+ID =  511
+mpr 1
+ID =  512
+mpr 1
+ID =  513
+mpr 1
+ID =  514
+mpr 1
+ID =  515
+mpr 1
+ID =  516
+mpr 1
+ID =  517
+mpr 1
+ID =  518
+mpr 1
+ID =  519
+mpr 1
+ID =  520
+mpr 1
+ID =  521
+mpr 1
+ID =  522
+mpr 1
+ID =  523
+mpr 1
+ID =  524
+mpr 1
+ID =  525
+mpr 1
+ID =  526
+mpr 1
+ID =  527
+mpr 1
+ID =  528
+mpr 1
+ID =  529
+mpr 1
+ID =  530
+mpr 1
+ID =  531
+mpr 1
+ID =  532
+mpr 1
+ID =  533
+mpr 1
+ID =  534
+mpr 1
+ID =  535
+mpr 1
+ID =  536
+mpr 1
+ID =  537
+mpr 1
+ID =  538
+mpr 1
+ID =  539
+mpr 1
+ID =  540
+mpr 1
+ID =  541
+mpr 1
+ID =  542
+mpr 1
+ID =  543
+mpr 1
+ID =  544
+mpr 1
+ID =  545
+mpr 1
+ID =  546
+mpr 1
+ID =  547
+mpr 1
+ID =  548
+mpr 1
+ID =  549
+mpr 1
+ID =  550
+mpr 1
+ID =  551
+mpr 1
+ID =  552
+mpr 1
+ID =  553
+mpr 1
+ID =  554
+mpr 1
+ID =  555
+mpr 1
+ID =  556
+mpr 1
+ID =  557
+mpr 1
+ID =  558
+mpr 1
+ID =  559
+mpr 1
+ID =  560
+mpr 1
+ID =  561
+mpr 1
+ID =  562
+mpr 1
+ID =  563
+mpr 1
+ID =  564
+mpr 1
+ID =  565
+mpr 1
+ID =  566
+mpr 1
+ID =  567
+mpr 1
+ID =  568
+mpr 1
+ID =  569
+mpr 1
+ID =  570
+mpr 1
+ID =  571
+mpr 1
+ID =  572
+mpr 1
+ID =  573
+mpr 1
+ID =  574
+mpr 1
+ID =  575
+mpr 1
+ID =  576
+mpr 1
+ID =  577
+mpr 1
+ID =  578
+mpr 1
+ID =  579
+mpr 1
+ID =  580
+mpr 1
+ID =  581
+mpr 1
+ID =  582
+mpr 1
+ID =  583
+mpr 1
+ID =  584
+mpr 1
+ID =  585
+mpr 1
+ID =  586
+mpr 1
+ID =  587
+mpr 1
+ID =  588
+mpr 1
+ID =  589
+mpr 1
+ID =  590
+mpr 1
+ID =  591
+mpr 1
+ID =  592
+mpr 1
+ID =  593
+mpr 1
+ID =  594
+mpr 1
+ID =  595
+mpr 1
+ID =  596
+mpr 1
+ID =  597
+mpr 1
+ID =  598
+mpr 1
+ID =  599
+mpr 1
+ID =  600
+mpr 1
+ID =  601
+mpr 1
+ID =  602
+mpr 1
+ID =  603
+mpr 1
+ID =  604
+mpr 1
+ID =  605
+mpr 1
+ID =  606
+mpr 1
+ID =  607
+mpr 1
+ID =  608
+mpr 1
+ID =  609
+mpr 1
+ID =  610
+mpr 1
+ID =  611
+mpr 1
+ID =  612
+mpr 1
+ID =  613
+mpr 1
+ID =  614
+mpr 1
+ID =  615
+mpr 1
+ID =  616
+mpr 1
+ID =  617
+mpr 1
+ID =  618
+mpr 1
+ID =  619
+mpr 1
+ID =  620
+mpr 1
+ID =  621
+mpr 1
+ID =  622
+mpr 1
+ID =  623
+mpr 1
+ID =  624
+mpr 1
+ID =  625
+mpr 1
+ID =  626
+mpr 1
+ID =  627
+mpr 1
+ID =  628
+mpr 1
+ID =  629
+mpr 1
+ID =  630
+mpr 1
+ID =  631
+mpr 1
+ID =  632
+mpr 1
+ID =  633
+mpr 1
+ID =  634
+mpr 1
+ID =  635
+mpr 1
+ID =  636
+mpr 1
+ID =  637
+mpr 1
+ID =  638
+mpr 1
+ID =  639
+mpr 1
+ID =  640
+mpr 1
+ID =  641
+mpr 1
+ID =  642
+mpr 1
+ID =  643
+mpr 1
+ID =  644
+mpr 1
+ID =  645
+mpr 1
+ID =  646
+mpr 1
+ID =  647
+mpr 1
+ID =  648
+mpr 1
+ID =  649
+mpr 1
+ID =  650
+mpr 1
+ID =  651
+mpr 1
+ID =  652
+mpr 1
+ID =  653
+mpr 1
+ID =  654
+mpr 1
+ID =  655
+mpr 1
+ID =  656
+mpr 1
+ID =  657
+mpr 1
+ID =  658
+mpr 1
+ID =  659
+mpr 1
+ID =  660
+mpr 1
+ID =  661
+mpr 1
+ID =  662
+mpr 1
+ID =  663
+mpr 1
+ID =  664
+mpr 1
+ID =  665
+mpr 1
+ID =  666
+mpr 1
+ID =  667
+mpr 1
+ID =  668
+mpr 1
+ID =  669
+mpr 1
+ID =  670
+mpr 1
+ID =  671
+mpr 1
+ID =  672
+mpr 1
+ID =  673
+mpr 1
+ID =  674
+mpr 5
+ID =  675
+mpr 5
+ID =  676
+mpr 5
+ID =  677
+mpr 5
+ID =  678
+mpr 1
+ID =  679
+mpr 1
+ID =  680
+mpr 5
+ID =  681
+mpr 5
+ID =  682
+mpr 5
+ID =  683
+mpr 5
+ID =  684
+mpr 5
+ID =  685
+mpr 5
+ID =  686
+mpr 5
+ID =  687
+mpr 5
+ID =  688
+mpr 1
+ID =  689
+mpr 1
+ID =  690
+mpr 5
+ID =  691
+mpr 5
+ID =  692
+mpr 5
+ID =  693
+mpr 5
+ID =  694
+mpr 1
+ID =  695
+mpr 1
+ID =  696
+mpr 1
+ID =  697
+mpr 1
+ID =  698
+mpr 5
+ID =  699
+mpr 5
+ID =  700
+mpr 5
+ID =  701
+mpr 5
+ID =  702
+mpr 1
+ID =  703
+mpr 1
+ID =  704
+mpr 5
+ID =  705
+mpr 5
+ID =  706
+mpr 5
+ID =  707
+mpr 5
+ID =  708
+mpr 5
+ID =  709
+mpr 5
+ID =  710
+mpr 5
+ID =  711
+mpr 5
+ID =  712
+mpr 1
+ID =  713
+mpr 1
+ID =  714
+mpr 5
+ID =  715
+mpr 5
+ID =  716
+mpr 5
+ID =  717
+mpr 5
+ID =  718
+mpr 1
+ID =  719
+mpr 1
+ID =  720
+mpr 1
+ID =  721
+mpr 1
+ID =  722
+mpr 2
+ID =  723
+mpr 2
+ID =  724
+mpr 2
+ID =  725
+mpr 2
+ID =  726
+mpr 1
+ID =  727
+mpr 1
+ID =  728
+mpr 1
+ID =  729
+mpr 1
+ID =  730
+mpr 1
+ID =  731
+mpr 1
+ID =  732
+mpr 1
+ID =  733
+mpr 1
+ID =  734
+mpr 1
+ID =  735
+mpr 1
+ID =  736
+mpr 4
+ID =  737
+mpr 4
+ID =  738
+mpr 1
+ID =  739
+mpr 1
+ID =  740
+mpr 1
+ID =  741
+mpr 1
+ID =  742
+mpr 4
+ID =  743
+mpr 4
+ID =  744
+mpr 1
+ID =  745
+mpr 1
+ID =  746
+mpr 2
+ID =  747
+mpr 2
+ID =  748
+mpr 2
+ID =  749
+mpr 2
+ID =  750
+mpr 1
+ID =  751
+mpr 1
+ID =  752
+mpr 1
+ID =  753
+mpr 1
+ID =  754
+mpr 1
+ID =  755
+mpr 1
+ID =  756
+mpr 2
+ID =  757
+mpr 2
+ID =  758
+mpr 2
+ID =  759
+mpr 2
+ID =  760
+mpr 1
+ID =  761
+mpr 1
+ID =  762
+mpr 2
+ID =  763
+mpr 2
+ID =  764
+mpr 2
+ID =  765
+mpr 2
+ID =  766
+mpr 1
+ID =  767
+mpr 1
+ID =  768
+mpr 1
+ID =  769
+mpr 1
+ID =  770
+mpr 1
+ID =  771
+mpr 1
+ID =  772
+mpr 1
+ID =  773
+mpr 1
+ID =  774
+mpr 1
+ID =  775
+mpr 1
+ID =  776
+mpr 1
+ID =  777
+mpr 1
+ID =  778
+mpr 1
+ID =  779
+mpr 1
+ID =  780
+mpr 1
+ID =  781
+mpr 1
+ID =  782
+mpr 2
+ID =  783
+mpr 2
+ID =  784
+mpr 1
+ID =  785
+mpr 1
+ID =  786
+mpr 1
+ID =  787
+mpr 1
+ID =  788
+mpr 2
+ID =  789
+mpr 2
+ID =  790
+mpr 1
+ID =  791
+mpr 1
+ID =  792
+mpr 1
+ID =  793
+mpr 1
+ID =  794
+mpr 1
+ID =  795
+mpr 1
+ID =  796
+mpr 4
+ID =  797
+mpr 4
+ID =  798
+mpr 2
+ID =  799
+mpr 2
+ID =  800
+mpr 2
+ID =  801
+mpr 2
+ID =  802
+mpr 1
+ID =  803
+mpr 1
+ID =  804
+mpr 1
+ID =  805
+mpr 1
+ID =  806
+mpr 2
+ID =  807
+mpr 2
+ID =  808
+mpr 1
+ID =  809
+mpr 1
+ID =  810
+mpr 1
+ID =  811
+mpr 1
+ID =  812
+mpr 1
+ID =  813
+mpr 1
+ID =  814
+mpr 2
+ID =  815
+mpr 2
+ID =  816
+mpr 1
+ID =  817
+mpr 1
+ID =  818
+mpr 1
+ID =  819
+mpr 1
+ID =  820
+mpr 4
+ID =  821
+mpr 4
+ID =  822
+mpr 2
+ID =  823
+mpr 2
+ID =  824
+mpr 2
+ID =  825
+mpr 2
+ID =  826
+mpr 1
+ID =  827
+mpr 1
+ID =  828
+mpr 1
+ID =  829
+mpr 1
+ID =  830
+mpr 2
+ID =  831
+mpr 2
+ID =  832
+mpr 1
+ID =  833
+mpr 1
+ID =  834
+mpr 1
+ID =  835
+mpr 1
+ID =  836
+mpr 1
+ID =  837
+mpr 1
+ID =  838
+mpr 2
+ID =  839
+mpr 2
+ID =  840
+mpr 1
+ID =  841
+mpr 1
+ID =  842
+mpr 3
+ID =  843
+mpr 3
+ID =  844
+mpr 3
+ID =  845
+mpr 3
+ID =  846
+mpr 1
+ID =  847
+mpr 1
+ID =  848
+mpr 3
+ID =  849
+mpr 3
+ID =  850
+mpr 3
+ID =  851
+mpr 3
+ID =  852
+mpr 3
+ID =  853
+mpr 3
+ID =  854
+mpr 3
+ID =  855
+mpr 3
+ID =  856
+mpr 1
+ID =  857
+mpr 1
+ID =  858
+mpr 3
+ID =  859
+mpr 3
+ID =  860
+mpr 3
+ID =  861
+mpr 3
+ID =  862
+mpr 1
+ID =  863
+mpr 1
+ID =  864
+mpr 1
+ID =  865
+mpr 1
+ID =  866
+mpr 3
+ID =  867
+mpr 3
+ID =  868
+mpr 3
+ID =  869
+mpr 3
+ID =  870
+mpr 1
+ID =  871
+mpr 1
+ID =  872
+mpr 1
+ID =  873
+mpr 1
+ID =  874
+mpr 1
+ID =  875
+mpr 1
+ID =  876
+mpr 6
+ID =  877
+mpr 6
+ID =  878
+mpr 4
+ID =  879
+mpr 4
+ID =  880
+mpr 4
+ID =  881
+mpr 4
+ID =  882
+mpr 6
+ID =  883
+mpr 6
+ID =  884
+mpr 4
+ID =  885
+mpr 4
+ID =  886
+mpr 4
+ID =  887
+mpr 4
+ID =  888
+mpr 1
+ID =  889
+mpr 1
+ID =  890
+mpr 3
+ID =  891
+mpr 3
+ID =  892
+mpr 3
+ID =  893
+mpr 3
+ID =  894
+mpr 1
+ID =  895
+mpr 1
+ID =  896
+mpr 1
+ID =  897
+mpr 1
+ID =  898
+mpr 1
+ID =  899
+mpr 1
+ID =  900
+mpr 6
+ID =  901
+mpr 6
+ID =  902
+mpr 4
+ID =  903
+mpr 4
+ID =  904
+mpr 4
+ID =  905
+mpr 4
+ID =  906
+mpr 6
+ID =  907
+mpr 6
+ID =  908
+mpr 4
+ID =  909
+mpr 4
+ID =  910
+mpr 4
+ID =  911
+mpr 4
+ID =  912
+mpr 3
+ID =  913
+mpr 3
+ID =  914
+mpr 3
+ID =  915
+mpr 3
+ID =  916
+mpr 1
+ID =  917
+mpr 1
+ID =  918
+mpr 6
+ID =  919
+mpr 6
+ID =  920
+mpr 4
+ID =  921
+mpr 4
+ID =  922
+mpr 4
+ID =  923
+mpr 4
+ID =  924
+mpr 6
+ID =  925
+mpr 6
+ID =  926
+mpr 4
+ID =  927
+mpr 4
+ID =  928
+mpr 4
+ID =  929
+mpr 4
+ID =  930
+mpr 1
+ID =  931
+mpr 1
+ID =  932
+mpr 1
+ID =  933
+mpr 1
+ID =  934
+mpr 1
+ID =  935
+mpr 1
+ID =  936
+mpr 3
+ID =  937
+mpr 3
+ID =  938
+mpr 3
+ID =  939
+mpr 3
+ID =  940
+mpr 1
+ID =  941
+mpr 1
+ID =  942
+mpr 6
+ID =  943
+mpr 6
+ID =  944
+mpr 4
+ID =  945
+mpr 4
+ID =  946
+mpr 4
+ID =  947
+mpr 4
+ID =  948
+mpr 6
+ID =  949
+mpr 6
+ID =  950
+mpr 4
+ID =  951
+mpr 4
+ID =  952
+mpr 4
+ID =  953
+mpr 4
+ID =  954
+mpr 1
+ID =  955
+mpr 1
+ID =  956
+mpr 1
+ID =  957
+mpr 1
+ID =  958
+mpr 1
+ID =  959
+mpr 1
+ID =  960
+mpr 1
+ID =  961
+mpr 1
+ID =  962
+mpr 2
+ID =  963
+mpr 2
+ID =  964
+mpr 2
+ID =  965
+mpr 2
+ID =  966
+mpr 2
+ID =  967
+mpr 2
+ID =  968
+mpr 1
+ID =  969
+mpr 1
+ID =  970
+mpr 1
+ID =  971
+mpr 1
+ID =  972
+mpr 1
+ID =  973
+mpr 1
+ID =  974
+mpr 6
+ID =  975
+mpr 6
+ID =  976
+mpr 5
+ID =  977
+mpr 5
+ID =  978
+mpr 1
+ID =  979
+mpr 1
+ID =  980
+mpr 6
+ID =  981
+mpr 6
+ID =  982
+mpr 5
+ID =  983
+mpr 5
+ID =  984
+mpr 1
+ID =  985
+mpr 1
+ID =  986
+mpr 2
+ID =  987
+mpr 2
+ID =  988
+mpr 2
+ID =  989
+mpr 2
+ID =  990
+mpr 2
+ID =  991
+mpr 2
+ID =  992
+mpr 1
+ID =  993
+mpr 1
+ID =  994
+mpr 1
+ID =  995
+mpr 1
+ID =  996
+mpr 1
+ID =  997
+mpr 1
+ID =  998
+mpr 6
+ID =  999
+mpr 6
+ID =  1000
+mpr 5
+ID =  1001
+mpr 5
+ID =  1002
+mpr 1
+ID =  1003
+mpr 1
+ID =  1004
+mpr 6
+ID =  1005
+mpr 6
+ID =  1006
+mpr 5
+ID =  1007
+mpr 5
+ID =  1008
+mpr 2
+ID =  1009
+mpr 2
+ID =  1010
+mpr 1
+ID =  1011
+mpr 1
+ID =  1012
+mpr 1
+ID =  1013
+mpr 1
+ID =  1014
+mpr 2
+ID =  1015
+mpr 2
+ID =  1016
+mpr 1
+ID =  1017
+mpr 1
+ID =  1018
+mpr 1
+ID =  1019
+mpr 1
+ID =  1020
+mpr 1
+ID =  1021
+mpr 1
+ID =  1022
+mpr 1
+ID =  1023
+mpr 1
+ID =  1024
+mpr 1
+ID =  1025
+mpr 1
+ID =  1026
+mpr 1
+ID =  1027
+mpr 1
+ID =  1028
+mpr 1
+ID =  1029
+mpr 1
+ID =  1030
+mpr 1
+ID =  1031
+mpr 1
+ID =  1032
+mpr 1
+ID =  1033
+mpr 1
+ID =  1034
+mpr 6
+ID =  1035
+mpr 6
+ID =  1036
+mpr 5
+ID =  1037
+mpr 5
+ID =  1038
+mpr 1
+ID =  1039
+mpr 1
+ID =  1040
+mpr 6
+ID =  1041
+mpr 6
+ID =  1042
+mpr 5
+ID =  1043
+mpr 5
+ID =  1044
+mpr 1
+ID =  1045
+mpr 1
+ID =  1046
+mpr 1
+ID =  1047
+mpr 1
+ID =  1048
+mpr 1
+ID =  1049
+mpr 1
+ID =  1050
+mpr 1
+ID =  1051
+mpr 1
+ID =  1052
+mpr 1
+ID =  1053
+mpr 1
+ID =  1054
+mpr 1
+ID =  1055
+mpr 1
+ID =  1056
+mpr 1
+ID =  1057
+mpr 1
+ID =  1058
+mpr 6
+ID =  1059
+mpr 6
+ID =  1060
+mpr 5
+ID =  1061
+mpr 5
+ID =  1062
+mpr 1
+ID =  1063
+mpr 1
+ID =  1064
+mpr 6
+ID =  1065
+mpr 6
+ID =  1066
+mpr 5
+ID =  1067
+mpr 5
+ID =  1068
+mpr 1
+ID =  1069
+mpr 1
+ID =  1070
+mpr 1
+ID =  1071
+mpr 1
+ID =  1072
+mpr 1
+ID =  1073
+mpr 1
+ID =  1074
+mpr 1
+ID =  1075
+mpr 1
+ID =  1076
+mpr 1
+ID =  1077
+mpr 1
+ID =  1078
+mpr 1
+ID =  1079
+mpr 1
