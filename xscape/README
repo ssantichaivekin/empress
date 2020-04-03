@@ -1,0 +1,230 @@
+xscape Tools
+
+Ran Libeskind-Hadas, Jessica Yi-Chieh Wu, Mukul Bansal
+Version 0.0.4 released on November 23, 2014 
+(See VERSION NOTES below for updates since first release)
+
+See also: www.cs.hmc.edu/~hadas/xscape 
+
+WHAT'S INCLUDED 
+
+The xscape programs are found in the bin directory which includes:
+
+* costscape.py:    Visualize the landscape of optimal solutions
+* sigscape.py:     Visualize the landscape of statistical significance
+* eventscape.py:   Enumerate the events in each region and the events
+  		   common to multiple regions.
+* tree2newick:	   Convert trees in .tree format into .newick format
+* view_tanglegram: View the tanglegram 
+
+REQUIREMENTS
+
+These tools require Python 2.7.x and the following packages:
+
+* matplotlib
+* BioPython
+* shapely
+
+All of these packages are included in the Enthought Python Canopy suite 
+which provides a full version of Python 2.7.3.
+
+https://www.enthought.com/products/epd/free/
+
+USAGE
+
+Run from the command line using
+
+costscape
+sigscape
+eventscape
+view_tanglegram
+tree2newick
+
+If the path variables on the local machine are not set appropriately, the 
+following will set them...
+
+export PATH=$PATH:<xscape path>/bin
+export PYTHONPATH=$PYTHONPATH:<xscape path>/python
+
+... where <xscape path> denotes the path to the directory where the xscape tools
+have been installed.
+
+INPUT AND OUTPUT
+
+Costscape, sigscape, and eventscape prompt the user for the names of input
+and output files and arguments.
+
+INPUT FILE
+
+The input file comprises a species/host tree followed by a gene/parasite tree
+in newick format with internal node names: (LeftTree, RightTree) Root;
+The node names cannot be numeric (although they can be alpha-numeric).
+
+Immediately following the two newick trees is a list of tip associations 
+with one entry per line of the form...
+
+g:s
+
+... where p is the name of a gene/parasite tip and s is the name of a 
+species/host tip.
+
+The name of the input file should end with .newick
+
+Sample files are provided in the examples directory.
+
+OUTPUT FILE
+
+All three programs will save to output files.  Costscape and sigscape will 
+save the plots to .pdf files and eventscape saves to a .csv file that can
+be opened and manipulated in programs such as Excel.  In costscape and sigscape
+the output file name is optional:  They provide another option to display the
+plots using matplotlibs display facilities.  They also print summary data in
+the terminal window.
+
+ARGUMENTS
+
+In addition, these programs prompt for the range of transfer and loss costs
+relative to the normalized unit cost of duplication.  Speciation cost is fixed to 0.
+
+COSTSCAPE IN DETAIL
+
+The program produces a plot in which the x-axis represents the range of loss
+costs and the y-axis represents the range of transfer costs.  The cost
+space is then divided into color-coded "regions" where each region
+represents a subset of the cost space where optimal solutions will be
+the same.  Each region is labeled by a "cost vector" of the form <c, d, t, l>
+representing the number of speciations, duplications, transfers, and
+losses, respectively, in an optimal solution.  Costscape also prints the 
+following information in the terminal window for each region:
+
+* The event count vector and the number of distinct solutions in that region
+* The vertices representing the boundary of the region
+* The area of the region
+
+SIGSCAPE IN DETAIL
+
+Sigsscape performs randomization trials to determine the fraction of random 
+trials whose costs are at least as good as those of the original input 
+dataset.  Each trial comprises a permutation of the leaf associations between 
+the two trees.
+
+Sigscape then computes an empirical p-value for each combination
+of costs, indicating the fraction of random trials whose cost is less than 
+or equal to that of the original input data.  The cost space is colored 
+green for significance at the 0.01 level, yellow for signficance between 
+0.01 and 0.05, and red for lack of significance at the 0.05 level.
+
+Because the permutation testing can be slow for large trees and large number 
+of trials, sigscape is multithreaded and prompts for the number of cores 
+to allocate to the permutation testing.
+
+EVENTSCAPE IN DETAIL
+
+Eventscape has two modes, Union and Intersection, and the user is prompted
+to select one.  In Union mode, each region (i.e., event count vector) records
+every event in every reconciliation in that region, that is, the union of 
+all events in the reconciliations for that region.  In Intersection mode,
+each region records those events that are common to all reconciliations in that
+region, that is, the intersection of the events taken over the reconciliations
+in that region.  
+
+Eventscape's output .csv file contains one line per region, indicating the 
+event count vector for that region, the number of distinct reconciliations, 
+followed by a list of the events for that region (either the union or 
+intersection, depending on the specified mode of operation).  Next, 
+eventscape partitions all of these events into those found in all regions 
+down to 1 region. 
+
+The reported events are as follows:
+
+p h eventType
+
+... where p is a node in the parasite tree, h is a node in the host tree, and
+eventType is the type of event.  For example...
+
+p5 h4 cospeciation
+
+... means that parasite tree node p5 cospeciates with host node h4.  Similarly,
+
+p5 h4 duplication
+
+... means that parasite tree node p5 duplicates on the edge terminating at h4.
+And...
+
+p5 h4 loss h7
+
+... means that the parasite edge terminating at p5 passes through host vertex
+h4 and continues on the host edge terminating at h7.
+
+Finally,
+
+p5 h4 switch h9
+
+... means that the parasite node p5 performs a duplication and
+switch on the host edge terminating at h4 and one of p5's children switches
+to the host edge terminating at h9.
+
+VIEW_TANGLEGRAM
+
+The view_tanglegram program renders the input file (tanglegram).  This is 
+particularly useful when interpreting the events that are output by
+eventscape.  Run...
+
+view_tanglegram -h 
+
+... to see the command line options.
+
+For example, a typical usage is:
+
+view_tanglegram -n -g outputFile.svg inputFile.newick
+
+The -n option displays the names of the internal nodes in the trees 
+(useful for interpreting the eventscape events which refer to these 
+internal nodes) and the -g option saves the file to the specified 
+.svg output file.  
+
+TREE2NEWICK
+
+Jane users may prefer to use the .tree format because Jane saves files in 
+that format (http://www.cs.hmc.edu/~hadas/jane/fileformats.html).  Jane also
+has a GUI editor that allows users to construct trees and save them in .tree
+format.
+
+A program called tree2newick.py is also provided that is run from 
+the command line, prompts the user for the .tree input file name and the 
+.newick output file name, and writes the newick tree to the output file.
+
+When using the .tree format, only the HOSTTREE, PARASITETREE, and PHI entries 
+are required.  All others are ignored.
+
+Note:  Tip names names in the .tree file must have no whitespace.
+
+ASSUMPTIONS
+
+The trees are untimed and switches are permitted from an edge h to any other
+edge h' as long as h' is neither ancestral nor descendant wrt to h.  Timing
+incompatabilities are therefore theoretically possible.
+
+VERSION NOTES
+
+Version 0.0.4 fixes a bug present in previous versions.  In particular,
+earlier versions would allow a parasite node p on host edge h to switch one
+of its children to the same host edge h.  In the event that a switch is 
+less expensive than a duplication, these spurious switches would effectively
+be duplications but would be counted as switches.  This bug has been
+corrected.
+
+ACKNOWLEDGEMENTS AND DATA SOURCES
+
+The Heliconius example dataset was taken from:
+
+Jennifer Cuthill and Michael Charleston
+Phylogenetic Codivergence Supports Coevolution of Mimetic Heliconious 
+Butterflies PLoS One 7(5): e36464. doi:10.1371/journal.pone.0036464
+
+The Gopher-Louse dataset was taken from:
+
+Hafner MS and Nadler SA
+Phylogenetic trees support the coevolution of parasites and their hosts
+Nature 1988, 332:258-259 
+
