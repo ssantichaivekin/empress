@@ -2,6 +2,7 @@ import ClusterUtil
 import ReconciliationVisualization as RV
 import HistogramDisplay
 import DTLMedian
+import ClusterMainInput
 
 import argparse
 from pathlib import Path
@@ -26,6 +27,7 @@ import matplotlib.pyplot as plt
 
 # Improvement vs. number of clusters, but improvement is vs. 1 cluster only
 
+'''
 def process_args():
     # Required arguments - input file, D T L costs
     parser = argparse.ArgumentParser("")
@@ -61,7 +63,7 @@ def process_args():
         help="Use the weighted average event support to evaluate clusters.")
     args = parser.parse_args()
     return args
-
+'''
 # The width parameter is unused -- it's here to maintain compatibility with HistogramDisplay.plot_histogram
 def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):
     hist, bins = hist_def
@@ -120,12 +122,12 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
         return random_median
     return get_median
 
-def main():
-    args = process_args()
+def main(filename, newick_data):
+    args = ClusterMainInput.getInput(Path(filename))
     # Choose the distance metric
-    if args.support:
+    if args["support"]:
         mk_score = ClusterUtil.mk_support_score
-    elif args.pdv:
+    elif args["pdv"]:
         mk_score = ClusterUtil.mk_pdv_score
     else:
         assert False
@@ -143,18 +145,18 @@ def main():
     # Make the distance metric for these specific trees
     score = mk_score(species_tree, gene_tree, gene_root)
     # Actually perform the clustering
-    if args.depth is not None:
+    if args["depth"] is not None:
         graphs,scores,_ = ClusterUtil.cluster_graph(recon_g, gene_root, score, args.depth, args.k, 200)
-    elif args.nmprs is not None:
+    elif args["nmprs"] is not None:
         graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args.nmprs, mpr_count, args.k, 200)
     else:
         assert False
     # Visualization
-    if args.pdv_vis:
+    if args["pdv_vis"]:
         pdv_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args)
-    if args.support_vis:
+    if args["support_vis"]:
         support_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args)
-    if args.medians:
+    if args["medians"]:
         get_median = mk_get_median(gene_tree, species_tree, gene_root, best_roots)
         for i, g in enumerate(graphs):
             m = get_median(g)
