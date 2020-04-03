@@ -72,7 +72,7 @@ def getOptionalInput():
         
 def print_usage():
     """
-    prints information on all optional parameter inputs
+    Print information on all optional parameter inputs.
     """
     data = [
         ("histogram", "Output the histogram at the path provided. \
