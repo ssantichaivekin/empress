@@ -85,16 +85,16 @@ def print_usage():
     Print information on all optional parameter inputs.
     """
     data = [
-        ("histogram", ("Output the histogram at the path provided. ",
+        ("histogram", ("Output the histogram at the path provided. "
         "If no filename is provided, outputs to a filename based on the input .newick file.")),
         ("xnorm", "Normalize the x-axis so that the distances range between 0 and 1."),
         ("ynorm", "Normalize the y-axis so that the histogram is a probability distribution."),
-        ("omit_zeros", ("Omit the zero column of the histogram, ",
+        ("omit_zeros", ("Omit the zero column of the histogram, "
         "which will always be the total number of reconciliations.")),
         ("cumulative", "Make the histogram cumulative."),
-        ("csv", ("Output the histogram as a .csv file at the path provided. ",
+        ("csv", ("Output the histogram as a .csv file at the path provided. "
         "If no filename is provided, outputs to a filename based on the input .newick file.")),
-        ("stats", ("Output statistics including the total number of MPRs, ",
+        ("stats", ("Output statistics including the total number of MPRs, "
         "the diameter of MPR-space, and the average distance between MPRs.")),
         ("time", "Time the diameter algorithm.")
     ]
