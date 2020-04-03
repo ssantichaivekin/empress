@@ -4,8 +4,6 @@ import HistogramAlg
 import Diameter
 import HistogramDisplay
 import HistogramMainInput
-# TODO: Remove this import once code finalized
-import newickFormatReader # this is only for call to main function
 
 from pathlib import Path
 import time
@@ -115,9 +113,3 @@ def main(file_name, newick_data):
         HistogramDisplay.plot_histogram(args["histogram"], hist, width, Path(file_name).stem, args["d"], args["t"], args["l"])
     if args["csv"] is not None:
         HistogramDisplay.csv_histogram(args["csv"], hist)
-
-if __name__ == "__main__":
-    # dummy variable
-    file_name = None
-    newick_data = newickFormatReader.getInput(file_name)
-    main(file_name, newick_data)
