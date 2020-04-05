@@ -60,21 +60,34 @@ def getOptionalInput():
     :return: dictionary of arguments where key is parameter name and value is parameter value.
     """
     inputs = {}
-    valid_params = ["histogram", "xnorm", "ynorm", "omit_zeros", "cumulative", "csv", "stats", "time"]
-    for param in valid_params:
-        inputs[param] = None
+    string_params = ["histogram", "time"]
+    bool_params = ["xnorm", "ynorm", "omit_zeros", "cumulative", "stats", "time"]
+    for param in string_params:
+        inputs[param] = "unset"
+    for param in bool_params:
+        inputs[param] = True
 
     print("Enter additional input in the form <parameter name> <value>")
     print("Enter 'Done' when you have no additional input to enter.")
     print("Enter '?' if you would like to see additional input options.")
     while True:
         user_input = input().split()
-        if user_input[0] == "Done":
+        param = user_input[0]
+        value = None
+        if len(user_input) > 1:
+            value = " ".join(user_input[1:])
+
+        if param == "Done":
             break
-        elif user_input[0] == "?":
+        elif param == "?":
             print_usage()
-        elif user_input[0] in valid_params:
-            inputs[user_input[0]] = user_input[1]
+        elif param in bool_params:
+            if value[0] in ('y', 'Y', 'n', 'N'):
+                inputs[param] = value[0] in ('y', 'Y')
+            else:
+                print("Value must begin with Y, y, N, or n.  Please try again.")
+        elif param in string_params:
+            inputs[param] = value
         else:
             print("That is not a valid parameter name. Please try again.")
     
