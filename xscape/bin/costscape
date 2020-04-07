@@ -20,9 +20,10 @@ from xscape import getInput
 from xscape import reconcile
 from xscape import plotcostsAnalytic as plotcosts
 
-def main():
+def main(newick_data):
     print("Costscape %s" % xscape.PROGRAM_VERSION_TEXT)
-    hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, outfile = \
+    hostTree, parasiteTree, phi, = newick_data 
+    switchLo, switchHi, lossLo, lossHi, outfile = \
         getInput.getInput(outputExtension = "pdf", allowEmptyOutfile=True)
     log = getInput.boolInput("Display in log coordinates? ")
     if outfile == "":
