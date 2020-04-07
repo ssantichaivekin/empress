@@ -60,7 +60,7 @@ def getOptionalInput():
     :return: dictionary of arguments where key is parameter name and value is parameter value.
     """
     inputs = {}
-    string_params = ("histogram", "time")
+    string_params = ("histogram", "time", "csv")
     bool_params = ("xnorm", "ynorm", "omit_zeros", "cumulative", "stats", "time")
     for param in string_params:
         inputs[param] = "unset"
