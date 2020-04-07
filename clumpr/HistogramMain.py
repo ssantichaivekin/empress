@@ -95,7 +95,7 @@ def main(filename, newick_data):
     :param filename: the path to a .newick file with the input trees and tip mapping.
     :param newick_data: output to newickFormatReader.getInput().
     """
-    args = HistogramMainInput.getInput(filename)
+    args = HistogramMainInput.getInput(Path(filename))
     hist, elapsed = calc_histogram(newick_data, args["d"], args["t"], args["l"], args["time"])
     hist = hist.histogram_dict
     if args["time"]:
