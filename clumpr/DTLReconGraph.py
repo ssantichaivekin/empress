@@ -29,9 +29,9 @@ import sys
 from numpy import mean
 from numpy import median as md
 
-import Greedy
+from clumpr import Greedy, ReconcileMainInput
 import newickFormatReader
-import ReconcileMainInput
+
 
 Infinity = float('inf')
 

@@ -1,9 +1,5 @@
-
-import DTLReconGraph
-import HistogramAlg
-import Diameter
-import HistogramDisplay
-import HistogramMainInput
+from clumpr import DTLReconGraph, HistogramAlg, \
+    Diameter, HistogramDisplay, HistogramMainInput
 
 from pathlib import Path
 import time

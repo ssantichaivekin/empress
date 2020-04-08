@@ -1,4 +1,4 @@
-import Histogram
+from clumpr import Histogram
 
 import numpy as np
 import matplotlib

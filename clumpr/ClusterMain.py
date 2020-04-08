@@ -1,8 +1,6 @@
-import ClusterUtil
-import ReconciliationVisualization as RV
-import HistogramDisplay
-import DTLMedian
-import ClusterMainInput
+from clumpr import ClusterUtil, HistogramDisplay, DTLMedian, \
+    DTLMedian, ClusterMainInput
+import clumpr.ReconciliationVisualization as RV
 
 import argparse
 from pathlib import Path

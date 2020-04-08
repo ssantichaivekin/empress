@@ -2,8 +2,8 @@
 
 from collections import OrderedDict
 from itertools import product
-from Histogram import Histogram
-from HistogramAlgTools import BFVerifier
+from clumpr.Histogram import Histogram
+from clumpr.HistogramAlgTools import BFVerifier
 
 # def reformat_tree(tree, root):
 #     """A recursive function that changes the format of a (species or gene) tree from edge to vertex, as described

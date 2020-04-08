@@ -15,7 +15,7 @@ try:
 except ImportError:
     import sys
     from os.path import realpath, dirname, join
-    sys.path.append(join(realpath(dirname(dirname(__file__))), "python"))
+    sys.path.append('..')
     import xscape
 from xscape.common import *
 from xscape.CostVector import *
