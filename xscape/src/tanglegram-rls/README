@@ -1,0 +1,15 @@
+tanglegrams visualization prototype.
+
+version: 
+	0.0.1 - proof-of-concept
+
+requirements:
+	python 2.5
+	python visual >= 3.2.9
+
+credits:
+	LCA - 
+	newick -
+
+license:
+	GPL

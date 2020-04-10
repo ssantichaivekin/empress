@@ -4,8 +4,6 @@ import HistogramAlg
 import Diameter
 import HistogramDisplay
 import HistogramMainInput
-# TODO: Remove this import once code finalized
-import newickFormatReader # this is only for call to main function
 
 from pathlib import Path
 import time
@@ -91,13 +89,13 @@ def transform_hist(hist, omit_zeros, xnorm, ynorm, cumulative):
         hist_cum = hist_ynorm
     return hist_cum, width
 
-def main(file_name, newick_data):
+def main(filename, newick_data):
     """
-    Input: Newick filename and output to newickFormatReader.getInput()
     Compute the PDV and other information and save them / output them
-    :param args <namespace> - the CLI arguments
+    :param filename: the path to a .newick file with the input trees and tip mapping.
+    :param newick_data: output to newickFormatReader.getInput().
     """
-    args = HistogramMainInput.getInput(filename=None, outputExtension=None, allowEmptyOutfile=None)
+    args = HistogramMainInput.getInput(Path(filename))
     hist, elapsed = calc_histogram(newick_data, args["d"], args["t"], args["l"], args["time"])
     hist = hist.histogram_dict
     if args["time"]:
@@ -112,12 +110,6 @@ def main(file_name, newick_data):
     hist_new, width = transform_hist(hist, args["omit_zeros"], args["xnorm"], args["ynorm"], args["cumulative"])
     # Make the histogram image
     if args["histogram"] is not None:
-        HistogramDisplay.plot_histogram(args["histogram"], hist, width, Path(file_name).stem, args["d"], args["t"], args["l"])
+        HistogramDisplay.plot_histogram(args["histogram"], hist, width, Path(filename).stem, args["d"], args["t"], args["l"])
     if args["csv"] is not None:
         HistogramDisplay.csv_histogram(args["csv"], hist)
-
-if __name__ == "__main__":
-    # dummy variable
-    file_name = None
-    newick_data = newickFormatReader.getInput(file_name)
-    main(file_name, newick_data)
