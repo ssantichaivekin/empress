@@ -9,6 +9,7 @@ def get_inputs():
         duplication = input("Enter relative cost of a duplication event: ")
         try:
             duplication = int(duplication)
+            break
         except ValueError:
             print("Duplication cost must be integer number. Please try again.")
     
@@ -16,6 +17,7 @@ def get_inputs():
         transfer = input("Enter relative cost of a transfer event: ")
         try:
             transfer = int(transfer)
+            break
         except ValueError:
             print("Transfer cost must be integer number. Please try again.")
     
@@ -23,6 +25,7 @@ def get_inputs():
         loss = input("Enter the relative cost of a loss event")
         try:
             loss = int(loss)
+            break
         except ValueError:
             print("Loss cost must be integer number. Please try again.")
 
