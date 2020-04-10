@@ -85,8 +85,14 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
         return random_median
     return get_median
 
-def main(filename, newick_data):
-    args = ClusterMainInput.getInput(Path(filename))
+def main(filename, newick_data, relev_params={}):
+    """
+    :param filename: the path to a .newick file with the input trees and tip mapping.
+    :param newick_data: output to newickFormatReader.getInput().
+    :param relev_params: relevant params.
+    """
+
+    args = ClusterMainInput.getInput(Path(filename), relev_params)
     # Choose the distance metric
     if args["support"]:
         mk_score = ClusterUtil.mk_support_score

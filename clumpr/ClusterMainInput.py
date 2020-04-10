@@ -2,15 +2,16 @@
 # Dave Makhervaks, March 2020
 # Main input function for ClumperMain
 
-def getInput(filename):
+def getInput(filename, relev_params):
     """ 
     :param filename: the path to a .newick file with the input trees and tip mapping.
     :return: dictionary of arguments where key is parameter name and value is parameter value.
     """
     
     inputs = {}
+    inputs.update(relev_params)
     # Get input file name and try to open it
-    while True:
+    while 'd' not in inputs:
         duplication = input("Enter relative cost of a duplication event: ")
         try:
             inputs["d"] = int(duplication)
@@ -18,7 +19,7 @@ def getInput(filename):
         except ValueError:
             print("Duplication cost must be integer number. Please try again.")
     
-    while True:
+    while 't' not in inputs:
         transfer = input("Enter relative cost of a transfer event: ")
         try:
             inputs["t"] = int(transfer)
@@ -26,7 +27,7 @@ def getInput(filename):
         except ValueError:
             print("Transfer cost must be integer number. Please try again.")
     
-    while True:
+    while 'l' not in inputs:
         loss = input("Enter relative cost of a loss event: ")
         try:
             inputs["l"] = int(loss)
@@ -34,7 +35,7 @@ def getInput(filename):
         except ValueError:
             print("Loss cost must be integer number. Please try again.")
 
-    while True:
+    while 'k' not in inputs:
         cluster = input("Enter how many clusters to create: ")
         try:
             inputs["k"] = int(cluster)
@@ -43,10 +44,10 @@ def getInput(filename):
             print("Cluster number must be integer number. Please try again.")
 
    
-    inputs.update(getMutuallyExclusiveInput())
-    inputs.update(getOptionalInput())
+    getMutuallyExclusiveInput(inputs)
+    getOptionalInput(inputs)
 
-    cost_suffix = ".{}-{}-{}".format(duplication, transfemdr, loss)
+    cost_suffix = ".{}-{}-{}".format(duplication, transfer, loss)
     # If args is unset, use the original .newick file path but replace .newick with .pdf
     if inputs["histogram"] is None:
         inputs["histogram"] = str(filename.with_suffix(cost_suffix + ".pdf"))
@@ -65,11 +66,10 @@ def getInput(filename):
         assert c.suffix == ".csv"
     return inputs
 
-def getMutuallyExclusiveInput():
+def getMutuallyExclusiveInput(inputs):
     """ 
-    :return: dictionary of arguments where key is parameter name and value is parameter value.
+    :param inputs: dictionary of arguments where key is parameter name and value is parameter value.
     """
-    inputs = {}
     # Specifies how far down to go when finding splits
     while True:
         # requires, d or n!
@@ -125,33 +125,38 @@ def getMutuallyExclusiveInput():
     else:
         inputs["support"] = True
 
-    return inputs
 
-def getOptionalInput():
+def getOptionalInput(inputs):
     """ 
-    :return: dictionary of arguments where key is parameter name and value is parameter value.
+    :param inputs: dictionary of arguments where key is parameter name and value is parameter value.
     """
-    inputs = {}
-    valid_params = ["medians"]
-    for param in valid_params:
-        inputs[param] = None
+    bool_params = ("bool_params")
+    for param in bool_params:
+        if param not in inputs:
+            inputs[param] = True
 
     print("Enter additional input in the form <parameter name> <value>")
     print("Enter 'Done' when you have no additional input to enter.")
     print("Enter '?' if you would like to see additional input options.")
     while True:
-        user_input = input().split()
-        if user_input[0] == "Done":
+        user_input = input(">> ").split()
+        param = user_input[0]
+        value = None
+        if len(user_input) > 1:
+            value = " ".join(user_input[1:])
+
+        if param == "Done":
             break
-        elif user_input[0] == "?":
+        elif param == "?":
             print_usage()
-        elif user_input[0] in valid_params:
-            inputs[user_input[0]] = True
+        elif param in bool_params:
+            if value[0] in ('y', 'Y', 'n', 'N'):
+                inputs[param] = value[0] in ('y', 'Y')
+            else:
+                print("Value must begin with Y, y, N, or n.  Please try again.")
         else:
             print("That is not a valid parameter name. Please try again.")
-    
-    return inputs
-        
+            
 def print_usage():
     """
     Print information on all optional parameter inputs.
