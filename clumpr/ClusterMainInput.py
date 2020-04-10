@@ -47,6 +47,8 @@ def getInput(filename, relev_params):
     getMutuallyExclusiveInput(inputs)
     getOptionalInput(inputs)
 
+    '''
+    # TODO: I think this code was accidentally duplicated here from Histogram
     cost_suffix = ".{}-{}-{}".format(duplication, transfer, loss)
     # If args is unset, use the original .newick file path but replace .newick with .pdf
     if inputs["histogram"] is None:
@@ -64,8 +66,10 @@ def getInput(filename, relev_params):
     else:
         c = Path(inputs["csv"])
         assert c.suffix == ".csv"
+    '''
     return inputs
 
+#TODO: Add better docstrings!!!
 def getMutuallyExclusiveInput(inputs):
     """ 
     :param inputs: dictionary of arguments where key is parameter name and value is parameter value.
