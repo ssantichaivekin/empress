@@ -36,7 +36,7 @@ def getInput(filename, relev_params):
         except ValueError:
             print("Loss cost must be integer number. Please try again.")
 
-    inputs.update(getOptionalInput())
+    getOptionalInput(inputs)
 
     cost_suffix = ".{}-{}-{}".format(duplication, transfer, loss)
     # If args is unset, use the original .newick file path but replace .newick with .pdf
@@ -57,11 +57,11 @@ def getInput(filename, relev_params):
         assert c.suffix == ".csv"
     return inputs
 
-def getOptionalInput():
+def getOptionalInput(inputs):
     """ 
-    :return: dictionary of arguments where key is parameter name and value is parameter value.
+    :param inputs: initial dictionary of arguments where key is parameter name and value is parameter value.
+    Add additional arguments to 'inputs' dictionary.
     """
-    inputs = {}
     string_params = ("histogram", "time", "csv")
     bool_params = ("xnorm", "ynorm", "omit_zeros", "cumulative", "stats", "time")
     for param in string_params:
@@ -94,8 +94,6 @@ def getOptionalInput():
             inputs[param] = value
         else:
             print("That is not a valid parameter name. Please try again.")
-    
-    return inputs
         
 def print_usage():
     """
