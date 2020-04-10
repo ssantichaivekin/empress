@@ -89,13 +89,14 @@ def transform_hist(hist, omit_zeros, xnorm, ynorm, cumulative):
         hist_cum = hist_ynorm
     return hist_cum, width
 
-def main(filename, newick_data):
+def main(filename, newick_data, relev_params={}):
     """
     Compute the PDV and other information and save them / output them
     :param filename: the path to a .newick file with the input trees and tip mapping.
     :param newick_data: output to newickFormatReader.getInput().
+    :param relev_params: relevant params.
     """
-    args = HistogramMainInput.getInput(Path(filename))
+    args = HistogramMainInput.getInput(Path(filename), relev_params)
     hist, elapsed = calc_histogram(newick_data, args["d"], args["t"], args["l"], args["time"])
     hist = hist.histogram_dict
     if args["time"]:

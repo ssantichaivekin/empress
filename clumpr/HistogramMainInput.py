@@ -2,15 +2,17 @@
 # Adrian Garcia, March 2020
 # Main input function for HistogramMain
 
-def getInput(filename):
+def getInput(filename, relev_params):
     """ 
     :param filename: the path to a .newick file with the input trees and tip mapping.
+    :param relev_params: relevant parameters
     :return: dictionary of arguments where key is parameter name and value is parameter value.
     """
     
     inputs = {}
+    inputs.update(relev_params)
     # Get input file name and try to open it
-    while True:
+    while "d" not in inputs:
         duplication = input("Enter relative cost of a duplication event: ")
         try:
             inputs["d"] = int(duplication)
@@ -18,7 +20,7 @@ def getInput(filename):
         except ValueError:
             print("Duplication cost must be integer number. Please try again.")
     
-    while True:
+    while "t" not in inputs:
         transfer = input("Enter relative cost of a transfer event: ")
         try:
             inputs["t"] = int(transfer)
@@ -26,7 +28,7 @@ def getInput(filename):
         except ValueError:
             print("Transfer cost must be integer number. Please try again.")
     
-    while True:
+    while "l" not in inputs:
         loss = input("Enter relative cost of a loss event: ")
         try:
             inputs["l"] = int(loss)
@@ -63,15 +65,17 @@ def getOptionalInput():
     string_params = ("histogram", "time", "csv")
     bool_params = ("xnorm", "ynorm", "omit_zeros", "cumulative", "stats", "time")
     for param in string_params:
-        inputs[param] = "unset"
+        if param not in inputs:
+            inputs[param] = "unset"
     for param in bool_params:
-        inputs[param] = True
+        if param not in inputs:
+            inputs[param] = True
 
     print("Enter additional input in the form <parameter name> <value>")
     print("Enter 'Done' when you have no additional input to enter.")
     print("Enter '?' if you would like to see additional input options.")
     while True:
-        user_input = input().split()
+        user_input = input(">> ").split()
         param = user_input[0]
         value = None
         if len(user_input) > 1:
