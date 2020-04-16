@@ -623,6 +623,19 @@ def main(newick_data):
     for i in range(len(result)):
         print((str(result[i]) + '\n'))
 
+# This should be called in empress.py when the user already supplied the DTL values
+def main_dtl(newick_data, duplication, transfer, loss):
+    """ Inputs:
+            newick data
+            integer duplication, transfer, and loss values
+
+        Outputs:
+            prints out the outputs from reconcile
+    """
+    result = reconcile(newick_data, duplication, transfer, loss)
+    for i in range(len(result)):
+        print((str(result[i]) + '\n'))
+
 # If the user runs this from the command line
 if __name__ == "__main__":  # Only run if this has been called
 
