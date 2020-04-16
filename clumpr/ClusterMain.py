@@ -47,7 +47,7 @@ def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x
 
 # My attempt at leveraging the fact that we want to generate the plots in the same
 # manner regardless of which type of plot to use...
-def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max):
+def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, newick_data):
     get_hist = mk_get_hist(species_tree, gene_tree, gene_root)
     cost_suffix = ".{}-{}-{}".format(args["d"], args["t"], args["l"])
     p = Path(newick_data)
@@ -61,20 +61,20 @@ def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hi
         g_h = get_hist(g)
         plot_f(g_p, g_h, 1, Path(newick_data).stem + g_i, args["d"], args["t"], args["l"], max_x, max_y, False)
 
-def support_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args):
+def support_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, newick_data):
     mk_get_hist = ClusterUtil.mk_get_support_hist
     plot_f = plot_support_histogram
     def get_max(l):
         h, b = l
         return 1, np.amax(h)
-    vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max)
+    vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, newick_data)
 
-def pdv_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args):
+def pdv_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, newick_data):
     mk_get_hist = ClusterUtil.mk_get_pdv_hist
     plot_f = HistogramDisplay.plot_histogram
     def get_max(l):
         return max(l.keys()), max(l.values())
-    vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max)
+    vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, newick_data)
 
 def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
     def get_median(graph):
@@ -85,8 +85,17 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
         return random_median
     return get_median
 
-def main(filename, newick_data):
-    args = ClusterMainInput.getInput(Path(filename))
+def main(filename, newick_data, relev_params=None):
+    """
+    :param filename: the path to a .newick file with the input trees and tip mapping.
+    :param newick_data: output to newickFormatReader.getInput().
+    :param relev_params: relevant params.
+    """
+
+    if (relev_params == None):
+        relev_params = {}
+
+    args = ClusterMainInput.getInput(Path(filename), relev_params)
     # Choose the distance metric
     if args["support"]:
         mk_score = ClusterUtil.mk_support_score
@@ -116,9 +125,9 @@ def main(filename, newick_data):
         assert False
     # Visualization
     if args["pdv_vis"]:
-        pdv_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args)
+        pdv_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, newick_data)
     if args["support_vis"]:
-        support_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args)
+        support_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, newick_data)
     if args["medians"]:
         get_median = mk_get_median(gene_tree, species_tree, gene_root, best_roots)
         for i, g in enumerate(graphs):
