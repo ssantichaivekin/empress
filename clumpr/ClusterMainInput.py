@@ -2,61 +2,73 @@
 # Dave Makhervaks, March 2020
 # Main input function for ClumperMain
 
-def getInput(relev_params):
+def getInput(d, t, l, k, relev_params):
     """ 
-    :param filename: the path to a .newick file with the input trees and tip mapping.
+    :param d: the cost of a duplication
+    :param t: ^^ transfer
+    :param l: ^^ loss
+    :param k: number of clusters
+    :param relev_params: relevant parameters
     :return: dictionary of arguments where key is parameter name and value is parameter value.
     """
-    
+    if not relev_params:
+        relev_params = {}
+
     inputs = {}
     inputs.update(relev_params)
     # Get input file name and try to open it
-    while 'd' not in inputs:
-        duplication = input("Enter relative cost of a duplication event: ")
-        try:
-            inputs["d"] = int(duplication)
-            break
-        except ValueError:
-            print("Duplication cost must be integer number. Please try again.")
     
-    while 't' not in inputs:
-        transfer = input("Enter relative cost of a transfer event: ")
-        try:
-            inputs["t"] = int(transfer)
-            break
-        except ValueError:
-            print("Transfer cost must be integer number. Please try again.")
+    # while 'd' not in inputs:
+    #     duplication = input("Enter relative cost of a duplication event: ")
+    #     try:
+    #         inputs["d"] = int(duplication)
+    #         break
+    #     except ValueError:
+    #         print("Duplication cost must be integer number. Please try again.")
     
-    while 'l' not in inputs:
-        loss = input("Enter relative cost of a loss event: ")
-        try:
-            inputs["l"] = int(loss)
-            break
-        except ValueError:
-            print("Loss cost must be integer number. Please try again.")
+    # while 't' not in inputs:
+    #     transfer = input("Enter relative cost of a transfer event: ")
+    #     try:
+    #         inputs["t"] = int(transfer)
+    #         break
+    #     except ValueError:
+    #         print("Transfer cost must be integer number. Please try again.")
+    
+    # while 'l' not in inputs:
+    #     loss = input("Enter relative cost of a loss event: ")
+    #     try:
+    #         inputs["l"] = int(loss)
+    #         break
+    #     except ValueError:
+    #         print("Loss cost must be integer number. Please try again.")
 
-    while 'k' not in inputs:
-        cluster = input("Enter how many clusters to create: ")
-        try:
-            inputs["k"] = int(cluster)
-            break
-        except ValueError:
-            print("Cluster number must be integer number. Please try again.")
+    # while 'k' not in inputs:
+    #     cluster = input("Enter how many clusters to create: ")
+    #     try:
+    #         inputs["k"] = int(cluster)
+    #         break
+    #     except ValueError:
+    #         print("Cluster number must be integer number. Please try again.")
 
    
     getMutuallyExclusiveInput(inputs)
-    getOptionalInput(inputs)
+    if "interactive" in relev_params:
+        getOptionalInput(inputs, relev_params["interactive"])
+    else:
+        getOptionalInput(inputs, False)
 
     return inputs
 
 #TODO: Add better docstrings!!!
 def getMutuallyExclusiveInput(inputs):
-    """ 
+    """
+    This method is for interactively asking for arguments that are mutually exclusive 
     :param inputs: dictionary of arguments where key is parameter name and value is parameter value.
     """
+
     # Specifies how far down to go when finding splits
+    # requires, d or n!
     while True:
-        # requires, d or n!
         depth_or_n = input("Please type 'd' if you want to enter depth, or 'n' for nmprs")
         if (depth_or_n not in ('d', 'n')):
             print("Please enter 'd' or 'n'")
@@ -81,8 +93,8 @@ def getMutuallyExclusiveInput(inputs):
                 print("NMPRs must be an integer number. Please try again.")
 
     # What visualizations to produce
+    # does not require visualization
     while True:
-        # does not require visualization
         vis_type = input("Please type 'p' for visualizing using PDV, 'h' for histograms, and 'n' for none.")
         if (vis_type not in ('p','h','n')):
             print("Please enter 'p', 'h', or 'n'")
@@ -110,14 +122,19 @@ def getMutuallyExclusiveInput(inputs):
         inputs["support"] = True
 
 
-def getOptionalInput(inputs):
+def getOptionalInput(inputs, is_interactive):
     """ 
     :param inputs: dictionary of arguments where key is parameter name and value is parameter value.
+    :param is_interactive: boolean determining whether user should be prompted
+    to provide more arguments.
     """
     bool_params = ("bool_params")
     for param in bool_params:
         if param not in inputs:
             inputs[param] = True
+
+    if not is_interactive:
+        return
 
     print("Enter additional input in the form <parameter name> <value>")
     print("Enter 'Done' when you have no additional input to enter.")

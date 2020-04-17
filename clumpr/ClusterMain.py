@@ -85,16 +85,21 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
         return random_median
     return get_median
 
-def perform_clustering(tree_data, relev_params=None):
+#TODO: ask about what to do about mutually exclusive inputs
+def perform_clustering(tree_data, d, t, l, k, relev_params=None):
     """
-    :param tree_data: Triple of output to newickFormatReader.getInput().
+    :param tree_data: output to newickFormatReader.getInput().
+    :param d: the cost of a duplication
+    :param t: ^^ transfer
+    :param l: ^^ loss
+    :param k: number of clusters
     :param relev_params: relevant params.
     """
 
     if (relev_params == None):
         relev_params = {}
 
-    args = ClusterMainInput.getInput(relev_params)
+    args = ClusterMainInput.getInput(d, t, l, k, relev_params)
     # Choose the distance metric
     if args["support"]:
         mk_score = ClusterUtil.mk_support_score
@@ -104,7 +109,7 @@ def perform_clustering(tree_data, relev_params=None):
         assert False
     # Get the recon graph + other info
     gene_tree, species_tree, gene_root, recon_g, mpr_count, best_roots = \
-        ClusterUtil.get_tree_info(tree_data, args["d"],args["t"],args["l"])
+        ClusterUtil.get_tree_info(tree_data, d, t, l)
 
     # Visualize the graphs
     #RV.visualizeAndSave(recon_g, "original.png")
@@ -117,9 +122,9 @@ def perform_clustering(tree_data, relev_params=None):
     score = mk_score(species_tree, gene_tree, gene_root)
     # Actually perform the clustering
     if args["depth"] is not None:
-        graphs,scores,_ = ClusterUtil.cluster_graph(recon_g, gene_root, score, args["depth"], args["k"], 200)
+        graphs,scores,_ = ClusterUtil.cluster_graph(recon_g, gene_root, score, args["depth"], k, 200)
     elif args["nmprs"] is not None:
-        graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args["nmprs"], mpr_count, args["k"], 200)
+        graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args["nmprs"], mpr_count, k, 200)
     else:
         assert False
     # Visualization
