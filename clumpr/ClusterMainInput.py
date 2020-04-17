@@ -2,7 +2,7 @@
 # Dave Makhervaks, March 2020
 # Main input function for ClumperMain
 
-def getInput(filename, relev_params):
+def getInput(relev_params):
     """ 
     :param filename: the path to a .newick file with the input trees and tip mapping.
     :return: dictionary of arguments where key is parameter name and value is parameter value.
@@ -47,26 +47,6 @@ def getInput(filename, relev_params):
     getMutuallyExclusiveInput(inputs)
     getOptionalInput(inputs)
 
-    '''
-    # TODO: I think this code was accidentally duplicated here from Histogram
-    cost_suffix = ".{}-{}-{}".format(duplication, transfer, loss)
-    # If args is unset, use the original .newick file path but replace .newick with .pdf
-    if inputs["histogram"] is None:
-        inputs["histogram"] = str(filename.with_suffix(cost_suffix + ".pdf"))
-    # If it wasn't set by the arg parser, then set it to None (the option wasn't present)
-    elif inputs["histogram"] == "unset":
-        inputs["histogram"] = None
-    #TODO: check that the specified path has a matplotlib-compatible extension?
-    # Do the same for .csv
-    if inputs["csv"] is None:
-        inputs["csv"] = str(filename.with_suffix(cost_suffix + ".csv"))
-    elif inputs["csv"] == "unset":
-        inputs["csv"] = None
-    # If it was user-specified, check that it has a .csv extension
-    else:
-        c = Path(inputs["csv"])
-        assert c.suffix == ".csv"
-    '''
     return inputs
 
 #TODO: Add better docstrings!!!
