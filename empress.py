@@ -17,21 +17,23 @@ def process_arg():
     ### Path to newick file ###
     parser.add_argument("-fn","--filename", metavar="<filename>", required=True,
         help="The path to a tree data file with the input trees and tip mapping.")
+    
+    # subparsers to encode for each functionality 
     subparsers = parser.add_subparsers(dest='functionality',help='Functions empress can run')
     
     ### Parser for costscape ###
     costscape_parser = subparsers.add_parser('costscape', help="Run costscape")
     costscape_parser.add_argument("-sl", metavar="<switch_low>", default = 1, 
-        required = True, help="Switch low value for costcape")
-    costscape_parser.add_argument("-sh", metavar="<switch_high>", default = 2, 
-        required = True, help="Switch high value for costcape")
+        help="Switch low value for costcape")
+    costscape_parser.add_argument("-sh", metavar="<switch_high>", default = 5, 
+        help="Switch high value for costcape")
     costscape_parser.add_argument("-tl", metavar="<transfer_low>", default = 1, 
-        required = True, help="Transfer low value for costcape")
-    costscape_parser.add_argument("-th", metavar="<transfer_high>", default = 2, 
-        required = True, help="Transfer high value for costcape")
-    costscape_parser.add_argument("--output-file", metavar="<output_file>", default = "",
-        help="Name of output file")
-    costscape_parser.add_argument("--log-scale", action= "store_true",
+        help="Transfer low value for costcape")
+    costscape_parser.add_argument("-th", metavar="<transfer_high>", default = 5, 
+        help="Transfer high value for costcape")
+    costscape_parser.add_argument("--outfile", metavar="<output_file>", default = "",
+        help="Name of output file, ending in .pdf")
+    costscape_parser.add_argument("--log", action= "store_true",
         help="Set display to log scale")
     costscape_parser.add_argument("--display", action= "store_true",
         help="Display output on screen")
@@ -39,20 +41,20 @@ def process_arg():
     ### Parser for reconcile ###
     reconcile_parser = subparsers.add_parser('reconcile', help="Run reconcile")
     reconcile_parser.add_argument("-d", type=int, metavar="<duplication_cost>", 
-        default = 2, required = True, help="The relative cost of a duplication.")
+        default = 2, help="The relative cost of a duplication.")
     reconcile_parser.add_argument("-t", type=int, metavar="<transfer_cost>", 
-        default = 2, required = True, help="The relative cost of a transfer.")
-    reconcile_parser.add_argument("-l", type=int, metavar="<loss_cost>", default = 1,
-        required = True, help="The relative cost of a loss.")
+        default = 3, help="The relative cost of a transfer.")
+    reconcile_parser.add_argument("-l", type=int, metavar="<loss_cost>", 
+        default = 1, help="The relative cost of a loss.")
 
     ### Param for clumpr ###
     clumpr_parser = subparsers.add_parser('clumpr', help="Run clumpr")
     clumpr_parser.add_argument("-d", type=int, metavar="<duplication_cost>", 
-        default = 2, required = True, help="The relative cost of a duplication.")
+        default = 2, help="The relative cost of a duplication.")
     clumpr_parser.add_argument("-t", type=int, metavar="<transfer_cost>", 
-        default = 2, required = True, help="The relative cost of a transfer.")
+        default = 3, help="The relative cost of a transfer.")
     clumpr_parser.add_argument("-l", type=int, metavar="<loss_cost>", 
-        default = 1, required = True, help="The relative cost of a loss.")
+        default = 1, help="The relative cost of a loss.")
     clumpr_parser.add_argument("-k", type=int, metavar="<number_of_clusters>",
         required=True, help="How many clusters to create.")
     clumpr_parser.add_argument("--medians", action="store_true", required=False,
@@ -79,11 +81,11 @@ def process_arg():
     ### Parser for Histogram ###
     histogram_parser = subparsers.add_parser('histogram', help="Run histogram")
     histogram_parser.add_argument("-d", type=int, metavar="<duplication_cost>", 
-        default = 2, required = True, help="The relative cost of a duplication.")
+        default = 2, help="The relative cost of a duplication.")
     histogram_parser.add_argument("-t", type=int, metavar="<transfer_cost>", 
-        default = 2, required = True, help="The relative cost of a transfer.")
-    histogram_parser.add_argument("-l", type=int, metavar="<loss_cost>", default = 1,
-        required = True, help="The relative cost of a loss.")
+        default = 3, help="The relative cost of a transfer.")
+    histogram_parser.add_argument("-l", type=int, metavar="<loss_cost>", 
+        default = 1, help="The relative cost of a loss.")
     histogram_parser.add_argument("--histogram", metavar="<filename>", default="unset",     
         nargs="?", help="Output the histogram at the path provided. \
         If no filename is provided, outputs to a filename based on the input .newick file.")
@@ -132,7 +134,7 @@ def main():
     args = process_arg()
     newick_data = getInput(args.filename)
     if args.functionality == "costscape":
-        costscape.main(newick_data, args.sl, args.sh, args.tl, args.th, args)
+        costscape.solve(newick_data, args.sl, args.sh, args.tl, args.th, args)
     elif args.functionality == "reconcile":
         DTLReconGraph.main(newick_data, args.d, args.t, args.l, args)
     elif args.functionality == "histogram":

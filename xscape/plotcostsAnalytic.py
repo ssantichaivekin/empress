@@ -2,6 +2,8 @@
 # Ran Libeskind-Hadas, October 2013
 # Plots the cost space using a matplotlib/pyplot
 
+import matplotlib
+matplotlib.use('tkagg') # need this so plt.show() works
 import matplotlib.pyplot as plt
 from shapely.geometry import *
 from .CostVector import *
