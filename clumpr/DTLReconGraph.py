@@ -614,7 +614,7 @@ def usage():
             ' respectively')
             
 # This should be called in empress.py when the user wants to run reconcile
-def main(newick_data):
+def reconcile_inter(newick_data):
     """ Inputs: newick data 
         print out the values from reconcile
     """
@@ -624,7 +624,7 @@ def main(newick_data):
         print((str(result[i]) + '\n'))
 
 # This should be called in empress.py when the user already supplied the DTL values
-def main_dtl(newick_data, duplication, transfer, loss):
+def reconcile_noninter(newick_data, duplication, transfer, loss):
     """ Inputs:
             newick data
             integer duplication, transfer, and loss values
