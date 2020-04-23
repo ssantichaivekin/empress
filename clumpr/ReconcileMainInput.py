@@ -3,7 +3,8 @@
 # Main input function for DTLReconGraph.py
 
 def get_inputs():
-    """ Returns Duplication, Transfer, and Loss Values in that order
+    """ 
+    :return: Duplication, Transfer, and Loss Values in that order
     """    
     while True:
         duplication = input("Enter relative cost of a duplication event: ")
