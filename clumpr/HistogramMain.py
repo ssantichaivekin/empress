@@ -6,10 +6,10 @@ import time
 import math
 
 
-def calc_histogram(newick_data, d, t, l, time_it, normalize=False, zero_loss=False):
+def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False):
     """
     Compute the PDV from a .newick file.
-    :param newick_data <tuple> - Triple of output to newickFormatReader.getInput()
+    :param tree_data <tuple> - Triple of output to newickFormatReader.getInput()
     :param d <float> - the cost of a duplication
     :param t <float> - ^^ transfer
     :param l <float> - ^^ loss
@@ -22,7 +22,7 @@ def calc_histogram(newick_data, d, t, l, time_it, normalize=False, zero_loss=Fal
     """
     # From the newick tree create the reconciliation graph
     edge_species_tree, edge_gene_tree, dtl_recon_graph, mpr_count, best_roots \
-        = DTLReconGraph.reconcile(newick_data, d, t, l)
+        = DTLReconGraph.reconcile(tree_data, d, t, l)
 
     # If we want to know the number of MPRs
     #print(mpr_count)
@@ -85,14 +85,18 @@ def transform_hist(hist, omit_zeros, xnorm, ynorm, cumulative):
         hist_cum = hist_ynorm
     return hist_cum, width
 
-def main(filename, newick_data):
+def compute_pdv(filename, tree_data, d, t, l, relev_params=None):
     """
     Compute the PDV and other information and save them / output them
     :param filename: the path to a .newick file with the input trees and tip mapping.
-    :param newick_data: output to newickFormatReader.getInput().
+    :param tree_data: output to newickFormatReader.getInput().
+    :param d: the cost of a duplication
+    :param t: ^^ transfer
+    :param l: ^^ loss
+    :param relev_params: relevant params.
     """
-    args = HistogramMainInput.getInput(Path(filename))
-    hist, elapsed = calc_histogram(newick_data, args["d"], args["t"], args["l"], args["time"])
+    args = HistogramMainInput.getInput(Path(filename), d, t, l, relev_params)
+    hist, elapsed = calc_histogram(tree_data, d, t, l, args["time"])
     hist = hist.histogram_dict
     if args["time"]:
         print(("Time spent: {}".format(elapsed)))
@@ -106,6 +110,6 @@ def main(filename, newick_data):
     hist_new, width = transform_hist(hist, args["omit_zeros"], args["xnorm"], args["ynorm"], args["cumulative"])
     # Make the histogram image
     if args["histogram"] is not None:
-        HistogramDisplay.plot_histogram(args["histogram"], hist, width, Path(filename).stem, args["d"], args["t"], args["l"])
+        HistogramDisplay.plot_histogram(args["histogram"], hist, width, Path(filename).stem, d, t, l)
     if args["csv"] is not None:
         HistogramDisplay.csv_histogram(args["csv"], hist)
