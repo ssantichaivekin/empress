@@ -2,50 +2,20 @@
 # Adrian Garcia, March 2020
 # Main input function for HistogramMain
 
-def getInput(filename, d, t, l, relev_params):
+def getInput(filename, d, t, l, args):
     """ 
     :param filename: the path to a .newick file with the input trees and tip mapping.
     :param d: the cost of a duplication
     :param t: ^^ transfer
     :param l: ^^ loss
-    :param relev_params: relevant parameters
+    :param args: dict that contains all parameters needed 
+    to run a functionality.
     :return: dictionary of arguments where key is parameter name and value is parameter value.
     """
-
-    if not relev_params:
-        relev_params = {}
     
     inputs = {}
-    inputs.update(relev_params)
-    # Get input file name and try to open it
-    # while "d" not in inputs:
-    #     duplication = input("Enter relative cost of a duplication event: ")
-    #     try:
-    #         inputs["d"] = int(duplication)
-    #         break
-    #     except ValueError:
-    #         print("Duplication cost must be integer number. Please try again.")
-    
-    # while "t" not in inputs:
-    #     transfer = input("Enter relative cost of a transfer event: ")
-    #     try:
-    #         inputs["t"] = int(transfer)
-    #         break
-    #     except ValueError:
-    #         print("Transfer cost must be integer number. Please try again.")
-    
-    # while "l" not in inputs:
-    #     loss = input("Enter relative cost of a loss event: ")
-    #     try:
-    #         inputs["l"] = int(loss)
-    #         break
-    #     except ValueError:
-    #         print("Loss cost must be integer number. Please try again.")
-
-    if "interactive" in relev_params:
-        getOptionalInput(inputs, relev_params["interactive"])
-    else:
-        getOptionalInput(inputs, False)
+    inputs.update(args)
+    getOptionalInput(inputs)
 
     cost_suffix = ".{}-{}-{}".format(d, t, l)
     # If args is unset, use the original .newick file path but replace .newick with .pdf
@@ -66,24 +36,20 @@ def getInput(filename, d, t, l, relev_params):
         assert c.suffix == ".csv"
     return inputs
 
-def getOptionalInput(inputs, is_interactive):
+def getOptionalInput(inputs):
     """ 
     :param inputs: initial dictionary of arguments where key is parameter name and value is parameter value.
-    :param is_interactive: boolean determining whether user should be prompted
-    to provide more arguments.
     Add additional arguments to 'inputs' dictionary.
     """
     string_params = ("histogram", "time", "csv")
     bool_params = ("xnorm", "ynorm", "omit_zeros", "cumulative", "stats", "time")
+
     for param in string_params:
         if param not in inputs:
             inputs[param] = "unset"
     for param in bool_params:
         if param not in inputs:
             inputs[param] = True
-    
-    if not is_interactive:
-        return
 
     print("Enter additional input in the form <parameter name> <value>")
     print("Enter 'Done' when you have no additional input to enter.")

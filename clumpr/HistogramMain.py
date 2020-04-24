@@ -89,7 +89,7 @@ def transform_hist(hist, omit_zeros, xnorm, ynorm, cumulative):
         hist_cum = hist_ynorm
     return hist_cum, width
 
-def compute_pdv(filename, tree_data, d, t, l, relev_params=None):
+def compute_pdv(filename, tree_data, d, t, l, args):
     """
     Compute the PDV and other information and save them / output them
     :param filename: the path to a .newick file with the input trees and tip mapping.
@@ -97,23 +97,27 @@ def compute_pdv(filename, tree_data, d, t, l, relev_params=None):
     :param d: the cost of a duplication
     :param t: ^^ transfer
     :param l: ^^ loss
-    :param relev_params: relevant params.
+    :param args: args parse object that contains all parameters needed 
+    to run a functionality.
     """
-    args = HistogramMainInput.getInput(Path(filename), d, t, l, relev_params)
-    hist, elapsed = calc_histogram(tree_data, d, t, l, args["time"])
+    # if args.interactive:
+    #     # converts args to dictionary first
+    #     args = vars(args)
+    #     args = HistogramMainInput.getInput(Path(filename), d, t, l, args)
+    hist, elapsed = calc_histogram(filename, d, t, l, args.time)
     hist = hist.histogram_dict
-    if args["time"]:
-        print(("Time spent: {}".format(elapsed)))
+    if args.time:
+        print("Time spent: {}".format(elapsed))
     # Calculate the statistics (with zeros)
-    if args["stats"]:
+    if args.stats:
         n_mprs = hist[0]
         diameter, mean, std = HistogramDisplay.compute_stats(hist)
-        print(("Number of MPRs: {}".format(n_mprs)))
-        print(("Diameter of MPR-space: {}".format(diameter)))
-        print(("Mean MPR distance: {} with standard deviation {}".format(mean, std)))
-    hist_new, width = transform_hist(hist, args["omit_zeros"], args["xnorm"], args["ynorm"], args["cumulative"])
+        print("Number of MPRs: {}".format(n_mprs))
+        print("Diameter of MPR-space: {}".format(diameter))
+        print("Mean MPR distance: {} with standard deviation {}".format(mean, std))
+    hist_new, width = transform_hist(hist, args.omit_zeros, args.xnorm, args.ynorm, args.cumulative)
     # Make the histogram image
-    if args["histogram"] is not None:
-        HistogramDisplay.plot_histogram(args["histogram"], hist, width, Path(filename).stem, d, t, l)
-    if args["csv"] is not None:
-        HistogramDisplay.csv_histogram(args["csv"], hist)
+    if args.histogram is not None:
+        HistogramDisplay.plot_histogram(args.histogram, hist, width, Path(args.input).stem, args.d, args.t, args.l)
+    if args.csv is not None:
+        HistogramDisplay.csv_histogram(args.csv, hist)
