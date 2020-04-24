@@ -4,13 +4,14 @@
 
 def getInput(filename, d, t, l, args):
     """ 
-    :param filename: the path to a .newick file with the input trees and tip mapping.
-    :param d: the cost of a duplication
-    :param t: ^^ transfer
-    :param l: ^^ loss
-    :param args: dict that contains all parameters needed 
-    to run a functionality.
-    :return: dictionary of arguments where key is parameter name and value is parameter value.
+    Get additional input from user for computing and saving the PDV
+    :param filename <str> - the path to a .newick file with the input trees and tip mapping
+    :param d <float> - the cost of a duplication
+    :param t <float> - ^^ transfer
+    :param l <float> - ^^ loss
+    :param args <dict str->str> - dictionary that contains all parameters needed 
+    to compute, save, and/or output the PDV
+    :return inputs <dict str->str> - all input from user for computing and saving the PDV
     """
     
     inputs = {}
@@ -38,8 +39,10 @@ def getInput(filename, d, t, l, args):
 
 def getOptionalInput(inputs):
     """ 
-    :param inputs: initial dictionary of arguments where key is parameter name and value is parameter value.
-    Add additional arguments to 'inputs' dictionary.
+    Add additional arguments to 'inputs' dictionary
+    :param inputs <dict str->str> - dictionary that contains given parameters to
+    compute, save, and/or output the PDV
+    :return None - inputs is simply updated with new information
     """
     string_params = ("histogram", "time", "csv")
     bool_params = ("xnorm", "ynorm", "omit_zeros", "cumulative", "stats", "time")
@@ -77,7 +80,7 @@ def getOptionalInput(inputs):
         
 def print_usage():
     """
-    Print information on all optional parameter inputs.
+    Print information on all optional parameter inputs
     """
     data = [
         ("histogram", ("Output the histogram at the path provided. "

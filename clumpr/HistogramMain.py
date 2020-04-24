@@ -12,8 +12,8 @@ import math
 
 def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False):
     """
-    Compute the PDV from a .newick file.
-    :param tree_data <tuple> - Triple of output to newickFormatReader.getInput()
+    Compute the PDV from a .newick file
+    :param tree_data <tuple> - triple of output to newickFormatReader.getInput()
     :param d <float> - the cost of a duplication
     :param t <float> - ^^ transfer
     :param l <float> - ^^ loss
@@ -22,7 +22,7 @@ def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False
     :param zero_loss <bool> - ignore loss events
     :return diameter_alg_hist <Histogram> - the PDV for the given .newick
     :return elapsed <float> - the time it took to compute the PDV
-        None if time_it is False.
+        None if time_it is False
     """
     # From the newick tree create the reconciliation graph
     edge_species_tree, edge_gene_tree, dtl_recon_graph, mpr_count, best_roots \
@@ -92,13 +92,13 @@ def transform_hist(hist, omit_zeros, xnorm, ynorm, cumulative):
 def compute_pdv(filename, tree_data, d, t, l, args):
     """
     Compute the PDV and other information and save them / output them
-    :param filename: the path to a .newick file with the input trees and tip mapping.
-    :param tree_data: output to newickFormatReader.getInput().
-    :param d: the cost of a duplication
-    :param t: ^^ transfer
-    :param l: ^^ loss
-    :param args: args parse object that contains all parameters needed 
-    to run a functionality.
+    :param filename: the path to a .newick file with the input trees and tip mapping
+    :param tree_data <tuple>: triple of output to newickFormatReader.getInput()
+    :param d <float> - the cost of a duplication
+    :param t <float> - ^^ transfer
+    :param l <float> - ^^ loss
+    :param args <ArgumentParser> - object that contains all parameters needed 
+    to compute, save, and/or output the PDV
     """
     # if args.interactive:
     #     # converts args to dictionary first
