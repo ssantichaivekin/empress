@@ -41,15 +41,20 @@ from HistogramAlgTools import BFVerifier
 
 
 def intersect_cost(event):
-    """The cost added if both reconciliations being looked at share a particular event"""
+    """
+    The cost added if both reconciliations being looked at share a particular event
+    :param event <tuple>   - the event being shared
+    :return <int>          - the cost
+    """
     return 0
 
 
 def cost(event, zero_loss):
-    """The cost added if exactly one of the reconciliations being looked at share a particular event.
-    :param event:       The event being shared
-    :param zero_loss:   Whether loss events should have cost = 0
-    :return:            The cost
+    """
+    The cost added if exactly one of the reconciliations being looked at share a particular event
+    :param event <tuple>      - the event being shared
+    :param zero_loss <bool>   - whether loss events should have cost = 0
+    :return <int>             - the cost
     """
 
     if zero_loss and event[0] == 'L':
@@ -59,9 +64,9 @@ def cost(event, zero_loss):
 
 def calculate_ancestral_table(species_tree):
     """
-    :param species_tree: a species tree, in vertex format and postorder,
+    :param species_tree <dict> - a species tree, in vertex format and postorder,
     represented as an OrderedDict (output from reformat_tree)
-    :return: A nested dictionary. The first dictionary has vertices in the
+    :return - A nested dictionary. The first dictionary has vertices in the
     tree as keys and the values are dictionaries. These dictionaries have
     as keys vertices of the tree (again) and values which are strings,
     representing how the first index relates to the second (see below
@@ -120,33 +125,34 @@ def calculate_ancestral_table(species_tree):
 
 def is_leaf(u, vertex_tree):
     """
-    :param u:           The node to test
-    :param vertex_tree: The vertex tree that contains the node
-    :return:            A boolean value representing whether the given node is a leaf of the given tree.
+    :param u <str>              - the node to test
+    :param vertex_tree <dict>   - the vertex tree that contains the node
+    :return <bool>              - a boolean value representing whether the given node is a leaf of the given tree
     """
     return vertex_tree[u] == (None, None)
 
 
 def is_exit_event(event):
     """
-    :param event:   An event to check
-    :return:        Whether said event is an exit event.
+    :param event <tuple>   - an event to check
+    :return <bool>         - whether said event is an exit event
     """
     return event[0] not in ('C', 'L')
 
 
 # Modified : use Histogram instead of value
 def calculate_hist_both_exit(zero_loss, enter_table, u, gene_tree, uA, dtl_recon_graph_a, uB, dtl_recon_graph_b):
-    """This function computes the histogram of a 'double exit', where both mapping nodes exit immediately.
-    :param zero_loss:           A boolean value representing whether loss events should count for distance
-    :param enter_table:         The enter table, which we use here.
-    :param u:                   The gene node whose group we're in
-    :param gene_tree:           The gene tree in vertex format
-    :param uA:                  The 'a' mapping node
-    :param dtl_recon_graph_a:   The 'a' DTL reconciliation graph
-    :param uB:                  The 'b' mapping node
-    :param dtl_recon_graph_b:   The 'b' DTL reconciliation graph
-    :return:                    The Histogram object of both mapping nodes exiting
+    """
+    This function computes the histogram of a 'double exit', where both mapping nodes exit immediately
+    :param zero_loss <bool>           - a boolean value representing whether loss events should count for distance
+    :param enter_table <dict>         - the enter table, which we use here
+    :param u <str>                    - the gene node whose group we're in
+    :param gene_tree <dict>           - the gene tree in vertex format
+    :param uA <str>                   - the 'a' mapping node
+    :param dtl_recon_graph_a <dict>   - the 'a' DTL reconciliation graph
+    :param uB <str>                   - the 'b' mapping node
+    :param dtl_recon_graph_b <dict>   - the 'b' DTL reconciliation graph
+    :return <Histogram>               - the Histogram object of both mapping nodes exiting
     """
     hist_both_exit = Histogram(None)
 
@@ -205,16 +211,18 @@ def calculate_hist_both_exit(zero_loss, enter_table, u, gene_tree, uA, dtl_recon
 
 def calculate_incomparable_enter_hist(zero_loss, enter_table, u, uA, uA_loss_events, uB, uB_loss_events,
                                        hist_both_exit):
-    """Returns the enter table entry for [uA][uB] with the assumption that A is on a different part of the species
+    """
+    Returns the enter table entry for [uA][uB] with the assumption that A is on a different part of the species
     tree from B
-    :param zero_loss:           Whether losses should not count
-    :param enter_table:         The DP table we are computing part of
-    :param u:                   The gene node whose group we are in
-    :param uA:                  The first mapping node to compare
-    :param uA_loss_events:      A list of the loss events on that mapping node
-    :param uB:                  The second mapping node to compare
-    :param uB_loss_events:      A list of the loss events on that mapping node
-    :param hist_both_exit:      The histogram of the double-exit that was previously calculated for uA and uB
+    :param zero_loss <bool>             - whether losses should not count
+    :param enter_table <dict>           - the DP table we are computing part of
+    :param u <str>                      - the gene node whose group we are in
+    :param uA <str>                     - the first mapping node to compare
+    :param uA_loss_events <list>        - a list of the loss events on that mapping node
+    :param uB <str>                     - the second mapping node to compare
+    :param uB_loss_events <list>        - a list of the loss events on that mapping node
+    :param hist_both_exit <Histogram>   - the histogram of the double-exit that was previously calculated for uA and uB
+    :return <Histogram>                 - the enter table entry for [uA][uB]
     """
     hists = [hist_both_exit]
     lost_hists = []
@@ -240,20 +248,22 @@ def calculate_incomparable_enter_hist(zero_loss, enter_table, u, uA, uA_loss_eve
 
 def calculate_equal_enter_hist(zero_loss, enter_table, u, uA, uA_loss_events, uB, uB_loss_events,
                                 hist_both_exit, exit_table_a, exit_table_b):
-    """Returns the enter table entry for [uA][uB] with the assumption that uA equals uB (but they might have different
+    """
+    Returns the enter table entry for [uA][uB] with the assumption that uA equals uB (but they might have different
     loss events leading from them!)
-    :param zero_loss:           Whether losses should not count
-    :param enter_table:         The DP table we are computing part of
-    :param u:                   The gene node whose group we are in
-    :param uA:                  The first mapping node to compare
-    :param uA_loss_events:      A list of the loss events on that mapping node
-    :param uB:                  The second mapping node to compare
-    :param uB_loss_events:      A list of the loss events on that mapping node
-    :param hist_both_exit:      The histogram of the double-exit that was previously calculated for uA and uB
-    :param exit_table_a:        The a exit table, which contains information about the single exit events for
-                                the mapping nodes' children.
-    :param exit_table_b:        The b exit table, which contains information about the single exit events for
-                                the mapping nodes' children.
+    :param zero_loss <bool>             - whether losses should not count
+    :param enter_table <dict>           - the DP table we are computing part of
+    :param u <str>                      - the gene node whose group we are in
+    :param uA <str>                     - the first mapping node to compare
+    :param uA_loss_events <list>        - a list of the loss events on that mapping node
+    :param uB <str>                     - the second mapping node to compare
+    :param uB_loss_events <list>        - a list of the loss events on that mapping node
+    :param hist_both_exit <Histogram>   - the histogram of the double-exit that was previously calculated for uA and uB
+    :param exit_table_a <dict>          - the a exit table, which contains information about the single exit events for
+                                          the mapping nodes' children
+    :param exit_table_b <dict>          - the b exit table, which contains information about the single exit events for
+                                          the mapping nodes' children
+    :return <Histogram>                 - the enter table entry for [uA][uB]  
     """
     # If uA does not equal uB, then something's gone horribly wrong.
     assert uA == uB, "calculate_equal_enter_hist called on values of uA and uB that are not equal"
@@ -281,22 +291,24 @@ def calculate_equal_enter_hist(zero_loss, enter_table, u, uA, uA_loss_events, uB
 
 def calculate_ancestral_enter_hist(zero_loss, is_swapped, enter_table, u, uA, uA_loss_events, uB, uB_loss_events,
                                     hist_both_exit, exit_table_a, exit_table_b):
-    """Returns the enter table entry for [uA][uB] with the assumption that A is an ancestor of B (if is_swapped is
+    """
+    Returns the enter table entry for [uA][uB] with the assumption that A is an ancestor of B (if is_swapped is
     false) or that B is an ancestor of A (if is_swapped is true). In both cases, it will compute the single exit
     table entry of the pair (with the ancestor going first, of course).
-    :param zero_loss:           Whether losses should not count
-    :param is_swapped:          Whether B is an ancestor of A (instead of the assumed A is an ancestor of B)
-    :param enter_table:         The DP table we are computing part of
-    :param u:                   The gene node whose group we are in
-    :param uA:                  The first mapping node to compare
-    :param uA_loss_events:      A list of the loss events on that mapping node
-    :param uB:                  The second mapping node to compare
-    :param uB_loss_events:      A list of the loss events on that mapping node
-    :param hist_both_exit:      The histogram of the double-exit that was previously calculated for uA and uB
-    :param exit_table_a:        The a exit table, which contains information about the single exit events for
-                                the mapping nodes' children.
-    :param exit_table_b:        The b exit table, which contains information about the single exit events for
-                                the mapping nodes' children.
+    :param zero_loss <bool>             - whether losses should not count
+    :param is_swapped <bool>            - whether B is an ancestor of A (instead of the assumed A is an ancestor of B)
+    :param enter_table <dict>           - the DP table we are computing part of
+    :param u <str>                      - the gene node whose group we are in
+    :param uA <str>                     - the first mapping node to compare
+    :param uA_loss_events <list>        - a list of the loss events on that mapping node
+    :param uB <str>                     - the second mapping node to compare
+    :param uB_loss_events <list>        - a list of the loss events on that mapping node
+    :param hist_both_exit <Histogram>   - the histogram of the double-exit that was previously calculated for uA and uB
+    :param exit_table_a <dict>          - the a exit table, which contains information about the single exit events for
+                                          the mapping nodes' children
+    :param exit_table_b <dict>          - the b exit table, which contains information about the single exit events for
+                                          the mapping nodes' children
+    :return <Histogram>                 - the enter table entry for [uA][uB]
     """
 
     # In both cases, we will need to tally up the histograms of any loss events on the descendant. Hists will hold those
@@ -361,11 +373,11 @@ def calculate_ancestral_enter_hist(zero_loss, is_swapped, enter_table, u, uA, uA
 def make_group_dict(gene_tree, dtl_recon_graph, postorder_species_nodes):
     """
     Returns a group dictionary of a particular dtl_recon_graph, that contains the mapping nodes in each gene node
-    :param gene_tree:               The vertex-based gene tree
-    :param dtl_recon_graph:         The dtl reconciliation graph we are using
-    :param postorder_species_nodes: A list of the species nodes in post order
-    :return:                        A dict keyed by gene node, where the values are the lists of mapping nodes for that
-                                     gene node.
+    :param gene_tree <dict>                 - the vertex-based gene tree
+    :param dtl_recon_graph <dict>           - the dtl reconciliation graph we are using
+    :param postorder_species_nodes <list>   - a list of the species nodes in post order
+    :return <dict>                          - a dict keyed by gene node, where the values are the lists of mapping nodes for that
+                                              gene node
     """
     postorder_group = {}
     for u in gene_tree:
@@ -384,15 +396,15 @@ def diameter_algorithm(species_tree, gene_tree, gene_tree_root, dtl_recon_graph_
      by making dtl_recon_graph_a equal dtl_recon_graph_b, arbitrary restrictions may be placed on which nodes are
      selected by choosing different graphs, for example by limiting one of the graphs to a single reconciliation tree
      to find that tree's distance to the furthest reconciliation.
-    :param species_tree:        The species tree (in vertex form)
-    :param gene_tree:           The gene tree (in vertex form)
-    :param gene_tree_root:      The root of the gene tree
-    :param dtl_recon_graph_a:   One of the two DTL reconcilation graphs to make the diameter from.
-    :param dtl_recon_graph_b:   The other reconciliation graph. Both must share the same species and gene trees.
-    :param debug:               Whether or not to print out pretty tables
-    :param zero_loss:           Whether losses should count at all
-    :param verify:              Whether to verify the calculations using brute force
-    :return:                    The diameter of the reconciliation.
+    :param species_tree <dict>        - the species tree (in vertex form)
+    :param gene_tree <dict>           - the gene tree (in vertex form)
+    :param gene_tree_root <str>       - the root of the gene tree
+    :param dtl_recon_graph_a <dict>   - one of the two DTL reconcilation graphs to make the diameter from
+    :param dtl_recon_graph_b <dict>   - the other reconciliation graph. Both must share the same species and gene trees.
+    :param debug <bool>               - whether or not to print out pretty tables
+    :param zero_loss <bool>           - whether losses should count at all
+    :param verify <bool>              - whether to verify the calculations using brute force
+    :return <Histogram>               - the diameter of the reconciliation
     """
 
     # Use debugging
@@ -482,13 +494,14 @@ def event_to_string(event):
 
 
 def print_table_nicely(table, deliminator, name="\t", dtype="map"):
-    """Takes a table (a 2D dict keyed with tuples) and prints a nicely formatted table. Used for debugging and wall art.
-    :param table:       The table we wish to print nicely. It is assumed that both the keys and values will fit within
-                        7 characters (room for one tab space), and that the table is filled completely.
-    :param deliminator: What string to put in between the elements of the tuples
-    :param name:        What this table should be named (upper left)
-    :param dtype:        A string corresponding to the type of data. Valid values are 'event', 'literal', and 'map'.
-    :return:            Nothing, but prints to the screen a lot.
+    """
+    Takes a table (a 2D dict keyed with tuples) and prints a nicely formatted table. Used for debugging and wall art.
+    :param table <dict>        - the table we wish to print nicely. It is assumed that both the keys and values will fit within
+                                 7 characters (room for one tab space), and that the table is filled completely.
+    :param deliminator <str>   - what string to put in between the elements of the tuples
+    :param name <str>          - what this table should be named (upper left)
+    :param dtype <str>         - a string corresponding to the type of data. Valid values are 'event', 'literal', and 'map'.
+    :return <None>             - nothing, but prints to the screen a lot
     """
 
     print("")
