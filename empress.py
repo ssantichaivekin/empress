@@ -138,7 +138,7 @@ def main():
     elif args.functionality == "reconcile":
         DTLReconGraph.reconcile_noninter(newick_data, args.d, args.t, args.l)
     elif args.functionality == "histogram":
-        HistogramMain.main(args.filename, newick_data, args.d, args.t, args.l, args)
+        HistogramMain.compute_pdv(args.filename, newick_data, args.d, args.t, args.l, args)
     elif args.functionality == "clumpr":
         ClusterMain.main(newick_data, args.d, args.t, args.l, args.k, args)
 
