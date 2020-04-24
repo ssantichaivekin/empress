@@ -10,16 +10,16 @@ import csv
 
 def plot_histogram(plot_file, histogram, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):
     """
-    Plots the PDV.
-    :param plot_file <string> - the filename to save the plot to
+    Plots the PDV
+    :param plot_file <str> - the filename to save the plot to
     :param histogram <dict int->int> - the underlying dict of values for the PDV Histogram
     :param width <float> - the width of the bars. Will be 1 unless the x-axis has been scaled
-    :param tree_name <string> - the name of the tree that generated this plot. Used to
-        figure out what the title of the plot should be.
+    :param tree_name <str> - the name of the tree that generated this plot. Used to
+        figure out what the title of the plot should be
     :params d, t, l <float> - the DTL costs - used to generate the title
     :params max_x, max_y <float> - Limits on the axes of the plot - useful for generating multiple
-        plots with the same axes.
-    :param title <bool> - Include a title.
+        plots with the same axes
+    :param title <bool> - Include a title
     """
     # Set the max limits
     if max_y is not None:
@@ -56,7 +56,7 @@ def plot_histogram(plot_file, histogram, width, tree_name, d, t, l, max_x=None, 
 def csv_histogram(csv_file, histogram):
     """
     Write the histogram to a .csv file
-    :param csv_file <string> - the path to a file to write to
+    :param csv_file <str> - the path to a file to write to
     :param histogram <dict> - the underlying dict for the PDV
     """
     with open(csv_file, 'w') as csv_handle:
@@ -90,7 +90,7 @@ def normalize_yvals(histogram):
 
 def cumulative(histogram):
     """
-    Make the histogram cumulative.
+    Make the histogram cumulative
     :param histogram <dict>
     :return new_hist <dict> - the transformed histogram
     """
@@ -103,7 +103,7 @@ def cumulative(histogram):
 
 def omit_zeros(histogram):
     """
-    Omit the zeros of the histogram (all are induced by comparing an MPR with itself).
+    Omit the zeros of the histogram (all are induced by comparing an MPR with itself)
     :param histogram <dict>
     :return new_hist <dict> - the transformed histogram
     """
@@ -111,7 +111,7 @@ def omit_zeros(histogram):
 
 def compute_stats(histogram):
     """
-    Get various stats on the histogram.
+    Get various stats on the histogram
     :param histogram <dict>
     :return diameter <int> - the largest distance between two MPRs
     :return mean <float> - the average pairwise distance

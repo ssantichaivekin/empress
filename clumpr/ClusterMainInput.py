@@ -2,60 +2,22 @@
 # Dave Makhervaks, March 2020
 # Main input function for ClumperMain
 
-def getInput(d, t, l, k, relev_params):
+def getInput(d, t, l, k, args):
     """ 
-    :param d: the cost of a duplication
-    :param t: ^^ transfer
-    :param l: ^^ loss
-    :param k: number of clusters
+    :param d <float> - the cost of a duplication
+    :param t <float> - ^^ transfer
+    :param l <float> - ^^ loss
+    :param k <float>: number of clusters
     :param relev_params: relevant parameters
-    :return: dictionary of arguments where key is parameter name and value is parameter value.
+    :param args <dict str->str> - dictionary that contains all parameters needed 
+    to compute, save, and/or output the PDV
+    :return inputs <dict str->str> - all input from user for computing and saving the PDV
     """
-    if not relev_params:
-        relev_params = {}
 
     inputs = {}
-    inputs.update(relev_params)
-    # Get input file name and try to open it
-    
-    # while 'd' not in inputs:
-    #     duplication = input("Enter relative cost of a duplication event: ")
-    #     try:
-    #         inputs["d"] = int(duplication)
-    #         break
-    #     except ValueError:
-    #         print("Duplication cost must be integer number. Please try again.")
-    
-    # while 't' not in inputs:
-    #     transfer = input("Enter relative cost of a transfer event: ")
-    #     try:
-    #         inputs["t"] = int(transfer)
-    #         break
-    #     except ValueError:
-    #         print("Transfer cost must be integer number. Please try again.")
-    
-    # while 'l' not in inputs:
-    #     loss = input("Enter relative cost of a loss event: ")
-    #     try:
-    #         inputs["l"] = int(loss)
-    #         break
-    #     except ValueError:
-    #         print("Loss cost must be integer number. Please try again.")
-
-    # while 'k' not in inputs:
-    #     cluster = input("Enter how many clusters to create: ")
-    #     try:
-    #         inputs["k"] = int(cluster)
-    #         break
-    #     except ValueError:
-    #         print("Cluster number must be integer number. Please try again.")
-
-   
+    inputs.update(args)
     getMutuallyExclusiveInput(inputs)
-    if "interactive" in relev_params:
-        getOptionalInput(inputs, relev_params["interactive"])
-    else:
-        getOptionalInput(inputs, False)
+    getOptionalInput(inputs)
 
     return inputs
 
@@ -108,8 +70,8 @@ def getMutuallyExclusiveInput(inputs):
         
     
     # Which objective function to use
+    # requires, p or s!
     while True:
-        # requires, p or s!
         score = input("Please type 'p' for using weighted average distance to evaluate clusters, or 's' for using weighted event support")
         if (score not in ('p','s')):
             print("Please enter 'p' or 's'")
@@ -122,19 +84,16 @@ def getMutuallyExclusiveInput(inputs):
         inputs["support"] = True
 
 
-def getOptionalInput(inputs, is_interactive):
+def getOptionalInput(inputs):
     """ 
     :param inputs: dictionary of arguments where key is parameter name and value is parameter value.
-    :param is_interactive: boolean determining whether user should be prompted
-    to provide more arguments.
+
     """
-    bool_params = ("bool_params")
+    bool_params = ("medians")
     for param in bool_params:
         if param not in inputs:
             inputs[param] = True
 
-    if not is_interactive:
-        return
 
     print("Enter additional input in the form <parameter name> <value>")
     print("Enter 'Done' when you have no additional input to enter.")
