@@ -136,7 +136,7 @@ def main():
     if args.functionality == "costscape":
         costscape.solve(newick_data, args.sl, args.sh, args.tl, args.th, args)
     elif args.functionality == "reconcile":
-        DTLReconGraph.main(newick_data, args.d, args.t, args.l, args)
+        DTLReconGraph.reconcile_noninter(newick_data, args.d, args.t, args.l)
     elif args.functionality == "histogram":
         HistogramMain.main(args.filename, newick_data, args.d, args.t, args.l, args)
     elif args.functionality == "clumpr":

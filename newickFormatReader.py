@@ -15,7 +15,7 @@
 # of strings of the form:
 # (topVertex, bottomVertex, leftEdgeName, rightEdgeName)
 
-# python libraries
+# python librarieså
 from io import StringIO
 
 # BioPython libraries
