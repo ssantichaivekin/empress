@@ -47,34 +47,34 @@ def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x
 
 # My attempt at leveraging the fact that we want to generate the plots in the same
 # manner regardless of which type of plot to use...
-def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, newick_data):
+def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, tree_data):
     get_hist = mk_get_hist(species_tree, gene_tree, gene_root)
     cost_suffix = ".{}-{}-{}".format(args["d"], args["t"], args["l"])
-    p = Path(newick_data)
+    p = Path(tree_data)
     orig_p = str(p.with_suffix(cost_suffix + ".pdf"))
     orig_h = get_hist(recon_g)
     max_x, max_y = get_max(orig_h)
-    plot_f(orig_p, orig_h, 1, Path(newick_data).stem, args["d"], args["t"], args["l"], max_x, max_y, False)
+    plot_f(orig_p, orig_h, 1, Path(tree_data).stem, args["d"], args["t"], args["l"], max_x, max_y, False)
     for i, g in enumerate(cluster_gs):
         g_i = "-{}cluster{}".format(args["k"], i)
         g_p = str(p.with_suffix("." + g_i + cost_suffix + ".pdf"))
         g_h = get_hist(g)
-        plot_f(g_p, g_h, 1, Path(newick_data).stem + g_i, args["d"], args["t"], args["l"], max_x, max_y, False)
+        plot_f(g_p, g_h, 1, Path(tree_data).stem + g_i, args["d"], args["t"], args["l"], max_x, max_y, False)
 
-def support_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, newick_data):
+def support_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, tree_data):
     mk_get_hist = ClusterUtil.mk_get_support_hist
     plot_f = plot_support_histogram
     def get_max(l):
         h, b = l
         return 1, np.amax(h)
-    vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, newick_data)
+    vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, tree_data)
 
-def pdv_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, newick_data):
+def pdv_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, tree_data):
     mk_get_hist = ClusterUtil.mk_get_pdv_hist
     plot_f = HistogramDisplay.plot_histogram
     def get_max(l):
         return max(l.keys()), max(l.values())
-    vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, newick_data)
+    vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, tree_data)
 
 def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
     def get_median(graph):
@@ -85,17 +85,21 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
         return random_median
     return get_median
 
-def main(filename, newick_data, relev_params=None):
+#TODO: ask about what to do about mutually exclusive inputs
+def perform_clustering(tree_data, d, t, l, k, relev_params=None):
     """
-    :param filename: the path to a .newick file with the input trees and tip mapping.
-    :param newick_data: output to newickFormatReader.getInput().
+    :param tree_data: output to newickFormatReader.getInput().
+    :param d: the cost of a duplication
+    :param t: ^^ transfer
+    :param l: ^^ loss
+    :param k: number of clusters
     :param relev_params: relevant params.
     """
 
     if (relev_params == None):
         relev_params = {}
 
-    args = ClusterMainInput.getInput(Path(filename), relev_params)
+    args = ClusterMainInput.getInput(d, t, l, k, relev_params)
     # Choose the distance metric
     if args["support"]:
         mk_score = ClusterUtil.mk_support_score
@@ -105,7 +109,7 @@ def main(filename, newick_data, relev_params=None):
         assert False
     # Get the recon graph + other info
     gene_tree, species_tree, gene_root, recon_g, mpr_count, best_roots = \
-        ClusterUtil.get_tree_info(newick_data, args["d"],args["t"],args["l"])
+        ClusterUtil.get_tree_info(tree_data, d, t, l)
 
     # Visualize the graphs
     #RV.visualizeAndSave(recon_g, "original.png")
@@ -118,16 +122,16 @@ def main(filename, newick_data, relev_params=None):
     score = mk_score(species_tree, gene_tree, gene_root)
     # Actually perform the clustering
     if args["depth"] is not None:
-        graphs,scores,_ = ClusterUtil.cluster_graph(recon_g, gene_root, score, args["depth"], args["k"], 200)
+        graphs,scores,_ = ClusterUtil.cluster_graph(recon_g, gene_root, score, args["depth"], k, 200)
     elif args["nmprs"] is not None:
-        graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args["nmprs"], mpr_count, args["k"], 200)
+        graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args["nmprs"], mpr_count, k, 200)
     else:
         assert False
     # Visualization
     if args["pdv_vis"]:
-        pdv_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, newick_data)
+        pdv_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, tree_data)
     if args["support_vis"]:
-        support_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, newick_data)
+        support_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, tree_data)
     if args["medians"]:
         get_median = mk_get_median(gene_tree, species_tree, gene_root, best_roots)
         for i, g in enumerate(graphs):
@@ -143,12 +147,15 @@ def main(filename, newick_data, relev_params=None):
     print(("New score: {}".format(k_score)))
     print(("Improvement:  {}".format(improvement)))
 
+'''
+TODO: This code was here from previous iterations
 # Debug
 def main2():
     args = process_args()
     gene_tree, species_tree, gene_root, recon_g, mpr_count = \
-        ClusterUtil.get_tree_info(newick_data, args["d"],args["t"],args["l"])
+        ClusterUtil.get_tree_info(tree_data, args["d"],args["t"],args["l"])
     RV.visualizeAndSave(recon_g, "original.png")
     gs = ClusterUtil.full_split(recon_g, gene_root, args["depth"])
     for i, g in enumerate(gs):
         RV.visualizeAndSave(g, "{}.png".format(i))
+'''
