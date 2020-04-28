@@ -15,8 +15,7 @@ try:
     import xscape
 except ImportError:
     import sys
-    from os.path import realpath, dirname, join
-    sys.path.append('../python')
+    sys.path.append('..')
     import xscape
 from xscape.commonAnalytic import *
 from xscape import getInput 

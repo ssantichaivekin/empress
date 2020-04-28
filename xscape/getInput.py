@@ -10,19 +10,19 @@ def getInput(outputExtension, allowEmptyOutfile=False):
     """ outputExtension is the output file extension (e.g, pdf or csv) """
     
     # Get input file name and try to open it
-    while True:
-        fileName = input("Enter .newick input file name: ")
-        if fileName.endswith(".newick"):
-            try:
-                fileHandle = open(fileName, 'r')
-                break
-            except IOError:
-                print("Error reading file.  Please try again.")
-        else:
-            print("File name must end in .newick.  Please try again.")
+    # while True:
+    #     fileName = input("Enter .newick input file name: ")
+    #     if fileName.endswith(".newick"):
+    #         try:
+    #             fileHandle = open(fileName, 'r')
+    #             break
+    #         except IOError:
+    #             print("Error reading file.  Please try again.")
+    #     else:
+    #         print("File name must end in .newick.  Please try again.")
     
-    hostTree, parasiteTree, phi = newickFormatReader(fileHandle)
-    fileHandle.close()
+    # hostTree, parasiteTree, phi = newickFormatReader(fileHandle)
+    # fileHandle.close()
 
     # Get output file name
     while True:
@@ -42,7 +42,8 @@ def getInput(outputExtension, allowEmptyOutfile=False):
     lossLo = floatInput("Enter loss low value: ", min_val=0)
     lossHi = floatInput("Enter loss high value: ", min_val=lossLo)
     
-    return hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, outfile
+    #return hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, outfile
+    return switchLo, switchHi, lossLo, lossHi, outfile
 
 def floatInput(prompt, min_val=-INF, max_val=INF):
     return numericInput(prompt, "float", min_val, max_val)

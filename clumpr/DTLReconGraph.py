@@ -29,14 +29,16 @@ import sys
 from numpy import mean
 from numpy import median as md
 
-import Greedy
+from clumpr import Greedy, ReconcileMainInput
 import newickFormatReader
-import ReconcileMainInput
+
+
+from typing import List, Dict, Tuple
 
 Infinity = float('inf')
 
 
-def preorder(tree, root_edge_name):
+def preorder(tree: dict, root_edge_name: str) -> list:
     """
     :param tree: host or parasite tree (see description above)
     :param root_edge_name: the name associated with the root of the given tree
@@ -56,7 +58,7 @@ def preorder(tree, root_edge_name):
                preorder(tree, right_child_edge_name)
 
 
-def postorder(tree, root_edge_name):
+def postorder(tree: dict, root_edge_name: str) -> list:
     """ The parameters of this function are the same as that of preorder above, except it
     returns the edge list in postorder (low to high edges; see tech report for more
     info on post- or pre-order)."""
@@ -73,7 +75,7 @@ def postorder(tree, root_edge_name):
                [root_edge_name]
 
 
-def DP(host_tree, parasite_tree, phi, dup_cost, transfer_cost, loss_cost):
+def DP(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:  
     """
     :param host_tree: a host tree in newick format
     :param parasite_tree: a parasite tree in newick format
@@ -374,7 +376,7 @@ def DP(host_tree, parasite_tree, phi, dup_cost, transfer_cost, loss_cost):
     return dtl_recon_graph, best_cost, mpr_count, tree_min
 
 
-def calculate_mean_med_event_nodes_per_mapping_node(dtl_recon_graph):
+def calculate_mean_med_event_nodes_per_mapping_node(dtl_recon_graph: dict) -> Tuple[float, float, list]:
     """
     :param dtl_recon_graph: a DTL Maximum Parsimony Reconciliation graph, as outputted by DP
     :return: the mean and median number of event nodes per mapping node in the given reconciliation,
@@ -397,7 +399,7 @@ def calculate_mean_med_event_nodes_per_mapping_node(dtl_recon_graph):
 # Note that this function was used in an old version of this code, but has since
 # been replaced in favor of a more efficient method of implementing frequency
 # scoring. So it plays no significant part in the algorithm at this time - 7/5/2017
-def preorder_dtl_sort(dtl_recon_graph, parasite_root):
+def preorder_dtl_sort(dtl_recon_graph: dict, parasite_root: str) -> list:
     """
     :param dtl_recon_graph: one of the outputs from DP, directly outputted by buildDTLReconGraph (see
     top of file for structure of the DTLReconGraph)
@@ -423,7 +425,7 @@ def preorder_dtl_sort(dtl_recon_graph, parasite_root):
 
 
 # As with the function above, this function is no longer used
-def preorder_check(preorder_list):
+def preorder_check(preorder_list: list) -> list:
     """
     :param preorder_list: output from preorder_DTL_sort. See that function for the structure
     of the input.
@@ -474,7 +476,7 @@ def preorder_check(preorder_list):
     return final_list
 
 
-def count_mprs_wrapper(mapping_node_list, dtl_recon_graph):
+def count_mprs_wrapper(mapping_node_list: list, dtl_recon_graph: dict) -> int:
     """
     :param mapping_node_list: output from findBestRoots, a list of mapping
     nodes for the root of the parasite tree that could produce a MPR.
@@ -500,7 +502,7 @@ def count_mprs_wrapper(mapping_node_list, dtl_recon_graph):
     return count
 
 
-def count_mprs(mapping_node, dtl_recon_graph, memo):
+def count_mprs(mapping_node: tuple, dtl_recon_graph: dict, memo: dict) -> int:
     """
     :param mapping_node: an individual mapping node that maps a node
     for the parasite tree onto a node of the host tree, in the format
@@ -542,7 +544,7 @@ def count_mprs(mapping_node, dtl_recon_graph, memo):
     return count
 
 
-def find_best_roots(parasite_tree, min_cost_dict):
+def find_best_roots(parasite_tree: dict, min_cost_dict: dict) -> list:
     """
     :param parasite_tree: parasite tree in the format described at the
     top of this file
@@ -565,7 +567,7 @@ def find_best_roots(parasite_tree, min_cost_dict):
     return tree_min
 
 
-def build_dtl_recon_graph(best_roots, event_dict, unique_dict):
+def build_dtl_recon_graph(best_roots: list, event_dict: dict, unique_dict: dict) -> dict:
     """
     :param best_roots: a list of minimum cost reconciliation roots - see findBestRoots
     for more info on the format of this input
@@ -587,9 +589,9 @@ def build_dtl_recon_graph(best_roots, event_dict, unique_dict):
     return unique_dict
 
 
-def reconcile(newick_data, dup_cost, transfer_cost, loss_cost):
+def reconcile(tree_data: Tuple[dict, dict, dict], dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, dict, dict, int, list]:
     """
-    :param newick_data: Triple of output to newickFormatReader.getInput()
+    :param tree_data: Triple of output to newickFormatReader.getInput()
     :param dup_cost: the cost associated with a duplication event
     :param transfer_cost: the cost associated with a transfer event
     :param loss_cost: the cost associated with a loss event
@@ -598,7 +600,7 @@ def reconcile(newick_data, dup_cost, transfer_cost, loss_cost):
     for details on the format of the host and parasite trees as well as the DTLReconGraph
     """
     # Note: I have made modifications to the return statement to make Diameter.py possible without re-reconciling.
-    host, paras, phi = newick_data
+    host, paras, phi = tree_data
     graph, best_cost, num_recon, best_roots = DP(host, paras, phi, dup_cost, transfer_cost, loss_cost)
     return host, paras, graph, num_recon, best_roots
 
@@ -614,12 +616,21 @@ def usage():
             ' respectively')
             
 # This should be called in empress.py when the user wants to run reconcile
-def main(newick_data):
-    """ Inputs: newick data 
-        print out the values from reconcile
+def reconcile_inter(tree_data: Tuple[dict, dict, dict]):
+    """ 
+    :param tree_data: Triple of output to newickFormatReader.getInput()
     """
     duplication, transfer, loss = ReconcileMainInput.get_inputs()
-    result = reconcile(newick_data, duplication, transfer, loss)
+    result = reconcile(tree_data, duplication, transfer, loss)
+    for i in range(len(result)):
+        print((str(result[i]) + '\n'))
+
+# This should be called in empress.py when the user already supplied the DTL values
+def reconcile_noninter(tree_data: Tuple[dict, dict, dict], duplication: float, transfer: float, loss: float):
+    """ 
+    :param tree_data: Triple of output to newickFormatReader.getInput()
+    """
+    result = reconcile(tree_data, duplication, transfer, loss)
     for i in range(len(result)):
         print((str(result[i]) + '\n'))
 

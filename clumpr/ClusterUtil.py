@@ -1,7 +1,4 @@
-import HistogramAlg
-import DTLMedian
-import DTLReconGraph
-import Diameter
+from clumpr import HistogramAlg, DTLMedian, DTLReconGraph, Diameter
 
 import itertools
 import functools

@@ -6,32 +6,34 @@ the results from the DP algorithm.
 Author: Santi Santichaivekin
 '''
 
-from Histogram import Histogram
+from clumpr.Histogram import Histogram
 
-def eventNodeType(eventNode):
+def event_node_type(event_node):
     '''
-    Returns 'S', 'T', 'D', L', or 'C'
+    Returns type 'S', 'T', 'D', L', or 'C'
     'S': speciation
     'D': duplication
     'T': transfer
     'L': loss
     'C': end event
+    :param event_node <tuple>   - the event node being inspected
+    :return <str>               - type of the event node
     '''
-    return eventNode[0]
+    return event_node[0]
 
-def firstChild(eventNode):
+def first_child(event_node):
     # ['T', ('p3', 'h2'), ('p4', 'h4'), 0.5]
     # returns a mapping node
-    assert(eventNode[1][0] and eventNode[1][1])
-    return eventNode[1]
+    assert(event_node[1][0] and event_node[1][1])
+    return event_node[1]
 
-def secondChild(eventNode):
+def second_child(event_node):
     # ['T', ('p3', 'h2'), ('p4', 'h4'), 0.5]
     # ['C', (None, None), (None, None), 1.0]
     # returns a mapping node
     # do not use on null entities
-    assert(eventNode[2][0] and eventNode[2][1])
-    return eventNode[2]
+    assert(event_node[2][0] and event_node[2][1])
+    return event_node[2]
 
 def BF_enumerate_partial_MPRs(recongraph, mapping_node) :
     '''
@@ -39,21 +41,21 @@ def BF_enumerate_partial_MPRs(recongraph, mapping_node) :
     the MPRs in the reconciliation graph starting at the mapping node.
     '''
     for event_node in recongraph[mapping_node]:
-        if eventNodeType(event_node) in ['S', 'T', 'D']:
-            for left_mapping_dict in BF_enumerate_partial_MPRs(recongraph, firstChild(event_node)):
-                for right_mapping_dict in BF_enumerate_partial_MPRs(recongraph, secondChild(event_node)):
+        if event_node_type(event_node) in ['S', 'T', 'D']:
+            for left_mapping_dict in BF_enumerate_partial_MPRs(recongraph, first_child(event_node)):
+                for right_mapping_dict in BF_enumerate_partial_MPRs(recongraph, second_child(event_node)):
                     recon_tree = {}
                     recon_tree[mapping_node] = [event_node]
                     recon_tree.update(left_mapping_dict)
                     recon_tree.update(right_mapping_dict)
                     yield recon_tree
-        elif eventNodeType(event_node) == 'L':
-            for child_mapping_dict in BF_enumerate_partial_MPRs(recongraph, firstChild(event_node)):
+        elif event_node_type(event_node) == 'L':
+            for child_mapping_dict in BF_enumerate_partial_MPRs(recongraph, first_child(event_node)):
                 recon_tree = {}
                 recon_tree[mapping_node] = [event_node]
                 recon_tree.update(child_mapping_dict)
                 yield recon_tree
-        elif eventNodeType(event_node) == 'C':
+        elif event_node_type(event_node) == 'C':
             recon_tree = {}
             recon_tree[mapping_node] = [event_node]
             yield recon_tree

@@ -11,8 +11,8 @@ try:
     import xscape
 except ImportError:
     import sys
-    from os.path import realpath, dirname, join
-    sys.path.append("../python")
+    print(sys.path)
+    sys.path.append("..")
     import xscape
 from xscape.commonAnalytic import *
 from xscape.CostVector import *
@@ -20,15 +20,13 @@ from xscape import getInput
 from xscape import reconcile
 from xscape import plotcostsAnalytic as plotcosts
 
-def main():
+def solve(newick_data, switchLo, switchHi, lossLo, lossHi, optional):
     print("Costscape %s" % xscape.PROGRAM_VERSION_TEXT)
-    hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, outfile = \
-        getInput.getInput(outputExtension = "pdf", allowEmptyOutfile=True)
-    log = getInput.boolInput("Display in log coordinates? ")
-    if outfile == "":
+    hostTree, parasiteTree, phi, = newick_data 
+    if optional.outfile == "":
         display = True
     else:
-        display = getInput.boolInput("Display to screen? ")
+        display = optional.display
 
     print("Reconciling trees...")
     startTime = time.time()
@@ -39,9 +37,9 @@ def main():
     print("Elapsed time %.2f seconds" % elapsedTime)
 
     plotcosts.plotcosts(CVlist, switchLo, switchHi, lossLo, lossHi, \
-                        outfile, \
-                        log, display)
-    if outfile != "":
-        print("Output written to file: ", outfile)
+                        optional.outfile, \
+                        optional.log, display)
+    if optional.outfile != "":
+        print("Output written to file: ", optional.outfile)
     
 if __name__ == '__main__': main()
