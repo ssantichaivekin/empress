@@ -100,7 +100,7 @@ def compute_pdv(filename, tree_data, d, t, l, args):
     #     # converts args to dictionary first
     #     args = vars(args)
     #     args = HistogramMainInput.getInput(Path(filename), d, t, l, args)
-    hist, elapsed = calc_histogram(filename, d, t, l, args.time)
+    hist, elapsed = calc_histogram(tree_data, d, t, l, args.time)
     hist = hist.histogram_dict
     if args.time:
         print("Time spent: {}".format(elapsed))
@@ -114,6 +114,6 @@ def compute_pdv(filename, tree_data, d, t, l, args):
     hist_new, width = transform_hist(hist, args.omit_zeros, args.xnorm, args.ynorm, args.cumulative)
     # Make the histogram image
     if args.histogram is not None:
-        HistogramDisplay.plot_histogram(args.histogram, hist, width, Path(args.input).stem, args.d, args.t, args.l)
+        HistogramDisplay.plot_histogram(args.histogram, hist, width, Path(args.filename).stem, args.d, args.t, args.l)
     if args.csv is not None:
         HistogramDisplay.csv_histogram(args.csv, hist)
