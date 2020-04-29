@@ -4,6 +4,7 @@
 # Cat Ngo, April 2020
 
 import argparse
+from pathlib import Path
 
 from newickFormatReader import getInput
 from clumpr import HistogramMain, DTLReconGraph, ClusterMain
@@ -24,13 +25,13 @@ def process_arg():
     ### Parser for costscape ###
     costscape_parser = subparsers.add_parser('costscape', help="Run costscape")
     costscape_parser.add_argument("-sl", metavar="<switch_low>", default = 1, 
-        help="Switch low value for costcape")
+        type=int, help="Switch low value for costcape")
     costscape_parser.add_argument("-sh", metavar="<switch_high>", default = 5, 
-        help="Switch high value for costcape")
+        type=int, help="Switch high value for costcape")
     costscape_parser.add_argument("-tl", metavar="<transfer_low>", default = 1, 
-        help="Transfer low value for costcape")
+        type=int, help="Transfer low value for costcape")
     costscape_parser.add_argument("-th", metavar="<transfer_high>", default = 5, 
-        help="Transfer high value for costcape")
+        type=int, help="Transfer high value for costcape")
     costscape_parser.add_argument("--outfile", metavar="<output_file>", default = "",
         help="Name of output file, ending in .pdf")
     costscape_parser.add_argument("--log", action= "store_true",
@@ -56,7 +57,7 @@ def process_arg():
     clumpr_parser.add_argument("-l", type=int, metavar="<loss_cost>", 
         default = 1, help="The relative cost of a loss.")
     clumpr_parser.add_argument("-k", type=int, metavar="<number_of_clusters>",
-        required=True, help="How many clusters to create.")
+        default = 3, help="How many clusters to create.")
     clumpr_parser.add_argument("--medians", action="store_true", required=False,
         help="Whether or not to print out medians for each cluster.")
     # Specifies how far down to go when finding splits
@@ -108,20 +109,20 @@ def process_arg():
         help="Time the diameter algorithm.")
     args = parser.parse_args()
     if args.functionality == "histogram":
-        fname = Path(args.input)
+        fname = Path(args.filename)
         cost_suffix = ".{}-{}-{}".format(args.d, args.t, args.l)
         # If args is unset, use the original .newick file path but replace .newick with .pdf
-        if histogram_args.histogram is None:
-            histogram_args.histogram = str(fname.with_suffix(cost_suffix + ".pdf"))
+        if args.histogram is None:
+            args.histogram = str(fname.with_suffix(cost_suffix + ".pdf"))
         # If it wasn't set by the arg parser, then set it to None (the option wasn't present)
-        elif histogram_args.histogram == "unset":
-            histogram_args.histogram = None
+        elif args.histogram == "unset":
+            args.histogram = None
         #TODO: check that the specified path has a matplotlib-compatible extension?
         # Do the same for .csv
-        if histogram_args.csv is None:
-            histogram_args.csv = str(fname.with_suffix(cost_suffix + ".csv"))
-        elif histogram_args.csv == "unset":
-            histogram_args.csv = None
+        if args.csv is None:
+            args.csv = str(fname.with_suffix(cost_suffix + ".csv"))
+        elif args.csv == "unset":
+            args.csv = None
         # If it was user-specified, check that it has a .csv extension
         else:
             c = Path(args.csv)
@@ -140,7 +141,7 @@ def main():
     elif args.functionality == "histogram":
         HistogramMain.compute_pdv(args.filename, newick_data, args.d, args.t, args.l, args)
     elif args.functionality == "clumpr":
-        ClusterMain.main(newick_data, args.d, args.t, args.l, args.k, args)
+        ClusterMain.perform_clustering(newick_data, args.d, args.t, args.l, args.k, args)
 
 
 if __name__ == "__main__": main()
