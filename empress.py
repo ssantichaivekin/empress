@@ -135,7 +135,7 @@ def main():
     args = process_arg()
     newick_data = getInput(args.filename)
     if args.functionality == "costscape":
-        costscape.solve(newick_data, args.tl, args.th, args.ll, args.lh args)
+        costscape.solve(newick_data, args.tl, args.th, args.ll, args.lh, args)
     elif args.functionality == "reconcile":
         DTLReconGraph.reconcile_noninter(newick_data, args.d, args.t, args.l)
     elif args.functionality == "histogram":

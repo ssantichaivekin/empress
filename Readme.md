@@ -37,7 +37,7 @@ For example, to run Costscape with switch low value of 2 and switch high value o
 * `-l` : Lost cost (1)
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 0, you run
-* `python3.7 empress.py -fn examples/heliconius.newick costscape reconcile -d 4 -t 2 -l 0`
+* `python3.7 empress.py -fn examples/heliconius.newick reconcile -d 4 -t 2 -l 0`
 
 ### Pair distance Histogram
 * `-d` : Duplication cost (2)
@@ -52,8 +52,8 @@ For example, to run DTL Reconciliation with duplication cost of 4, transfer cost
 * `--stats` : Output statistics including the total number of MPRs, the diameter of MPR-space, and the average distance between MPRs*
 * `--time` : Time the diameter algorithm*
 
-For example, to run Pair-distance Histogram that outputs the histogram to `foo.pdf` and normalizes the y-axis, you run
-* `python3.7 empress.py -fn examples/heliconius.newick histogram --histogram foo.pdf --y-axis`
+For example, to run Pair-distance Histogram that outputs a csv file at `foo.csv`, outputs a histogram to `bar.pdf` and normalizes the y-axis, you run
+* `python3.7 empress.py -fn examples/heliconius.newick histogram --csv foo.csv --histogram bar.pdf --ynorm`
 
 ### Cluster MPR
 * `-d` : Duplication cost (2)
