@@ -27,6 +27,19 @@ import matplotlib.pyplot as plt
 
 # The width parameter is unused -- it's here to maintain compatibility with HistogramDisplay.plot_histogram
 def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):
+    """
+    Creates Support visualization
+    :param plot_file <str> - path of pdf file
+    :param hist_def <tuple> - size 2, hist and bins
+    :param width <float> - width of the plot
+    :param tree_name <str> - name of the tree file
+    :param d <float> - the input gene tree
+    :param t <float> - the value of the gene root
+    :param l <float> - reconciliation graph
+    :max_x d <float> - the input gene tree
+    :max_y t <float> - the value of the gene root
+    :title l <str> - Title for the plot
+    """
     hist, bins = hist_def
     width = bins[1] - bins[0]
     center = (bins[:-1] + bins[1:]) / 2
@@ -46,6 +59,19 @@ def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x
 # My attempt at leveraging the fact that we want to generate the plots in the same
 # manner regardless of which type of plot to use...
 def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, tree_data):
+    """
+    Creates Support visualization
+    :param species_tree <OrderedDict> - the input species tree
+    :param gene_tree <OrderedDict> - the input gene tree
+    :param gene_root <str> - the value of the gene root
+    :param recon_g <dict> - reconciliation graph
+    :param cluster_gs <list> - list of cluster graphs, i.e. list of cluster dicts
+    :param args <ArgumentParser>: args parse object that contains all parameters needed 
+    :param mk_get_hist <func mk_get_support_hist>: retrieves support histograms
+    :param plot_f <func plot_support_histogram>: plots support histograms
+    :param get_max <func get_max>: retrieves max of key,value
+    :param tree_data <str>: file location
+    """
     get_hist = mk_get_hist(species_tree, gene_tree, gene_root)
     cost_suffix = ".{}-{}-{}".format(args.d, args.t, args.l)
     p = Path(tree_data)
@@ -60,6 +86,16 @@ def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hi
         plot_f(g_p, g_h, 1, Path(tree_data).stem + g_i, args.d, args.t, args.l, max_x, max_y, False)
 
 def support_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, tree_data):
+    """
+    Creates Support visualization
+    :param species_tree <OrderedDict> - the input species tree
+    :param gene_tree <OrderedDict> - the input gene tree
+    :param gene_root <str> - the value of the gene root
+    :param recon_g <dict> - reconciliation graph
+    :param cluster_gs <list> - list of cluster graphs, i.e. list of cluster dicts
+    :param args <ArgumentParser>: args parse object that contains all parameters needed 
+    :param tree_data <str>: file location
+    """
     mk_get_hist = ClusterUtil.mk_get_support_hist
     plot_f = plot_support_histogram
     def get_max(l):
@@ -68,6 +104,16 @@ def support_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, t
     vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, tree_data)
 
 def pdv_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, tree_data):
+    """
+    Creates pdv_vis
+    :param species_tree <OrderedDict> - the input species tree
+    :param gene_tree <OrderedDict> - the input gene tree
+    :param gene_root <str> - the value of the gene root
+    :param recon_g <dict> - reconciliation graph
+    :param cluster_gs <list> - list of cluster graphs, i.e. list of cluster dicts
+    :param args <ArgumentParser>: args parse object that contains all parameters needed 
+    :param tree_data <str>: file location
+    """
     mk_get_hist = ClusterUtil.mk_get_pdv_hist
     plot_f = HistogramDisplay.plot_histogram
     def get_max(l):
@@ -75,7 +121,21 @@ def pdv_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, tree_
     vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, tree_data)
 
 def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
+    """
+    Calculate the median
+    :param gene_tree <OrderedDict> - the input gene tree
+    :param species_tree <OrderedDict> - the input species tree
+    :param gene_root <str> - the value of the gene root
+    :param best_roots <list> - list of str of the best roots
+    :return get_median <func get_median> - the function that calculate
+    :median for a given graph
+    """
     def get_median(graph):
+        """
+        Returns the median
+        :param graph <dict> - the input graph
+        :return random_median <dict> - the median
+        """
         median_graph, n_meds, median_roots = DTLMedian.get_median_graph(
                 graph, gene_tree, species_tree, gene_root, best_roots)
         med_counts = DTLMedian.get_med_counts(median_graph, median_roots)
@@ -83,15 +143,14 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
         return random_median
     return get_median
 
-#TODO: ask about what to do about mutually exclusive inputs
 def perform_clustering(tree_data, d, t, l, k, args):
     """
-    :param tree_data: output to newickFormatReader.getInput().
-    :param d: the cost of a duplication
-    :param t: ^^ transfer
-    :param l: ^^ loss
-    :param k: number of clusters
-    :param args: args parse object that contains all parameters needed 
+    :param tree_data <tuple>: triple of output to newickFormatReader.getInput()
+    :param d <float>: the cost of a duplication
+    :param t <float>: ^^ transfer
+    :param l <float>: ^^ loss
+    :param k <float>: number of clusters
+    :param args <ArgumentParser>: args parse object that contains all parameters needed 
     to run a functionality.
     """
     # if args.interactive:
