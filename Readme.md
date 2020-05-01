@@ -20,10 +20,10 @@ For specific parameters of each functionality, consult the list below:
 ## List of Parameters
 Note: value in paranthesis denotes default value, asterik denotes boolean flags
 ### Costscape
-* `-sl` : Switch low value (1)
-* `-sh` : Switch high value (5)
 * `-tl` : Transfer low value (1)
 * `-th` : Transfer high value (5)
+* `-ll` : Loss low value (1)
+* `-lh` : Loss high value (5)
 * `--outfile` : Name of output file. Must end in .pdf ("")
 * `--log` : Set graph to log scale*
 * `--display` : Display graph to screen*
