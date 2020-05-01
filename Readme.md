@@ -52,8 +52,8 @@ For example, to run DTL Reconciliation with duplication cost of 4, transfer cost
 * `--stats` : Output statistics including the total number of MPRs, the diameter of MPR-space, and the average distance between MPRs*
 * `--time` : Time the diameter algorithm*
 
-For example, to run Pair-distance Histogram that outputs the histogram to `foo.pdf` and normalizes the y-axis, you run
-* `python3.7 empress.py -fn examples/heliconius.newick histogram --histogram foo.pdf --y-axis`
+For example, to run Pair-distance Histogram that outputs a csv file at `examples/heliconius.2-3-1.csv', outputs a histogram to `examples/heliconius.2-3-1.pdf' and normalizes the y-axis, you run
+* `python3.7 empress.py -fn examples/heliconius.newick histogram --histogram --csv --ynorm`
 
 ### Cluster MPR
 * `-d` : Duplication cost (2)
