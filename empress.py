@@ -24,14 +24,14 @@ def process_arg():
     
     ### Parser for costscape ###
     costscape_parser = subparsers.add_parser('costscape', help="Run costscape")
-    costscape_parser.add_argument("-sl", metavar="<switch_low>", default = 1, 
-        type=int, help="Switch low value for costcape")
-    costscape_parser.add_argument("-sh", metavar="<switch_high>", default = 5, 
-        type=int, help="Switch high value for costcape")
     costscape_parser.add_argument("-tl", metavar="<transfer_low>", default = 1, 
         type=int, help="Transfer low value for costcape")
     costscape_parser.add_argument("-th", metavar="<transfer_high>", default = 5, 
         type=int, help="Transfer high value for costcape")
+    costscape_parser.add_argument("-ll", metavar="<switch_low>", default = 1, 
+        type=int, help="Loss low value for costcape")
+    costscape_parser.add_argument("-lh", metavar="<switch_high>", default = 5, 
+        type=int, help="Loss high value for costcape")
     costscape_parser.add_argument("--outfile", metavar="<output_file>", default = "",
         help="Name of output file, ending in .pdf")
     costscape_parser.add_argument("--log", action= "store_true",
@@ -135,7 +135,7 @@ def main():
     args = process_arg()
     newick_data = getInput(args.filename)
     if args.functionality == "costscape":
-        costscape.solve(newick_data, args.sl, args.sh, args.tl, args.th, args)
+        costscape.solve(newick_data, args.tl, args.th, args.ll, args.lh args)
     elif args.functionality == "reconcile":
         DTLReconGraph.reconcile_noninter(newick_data, args.d, args.t, args.l)
     elif args.functionality == "histogram":
