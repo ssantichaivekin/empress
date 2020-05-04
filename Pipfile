@@ -1,0 +1,13 @@
+[requires]
+python_version = '3.7'
+
+[packages]
+biopython = '*'
+networkx = '*'
+pydot = '*'
+matplotlib = '*'
+shapely = '*'
+numpy = '*'
+
+[dev-packages]
+coverage = '*'
