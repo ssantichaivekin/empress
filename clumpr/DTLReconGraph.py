@@ -33,16 +33,15 @@ from clumpr import Greedy, ReconcileMainInput
 import newickFormatReader
 
 
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Iterator
 
 Infinity = float('inf')
 
-
-def preorder(tree: dict, root_edge_name: str) -> list:
+def preorder(tree: dict, root_edge_name: Tuple) -> Iterator:
     """
     :param tree: host or parasite tree (see description above)
     :param root_edge_name: the name associated with the root of the given tree
-    :return: list of edges in the given tree in preorder (high to low edges). See
+    :yield: list of edges in the given tree in preorder (high to low edges). See
     tech report for more information on post- or pre-order.
     """
 
@@ -51,14 +50,14 @@ def preorder(tree: dict, root_edge_name: str) -> list:
 
     # Base case
     if left_child_edge_name is None:  # Then right_child_edge_name == None also
-        return [root_edge_name]
+        yield root_edge_name
     else:  # Recursive call
-        return [root_edge_name] + \
-               preorder(tree, left_child_edge_name) + \
-               preorder(tree, right_child_edge_name)
+        yield root_edge_name
+        yield from preorder(tree, left_child_edge_name)
+        yield from preorder(tree, right_child_edge_name)
 
 
-def postorder(tree: dict, root_edge_name: str) -> list:
+def postorder(tree: dict, root_edge_name: Tuple) -> Iterator:
     """ The parameters of this function are the same as that of preorder above, except it
     returns the edge list in postorder (low to high edges; see tech report for more
     info on post- or pre-order)."""
@@ -68,11 +67,11 @@ def postorder(tree: dict, root_edge_name: str) -> list:
 
     # Base case
     if left_child_edge_name is None:  # then right_child_edge_name == None also
-        return [root_edge_name]
+        yield root_edge_name
     else:  # Recursive call
-        return postorder(tree, left_child_edge_name) + \
-               postorder(tree, right_child_edge_name) + \
-               [root_edge_name]
+        yield from postorder(tree, left_child_edge_name)
+        yield from postorder(tree, right_child_edge_name)
+        yield root_edge_name
 
 
 def DP(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:  
