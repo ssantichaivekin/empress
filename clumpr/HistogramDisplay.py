@@ -36,7 +36,9 @@ def plot_histogram(plot_file, histogram, width, tree_name, d, t, l, max_x=None, 
     ax = plt.gca()
     # matplotlib sure is intuitive and easy to use!
     # Get the exponent text from the y-axis and format it into latex
-    plt.tight_layout() # A hack to make offset text updated (matplotlib bug) for this issue: https://github.com/ssantichaivekin/eMPRess/pull/29
+    # tight_layout is a hack that makes the exponent display correctly.
+    # Please refer to https://github.com/ssantichaivekin/eMPRess/pull/29
+    plt.tight_layout() 
     exponent_text = ax.get_yaxis().get_offset_text().get_text()
     if exponent_text == "":
         exponent = 0
