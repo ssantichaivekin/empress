@@ -1,2 +1,9 @@
-*.DS_Store
+# Mac OS generated files
+.DS_Store
+
+# Cpython files
 *.pyc
+
+# editor-generated files
+.vscode/
+.idea/
