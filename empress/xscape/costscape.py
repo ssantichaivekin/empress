@@ -8,17 +8,14 @@ import time
 
 # xscape libraries
 try:
-    import xscape
+    from empress import xscape
 except ImportError:
     import sys
     print(sys.path)
     sys.path.append("..")
-    import xscape
-from xscape.commonAnalytic import *
-from xscape.CostVector import *
-from xscape import getInput
-from xscape import reconcile
-from xscape import plotcostsAnalytic as plotcosts
+    import empress.xscape
+from empress.xscape import reconcile
+from empress.xscape import plotcostsAnalytic as plotcosts
 
 def solve(newick_data, switchLo, switchHi, lossLo, lossHi, optional):
     print("Costscape %s" % xscape.PROGRAM_VERSION_TEXT)
