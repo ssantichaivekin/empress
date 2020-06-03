@@ -592,7 +592,7 @@ def build_dtl_recon_graph(best_roots: list, event_dict: dict, unique_dict: dict)
 
 def reconcile(tree_data: ReconData, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, dict, dict, int, list]:
     """
-    :param tree_data: Output of newickFormatReader.getInput()
+    :param tree_data <ReconData>: Output of newickFormatReader.getInput()
     :param dup_cost: the cost associated with a duplication event
     :param transfer_cost: the cost associated with a transfer event
     :param loss_cost: the cost associated with a loss event
@@ -616,9 +616,9 @@ def usage():
             ' respectively')
             
 # This should be called in empress.py when the user wants to run reconcile
-def reconcile_inter(tree_data: Tuple[dict, dict, dict]):
+def reconcile_inter(tree_data: ReconData):
     """ 
-    :param tree_data: Output of newickFormatReader.getInput()
+    :param tree_data <ReconData>: Output of newickFormatReader.getInput()
     """
     duplication, transfer, loss = ReconcileMainInput.get_inputs()
     result = reconcile(tree_data, duplication, transfer, loss)

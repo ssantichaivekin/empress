@@ -142,7 +142,7 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
 
 def perform_clustering(tree_data, d, t, l, k, args):
     """
-    :param tree_data: Output of newickFormatReader.getInput()
+    :param tree_data <ReconData>: Output of newickFormatReader.getInput()
     :param d <float>: the cost of a duplication
     :param t <float>: ^^ transfer
     :param l <float>: ^^ loss
