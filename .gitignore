@@ -1,8 +1,10 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Mac OS generated files
 .DS_Store
-
-# Cpython files
-*.pyc
 
 # editor-generated files
 .vscode/
