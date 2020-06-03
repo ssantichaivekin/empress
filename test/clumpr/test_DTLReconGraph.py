@@ -1,4 +1,4 @@
-from clumpr import DTLReconGraph
+from empress.clumpr import DTLReconGraph
 import unittest
 
 class EdgeTreeTraversalTestCase(unittest.TestCase):

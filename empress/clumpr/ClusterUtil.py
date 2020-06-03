@@ -1,4 +1,4 @@
-from clumpr import HistogramAlg, DTLMedian, DTLReconGraph, Diameter
+from empress.clumpr import DTLReconGraph, Diameter, HistogramAlg, DTLMedian
 
 import itertools
 import functools

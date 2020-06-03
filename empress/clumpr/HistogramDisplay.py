@@ -1,11 +1,9 @@
-from clumpr import Histogram
+from empress.clumpr import Histogram
 
-import numpy as np
 import matplotlib
 # Don't require an X-Server
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
 import csv
 
 def plot_histogram(plot_file, histogram, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):

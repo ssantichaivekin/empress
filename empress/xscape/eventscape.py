@@ -7,27 +7,25 @@
 import time
 from collections import *
 from operator import itemgetter
-from shapely.geometry import *
 import csv
 
 # xscape libraries
 try:
-    import xscape
+    from empress import xscape
 except ImportError:
     import sys
     sys.path.append('..')
-    import xscape
-from xscape.commonAnalytic import *
-from xscape import getInput 
-from xscape import reconcile
-from xscape.reconcileEvents import *
+    import empress.xscape
+from empress.xscape import getInput
+from empress.xscape import reconcile
+
 
 def main():
     global CandidateCVlist
     
     print("Eventscape %s" % xscape.PROGRAM_VERSION_TEXT)
     hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, outfile = \
-        getInput.getInput(outputExtension = "csv")
+        getInput.getInput(outputExtension ="csv")
 
     while True:
         merge_type = input("[U]nion or [I]ntersection? ")

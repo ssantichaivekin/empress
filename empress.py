@@ -6,9 +6,9 @@
 import argparse
 from pathlib import Path
 
-from newickFormatReader import getInput
-from clumpr import HistogramMain, DTLReconGraph, ClusterMain
-from xscape import costscape
+from empress.newickFormatReader import getInput
+from empress.clumpr import DTLReconGraph, ClusterMain, HistogramMain
+from empress.xscape import costscape
 
 def process_arg():
     """ Returns args parse object that contains all parameters needed to run a functionality

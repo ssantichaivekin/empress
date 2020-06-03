@@ -6,22 +6,19 @@
 # python libraries
 from multiprocessing import Process, Queue  # For multiprocessing random trials
 import random
-import sys
 import time
 
 # xscape libraries
 try:
-    import xscape
+    from empress import xscape
 except ImportError:
     import sys
     from os.path import realpath, dirname, join
     sys.path.append('..')
-    import xscape
-from xscape.common import *
-from xscape.CostVector import *
-from xscape import getInput
-from xscape import reconcile 
-from xscape import plotsig
+    import empress.xscape
+from empress.xscape import getInput
+from empress.xscape import reconcile
+from empress.xscape import plotsig
 
 DOTS = 100  # DOTS data points per dimension;
             # Increase this value for higher resolution plottin
@@ -29,14 +26,14 @@ DOTS = 100  # DOTS data points per dimension;
 def main():
     print("Sigscape %s" % xscape.PROGRAM_VERSION_TEXT)
     hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, \
-        outfile = getInput.getInput(outputExtension = "pdf", allowEmptyOutfile = True)
+        outfile = getInput.getInput(outputExtension ="pdf", allowEmptyOutfile = True)
     log = getInput.boolInput("Display in log coordinates? ")
     if outfile == "":
         display = True
     else:
         display = getInput.boolInput("Display to screen? ")
 
-    numTrials = getInput.intInput("Enter the number of randomization trials: " , 1)
+    numTrials = getInput.intInput("Enter the number of randomization trials: ", 1)
     numProcs = getInput.intInput("Enter the number of cores for parallelization: ", 1)
     seed = getSeed("Enter random seed (leave blank if none): ")
     if seed:
@@ -92,7 +89,7 @@ def seqTrials(parasiteTree, hostTree, phi, numTrials,
             print(".", end=' ')      # Progress indicator!
         sys.stdout.flush()
         newPhi = randomizeTips(parasiteTips, hostTips)
-        output.append(reconcile.reconcile(parasiteTree, hostTree, newPhi, 
+        output.append(reconcile.reconcile(parasiteTree, hostTree, newPhi,
                                           switchLo, switchHi, lossLo, lossHi))
     
     if verbose:

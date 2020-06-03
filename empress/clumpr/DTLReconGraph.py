@@ -29,11 +29,9 @@ import sys
 from numpy import mean
 from numpy import median as md
 
-from clumpr import Greedy, ReconcileMainInput
-import newickFormatReader
+from empress.clumpr import ReconcileMainInput, Greedy
 
-
-from typing import List, Dict, Tuple, Iterator
+from typing import Tuple, Iterator
 
 Infinity = float('inf')
 
