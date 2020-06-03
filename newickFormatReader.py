@@ -15,11 +15,22 @@
 # of strings of the form:
 # (topVertex, bottomVertex, leftEdgeName, rightEdgeName)
 
-# python librarieså
+# Python libraries
 from io import StringIO
 
 # BioPython libraries
 from Bio import Phylo
+
+# Storage class for the newick data (trees, tip mapping, and optional distance parameters)
+# Distances encode the annotated distances in time between the different branches of the tree
+class ReconData(object):
+
+    def __init__(self, host_tree, host_distances, parasite_tree, parasite_distances, phi):
+        self.host_tree = host_tree
+        self.host_distances = host_distances
+        self.parasite_tree = parasite_tree
+        self.parasite_distances = parasite_distances
+        self.phi = phi
 
 def getInput(filename):
     """
@@ -32,9 +43,9 @@ def getInput(filename):
     """
 
     file_handle = open(filename, 'r')
-    host_tree, parasite_tree, phi = newick_format_reader(file_handle)
+    N = newick_format_reader(file_handle)
     file_handle.close()
-    return host_tree, parasite_tree, phi
+    return N
 
 def newick_format_reader(file_handle):
     """
@@ -65,14 +76,16 @@ def newick_format_reader(file_handle):
     phi_list = phi_string.split()
 
     # Parse the input and build dictionary representations
-    host_dict = parse_newick(host_string, "host")
-    parasite_dict = parse_newick(parasite_string, "parasite")
+    host_dict, host_D = parse_newick(host_string, "host")
+    parasite_dict, parasite_D = parse_newick(parasite_string, "parasite")
     phi_dict = parse_phi(phi_list)
 
     if autoclose:
         file_handle.close()
 
-    return host_dict, parasite_dict, phi_dict
+    # Package it in a more easily-changed format
+    N = NewickData(host_dict, host_D, parasite_dict, parasite_D, phi_dict)
+    return N
 
 def parse_newick(newick_string, tree_type):
     """
@@ -86,6 +99,7 @@ def parse_newick(newick_string, tree_type):
 
     tree = Phylo.read(StringIO(newick_string), "newick")
     distance_dict = tree.depths(unit_branch_lengths=True)
+    # Get the actual distance annotations (zero for unannotated trees)
     D = {}
     for clade in distance_dict:
         name = clade.name
@@ -94,7 +108,12 @@ def parse_newick(newick_string, tree_type):
     dfs_list = [(node.name, int(D[node.name])) for node in tree.find_clades()]
     tree_dict = {}
     build_tree_dictionary(build_tree(dfs_list), "Top", tree_dict, tree_type)
-    return tree_dict
+    real_distances = tree.depths()
+    real_D = {}
+    for clade in real_distances:
+        name = clade.name
+        real_D[name] = dist
+    return tree_dict, real_D
 
 def build_tree(dfs_list):
     """
