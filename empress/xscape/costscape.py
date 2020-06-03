@@ -20,7 +20,9 @@ from empress.xscape import plotcostsAnalytic as plotcosts
 
 def solve(newick_data, transferMin, transferMax, dupMin, dupMax, optional):
     print("Costscape %s" % xscape.PROGRAM_VERSION_TEXT)
-    hostTree, parasiteTree, phi, = newick_data 
+    hostTree = newick_data.host_tree
+    parasiteTree = newick_data.parasite_tree
+    phi = newick_data.phi
     if optional.outfile == "":
         display = True
     else:

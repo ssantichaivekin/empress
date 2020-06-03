@@ -72,7 +72,7 @@ def postorder(tree: dict, root_edge_name: Tuple) -> Iterator:
         yield root_edge_name
 
 
-def DP(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:  
+def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:  
     """
     :param host_tree: a host tree in newick format
     :param parasite_tree: a parasite tree in newick format
@@ -89,6 +89,10 @@ def DP(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfe
     corresponding to lists which include all valid event nodes for a given
     mapping node for the MPR.
     """
+    host_tree = tree_data.host_tree
+    host_distances = tree_data.host_distances
+    parasite_tree = tree_data.parasite_tree
+    phi = tree_data.phi
 
     # A, C, O, and best_switch are all defined in tech report. Keys are edges and values are as defined in tech report
     A = {}
@@ -586,9 +590,9 @@ def build_dtl_recon_graph(best_roots: list, event_dict: dict, unique_dict: dict)
     return unique_dict
 
 
-def reconcile(tree_data: Tuple[dict, dict, dict], dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, dict, dict, int, list]:
+def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, dict, dict, int, list]:
     """
-    :param tree_data: Triple of output to newickFormatReader.getInput()
+    :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
     :param dup_cost: the cost associated with a duplication event
     :param transfer_cost: the cost associated with a transfer event
     :param loss_cost: the cost associated with a loss event
@@ -597,8 +601,7 @@ def reconcile(tree_data: Tuple[dict, dict, dict], dup_cost: float, transfer_cost
     for details on the format of the host and parasite trees as well as the DTLReconGraph
     """
     # Note: I have made modifications to the return statement to make Diameter.py possible without re-reconciling.
-    host, paras, phi = tree_data
-    graph, best_cost, num_recon, best_roots = DP(host, paras, phi, dup_cost, transfer_cost, loss_cost)
+    graph, best_cost, num_recon, best_roots = DP(tree_data, dup_cost, transfer_cost, loss_cost)
     return host, paras, graph, num_recon, best_roots
 
 
@@ -613,9 +616,9 @@ def usage():
             ' respectively')
             
 # This should be called in empress.py when the user wants to run reconcile
-def reconcile_inter(tree_data: Tuple[dict, dict, dict]):
+def reconcile_inter(tree_data: ReconInput):
     """ 
-    :param tree_data: Triple of output to newickFormatReader.getInput()
+    :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
     """
     duplication, transfer, loss = ReconcileMainInput.get_inputs()
     result = reconcile(tree_data, duplication, transfer, loss)
@@ -623,9 +626,9 @@ def reconcile_inter(tree_data: Tuple[dict, dict, dict]):
         print((str(result[i]) + '\n'))
 
 # This should be called in empress.py when the user already supplied the DTL values
-def reconcile_noninter(tree_data: Tuple[dict, dict, dict], duplication: float, transfer: float, loss: float):
+def reconcile_noninter(tree_data: ReconInput, duplication: float, transfer: float, loss: float):
     """ 
-    :param tree_data: Triple of output to newickFormatReader.getInput()
+    :param tree_data <ReconInput> : Output of newickFormatReader.getInput()
     """
     result = reconcile(tree_data, duplication, transfer, loss)
     for i in range(len(result)):
