@@ -30,7 +30,6 @@ def plotcosts(CVlist, switchMin, switchMax, dupMin, dupMax, steps, outfile,
         plt.xscale('log')
         plt.yscale('log')
     plt.axis([dupMin, dupMax, switchMin, switchMax])
-≈
     plt.xlabel("Duplication cost relative to loss")
     plt.ylabel("Transfer cost relative to loss")
     
