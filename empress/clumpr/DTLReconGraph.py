@@ -72,7 +72,7 @@ def postorder(tree: dict, root_edge_name: Tuple) -> Iterator:
         yield root_edge_name
 
 
-def DP(tree_data: ReconData, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:  
+def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:  
     """
     :param host_tree: a host tree in newick format
     :param parasite_tree: a parasite tree in newick format
@@ -590,9 +590,9 @@ def build_dtl_recon_graph(best_roots: list, event_dict: dict, unique_dict: dict)
     return unique_dict
 
 
-def reconcile(tree_data: ReconData, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, dict, dict, int, list]:
+def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, dict, dict, int, list]:
     """
-    :param tree_data <ReconData>: Output of newickFormatReader.getInput()
+    :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
     :param dup_cost: the cost associated with a duplication event
     :param transfer_cost: the cost associated with a transfer event
     :param loss_cost: the cost associated with a loss event
@@ -616,9 +616,9 @@ def usage():
             ' respectively')
             
 # This should be called in empress.py when the user wants to run reconcile
-def reconcile_inter(tree_data: ReconData):
+def reconcile_inter(tree_data: ReconInput):
     """ 
-    :param tree_data <ReconData>: Output of newickFormatReader.getInput()
+    :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
     """
     duplication, transfer, loss = ReconcileMainInput.get_inputs()
     result = reconcile(tree_data, duplication, transfer, loss)

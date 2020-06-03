@@ -21,9 +21,11 @@ from io import StringIO
 # BioPython libraries
 from Bio import Phylo
 
-# Storage class for the newick data (trees, tip mapping, and optional distance parameters)
-# Distances encode the annotated distances in time between the different branches of the tree
-class ReconData(object):
+class ReconInput(object):
+    """
+    Storage class for the newick data (trees, tip mapping, and optional distance parameters)
+    Distances encode the annotated distances in time between the different branches of the tree
+    """
 
     def __init__(self, host_tree, host_distances, parasite_tree, parasite_distances, phi):
         self.host_tree = host_tree
@@ -36,16 +38,13 @@ def getInput(filename):
     """
     Takes a filename as input and returns the host tree, parasite tree, and tip mapping phi
     :param filename <str>   - filename of newick file to parse
-    :return                 0 <dict> - the host tree,
-                            1 <dict> - the parasite tree,
-                            3 <dict> - and a map phi from the tips of the parasite
-                                          tree to those of the host tree
+    :return recon_input <ReconInput> - Wraps the host and parasite trees, the tip mapping, and other info
     """
 
     file_handle = open(filename, 'r')
-    N = newick_format_reader(file_handle)
+    recon_input = newick_format_reader(file_handle)
     file_handle.close()
-    return N
+    return recon_input
 
 def newick_format_reader(file_handle):
     """
@@ -56,10 +55,7 @@ def newick_format_reader(file_handle):
     The trees are returned in the dictionary format
     used by xscape.
     :param file_handle <TextIOWrapper or str> - file_handle to read and parse
-    :return                                   0 <dict> - the host tree,
-                                              1 <dict> - the parasite tree,
-                                              2 <dict> - and a map with parasite names as keys
-                                                         and host tips as values
+    :return recon_input <ReconInput> - Wraps the host and parasite trees, the tip mapping, and other info
     """
 
     if isinstance(file_handle, str):
@@ -84,8 +80,8 @@ def newick_format_reader(file_handle):
         file_handle.close()
 
     # Package it in a more easily-changed format
-    N = NewickData(host_dict, host_D, parasite_dict, parasite_D, phi_dict)
-    return N
+    recon_input = ReconInput(host_dict, host_D, parasite_dict, parasite_D, phi_dict)
+    return recon_input
 
 def parse_newick(newick_string, tree_type):
     """
@@ -95,6 +91,7 @@ def parse_newick(newick_string, tree_type):
     :param newick_string <str>   - string representation of tree
     :param tree_type <str>       - "host" or "parasite"
     :return tree_dict <dict>     - dict representation of tree
+    :return real_distance_dict <dict> - maps node name to distance of that node from the root
     """
 
     tree = Phylo.read(StringIO(newick_string), "newick")
@@ -109,11 +106,11 @@ def parse_newick(newick_string, tree_type):
     tree_dict = {}
     build_tree_dictionary(build_tree(dfs_list), "Top", tree_dict, tree_type)
     real_distances = tree.depths()
-    real_D = {}
+    real_distance_dict = {}
     for clade in real_distances:
         name = clade.name
-        real_D[name] = dist
-    return tree_dict, real_D
+        real_distance_dict[name] = dist
+    return tree_dict, real_distance_dict
 
 def build_tree(dfs_list):
     """
