@@ -1,5 +1,8 @@
 # TODO: To be converted to automated tests
 # https://github.com/ssantichaivekin/eMPRess/issues/32
+"""
+An example of how we will use the empress wrapper
+"""
 import empress
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
@@ -9,11 +12,11 @@ import tkinter
 recon_input = empress.read_tree("./example/heliconius.newick")
 
 # Display Costscape Window where we can click on x/y axis
-class TkinterCostPolygonPage:
+class TkinterCostRegionPage:
     """Put this class in your app"""
     def __init__(self):
         # or put these lines in your class
-        cost_poly = empress.compute_cost_polygon(recon_input)
+        cost_poly = empress.compute_cost_region(recon_input)
         fig = cost_poly.draw()
         canvas = FigureCanvasTkAgg(fig)
         canvas.draw()
