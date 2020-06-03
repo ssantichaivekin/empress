@@ -28,18 +28,20 @@ For example, to run Costscape with default parameters, you run:
 For specific parameters of each functionality, consult the list below:
 
 ## List of Parameters
-Note: value in paranthesis denotes default value, asterik denotes boolean flags
+Note: value in parenthesis denotes default value, asterisk denotes boolean flags
 ### Costscape
+* `-dl` : Duplication low value (1)
+* `-dh` : Duplication high value (5)
 * `-tl` : Transfer low value (1)
 * `-th` : Transfer high value (5)
-* `-ll` : Loss low value (1)
-* `-lh` : Loss high value (5)
 * `--outfile` : Name of output file. Must end in .pdf ("")
 * `--log` : Set graph to log scale*
 * `--display` : Display graph to screen*
 
-For example, to run Costscape with switch low value of 2 and switch high value of 10 that saves to a file called `foo.pdf` display it in log scale, you run
-* `python empress.py -fn examples/heliconius.newick costscape -sl 2 -sh 10 --outfile foo.pdf --log`
+
+For example, the following example runs Costscape with duplication low value of 0.5, duplication high value of 10, transfer low value of 0.5, 
+and transfer high value of 10, that saves to a file called `foo.pdf` display it in log scale.
+* `python empress.py -fn examples/heliconius.newick costscape -tl 0.5 -th 10 -dl 0.5 -dh 10 --outfile costscape-example-img.pdf --log`
 
 ### DTL Reconciliation
 * `-d` : Duplication cost (2)
