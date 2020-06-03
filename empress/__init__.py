@@ -22,14 +22,11 @@ class Drawable(ABC):
         """
         Draw self as matplotlib Figure.
         """
-        # create a new figure
-        # draw on the figure
-        # return the figure
         pass
 
     def draw_to_file(self, fname):
         """
-        Draw self and save it as pdf at path fname.
+        Draw self and save it as image at path fname.
         """
         figure = self.draw()
         figure.savefig(fname)
@@ -70,7 +67,7 @@ class ReconGraphWrapper(Drawable):
         """
         pass
 
-class CostPolygonWrapper(Drawable):
+class CostRegionWrapper(Drawable):
     def __init__(self, info):
         """
         Will look into this more.
@@ -87,7 +84,7 @@ def read_tree(fname: str) -> ReconInputWrapper:
     """
     pass
 
-def compute_cost_polygon(recon_input: ReconInputWrapper) -> CostPolygonWrapper:
+def compute_cost_region(recon_input: ReconInputWrapper) -> CostRegionWrapper:
     """
     Compute the cost polygon of recon_input. The cost polygon can be used
     to create a figure that separate costs into different regions.
