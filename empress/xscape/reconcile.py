@@ -1,5 +1,6 @@
 # reconcile.py
 # Ran Libeskind-Hadas, Jessica Yi-Chieh Wu, Mukul Bansal, November 2013
+# Updated by RLH on June 2020 to replace lossMin, lossMax with dupMin, dupMax
 
 # Memoized Pareto tree reconciliation dynamic programming solver for 
 # untimed trees.
@@ -33,34 +34,34 @@ Bestmemo = None
 
 # The Ancestors and Descendants dictionaries are precomputed in the reconcile
 # function and allow the switch function to determine the valid landing sites
-# for a switch. 
+# for a transfer. 
 
 Ancestors = None
 Descendants = None
 
-# The switchLo, switchHi, lossLo, and lossHi values are the user-specified
-# low and high ranges for the switch and loss costs, relative to the unit
-# cost of duplication.  They are shown here only for clarity.  
+# The transferMin, transferMax, dupMin, and dupMax values are the user-specified
+# low and high ranges for the switch and dup costs, relative to the unit
+# cost of loss.  They are shown here only for clarity.  
 
-switchLo = None
-switchHi = None
-lossLo = None
-lossHi = None
+transferMin = None
+transferMax = None
+dupMin = None
+dupMax = None
 
 # This is the main function for this file.  It seeks to find the best
 # reconciliation for the parasite tree, rooted at every possible edge of the
 # host tree.
-def reconcile(parasiteTree, hostTree, phi, smin, smax, lmin, lmax):
+def reconcile(parasiteTree, hostTree, phi, tmin, tmax, dmin, dmax):
     ''' Takes dictionary representations of the parasite tree, host tree
         and phi as input and returns a list of the Pareto optimal solutions. '''
             
-    global switchLo, switchHi, lossLo, lossHi
+    global transferMin, transferMax, dupMin, dupMax
     global Amemo, Cmemo, Bestmemo
     global Ancestors, Descendants
     Amemo = {}; Cmemo = {}; Bestmemo = {}  # These need to be reset on each run
     Ancestors = {}; Descendants = {}
     
-    switchLo = smin; switchHi = smax; lossLo = lmin; lossHi = lmax
+    transferMin = tmin; transferMax = tmax; dupMin = dmin; dupMax = dmax
     
     ancestorsAndDescendants(hostTree) # Set the Ancestors and Descendants
         
@@ -200,14 +201,14 @@ def CVfilter(CVlist):
     ''' Filter the CVlist to a subset that removes those cost vectors that
         cannot be optimal in the given cost range. '''
         
-    global switchLo, switchHi, lossLo, lossHi 
+    global transferMin, transferMax, dupMin, dupMax 
     
     if CVlist == []: return []
     else:
-        LUB = min([cv.d + cv.s * switchHi + cv.l * lossHi for cv in CVlist])
+        LUB = min([cv.d * dupMax + cv.s * transferMax + cv.l  for cv in CVlist])
         output = []
         for cv in CVlist:
-            mincost = cv.d + cv.l * lossLo + cv.s * switchLo 
+            mincost = cv.d * dupMin + cv.l + cv.s * transferMin 
             if mincost <= LUB:
                 output.append(cv)
         return output
