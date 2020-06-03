@@ -626,9 +626,9 @@ def reconcile_inter(tree_data: ReconInput):
         print((str(result[i]) + '\n'))
 
 # This should be called in empress.py when the user already supplied the DTL values
-def reconcile_noninter(tree_data: Tuple[dict, dict, dict], duplication: float, transfer: float, loss: float):
+def reconcile_noninter(tree_data: ReconInput, duplication: float, transfer: float, loss: float):
     """ 
-    :param tree_data: Output of newickFormatReader.getInput()
+    :param tree_data <ReconInput> : Output of newickFormatReader.getInput()
     """
     result = reconcile(tree_data, duplication, transfer, loss)
     for i in range(len(result)):

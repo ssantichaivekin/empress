@@ -72,15 +72,15 @@ def newick_format_reader(file_handle):
     phi_list = phi_string.split()
 
     # Parse the input and build dictionary representations
-    host_dict, host_D = parse_newick(host_string, "host")
-    parasite_dict, parasite_D = parse_newick(parasite_string, "parasite")
+    host_dict, host_distances = parse_newick(host_string, "host")
+    parasite_dict, parasite_distances = parse_newick(parasite_string, "parasite")
     phi_dict = parse_phi(phi_list)
 
     if autoclose:
         file_handle.close()
 
     # Package it in a more easily-changed format
-    recon_input = ReconInput(host_dict, host_D, parasite_dict, parasite_D, phi_dict)
+    recon_input = ReconInput(host_dict, host_distances, parasite_dict, parasite_distances, phi_dict)
     return recon_input
 
 def parse_newick(newick_string, tree_type):
