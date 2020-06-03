@@ -13,28 +13,29 @@ import matplotlib.pyplot as plt
 from common import *
 from CostVector import *
 
-def plotcosts(CVlist, switchMin, switchMax, lossMin, lossMax, steps, outfile,
+def plotcosts(CVlist, switchMin, switchMax, dupMin, dupMax, steps, outfile,
               log=True, display=False):
     ''' Plots the cost space for the given CVlist of CostVectors.  The x-axis
-        represents loss cost (relative to unit cost for duplication) and
+        represents dup cost (relative to unit cost for loss) and
         the y-axis represents switch cost (relative to unit cost for
-        duplication).  The x-range is from lossMin to lossMax and the
+        duplication).  The x-range is from dupMin to dupMax and the
         y-range is from switchMin to switchMax.  Draws steps dots in each
         dimension. '''
     numVectors = len(CVlist)
     colorMap = buildColors(numVectors)
 
+    print("New version")
     plotted = []    # Store list of CVlist indices that are optimal in our range
     if log:
         plt.xscale('log')
         plt.yscale('log')
-    plt.axis([lossMin, lossMax, switchMin, switchMax])
-    plt.xlabel("Loss cost relative to duplication")
-    plt.ylabel("Transfer cost relative to duplication")
+    plt.axis([dupMin, dupMax, switchMin, switchMax])
+    plt.xlabel("Duplication cost relative to loss")
+    plt.ylabel("Transfer cost relative to loss")
     
     # process
     pts = collections.defaultdict(list)  # key = bestIndex
-    for x in frange(lossMin, lossMax, steps, log=log):
+    for x in frange(dupMin, dupMax, steps, log=log):
         for y in frange(switchMin, switchMax, steps, log=log):
             bestIndex, junkCV, junkCost = getBestCV(CVlist, x, y)  # Find index of best CV
             if not bestIndex in plotted:
@@ -49,7 +50,7 @@ def plotcosts(CVlist, switchMin, switchMax, lossMin, lossMax, steps, outfile,
 
     # legend
     for i in plotted:   # Generate labels for plotted CV
-        plt.plot(lossMin, switchMin, color = colorMap[plotted.index(i)], \
+        plt.plot(dupMin, switchMin, color = colorMap[plotted.index(i)], \
                        label = str(CVlist[i]))
     leg = plt.legend()
     for i in range(len(leg.legendHandles)):  # Adjust legend marker thickness

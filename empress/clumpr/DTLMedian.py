@@ -30,7 +30,7 @@
 import optparse
 from operator import itemgetter
 import numpy as np
-from clumpr import DTLReconGraph, Diameter
+from empress.clumpr import DTLReconGraph, Diameter
 
 
 def mapping_node_sort(ordered_gene_node_list, ordered_species_node_list, mapping_node_list):

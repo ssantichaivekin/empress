@@ -1,25 +1,26 @@
 # commonAnalytic.py
+# Updated 6/1/2020: loss = 1, x-axis is duplication, y-axis is transfer
 
 from shapely.geometry import *
 from .CostVector import *
 import random
 
-def getRegions(CVlist, switchMin, switchMax, lossMin, lossMax,
+def getRegions(CVlist, transferMin, transferMax, dupMin, dupMax,
                restrict=True):
     regions = {}
 
     # bounding box
-    boundingbox = [(lossMin, switchMin), (lossMin, switchMax), \
-                   (lossMax, switchMax), (lossMax, switchMin)]
+    boundingbox = [(dupMin, transferMin), (dupMin, transferMax), \
+                   (dupMax, transferMax), (dupMax, transferMin)]
     bb = Polygon(boundingbox)
 
     # find region for each event count vector
-    # Let x and y denote the loss and transfer costs (relative to duplication cost).
-    # A cost vector cv has cost = cv.d + cv.l * x + cv.s * y.
+    # Let x and y denote the duplication and transfer costs (relative to duplication cost).
+    # A cost vector cv has cost = cv.d * x + cv.l * 1 + cv.s * y.
     # For cv1 to be optimal, then for each cv2 (s.t. cv2 != cv1), it must be that
-    #     cv1.d + cv1.l * x + cv1.s * y <= cv2.d + cv2.l * x + cv2.s * y
+    #     cv1.d * x + cv1.l * 1 + cv1.s * y <= cv2.d * x + cv2.l * 1 + cv2.s * y
     # that is
-    #     y <= x * (cv2.l - cv1.l)/(cv1.s - cv2.s) + (cv2.d - cv1.d)/(cv1.s - cv2.s)
+    #     y <= x * (cv2.d - cv1.d)/(cv1.s - cv2.s) + (cv2.l - cv1.l)/(cv1.s - cv2.s)
     for cv1 in CVlist:
         region = bb
         for cv2 in CVlist:
@@ -27,23 +28,23 @@ def getRegions(CVlist, switchMin, switchMax, lossMin, lossMax,
                 continue    # skip comparison
 
             if cv1.s == cv2.s:  # vertical line defines the half-space
-                xint = 1.0*(cv2.d - cv1.d)/(cv1.l - cv2.l)  # x-intercept
+                xint = 1.0*(cv2.l - cv1.l)/(cv1.d - cv2.d)  # x-intercept
                 
                 # the variable "below" is True iff half-space is to left of line
-                below = cv1.l - cv2.l > 0
+                below = cv1.d - cv2.d > 0
                 
                 # test if half-space is to left or right of the line
                 if below:      # below
-                    lowestx = min(xint, lossMin)
-                    poly = [(xint, switchMin), (xint, switchMax),
-                            (lowestx, switchMax), (lowestx, switchMin)]
+                    lowestx = min(xint, dupMin)
+                    poly = [(xint, dupMin), (xint, dupMax),
+                            (lowestx, transferMax), (lowestx, transferMin)]
                 else:          # above
-                    highestx = max(xint, lossMax)
-                    poly = [(xint, switchMin), (xint, switchMax),
-                            (highestx, switchMax), (highestx, switchMin)]    
+                    highestx = max(xint, dupMax)
+                    poly = [(xint, transferMin), (xint, transferMax),
+                            (highestx, transferMax), (highestx, transferMin)]    
             else:
-                m = 1.0*(cv2.l - cv1.l)/(cv1.s - cv2.s)  # slope
-                b = 1.0*(cv2.d - cv1.d)/(cv1.s - cv2.s)  # y-intercept
+                m = 1.0*(cv2.d - cv1.d)/(cv1.s - cv2.s)  # slope
+                b = 1.0*(cv2.l - cv1.l)/(cv1.s - cv2.s)  # y-intercept
                 
                 # the variable "below" is True iff half-space is below line
                 below = cv1.s - cv2.s > 0
@@ -51,27 +52,27 @@ def getRegions(CVlist, switchMin, switchMax, lossMin, lossMax,
                 if m == 0:      # horizontal line defines the half-space
                     # test if half-space is below or above the line
                     if below:  # below
-                        lowesty = min(b, switchMin)
-                        poly = [(lossMin, b), (lossMax, b),
-                                (lossMax, lowesty), (lossMin, lowesty)]
+                        lowesty = min(b, transferMin)
+                        poly = [(dupMin, b), (dupMax, b),
+                                (dupMax, lowesty), (dupMin, lowesty)]
                     else:      # above
-                        highesty = max(b, switchMax)
-                        poly = [(lossMin, b), (lossMax, b),
-                                (lossMax, highesty), (lossMin, highesty)]
+                        highesty = max(b, transferMax)
+                        poly = [(dupMin, b), (dupMax, b),
+                                (dupMax, highesty), (dupMin, highesty)]
                 else:           # "slanted" line defines the half-space
                     # y-coord of intersection with left/right edge of boundingbox 
-                    lefty = m * lossMin + b
-                    righty = m * lossMax + b
+                    lefty = m * dupMin + b
+                    righty = m * dupMax + b
                     
                     # test if half-space is below or above the line
                     if below:  # below
-                        lowesty = min(switchMin, lefty, righty)
-                        poly = [(lossMin, lefty), (lossMax, righty),
-                                (lossMax, lowesty), (lossMin, lowesty)]
+                        lowesty = min(transferMin, lefty, righty)
+                        poly = [(dupMin, lefty), (dupMax, righty),
+                                (dupMax, lowesty), (dupMin, lowesty)]
                     else:      # above
-                        highesty = max(switchMax, lefty, righty)
-                        poly = [(lossMin, lefty), (lossMax, righty),
-                                (lossMax, highesty), (lossMin, highesty)]
+                        highesty = max(transferMax, lefty, righty)
+                        poly = [(dupMin, lefty), (dupMax, righty),
+                                (dupMax, highesty), (dupMin, highesty)]
                 
             # update region
             P = Polygon(poly)

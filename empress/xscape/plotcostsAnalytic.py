@@ -1,6 +1,7 @@
 # plotcostsAnalytic.py
 # Ran Libeskind-Hadas, October 2013
 # Plots the cost space using a matplotlib/pyplot
+# Updated June 2020 to plot costs relative to loss rather than to duplication
 
 import matplotlib
 matplotlib.use('tkagg') # need this so plt.show() works
@@ -9,27 +10,27 @@ from shapely.geometry import *
 from .CostVector import *
 from .commonAnalytic import *
 
-def plotcosts(CVlist, switchMin, switchMax, lossMin, lossMax, outfile,
+def plotcosts(CVlist, transferMin, transferMax, dupMin, dupMax, outfile,
               log=True, display=False):
     ''' Plots the cost space for the given CVlist of CostVectors.  The x-axis
-        represents loss cost (relative to unit cost for duplication) and
-        the y-axis represents switch cost (relative to unit cost for
-        duplication).  The x-range is from lossMin to lossMax and the
-        y-range is from switchMin to switchMax.'''
+        represents duplication cost (relative to unit cost for loss) and
+        the y-axis represents transfer cost (relative to unit cost for
+        loss).  The x-range is from dupMin to dupMax and the
+        y-range is from transferMin to transferMax.'''
 
     if log:
         plt.xscale('log')
         plt.yscale('log')
-    plt.axis([lossMin, lossMax, switchMin, switchMax])
-    plt.xlabel("Loss cost relative to duplication")
-    plt.ylabel("Transfer cost relative to duplication")
+    plt.axis([dupMin, dupMax, transferMin, transferMax])
+    plt.xlabel("Duplication cost relative to loss")
+    plt.ylabel("Transfer cost relative to loss")
     
     # color map
     numRegions = len(CVlist)
     colorMap = buildColors(numRegions)
 
     # plot regions
-    regions = getRegions(CVlist, switchMin, switchMax, lossMin, lossMax)
+    regions = getRegions(CVlist, transferMin, transferMax, dupMin, dupMax)
     for cv in CVlist:
         cv_str = str(cv)
         if cv_str not in regions:

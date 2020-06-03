@@ -1,5 +1,4 @@
-from clumpr import DTLReconGraph, HistogramAlg, \
-    Diameter, HistogramDisplay, HistogramMainInput
+from empress.clumpr import DTLReconGraph, Diameter, HistogramAlg, HistogramDisplay
 
 from pathlib import Path
 import time
