@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import tkinter
 
 # Read Reconciliation Input
-recon_input = empress.read_tree("./example/heliconius.newick")
+recon_input = empress.read_input("./example/heliconius.newick")
 
 # Display Costscape Window where we can click on x/y axis
 class TkinterCostRegionPage:

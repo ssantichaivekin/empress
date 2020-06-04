@@ -77,7 +77,7 @@ class CostRegionWrapper(Drawable):
     def draw_on(self, axes: plt.Axes):
         pass
 
-def read_tree(fname: str) -> ReconInputWrapper:
+def read_input(fname: str) -> ReconInputWrapper:
     """
     Read parasite tree, host tree, and tip mapping from fname.
     Returns ReconInputWrapper which wraps the three info.
