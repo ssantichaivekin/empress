@@ -8,8 +8,8 @@ import tkinter
 # Read Reconciliation Input
 recon_input = empress.read_input("./examples/heliconius.newick")
 
-cost_polygon = empress.compute_cost_region(recon_input, 0.5, 10, 0.5, 10)
-cost_polygon.draw_to_file('./examples/cost_poly.png')
+cost_region = empress.compute_cost_region(recon_input, 0.5, 10, 0.5, 10)
+cost_region.draw_to_file('./examples/cost_poly.png')
 
 import tkinter as tk
 
@@ -21,7 +21,7 @@ class Application(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        fig = cost_polygon.draw()
+        fig = cost_region.draw()
         canvas = FigureCanvasTkAgg(fig, self)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
