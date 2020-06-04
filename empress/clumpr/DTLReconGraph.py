@@ -30,6 +30,7 @@ from numpy import mean
 from numpy import median as md
 
 from empress.clumpr import ReconcileMainInput, Greedy
+from empress.newickFormatReader import ReconInput
 
 from typing import Tuple, Iterator
 
