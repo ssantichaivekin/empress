@@ -8,7 +8,7 @@ import matplotlib
 try:
     matplotlib.use('tkagg') # need this so plt.show() works
 except ImportError:
-    print("", file=sys.stderr)
+    print("Using Agg backend: will not be able to create windows with plots.", file=sys.stderr)
     matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from shapely.geometry import *
