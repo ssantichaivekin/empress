@@ -1,25 +1,37 @@
 # TODO: To be converted to automated tests
 # https://github.com/ssantichaivekin/eMPRess/issues/32
-"""
-An example of how we will use the empress wrapper
-"""
 import empress
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import tkinter
 
 # Read Reconciliation Input
-recon_input = empress.read_input("./example/heliconius.newick")
+recon_input = empress.read_input("./examples/heliconius.newick")
 
-# Display Costscape Window where we can click on x/y axis
-class TkinterCostRegionPage:
-    """Put this class in your app"""
-    def __init__(self):
-        # or put these lines in your class
-        cost_poly = empress.compute_cost_region(recon_input)
-        fig = cost_poly.draw()
-        canvas = FigureCanvasTkAgg(fig)
-        canvas.draw()
+cost_polygon = empress.compute_cost_polygon(recon_input, 1, 5, 1, 5)
+cost_polygon.draw_to_file('./examples/cost_poly.png')
+
+# import tkinter as tk
+#
+# class Application(tk.Frame):
+#     def __init__(self, master=None):
+#         super().__init__(master)
+#         self.master = master
+#         self.pack()
+#         self.create_widgets()
+#
+#     def create_widgets(self):
+#         fig = cost_polygon.draw()
+#         canvas = FigureCanvasTkAgg(fig, self)
+#         canvas.draw()
+#         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+#
+#     def say_hi(self):
+#         print("hi there, everyone!")
+#
+# root = tk.Tk()
+# app = Application(master=root)
+# app.mainloop()
 
 # Compute ReconGraph
 recongraph = empress.reconcile(recon_input, 1, 3, 2)
