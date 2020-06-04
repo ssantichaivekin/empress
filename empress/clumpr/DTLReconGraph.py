@@ -72,12 +72,29 @@ def postorder(tree: dict, root_edge_name: Tuple) -> Iterator:
         yield from postorder(tree, right_child_edge_name)
         yield root_edge_name
 
+def contemporaneous(host_1, host_1_parent, host_2, host_2_parent, distances):
+    """
+    :param host_1: the first host node
+    :param host_1_parent: its parent
+    :param host_2: the second host node
+    :param host_2_paren: its parent
+    :param distances: the distance dictionary for the host tree
+    :return: bool of whether the two lineages overlap in time
+    """
+    start_1 = distances[host_1_parent]
+    end_1 = distances[host_1]
+    start_2 = distances[host_2_parent]
+    end_2 = distances[host_2]
+    # They must overlap unless one comes completely before the other
+    if end_1 < start_2:
+        return False
+    if end_2 < start_1:
+        return False
+    return True
 
 def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:  
     """
-    :param host_tree: a host tree in newick format
-    :param parasite_tree: a parasite tree in newick format
-    :param phi: an output of the newick formatter that maps tips from the parasite tree to tips of the host tree
+    :param tree_data: Output of newickFormatReader.getInput()
     :param dup_cost: cost of a duplication event
     :param transfer_cost: cost of a transfer event
     :param loss_cost: cost of a loss event
@@ -155,7 +172,6 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
                 h_child2 = eh2[1]
 
             # Compute A(ep, eh)
-
             if vh_is_a_tip:
 
                 # Check if the tips map to one another
@@ -174,7 +190,6 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
             else:
 
                 # Compute Co and create event list to add to events_dict
-
                 if not vp_is_a_tip:
 
                     # Calculate cospeciation cost assuming the cost is 0
@@ -283,7 +298,6 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
                 events_dict[(vp, vh)].extend(A_min)
 
             # Calculate O for eh's children
-            
             # Remove all 'impossible' events from the options
             if min_cost[(vp, vh)] == Infinity:
                 del min_cost[(vp, vh)]
@@ -602,6 +616,8 @@ def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss
     for details on the format of the host and parasite trees as well as the DTLReconGraph
     """
     # Note: I have made modifications to the return statement to make Diameter.py possible without re-reconciling.
+    host = tree_data.host_tree
+    paras = tree_data.parasite_tree
     graph, best_cost, num_recon, best_roots = DP(tree_data, dup_cost, transfer_cost, loss_cost)
     return host, paras, graph, num_recon, best_roots
 
