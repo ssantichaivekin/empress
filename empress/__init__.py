@@ -76,7 +76,7 @@ class ReconGraphWrapper(Drawable):
 class CostRegionWrapper(Drawable):
     def __init__(self, cost_vectors, switch_min, switch_max, loss_min, loss_max):
         """
-        Will look into this more.
+        CostRegionWrapper wraps all information required to display a cost region plot.
         """
         self._cost_vectors = cost_vectors
         self._switch_min = switch_min
