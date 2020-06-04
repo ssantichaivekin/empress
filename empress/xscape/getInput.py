@@ -3,8 +3,8 @@
 # Main input function for xscape tools
 
 # xscape libraries
-from .common import *
-from .newickFormatReader import *
+from empress.xscape.common import frange, getBestCV, INF
+from empress.xscape.newickFormatReader import newickFormatReader, parseNewick, buildTree, buildTreeDictionary, parsePhi
 
 def getInput(outputExtension, allowEmptyOutfile=False):
     """ outputExtension is the output file extension (e.g, pdf or csv) """
