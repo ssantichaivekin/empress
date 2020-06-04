@@ -3,8 +3,13 @@
 # Plots the cost space using a matplotlib/pyplot
 # Updated June 2020 to plot costs relative to loss rather than to duplication
 
+import sys
 import matplotlib
-matplotlib.use('tkagg') # need this so plt.show() works
+try:
+    matplotlib.use('tkagg') # need this so plt.show() works
+except ImportError:
+    print("", file=sys.stderr)
+    matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from shapely.geometry import *
 from .CostVector import *
