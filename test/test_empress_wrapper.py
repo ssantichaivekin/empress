@@ -8,30 +8,32 @@ import tkinter
 # Read Reconciliation Input
 recon_input = empress.read_input("./examples/heliconius.newick")
 
-cost_polygon = empress.compute_cost_polygon(recon_input, 1, 5, 1, 5)
+cost_polygon = empress.compute_cost_region(recon_input, 0.5, 10, 0.5, 10)
 cost_polygon.draw_to_file('./examples/cost_poly.png')
 
-# import tkinter as tk
-#
-# class Application(tk.Frame):
-#     def __init__(self, master=None):
-#         super().__init__(master)
-#         self.master = master
-#         self.pack()
-#         self.create_widgets()
-#
-#     def create_widgets(self):
-#         fig = cost_polygon.draw()
-#         canvas = FigureCanvasTkAgg(fig, self)
-#         canvas.draw()
-#         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-#
-#     def say_hi(self):
-#         print("hi there, everyone!")
-#
-# root = tk.Tk()
-# app = Application(master=root)
-# app.mainloop()
+import tkinter as tk
+
+class Application(tk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.master = master
+        self.pack()
+        self.create_widgets()
+
+    def create_widgets(self):
+        fig = cost_polygon.draw()
+        canvas = FigureCanvasTkAgg(fig, self)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+
+    def say_hi(self):
+        print("hi there, everyone!")
+
+root = tk.Tk()
+app = Application(master=root)
+app.mainloop()
+
+# Functions below are still untested
 
 # Compute ReconGraph
 recongraph = empress.reconcile(recon_input, 1, 3, 2)
