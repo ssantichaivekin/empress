@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from empress.xscape.CostVector import CostVector
 from empress import newickFormatReader
 from empress.xscape.reconcile import reconcile as xscape_reconcile
-from empress.xscape.plotcostsAnalytic import plot_costs_to_axis as xscape_plot_costs_to_axis
+from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
 
 
 class Drawable(ABC):
@@ -91,7 +91,7 @@ class CostRegionWrapper(Drawable):
         pass
 
     def draw_on(self, axes: plt.Axes, log=False):
-        xscape_plot_costs_to_axis(axes, self._cost_vectors, self._switch_min, self._switch_max,
+        xscape_plot_costs_on_axis(axes, self._cost_vectors, self._switch_min, self._switch_max,
                                   self._loss_min, self._loss_max, log=False)
 
 
@@ -106,7 +106,7 @@ def read_input(fname: str) -> ReconInputWrapper:
 
 
 def compute_cost_region(recon_input: ReconInputWrapper, switch_low: float, switch_high: float,
-                         lost_low: float, lost_high: float) -> CostPolygonWrapper:
+                         lost_low: float, lost_high: float) -> CostRegionWrapper:
     """
     Compute the cost polygon of recon_input. The cost polygon can be used
     to create a figure that separate costs into different regions.
@@ -115,7 +115,7 @@ def compute_cost_region(recon_input: ReconInputWrapper, switch_low: float, switc
     host_tree = recon_input._host_tree
     tip_mapping = recon_input._tip_mapping
     cost_vectors = xscape_reconcile(parasite_tree, host_tree, tip_mapping, switch_low, switch_high, lost_low, lost_high)
-    return CostPolygonWrapper(cost_vectors, switch_low, switch_high, lost_low, lost_high)
+    return CostRegionWrapper(cost_vectors, switch_low, switch_high, lost_low, lost_high)
 
 
 def reconcile(recon_input: ReconInputWrapper, dup_cost: int, trans_cost: int, loss_cost: int) -> ReconGraphWrapper:
