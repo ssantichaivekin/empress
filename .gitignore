@@ -10,4 +10,8 @@ __pycache__/
 .vscode/
 .idea/
 
+# Images and Documents
+*.jpg
+*.jpeg
+*.png
 *.pdf
