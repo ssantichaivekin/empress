@@ -29,7 +29,9 @@
 
 import optparse
 from operator import itemgetter
+
 import numpy as np
+
 from empress.clumpr import DTLReconGraph, Diameter
 
 
