@@ -7,6 +7,8 @@ from abc import ABC, abstractmethod
 
 from empress.xscape.CostVector import CostVector
 from empress import newickFormatReader
+from empress.newickFormatReader import ReconInput
+from empress.newickFormatReader import getInput as read_input
 from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
 
@@ -37,13 +39,6 @@ class Drawable(ABC):
         """
         figure = self.draw()
         figure.savefig(fname)
-
-
-class ReconInputWrapper:
-    def __init__(self, parasite_tree: dict, host_tree: dict, tip_mapping: dict):
-        self._parasite_tree = parasite_tree
-        self._host_tree = host_tree
-        self._tip_mapping = tip_mapping
 
 
 class ReconciliationWrapper(Drawable):
@@ -95,30 +90,20 @@ class CostRegionWrapper(Drawable):
                                   self._loss_min, self._loss_max, log=False)
 
 
-def read_input(fname: str) -> ReconInputWrapper:
-    """
-    Read parasite tree, host tree, and tip mapping from fname.
-    Returns ReconInputWrapper which wraps the three info.
-    """
-    host_tree, parasite_tree, tip_mapping = newickFormatReader.getInput(fname)
-    recon_input = ReconInputWrapper(parasite_tree, host_tree, tip_mapping)
-    return recon_input
-
-
-def compute_cost_region(recon_input: ReconInputWrapper, switch_low: float, switch_high: float,
-                         lost_low: float, lost_high: float) -> CostRegionWrapper:
+def compute_cost_region(recon_input: ReconInput, switch_low: float, switch_high: float,
+                        lost_low: float, lost_high: float) -> CostRegionWrapper:
     """
     Compute the cost polygon of recon_input. The cost polygon can be used
     to create a figure that separate costs into different regions.
     """
-    parasite_tree = recon_input._parasite_tree
-    host_tree = recon_input._host_tree
-    tip_mapping = recon_input._tip_mapping
+    parasite_tree = recon_input.parasite_tree
+    host_tree = recon_input.host_tree
+    tip_mapping = recon_input.phi
     cost_vectors = xscape_reconcile(parasite_tree, host_tree, tip_mapping, switch_low, switch_high, lost_low, lost_high)
     return CostRegionWrapper(cost_vectors, switch_low, switch_high, lost_low, lost_high)
 
 
-def reconcile(recon_input: ReconInputWrapper, dup_cost: int, trans_cost: int, loss_cost: int) -> ReconGraphWrapper:
+def reconcile(recon_input: ReconInput, dup_cost: int, trans_cost: int, loss_cost: int) -> ReconGraphWrapper:
     """
     Given recon_input (which has parasite tree, host tree, and tip mapping info)
     and the cost of the three events, computes and returns a reconciliation graph.
