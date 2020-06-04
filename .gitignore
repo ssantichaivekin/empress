@@ -9,3 +9,5 @@ __pycache__/
 # editor-generated files
 .vscode/
 .idea/
+
+*.pdf
