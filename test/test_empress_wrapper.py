@@ -3,15 +3,13 @@
 import empress
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
-import tkinter
+import tkinter as tk
 
 # Read Reconciliation Input
 recon_input = empress.read_input("./examples/heliconius.newick")
 
 cost_region = empress.compute_cost_region(recon_input, 0.5, 10, 0.5, 10)
 cost_region.draw_to_file('./examples/cost_poly.png')
-
-import tkinter as tk
 
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -25,9 +23,6 @@ class Application(tk.Frame):
         canvas = FigureCanvasTkAgg(fig, self)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-
-    def say_hi(self):
-        print("hi there, everyone!")
 
 root = tk.Tk()
 app = Application(master=root)
