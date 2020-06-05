@@ -120,8 +120,6 @@ def edgesFromReconciliationGraph(dtlGraph):
 
     return outputEdgesList
 
-import matplotlib.pyplot as plt
-
 def visualizeAndSave(dtlGraph, targetFile):
     '''
     Receives that graph part of the reconciliation graph.
@@ -136,8 +134,6 @@ def visualizeAndSave(dtlGraph, targetFile):
     # topologically lower nodes on the top
     nxDtlGraph.add_edges_from(edgesFromReconciliationGraph(dtlGraph))
     pydotDtlGraph = nx.drawing.nx_pydot.to_pydot(nxDtlGraph)
-    nx.draw(nxDtlGraph)
-    plt.show()
     try:
         pydotDtlGraph.write_png(filename + '.png')
     except Exception as e:
