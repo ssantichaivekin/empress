@@ -3,8 +3,8 @@ This demo demonstrates how you would use the reconciliation graph visualizer
 written by me and Dennis.
 '''
 
-import DTLReconGraph # for creating a reconciliation graph
-import ReconciliationVisualization # for visualization
+from empress.clumpr import DTLReconGraph # for creating a reconciliation graph
+from empress.clumpr import ReconciliationVisualization # for visualization
 
 # Since we currently have no way of storing reconciliation graph in a file,
 # we generate it every time when we run the algorithm

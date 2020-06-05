@@ -3,10 +3,12 @@
 """
 An example of how we will use the empress wrapper
 """
-import empress
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import matplotlib.pyplot as plt
 import tkinter
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib import pyplot as plt
+
+import empress
 
 # Read Reconciliation Input
 recon_input = empress.read_input("./example/heliconius.newick")

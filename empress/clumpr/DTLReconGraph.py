@@ -25,6 +25,7 @@
 # mean and median numbers of event nodes per mapping node.
 
 import sys
+from typing import Tuple, Iterator
 
 from numpy import mean
 from numpy import median as md
@@ -32,7 +33,6 @@ from numpy import median as md
 from empress.clumpr import ReconcileMainInput, Greedy
 from empress.newickFormatReader import ReconInput
 
-from typing import Tuple, Iterator
 
 Infinity = float('inf')
 

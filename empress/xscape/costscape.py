@@ -8,13 +8,7 @@
 import time
 
 # xscape libraries
-try:
-    from empress import xscape
-except ImportError:
-    import sys
-    print(sys.path)
-    sys.path.append("..")
-    import empress.xscape
+from empress import xscape
 from empress.xscape import reconcile
 from empress.xscape import plotcostsAnalytic as plotcosts
 
