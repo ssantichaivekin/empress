@@ -4,6 +4,8 @@ modified by Santi Santichaivekin (Feb 28, 19).
 '''
 
 import networkx as nx
+import sys
+import os
 
 EXAMPLE1 = {
     ('p1', 'h1'): [['C', (None, None), (None, None), 1.0], 0],
@@ -118,6 +120,8 @@ def edgesFromReconciliationGraph(dtlGraph):
 
     return outputEdgesList
 
+import matplotlib.pyplot as plt
+
 def visualizeAndSave(dtlGraph, targetFile):
     '''
     Receives that graph part of the reconciliation graph.
@@ -125,14 +129,23 @@ def visualizeAndSave(dtlGraph, targetFile):
 
     Note: targetfile must ends with .png
     '''
-    assert(targetFile.endswith(".png"))
+    filename, extension = os.path.splitext(targetFile)
     # creates an empty graph
     nxDtlGraph = nx.DiGraph()
-    # add edges -- note that the library already perfers to place
-    # topoligically lower nodes on the top
+    # add edges -- note that the library already prefers to place
+    # topologically lower nodes on the top
     nxDtlGraph.add_edges_from(edgesFromReconciliationGraph(dtlGraph))
     pydotDtlGraph = nx.drawing.nx_pydot.to_pydot(nxDtlGraph)
-    pydotDtlGraph.write_png(targetFile)
+    nx.draw(nxDtlGraph)
+    plt.show()
+    try:
+        pydotDtlGraph.write_png(filename + '.png')
+    except Exception as e:
+        # Exception: "dot" not found in path.
+        # For people with who does not have Graphviz installed
+        print("Graphviz not installed. Cannot render image as .png, saved as .gv instead", file=sys.stderr)
+        print("You can visualize the .gv file in http://www.webgraphviz.com/", file=sys.stderr)
+        pydotDtlGraph.write(filename + '.gv')
 
 if __name__ == '__main__' :
     visualizeAndSave(EXAMPLE1, "example1.png")
