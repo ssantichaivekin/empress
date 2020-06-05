@@ -11,6 +11,8 @@ from empress.newickFormatReader import ReconInput
 from empress.newickFormatReader import getInput as read_input
 from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
+from empress.clumpr import DTLReconGraph
+from empress.clumpr import ReconciliationVisualization
 
 
 class Drawable(ABC):
@@ -54,8 +56,11 @@ class ReconciliationWrapper(Drawable):
 class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
-    def __init__(self, recongraph: dict):
-        self._recongraph = recongraph
+    def __init__(self, recongraph: dict, cost: float, n_recon: int, roots: list):
+        self.recongraph = recongraph
+        self.cost = cost
+        self.n_recon = n_recon
+        self.roots = roots
 
     def find_median(self) -> ReconciliationWrapper:
         """
@@ -108,4 +113,5 @@ def reconcile(recon_input: ReconInput, dup_cost: int, trans_cost: int, loss_cost
     Given recon_input (which has parasite tree, host tree, and tip mapping info)
     and the cost of the three events, computes and returns a reconciliation graph.
     """
-    pass
+    graph, cost, n_recon, roots = DTLReconGraph.DP(recon_input, dup_cost, trans_cost, loss_cost)
+    return ReconGraphWrapper(graph, cost, n_recon, roots)

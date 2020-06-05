@@ -11,24 +11,22 @@ recon_input = empress.read_input("./examples/heliconius.newick")
 cost_region = empress.compute_cost_region(recon_input, 0.5, 10, 0.5, 10)
 cost_region.draw_to_file('./examples/cost_poly.png')
 
-class Application(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.pack()
-        self.create_widgets()
-
-    def create_widgets(self):
-        fig = cost_region.draw()
-        canvas = FigureCanvasTkAgg(fig, self)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-
-root = tk.Tk()
-app = Application(master=root)
-app.mainloop()
-
-# Functions below are still untested
+# class Application(tk.Frame):
+#     def __init__(self, master=None):
+#         super().__init__(master)
+#         self.master = master
+#         self.pack()
+#         self.create_widgets()
+#
+#     def create_widgets(self):
+#         fig = cost_region.draw()
+#         canvas = FigureCanvasTkAgg(fig, self)
+#         canvas.draw()
+#         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+#
+# root = tk.Tk()
+# app = Application(master=root)
+# app.mainloop()
 
 # Compute ReconGraph
 recongraph = empress.reconcile(recon_input, 1, 3, 2)
