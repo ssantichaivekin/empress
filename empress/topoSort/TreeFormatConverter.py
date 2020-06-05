@@ -1,7 +1,7 @@
 # TreeFormatConverter.py
 # Converts between different formats of trees
 
-import Tree  # Tree class 
+from empress.topoSort import Tree  # Tree class
 
 # Edge-based format is the primary format used by eMPRess algorithms.  This is the format that newickFormatReader.py
 # constructs from a .newick input file.
