@@ -5,20 +5,15 @@
 
 # python libraries
 import time
+import csv
 from collections import *
 from operator import itemgetter
-import csv
+
 
 # xscape libraries
-try:
-    from empress import xscape
-except ImportError:
-    import sys
-    sys.path.append('..')
-    import empress.xscape
+from empress import xscape
 from empress.xscape import getInput
 from empress.xscape import reconcile
-
 
 def main():
     global CandidateCVlist

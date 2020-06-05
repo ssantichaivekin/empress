@@ -5,10 +5,11 @@
 
 import matplotlib
 matplotlib.use('tkagg') # need this so plt.show() works
-import matplotlib.pyplot as plt
-from shapely.geometry import *
-from .CostVector import *
-from .commonAnalytic import *
+from matplotlib import pyplot as plt
+from shapely.geometry import Polygon
+
+from empress.xscape.CostVector import CostVector
+from empress.xscape.commonAnalytic import getRegions, buildColors
 
 def plotcosts(CVlist, transferMin, transferMax, dupMin, dupMax, outfile,
               log=True, display=False):

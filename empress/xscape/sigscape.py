@@ -4,21 +4,16 @@
 # Ran Libeskind-Hadas, Jessica Yi-Chieh Wu, Mukul Bansal, November 2013
 
 # python libraries
-from multiprocessing import Process, Queue  # For multiprocessing random trials
 import random
 import time
+from multiprocessing import Process, Queue  # For multiprocessing random trials
 
 # xscape libraries
-try:
-    from empress import xscape
-except ImportError:
-    import sys
-    from os.path import realpath, dirname, join
-    sys.path.append('..')
-    import empress.xscape
+from empress import xscape
 from empress.xscape import getInput
 from empress.xscape import reconcile
 from empress.xscape import plotsig
+
 
 DOTS = 100  # DOTS data points per dimension;
             # Increase this value for higher resolution plottin

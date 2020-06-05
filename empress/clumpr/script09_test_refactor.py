@@ -7,20 +7,17 @@ which is calculated by the algorithm with the max distance that is computed by
 enumerating all the reconciliation trees in the graph, finding the pairwise distance
 of each.
 '''
-
-import DTLReconGraph
-import ReconciliationVisualization
-import Diameter
-import HistogramAlg
-import HistogramAlgTools
-from Histogram import Histogram
 import itertools
 import random
-random.seed(1)
-
 import os
 import re
 from sys import stdout
+
+from empress.clumpr import DTLReconGraph, ReconciliationVisualization, Diameter, HistogramAlg, HistogramAlgTools
+from empress.clumpr.Histogram import Histogram
+
+random.seed(1)
+
 
 def get_tree_paths(tree_dir, min_size):
     paths = []
