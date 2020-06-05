@@ -651,27 +651,3 @@ def reconcile_noninter(tree_data: ReconInput, duplication: float, transfer: floa
     for i in range(len(result)):
         print((str(result[i]) + '\n'))
 
-# If the user runs this from the command line
-if __name__ == "__main__":  # Only run if this has been called
-
-    if len(sys.argv) != 1:  # Would indicate an interactive mode invocation
-
-        # Save the arguments in a new list
-        arglst = sys.argv[:]
-
-        # Check user input - the length consideration handles the user not giving sufficient arguments
-        if len(arglst) not in [5, 6] or "-h" in arglst or "-H" in arglst or "--help" in arglst or "--Help" in arglst:
-            print((usage()))
-        else:
-            try:
-                result = reconcile(arglst[1], float(arglst[2]), float(arglst[3]), float(arglst[4]))
-                for i in range(len(result)):
-                    print((str(result[i]) + '\n'))
-            except ValueError:
-                print((usage()))
-            except IOError:
-                print('Bad filename')
-                print((usage()))
-    else:  # Show the user usage anyway, in case they happen to just call the file name wanting usage info
-        print((usage()))
-    
