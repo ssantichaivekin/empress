@@ -9,12 +9,9 @@
 from clumpr import DTLReconGraph
 import random
 import matplotlib
-matplotlib.use('tkagg') # need this so plt.show() works
 import matplotlib.pyplot as plt
 
-from typing import List, Dict, Tuple
-
-def trials(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, loss_cost: float, num_trials: int) -> list:
+def _trials(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, loss_cost: float, num_trials: int) -> list:
     """
     :param host_tree: dictionary representation of host tree
     :param parasite_tree: dictionary of parasite tree
@@ -27,10 +24,10 @@ def trials(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, tra
     """
    
     costs = list()  # List of costs of random trials
-    parasites = list(phi.keys())
+    parasites = phi.keys()
     hosts = list(phi.values())
     for t in range(num_trials):
-        random_phi = create_random_phi(phi)
+        random_phi = _create_random_phi(phi)
         for p in parasites:
             h = random.choice(hosts)
             random_phi[p] = h
@@ -38,7 +35,7 @@ def trials(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, tra
         costs.append(cost)
     return costs
 
-def create_random_phi(phi : dict) -> dict:
+def _create_random_phi(phi : dict) -> dict:
     """
     :param phi: dictionary representation of parasite tip to host tip mapping
     :return: a dictionary of parasite tips to host tips that preserves the degree of
@@ -46,7 +43,7 @@ def create_random_phi(phi : dict) -> dict:
     """
     random_phi = {}
     parasites = list(phi.keys())
-    hosts = phi.values()
+    hosts = list(phi.values())
     unique_hosts = list(set(hosts))
     parasite_count = {}   # keys are hosts, values are the number of parasites on that host wrt phi
     # computer parasite_count values
@@ -61,18 +58,18 @@ def create_random_phi(phi : dict) -> dict:
             parasites.remove(p)
     return random_phi
 
-def plot_histogram(MPR_cost: int, costs: list):
+def plot_histogram(mpr_cost: int, costs: list):
     """
-    :param MPR_cost: floating point cost of MPR for given host-parasite-phi and DTL costs
+    :param mpr_cost: floating point cost of MPR for given host-parasite-phi and DTL costs
     :param costs: list of floating point costs of Monte Carlo samples
     :return: None.  Displays histogram.
     """
     plt.hist(costs, color = "blue", density = True)
-    plt.hist(MPR_cost, color="red", rwidth=1)
+    plt.hist(mpr_cost, color="red", rwidth=1)
     plt.show()
 
-def stats(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, loss_cost: float, num_trials: int) -> (float, list, float):
-    _, MPR_cost, _, _ = DTLReconGraph.DP(host_tree, parasite_tree, phi, dup_cost, transfer_cost, loss_cost)
+def stats(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, \
+    loss_cost: float, num_trials: int) -> (float, list, float):
     """
     :param host_tree: dictionary representation of host tree
     :param parasite_tree: dictionary of parasite tree
@@ -81,18 +78,22 @@ def stats(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, tran
     :param transfer_cost: float transfer cost
     :param loss_cost: float loss cost
     :param num_trials: int number of trials in Monte Carlo simulation
+    :param mpr_cost: float cost of the mpr from the original dataset.  If None, we compute it here
     :return: tuple of three items:
         float cost of optimal MPR for given data
         list of floating point costs of reconciliations of the Monte Carlo samples
         float empirical p-value between 0 and 1
     """
-    
-    costs = trials(host_tree, parasite_tree, phi, dup_cost, transfer_cost, loss_cost, num_trials)
+    # If mpr_cost not passed in, we compute it here (only used for ease of testing)
+ 
+    _, mpr_cost, _, _ = DTLReconGraph.DP(host_tree, parasite_tree, phi, dup_cost, \
+            transfer_cost, loss_cost)
+    costs = _trials(host_tree, parasite_tree, phi, dup_cost, transfer_cost, loss_cost, num_trials)
 
     # Empirical p-value computed as (r+1)/(n+1) where n is the number of trials and r is the number of trials 
     # whose cost is less than or equal to the cost of the MPR for the actual data.
-    r = len([score for score in costs if score <= MPR_cost])
+    r = len([score for score in costs if score <= mpr_cost])
     p = (r+1)/(num_trials + 1)
-    return MPR_cost, costs, p
+    return mpr_cost, costs, p
 
 
