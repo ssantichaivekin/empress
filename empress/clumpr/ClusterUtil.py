@@ -1,4 +1,4 @@
-from clumpr import HistogramAlg, DTLMedian, DTLReconGraph, Diameter
+from empress.clumpr import DTLReconGraph, Diameter, HistogramAlg, DTLMedian
 
 import itertools
 import functools
@@ -656,7 +656,7 @@ def calc_improvement_pdv(big_k, little_k):
 def get_tree_info(newick, d,t,l):
     """
     Reconcile the trees and return all the relevant info.
-    :param newick <string> - path to a .newick file to reconcile
+    :param newick <ReconInput>: Output of newickFormatReader.getInput()
     :params d,t,l <float> - the relative DTL costs
     :return gene_tree <tree>
     :return species_tree <tree>

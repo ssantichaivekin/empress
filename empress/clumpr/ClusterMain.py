@@ -1,8 +1,5 @@
-from clumpr import ClusterUtil, HistogramDisplay, DTLMedian, \
-    DTLMedian, ClusterMainInput
-import clumpr.ReconciliationVisualization as RV
+from empress.clumpr import ClusterUtil, HistogramDisplay, DTLMedian
 
-import argparse
 from pathlib import Path
 import numpy as np
 import matplotlib
@@ -145,7 +142,7 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
 
 def perform_clustering(tree_data, d, t, l, k, args):
     """
-    :param tree_data <tuple>: triple of output to newickFormatReader.getInput()
+    :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
     :param d <float>: the cost of a duplication
     :param t <float>: ^^ transfer
     :param l <float>: ^^ loss

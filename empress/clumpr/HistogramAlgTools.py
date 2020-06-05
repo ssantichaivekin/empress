@@ -6,7 +6,7 @@ the results from the DP algorithm.
 Author: Santi Santichaivekin
 '''
 
-from clumpr.Histogram import Histogram
+from empress.clumpr.Histogram import Histogram
 
 def event_node_type(event_node):
     '''

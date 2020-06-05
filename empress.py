@@ -2,13 +2,14 @@
 
 # empress.py
 # Cat Ngo, April 2020
+# Updated 6/1/2020 by RLH
 
 import argparse
 from pathlib import Path
 
-from newickFormatReader import getInput
-from clumpr import HistogramMain, DTLReconGraph, ClusterMain
-from xscape import costscape
+from empress.newickFormatReader import getInput
+from empress.clumpr import DTLReconGraph, ClusterMain, HistogramMain
+from empress.xscape import costscape
 
 def process_arg():
     """ Returns args parse object that contains all parameters needed to run a functionality
@@ -17,21 +18,21 @@ def process_arg():
     parser = argparse.ArgumentParser("")
     ### Path to newick file ###
     parser.add_argument("-fn","--filename", metavar="<filename>", required=True,
-        help="The path to a tree data file with the input trees and tip mapping.")
+        help="The path to the file with the input trees and tip mapping.")
     
     # subparsers to encode for each functionality 
     subparsers = parser.add_subparsers(dest='functionality',help='Functions empress can run')
     
     ### Parser for costscape ###
     costscape_parser = subparsers.add_parser('costscape', help="Run costscape")
+    costscape_parser.add_argument("-dl", metavar="<duplication_low>", default = 1, 
+        type=float, help="Duplication low value for costcape")
+    costscape_parser.add_argument("-dh", metavar="<duplication_high>", default = 5, 
+        type=float, help="Duplication high value for costcape")
     costscape_parser.add_argument("-tl", metavar="<transfer_low>", default = 1, 
-        type=int, help="Transfer low value for costcape")
+        type=float, help="Transfer low value for costcape")
     costscape_parser.add_argument("-th", metavar="<transfer_high>", default = 5, 
-        type=int, help="Transfer high value for costcape")
-    costscape_parser.add_argument("-ll", metavar="<switch_low>", default = 1, 
-        type=int, help="Loss low value for costcape")
-    costscape_parser.add_argument("-lh", metavar="<switch_high>", default = 5, 
-        type=int, help="Loss high value for costcape")
+        type=float, help="Transfer high value for costcape")
     costscape_parser.add_argument("--outfile", metavar="<output_file>", default = "",
         help="Name of output file, ending in .pdf")
     costscape_parser.add_argument("--log", action= "store_true",
@@ -41,52 +42,52 @@ def process_arg():
     
     ### Parser for reconcile ###
     reconcile_parser = subparsers.add_parser('reconcile', help="Run reconcile")
-    reconcile_parser.add_argument("-d", type=int, metavar="<duplication_cost>", 
-        default = 2, help="The relative cost of a duplication.")
-    reconcile_parser.add_argument("-t", type=int, metavar="<transfer_cost>", 
-        default = 3, help="The relative cost of a transfer.")
-    reconcile_parser.add_argument("-l", type=int, metavar="<loss_cost>", 
-        default = 1, help="The relative cost of a loss.")
+    reconcile_parser.add_argument("-d", type=float, metavar="<duplication_cost>", 
+        default = 2, help="Duplication cost")
+    reconcile_parser.add_argument("-t", type=float, metavar="<transfer_cost>", 
+        default = 3, help="Transfer cost")
+    reconcile_parser.add_argument("-l", type=float, metavar="<loss_cost>", 
+        default = 1, help="Loss cost")
 
     ### Param for clumpr ###
     clumpr_parser = subparsers.add_parser('clumpr', help="Run clumpr")
-    clumpr_parser.add_argument("-d", type=int, metavar="<duplication_cost>", 
-        default = 2, help="The relative cost of a duplication.")
-    clumpr_parser.add_argument("-t", type=int, metavar="<transfer_cost>", 
-        default = 3, help="The relative cost of a transfer.")
-    clumpr_parser.add_argument("-l", type=int, metavar="<loss_cost>", 
-        default = 1, help="The relative cost of a loss.")
+    clumpr_parser.add_argument("-d", type=float, metavar="<duplication_cost>", 
+        default = 2, help="Duplication cost")
+    clumpr_parser.add_argument("-t", type=float, metavar="<transfer_cost>", 
+        default = 3, help="Transfer cost")
+    clumpr_parser.add_argument("-l", type=float, metavar="<loss_cost>", 
+        default = 1, help="Loss cost")
     clumpr_parser.add_argument("-k", type=int, metavar="<number_of_clusters>",
-        default = 3, help="How many clusters to create.")
+        default = 3, help="Number of clusters")
     clumpr_parser.add_argument("--medians", action="store_true", required=False,
-        help="Whether or not to print out medians for each cluster.")
+        help="Whether or not to print out medians for each cluster")
     # Specifies how far down to go when finding splits
     depth_or_n = clumpr_parser.add_mutually_exclusive_group(required=True)
     depth_or_n.add_argument("--depth", type=int, metavar="<tree_depth>",
-        help="How far down the graph to consider event splits.")
+        help="How far down the graph to consider event splits")
     depth_or_n.add_argument("--nmprs", type=int, metavar="<tree_depth>",
-        help="How many MPRs to consider")
+        help="Number of MPRs to consider")
     # What visualizations to produce
     vis_type = clumpr_parser.add_mutually_exclusive_group(required=False)
     vis_type.add_argument("--pdv-vis", action="store_true",
-        help="Visualize the resulting clusters using the PDV.")
+        help="Visualize the resulting clusters using the Pairwise Distance")
     vis_type.add_argument("--support-vis", action="store_true",
-        help="Visualize the resulting clusters using a histogram of the event supports.")
+        help="Visualize the resulting clusters using event supports")
     # Which objective function to use
     score = clumpr_parser.add_mutually_exclusive_group(required=True)
     score.add_argument("--pdv", action="store_true",
-        help="Use the weighted average distance to evaluate clusters.")
+        help="Use the weighted average distance to evaluate clusters")
     score.add_argument("--support", action="store_true",
-        help="Use the weighted average event support to evaluate clusters.")
+        help="Use the weighted average event support to evaluate clusters")
 
     ### Parser for Histogram ###
     histogram_parser = subparsers.add_parser('histogram', help="Run histogram")
-    histogram_parser.add_argument("-d", type=int, metavar="<duplication_cost>", 
-        default = 2, help="The relative cost of a duplication.")
-    histogram_parser.add_argument("-t", type=int, metavar="<transfer_cost>", 
-        default = 3, help="The relative cost of a transfer.")
-    histogram_parser.add_argument("-l", type=int, metavar="<loss_cost>", 
-        default = 1, help="The relative cost of a loss.")
+    histogram_parser.add_argument("-d", type=float, metavar="<duplication_cost>", 
+        default = 2, help="Duplication cost")
+    histogram_parser.add_argument("-t", type=float, metavar="<transfer_cost>", 
+        default = 3, help="Transfer cost")
+    histogram_parser.add_argument("-l", type=float, metavar="<loss_cost>", 
+        default = 1, help="Loss cost")
     histogram_parser.add_argument("--histogram", metavar="<filename>", default="unset",     
         nargs="?", help="Output the histogram at the path provided. \
         If no filename is provided, outputs to a filename based on the input .newick file.")
@@ -106,7 +107,7 @@ def process_arg():
         help="Output statistics including the total number of MPRs, the diameter of MPR-space, and the average distance between MPRs.")
     # Time it?
     histogram_parser.add_argument("--time", action="store_true",
-        help="Time the diameter algorithm.")
+        help="Time the diameter algorithm")
     args = parser.parse_args()
     if args.functionality == "histogram":
         fname = Path(args.filename)
@@ -135,7 +136,7 @@ def main():
     args = process_arg()
     newick_data = getInput(args.filename)
     if args.functionality == "costscape":
-        costscape.solve(newick_data, args.tl, args.th, args.ll, args.lh, args)
+        costscape.solve(newick_data, args.dl, args.dh, args.tl, args.th, args)
     elif args.functionality == "reconcile":
         DTLReconGraph.reconcile_noninter(newick_data, args.d, args.t, args.l)
     elif args.functionality == "histogram":

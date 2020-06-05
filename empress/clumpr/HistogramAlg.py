@@ -1,9 +1,8 @@
 # Modification on the original diameter algorithm to support getting the histogram of the whole graph.
 
-from collections import OrderedDict
 from itertools import product
-from clumpr.Histogram import Histogram
-from clumpr.HistogramAlgTools import BFVerifier
+from empress.clumpr.Histogram import Histogram
+from empress.clumpr.HistogramAlgTools import BFVerifier
 
 # def reformat_tree(tree, root):
 #     """A recursive function that changes the format of a (species or gene) tree from edge to vertex, as described
