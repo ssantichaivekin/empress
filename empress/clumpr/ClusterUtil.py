@@ -10,7 +10,7 @@ from empress.clumpr import DTLReconGraph, Diameter, HistogramAlg, DTLMedian
 def graph_union(g1, g2):
     """
     The union of two recon graphs. (includes all mapping nodes and events from each)
-    :params g1, g2 <recon_graph> - the two graphs to union
+    :params g1, g2 <recon_graph> - the two recon graphs to join via union
     :return newg <recon_graph> - the unioned graph
     """
     newg = {}
@@ -334,7 +334,7 @@ def get_score_nodp(graphs, g_score, mpr_counter):
 
 def get_score_merge_indices(graphs, g_score, score_dp, score_u_dp, nmprs_dp, nmprs_u_dp, mpr_counter, i1, i2):
     """
-    Calculate the WAS for graphs but assuming that i1 and i2 are merged.
+    Calculate the WAS (weighted average support) for graphs but assuming that i1 and i2 are merged.
     Used to calculate which pair is the best to merge in combine.
     :param graphs [<recon_graph>] - the graphs to use
     :param g_score <function: graph->float> - the objective function

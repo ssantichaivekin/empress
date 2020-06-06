@@ -1,7 +1,6 @@
 # DTLReconGraph.py  --  was previously named DP.py
 # Ran Libeskind-Hadas, June 2015
-# The basic DP algorithm for reconciling pairs of trees
-
+# The DP algorithm for reconciling pairs of trees
 # Altered and expanded by Carter Slocum and Annalise Schweickart
 # Altered and expanded by Andrew Ramirez and Eli Zupke
 
@@ -30,7 +29,7 @@ from typing import Tuple, Iterator
 from numpy import mean
 from numpy import median as md
 
-from empress.clumpr import ReconcileMainInput, Greedy
+from empress.clumpr import ReconcileMainInput
 from empress.newickFormatReader import ReconInput
 
 
@@ -38,10 +37,9 @@ Infinity = float('inf')
 
 def preorder(tree: dict, root_edge_name: Tuple) -> Iterator:
     """
-    :param tree: host or parasite tree (see description above)
-    :param root_edge_name: the name associated with the root of the given tree
-    :yield: list of edges in the given tree in preorder (high to low edges). See
-    tech report for more information on post- or pre-order.
+    :param tree <tree> - host or parasite tree (see description above)
+    :param root_edge_name <str> - the name associated with the root of the given tree
+    :yield: list of edges in the given tree in preorder (high to low edges).
     """
 
     value = tree[root_edge_name]
@@ -58,8 +56,7 @@ def preorder(tree: dict, root_edge_name: Tuple) -> Iterator:
 
 def postorder(tree: dict, root_edge_name: Tuple) -> Iterator:
     """ The parameters of this function are the same as that of preorder above, except it
-    returns the edge list in postorder (low to high edges; see tech report for more
-    info on post- or pre-order)."""
+    yields the edge list in postorder. """
 
     value = tree[root_edge_name]
     _, _, left_child_edge_name, right_child_edge_name = value
@@ -94,10 +91,10 @@ def contemporaneous(host_1, host_1_parent, host_2, host_2_parent, distances):
 
 def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:  
     """
-    :param tree_data: Output of newickFormatReader.getInput()
-    :param dup_cost: cost of a duplication event
-    :param transfer_cost: cost of a transfer event
-    :param loss_cost: cost of a loss event
+    :param tree_data <ReconInput> object - See newickFormatReader (data comes from getInput)
+    :param dup_cost <float> - cost of a duplication event
+    :param transfer_cost <float> - cost of a transfer event
+    :param loss_cost <float> - cost of a loss event
     :return: the DTL reconciliation graph in the form of a dictionary, the total cost of the best reconciliation,
     the number of maximum parsimony reconciliations, and the roots for a reconciliation graph that could produce a
     Maximum Parsimony Reconciliation.
@@ -415,81 +412,81 @@ def calculate_mean_med_event_nodes_per_mapping_node(dtl_recon_graph: dict) -> Tu
 # Note that this function was used in an old version of this code, but has since
 # been replaced in favor of a more efficient method of implementing frequency
 # scoring. So it plays no significant part in the algorithm at this time - 7/5/2017
-def preorder_dtl_sort(dtl_recon_graph: dict, parasite_root: str) -> list:
-    """
-    :param dtl_recon_graph: one of the outputs from DP, directly outputted by buildDTLReconGraph (see
-    top of file for structure of the DTLReconGraph)
-    :param parasite_root: The root node of the parasite tree, represented as a string
-    :return: an ordered list of tuples, in order of increasing level. Each element is of the form ((P, H), L),
-    where P is a parasite node and H is a host node, and the parasite node is mapped onto the host node in
-    the first tuple in the overarching tuple. The second element is the level in the tree at which the (P,H)
-    tuple occurs. Note level 0 is the root and the highest level represents tips.
-    """
+# def preorder_dtl_sort(dtl_recon_graph: dict, parasite_root: str) -> list:
+#     """
+#     :param dtl_recon_graph: one of the outputs from DP, directly outputted by buildDTLReconGraph (see
+#     top of file for structure of the DTLReconGraph)
+#     :param parasite_root: The root node of the parasite tree, represented as a string
+#     :return: an ordered list of tuples, in order of increasing level. Each element is of the form ((P, H), L),
+#     where P is a parasite node and H is a host node, and the parasite node is mapped onto the host node in
+#     the first tuple in the overarching tuple. The second element is the level in the tree at which the (P,H)
+#     tuple occurs. Note level 0 is the root and the highest level represents tips.
+#     """
 
-    keys_l = Greedy.orderDTL(dtl_recon_graph, parasite_root)
-    ordered_keys_l = []  # We could marginally improve efficiency here by locking list length, but we don't do that here
-    level_counter = 0
-    while len(ordered_keys_l) < len(keys_l):
-        to_add = []
-        for mapping in keys_l:
-            if mapping[-1] == level_counter:
-                    to_add += [mapping]
-        ordered_keys_l += to_add
-        level_counter += 1
+#     keys_l = OrderDTL.orderDTL(dtl_recon_graph, parasite_root)
+#     ordered_keys_l = []  # We could marginally improve efficiency here by locking list length, but we don't do that here
+#     level_counter = 0
+#     while len(ordered_keys_l) < len(keys_l):
+#         to_add = []
+#         for mapping in keys_l:
+#             if mapping[-1] == level_counter:
+#                     to_add += [mapping]
+#         ordered_keys_l += to_add
+#         level_counter += 1
 
-    return ordered_keys_l
+#     return ordered_keys_l
 
 
 # As with the function above, this function is no longer used
-def preorder_check(preorder_list: list) -> list:
-    """
-    :param preorder_list: output from preorder_DTL_sort. See that function for the structure
-    of the input.
-    :return: The same ordered list inputted as preOrderList, except duplicate tuples
-    in the list have been removed
-    """
+# def preorder_check(preorder_list: list) -> list:
+#     """
+#     :param preorder_list: output from preorder_DTL_sort. See that function for the structure
+#     of the input.
+#     :return: The same ordered list inputted as preOrderList, except duplicate tuples
+#     in the list have been removed
+#     """
 
-    # new_list = [(a1, a2), b] where a is the map node and b is the depth level
-    # Filtering for multiple instances of a with different b by keeping biggest
-    # b instance. This is safe: ensures that all possible parents of a node will
-    # be handled before a node to prevent considering duplicates in the
-    # addScores function. Correction by Jean Sung, July 2016
-    #
-    # - Note by Andrew Ramirez, July 5 2017: the addScores
-    # function, along with frequency scoring in general, has since been removed
-    # from this file and that functionality is implemented in a separate file now.
+#     # new_list = [(a1, a2), b] where a is the map node and b is the depth level
+#     # Filtering for multiple instances of a with different b by keeping biggest
+#     # b instance. This is safe: ensures that all possible parents of a node will
+#     # be handled before a node to prevent considering duplicates in the
+#     # addScores function. Correction by Jean Sung, July 2016
+#     #
+#     # - Note by Andrew Ramirez, July 5 2017: the addScores
+#     # function, along with frequency scoring in general, has since been removed
+#     # from this file and that functionality is implemented in a separate file now.
 
-    new_list = []
-    pre_dict = {}
-    for root in preorder_list:
-        if root not in new_list:
-            new_list.append(root)
-    for x in range(len(new_list)):
-        current_root = new_list[x][0]
-        current_level = new_list[x][1]
-        if current_root in pre_dict:
-            if pre_dict[current_root][0] > current_level:
-                new_list[x] = (None, None)
-            else:
-                location = pre_dict[current_root][1]
-                new_list[location] = (None, None)
-        else:
-            pre_dict[current_root] = (current_level, x)
+#     new_list = []
+#     pre_dict = {}
+#     for root in preorder_list:
+#         if root not in new_list:
+#             new_list.append(root)
+#     for x in range(len(new_list)):
+#         current_root = new_list[x][0]
+#         current_level = new_list[x][1]
+#         if current_root in pre_dict:
+#             if pre_dict[current_root][0] > current_level:
+#                 new_list[x] = (None, None)
+#             else:
+#                 location = pre_dict[current_root][1]
+#                 new_list[location] = (None, None)
+#         else:
+#             pre_dict[current_root] = (current_level, x)
 
-    final_list = []
-    for item in new_list:
-        node = item[0]
-        depth = item[1]
-        final_list.append(item)
+#     final_list = []
+#     for item in new_list:
+#         node = item[0]
+#         depth = item[1]
+#         final_list.append(item)
 
-        # Check for duplicate instances with smaller depth levels
-        for newItem in final_list:
-            new_node = newItem[0]
-            new_depth = newItem[1]
-            if (node == new_node) and (depth > new_depth):
-                final_list.remove(newItem)
-                break
-    return final_list
+#         # Check for duplicate instances with smaller depth levels
+#         for newItem in final_list:
+#             new_node = newItem[0]
+#             new_depth = newItem[1]
+#             if (node == new_node) and (depth > new_depth):
+#                 final_list.remove(newItem)
+#                 break
+#     return final_list
 
 
 def count_mprs_wrapper(mapping_node_list: list, dtl_recon_graph: dict) -> int:

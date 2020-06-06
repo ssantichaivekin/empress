@@ -1,10 +1,7 @@
 # DTLMedian.py
 # Written July 2017 by Andrew Ramirez and Eli Zupke
-# Utilizes previous code to find the "median" reconciliation of a pair of gene and species trees
-# and other related information
 
-
-# -1. DATA STRUCTURE QUICK REFERENCE:
+# DATA STRUCTURE QUICK REFERENCE:
 #
 #
 #   DTL or Median Reconciliation graph:
