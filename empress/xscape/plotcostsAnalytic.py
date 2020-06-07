@@ -11,7 +11,8 @@ from shapely.geometry import Polygon
 from empress.xscape.CostVector import CostVector
 from empress.xscape.commonAnalytic import getRegions, buildColors
 
-def plotcosts(CVlist, transferMin, transferMax, dupMin, dupMax, outfile,
+def plotcosts(CVlist, transferMin, transferMax, dupMin, dupMax,
+              outfile,
               log=True, display=False):
     ''' Plots the cost space for the given CVlist of CostVectors.  The x-axis
         represents duplication cost (relative to unit cost for loss) and
@@ -95,10 +96,10 @@ def plotcosts(CVlist, transferMin, transferMax, dupMin, dupMax, outfile,
     leg = plt.legend()
     for i in range(len(leg.legendHandles)):  # adjust legend marker thickness
         leg.legendHandles[i].set_linewidth(2.0)
-    plt.title("Costscape:  " + outfile)
     
-    if outfile != "":
-        plt.savefig(outfile, format="pdf")
+    if outfile:
+        plt.title("Costscape:  " + outfile)
+        plt.savefig(outfile)
     if display:
         plt.show()
 

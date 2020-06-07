@@ -6,6 +6,22 @@ from typing import List, Iterable
 from abc import ABC, abstractmethod
 from empress.xscape.CostVector import CostVector
 
+#==========================================================
+# global
+
+DUP_COST = 2
+TRANS_COST = 3
+LOSS_COST = 1
+
+DUP_LOW = 1
+DUP_HIGH = 5
+TRANS_LOW = 1
+TRANS_HIGH = 5
+
+NUM_CLUSTERS = 3
+
+#==========================================================
+
 class Drawable(ABC):
     """
     Implements a default draw method

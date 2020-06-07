@@ -13,7 +13,8 @@ from matplotlib import pyplot as plt
 from empress.xscape.common import frange, getBestCV
 from empress.xscape.CostVector import CostVector
 
-def plotcosts(CVlist, switchMin, switchMax, dupMin, dupMax, steps, outfile,
+def plotcosts(CVlist, switchMin, switchMax, dupMin, dupMax,
+              steps, outfile,
               log=True, display=False):
     ''' Plots the cost space for the given CVlist of CostVectors.  The x-axis
         represents dup cost (relative to unit cost for loss) and
@@ -55,9 +56,10 @@ def plotcosts(CVlist, switchMin, switchMax, dupMin, dupMax, steps, outfile,
     leg = plt.legend()
     for i in range(len(leg.legendHandles)):  # Adjust legend marker thickness
         leg.legendHandles[i].set_linewidth(5.0)
-    plt.title("Costscape:  " + outfile)
 
-    if outfile != "":
+    if outfile:
+        print("out", outfile)
+        plt.title("Costscape: ${outfile}")
         plt.savefig(outfile, format="pdf")
     if display:
         plt.show()
