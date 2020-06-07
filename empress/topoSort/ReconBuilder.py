@@ -7,7 +7,7 @@ from empress.topoSort.Tree import NodeLayout
 from empress.topoSort.Tree import TreeType
 from empress.topoSort.TreeFormatConverter import dict_to_tree
 
-__all__ = ["build_trees_with_temporal_order", "build_temporal_graph", "topological_order"]
+__all__ = ["build_trees_with_temporal_order"]
 
 def build_trees_with_temporal_order(host_tree, parasite_tree, reconciliation):
     """
@@ -15,9 +15,12 @@ def build_trees_with_temporal_order(host_tree, parasite_tree, reconciliation):
     :param host_tree: host tree dictionary
     :param parasite_tree: parasite tree dictionary
     :param reconciliation: reconciliation dictionary
-    :return: a Tree object of type HOST and a Tree object of type PARASITE. If we can find a valid temporal
-             ordering for the nodes, then the nodes in both trees will have their
-             layout field populated that contains the temporal order information
+    :return: a Tree object of type HOST, a Tree object of type PARASITE, and a boolean
+             indicator of whether the reconciliation is temporally consistent. If the
+             reconciliation is temporally consistent, then the tree objects have their
+             nodes populated and the nodes will contain the temporal order information
+             in the layout field. If the reconciliation is temporally inconsistent, the
+             function returns None, None, False.
     """
     # find the temporal order for host nodes and parasite nodes
     temporal_graph = build_temporal_graph(host_tree, parasite_tree, reconciliation)
@@ -36,10 +39,11 @@ def build_trees_with_temporal_order(host_tree, parasite_tree, reconciliation):
         leaf_order = max_order + 1
         populate_nodes_with_order(host_tree_object.root_node, TreeType.HOST, ordering_dict, leaf_order)
         populate_nodes_with_order(parasite_tree_object.root_node, TreeType.PARASITE, ordering_dict, leaf_order)
+        return host_tree_object, parasite_tree_object, True
+    else:
+        return None, None, False
 
-    return host_tree_object, parasite_tree_object
-
-def create_parent_dict(H, P):
+def create_parent_dict(host_tree, parasite_tree):
     """
     :param host_tree:  host tree dictionary
     :param parasite_tree:  parasite tree dictionary
@@ -47,13 +51,13 @@ def create_parent_dict(H, P):
              for both the host tree and the parasite tree.
     """
     parent_dict = {}
-    for edge_name in H:
-        child_node = _bottom_node(H[edge_name])
-        parent_node = _top_node(H[edge_name])
+    for edge_name in host_tree:
+        child_node = _bottom_node(host_tree[edge_name])
+        parent_node = _top_node(host_tree[edge_name])
         parent_dict[child_node] = parent_node
-    for edge_name in P:
-        child_node = _bottom_node(P[edge_name])
-        parent_node = _top_node(P[edge_name])
+    for edge_name in parasite_tree:
+        child_node = _bottom_node(parasite_tree[edge_name])
+        parent_node = _top_node(parasite_tree[edge_name])
         parent_dict[child_node] = parent_node
     return parent_dict
 
@@ -214,7 +218,7 @@ def topological_order_helper(start_node, start_order, visiting_nodes, unvisited_
         # if children are all labeled, we can label the start_node
         visiting_nodes.remove(start_node)
         ordering_dict[start_node] = next_order
-        return False, next_order+1
+        return False, next_order + 1
 
 def populate_nodes_with_order(tree_node, tree_type, ordering_dict, leaf_order):
     """

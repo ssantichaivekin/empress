@@ -45,8 +45,6 @@ class Tree:
         self.root_node = None       # Node:  Root Node of the Tree 
         self.tree_type = None       # TreeType: HOST or PARASITE 
 
-    # The @property decorator allows this to be called as .leaf_list rather than .leaf_list()
-    @property
     def leaf_list(self):
         """ Returns list of leaf Nodes from left to right. """
         return self._leaf_list_helper(self.root_node)
@@ -60,8 +58,6 @@ class Tree:
             return list1
 
 
-    # The @property decorator allows this to be called as .postorder_list rather than .postorder_list()    
-    @property
     def postorder_list(self):
         """ returns list of all Nodes in postorder """
         return self._postorder_list_helper(self.root_node)
@@ -74,10 +70,3 @@ class Tree:
             list1.extend(list2)
             list1.append(node)
             return list1
-
-
-    
-        
-
-
-
