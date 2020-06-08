@@ -134,6 +134,3 @@ def visualizeAndSave(dtlGraph, targetFile):
     pydotDtlGraph = nx.drawing.nx_pydot.to_pydot(nxDtlGraph)
     pydotDtlGraph.write_png(targetFile)
 
-if __name__ == '__main__' :
-    visualizeAndSave(EXAMPLE1, "example1.png")
-    visualizeAndSave(EXAMPLE2, "example2.png")
