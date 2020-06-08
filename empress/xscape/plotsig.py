@@ -4,14 +4,14 @@
 
 # python libraries
 import random
+import collections
 
 # matplotlib libraries
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 
 # xscape libraries
-from .common import *
-from .CostVector import *
-import collections
+from empress.xscape.common import frange, getBestCV
+from empress.xscape.CostVector import CostVector
 
 def plotsig(CVlist, randomTrialsCVlist,
             switchMin, switchMax, lossMin, lossMax, steps, outfile,

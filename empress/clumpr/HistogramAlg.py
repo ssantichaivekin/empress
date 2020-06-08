@@ -1,6 +1,7 @@
 # Modification on the original diameter algorithm to support getting the histogram of the whole graph.
 
 from itertools import product
+
 from empress.clumpr.Histogram import Histogram
 from empress.clumpr.HistogramAlgTools import BFVerifier
 

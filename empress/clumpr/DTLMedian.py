@@ -29,7 +29,9 @@
 
 import optparse
 from operator import itemgetter
+
 import numpy as np
+
 from empress.clumpr import DTLReconGraph, Diameter
 
 
@@ -410,73 +412,3 @@ def get_med_counts(median_reconciliation, roots_for_median):
         count_mprs(root, median_reconciliation, med_counts)
     return med_counts
 
-def main():
-    """
-    :return: nothing. This function will run the main loop for the command line interface.
-    """
-
-    p = optparse.OptionParser(usage=usage())
-
-    p.add_option('-r', '--random', dest='random', help='Add a random median reconciliation from the full median'
-                                                       ' reconciliation graph of the given file to the output',
-                 action='store_true', default=False)
-    p.add_option('-c', '--count', dest='count', help='Add the number of median reconciliations to'
-                                                     'the output', action='store_true', default=False)
-
-    options, args = p.parse_args()
-
-    if len(args) == 4:
-        try:
-
-            # These will be the outputs we eventually return
-            output = []
-
-            # Save arg values
-            filename = args[0]
-            dup = float(args[1])
-            transfer = float(args[2])
-            loss = float(args[3])
-
-            # Get basic info just about the dtl recon graph
-            species_tree, gene_tree, dtl_recon_graph, mpr_count, best_roots = DTLReconGraph.reconcile(filename, dup,
-                                                                                                      transfer, loss)
-
-            # Reformat gene tree and get info on it, as well as for the species tree in the following line
-            postorder_gene_tree, gene_tree_root, gene_node_count = Diameter.reformat_tree(gene_tree, "pTop")
-            postorder_species_tree, species_tree_root, species_node_count = Diameter.reformat_tree(species_tree,
-                                                                                                   "hTop")
-
-            # Compute the median reconciliation graph
-            median_reconciliation, n_meds, roots_for_median = get_median_graph(
-                    dtl_recon_graph, postorder_gene_tree, postorder_species_tree, gene_tree_root, best_roots)
-
-            # We'll always want to output the median
-            output.append(median_reconciliation)
-
-            # Check if the user wants the number of medians
-            if options.count:
-                output.append(n_meds)
-
-            # Check if the user wants a random median
-            if options.random:
-                med_counts = get_med_counts(median_reconciliation, roots_for_median)
-                # Calculate a random, uniformly sampled single-path median from the median recon
-                random_median = choose_random_median_wrapper(median_reconciliation, roots_for_median, med_counts)
-                output.append(random_median)
-
-            # Now print all of the output requested by the user
-            for i in range(len(output)):
-                if i != (len(output) - 1):
-                    print((str(output[i]) + '\n'))
-                else:
-                    print((str(output[i])))
-
-        except ValueError:
-            print((usage()))
-    else:
-        print(usage())
-
-
-if __name__ == '__main__':
-
-    main()

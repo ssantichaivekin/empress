@@ -1,7 +1,7 @@
 """
 Wraps empress functionalities
 """
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 from typing import List
 from abc import ABC, abstractmethod
 

@@ -4,64 +4,19 @@
 # Ran Libeskind-Hadas, Jessica Yi-Chieh Wu, Mukul Bansal, November 2013
 
 # python libraries
-from multiprocessing import Process, Queue  # For multiprocessing random trials
 import random
 import time
+from multiprocessing import Process, Queue  # For multiprocessing random trials
 
 # xscape libraries
-try:
-    from empress import xscape
-except ImportError:
-    import sys
-    from os.path import realpath, dirname, join
-    sys.path.append('..')
-    import empress.xscape
+from empress import xscape
 from empress.xscape import getInput
 from empress.xscape import reconcile
 from empress.xscape import plotsig
 
+
 DOTS = 100  # DOTS data points per dimension;
             # Increase this value for higher resolution plottin
-
-def main():
-    print("Sigscape %s" % xscape.PROGRAM_VERSION_TEXT)
-    hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, \
-        outfile = getInput.getInput(outputExtension ="pdf", allowEmptyOutfile = True)
-    log = getInput.boolInput("Display in log coordinates? ")
-    if outfile == "":
-        display = True
-    else:
-        display = getInput.boolInput("Display to screen? ")
-
-    numTrials = getInput.intInput("Enter the number of randomization trials: ", 1)
-    numProcs = getInput.intInput("Enter the number of cores for parallelization: ", 1)
-    seed = getSeed("Enter random seed (leave blank if none): ")
-    if seed:
-        random.seed(seed)
-
-    print("Reconciling trees...")
-    CVlist = reconcile.reconcile(parasiteTree, hostTree, phi, \
-                                 switchLo, switchHi, lossLo, lossHi)  
-    startTime = time.time()
-    if numProcs == 1:
-        randomTrialsCVlist = seqTrials(parasiteTree, hostTree, phi, \
-                                       numTrials,
-                                       switchLo, switchHi, \
-                                       lossLo, lossHi)
-    else:
-        randomTrialsCVlist = parallelTrials(parasiteTree, hostTree, phi, \
-                                            numTrials, numProcs, \
-                                            switchLo, switchHi, \
-                                            lossLo, lossHi)
-    endTime = time.time()
-    elapsedTime = endTime- startTime
-    print("\nElapsed time %.2f seconds" % elapsedTime)   
-
-    print("Plotting...")
-    plotsig.plotsig(CVlist, randomTrialsCVlist, switchLo, switchHi, \
-                    lossLo, lossHi, DOTS, outfile, \
-                    log, display)
-    if outfile != "": print("Output written in file ", outfile)
 
 def getSeed(prompt):
     while True:
@@ -161,6 +116,3 @@ def randomizeTips(parasiteTips, hostTips):
     for j in range(numHtips, numPtips):
         randomPhi[parasiteTips[j]] = random.choice(hostTips)
     return randomPhi
-
-if __name__ == '__main__': main()
-    
