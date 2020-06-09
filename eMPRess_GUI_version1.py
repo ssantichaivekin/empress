@@ -146,7 +146,7 @@ class App:
         # use empress wrapper
         recon_input = empress.read_input(self.file_path)
         cost_regions = empress.compute_cost_regions(recon_input, 0.5, 10, 0.5, 10)  
-        #cost_region.draw_to_file('./examples/cost_poly.png')  # draw and save to a file
+        #cost_regions.draw_to_file('./examples/cost_poly.png')  # draw and save to a file
         fig = cost_regions.draw()  # draw to figure (creates matplotlib figure)
         canvas = FigureCanvasTkAgg(fig, plt_frame)
         canvas.draw()
@@ -325,10 +325,6 @@ root.quit()
 
 
 
-# Notes:
-# Background image
-# logo
-# validate input
 
 
 
