@@ -34,4 +34,3 @@ def solve(newick_data, transferMin, transferMax, dupMin, dupMax, optional):
                         optional.log, display)
     if optional.outfile != "":
         print("Output written to file: ", optional.outfile)
-
