@@ -1,7 +1,7 @@
-# TreeTester.py
+# test_Tree.py
 # Tests the Tree class and TreeFormatConverter.py
 
-from empress.topoSort.TreeFormatConverter import *
+from empress.topo_sort.TreeFormatConverter import *
 
 # Edge-based format is the primary format used by eMPRess algorithms.  This is the format that newickFormatReader.py
 # constructs from a .newick input file.
@@ -38,5 +38,3 @@ host = {'hTop': ('Top', 'm1', ('m1', 'm2'), ('m1', 'm8')),
 host_converted = dict_to_tree(host, Tree.TreeType.HOST)
 print(host_converted.leaf_list())
 print(host_converted.postorder_list())
-
-

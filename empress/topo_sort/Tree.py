@@ -59,7 +59,7 @@ class Tree:
 
 
     def postorder_list(self):
-        """ returns list of all Nodes in postorder """
+        """ Returns list of all Nodes in postorder """
         return self._postorder_list_helper(self.root_node)
 
     def _postorder_list_helper(self, node):

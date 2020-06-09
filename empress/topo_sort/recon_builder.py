@@ -3,15 +3,17 @@
 # as specified in Recon.py using the host tree, parasite tree, and reconfiguration 
 # representation in the DTL.
 
-from empress.topoSort.Tree import NodeLayout
-from empress.topoSort.Tree import TreeType
-from empress.topoSort.TreeFormatConverter import dict_to_tree
+from empress.topo_sort.Tree import NodeLayout
+from empress.topo_sort.Tree import TreeType
+from empress.topo_sort.TreeFormatConverter import dict_to_tree
 
 __all__ = ["build_trees_with_temporal_order"]
 
 def build_trees_with_temporal_order(host_tree, parasite_tree, reconciliation):
     """
-    This is the main function for visualization purposes.
+    This function uses topological sort to order the nodes inside host and parasite tree.
+    The output trees can be used for visualization.
+    
     :param host_tree: host tree dictionary
     :param parasite_tree: parasite tree dictionary
     :param reconciliation: reconciliation dictionary
