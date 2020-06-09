@@ -135,7 +135,6 @@ def generateNewickTests(numLeaves, destFolderName, sample=None, prob=1):
             parasiteLeaves = treeTupleLeaves(parasiteTree)
             hostLeaves = treeTupleLeaves(hostTree)
             count += 1
-            print(count)
             if sample == None:
                 mappings = generateAllMappings(parasiteLeaves, hostLeaves)
             else:
@@ -152,14 +151,14 @@ def generateNewickTests(numLeaves, destFolderName, sample=None, prob=1):
                     f.write(mappingToString(mappingPhi))
                 filenum += 1
                 
-if __name__ == '__main__':
+def generateNewickTestsMultipleSizes(size_range, path):
     '''
     Generate newick tree samples to test the histogram algorithm.
     The trees generated has 1-10 leaves.
     '''
     # Generate newick tree 
-    for tree_size in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-        targetFolder = './newickSample/size%d' % tree_size
+    for tree_size in size_range:
+        targetFolder = '%s/size%d' % (path, tree_size)
         if not os.path.exists(targetFolder):
             os.makedirs(targetFolder)
             if tree_size < 7:
