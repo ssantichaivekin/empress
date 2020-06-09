@@ -1,16 +1,15 @@
 # Diameter.py
 # Written by Eli Zupke and Andrew Ramirez July 2017
-# It is based off of Jordan Haack's more efficient work on a polynomial-time algorithm for the DTL MPR Diameter Problem
 
 # 0. ON THE PAPER
 #
-#       This program is based off of an algorithm written by Jordan Haack. There is a paper that describes this
-#   algorithm more thoroughly than can be expressed in source code comments. The paper title is "Computing the Diameter
-#   of the Space of Maximum Parsimony Reconciliations in the Duplication-Transfer-Loss Model".
+#   This program is based on the paper title is "Computing the Diameter
+#   of the Space of Maximum Parsimony Reconciliations in the Duplication-Transfer-Loss Model"
+#   by Haack, et. al.
 
 # 1. ON TREE REPRESENTATION FORMATS:
 #
-#       There are two formats in this code-base for trees: Edge-based trees, and vertex-based trees. The edge-based
+#   There are two formats in this code-base for trees: Edge-based trees, and vertex-based trees. The edge-based
 #   trees are what are output from DTLReconGraph.py (which returns them straight from newickFormatReader). For
 #   readability and convenience purposes, both the gene and species trees are converted into vertex-based trees.
 #
@@ -29,7 +28,7 @@
 
 # 2. ON THE NAMING CONVENTION OF THE TWO TREES:
 #
-#       This file calls the two trees the gene tree and the species tree. Other programs, like DTLReconGraph.py, have
+#   This file calls the two trees the gene tree and the species tree. Other programs, like DTLReconGraph.py, have
 #   different naming conventions (such as "host" for the species tree and "parasite" for the gene tree) because they
 #   were coded under different assumptions as to what the two trees represent. Let it be understood that these names are
 #   synonymous, and that references to "hTop" or "pTop" refer to the name of the handle of the species and
@@ -38,23 +37,23 @@
 
 # 3. ON GENE, SPECIES, AND MAPPING NODES:
 #
-#       The convention for variable names in this file is to use lowercase letters to represent gene nodes (commonly
+#   The convention for variable names in this file is to use lowercase letters to represent gene nodes (commonly
 #   'u'), uppercase letters to represent species nodes (commonly 'A' and 'B') and pairs of lower and upper case letter
 #   to represent mapping nodes (commonly 'uA' and 'uB').
 
 
 # 4. ON THE DYNAMIC PROGRAMMING TABLES AND THEIR FUNCTIONS:
 #
-#       The Diameter algorithm involves the use of three dynamic programming tables:
+#   The Diameter algorithm involves the use of three dynamic programming tables:
 #   The enter_table and the two exit_table s.
 #
-#       The tables are described in detail in the paper, but a summary of their functions follows:
+#   The tables are described in detail in the paper, but a summary of their functions follows:
 #
-#       The enter_table has the format [u][uA][uB], and it contains the largest number of event nodes that each pair
+#   The enter_table has the format [u][uA][uB], and it contains the largest number of event nodes that each pair
 #   of reconciliation subtrees rooted at uA and uB can differ for when uA and uB are used to enter Group(u). Running the
 #   program in debug mode will print out this table at every u.
 #
-#       exit_table_a has the format [u][uA][uB] (where uA is an ancestor of uB or uA == uB). exit_table_b has the format
+#   exit_table_a has the format [u][uA][uB] (where uA is an ancestor of uB or uA == uB). exit_table_b has the format
 #   [u][uB][uA] (where uB is an ancestor of uA or uA == uB). They contain the largest
 #   number of event nodes that each pair of reconciliation subtrees rooted at uA and uB can differ for when uA (for
 #   exit_table_a) or uB (for exit_table_b) leads to an exit event. This table is two tables, rather than one, to allow
@@ -62,7 +61,7 @@
 #   species tree and gene tree.
 
 
-# -1. DATA STRUCTURE QUICK REFERENCE:
+# DATA STRUCTURE QUICK REFERENCE:
 #
 #   Ancestor Comparability:
 #       A ancestor of B:    'an'

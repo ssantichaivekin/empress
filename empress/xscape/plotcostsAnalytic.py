@@ -4,12 +4,12 @@
 
 import matplotlib
 from matplotlib.axes import Axes
+matplotlib.use('tkagg') # need this so plt.show() works
+from matplotlib import pyplot as plt
+from shapely.geometry import Polygon, LineString, Point
 
-matplotlib.use('tkagg')  # need this so plt.show() works
-import matplotlib.pyplot as plt
-from shapely.geometry import *
-from .CostVector import *
-from .commonAnalytic import *
+from empress.xscape.commonAnalytic import getRegions, buildColors
+
 
 def plot_costs_on_axis(axes: Axes, cost_vectors, transfer_min, transfer_max, dup_min,
                        dup_max, title=None, log=False, verbose=False):
