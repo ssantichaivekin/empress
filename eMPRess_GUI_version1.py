@@ -145,9 +145,9 @@ class App:
         plt_frame.pack_propagate(False)
         # use empress wrapper
         recon_input = empress.read_input(self.file_path)
-        cost_region = empress.compute_cost_region(recon_input, 0.5, 10, 0.5, 10)  
+        cost_regions = empress.compute_cost_regions(recon_input, 0.5, 10, 0.5, 10)  
         #cost_region.draw_to_file('./examples/cost_poly.png')  # draw and save to a file
-        fig = cost_region.draw()  # draw to figure (creates matplotlib figure)
+        fig = cost_regions.draw()  # draw to figure (creates matplotlib figure)
         canvas = FigureCanvasTkAgg(fig, plt_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
