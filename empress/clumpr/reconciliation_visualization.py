@@ -88,34 +88,34 @@ def _event_node_to_str(event_node):
 
 def edges_from_recongraph(dtl_graph):
     output_edges_list = []
-    for mappingNode, eventNodes in list(dtl_graph.items()):
-        mappingNodeName = _mapping_node_to_str(mappingNode)
-        for eventNode in eventNodes :
+    for mappingNode, event_nodes in list(dtl_graph.items()):
+        mapping_node_name = _mapping_node_to_str(mappingNode)
+        for event_node in event_nodes:
             # check whether this is an event node or just
             # extra data -- SEE EXAMPLE1
             try:
-                assert eventNode[0] in ['S', 'T', 'D', 'L', 'C']
-            except AssertionError:
+                assert event_node[0] in ['S', 'T', 'D', 'L', 'C']
+            except:
                 continue
 
-            event_node_name = _event_node_to_str(eventNode)
+            event_node_name = _event_node_to_str(event_node)
             # we do not have to insert the end event to
             # the visualization
-            if _event_node_type(eventNode) == 'C':
+            if _event_node_type(event_node) == 'C':
                 pass
             # loss has only one children
-            elif _event_node_type(eventNode) == 'L':
-                output_edges_list.append((mappingNodeName, event_node_name))
+            elif _event_node_type(event_node) == 'L':
+                output_edges_list.append((mapping_node_name, event_node_name))
 
-                next_mapping_node_name = _mapping_node_to_str(_first_child(eventNode))
+                next_mapping_node_name = _mapping_node_to_str(_first_child(event_node))
                 output_edges_list.append((event_node_name, next_mapping_node_name))
             # other types have two children
             else:
-                output_edges_list.append((mappingNodeName, event_node_name))
+                output_edges_list.append((mapping_node_name, event_node_name))
              
-                next_mapping_node_name0 = _mapping_node_to_str(_first_child(eventNode))
+                next_mapping_node_name0 = _mapping_node_to_str(_first_child(event_node))
                 output_edges_list.append((event_node_name, next_mapping_node_name0))
-                next_mapping_node_name1 = _mapping_node_to_str(_second_child(eventNode))
+                next_mapping_node_name1 = _mapping_node_to_str(_second_child(event_node))
                 output_edges_list.append((event_node_name, next_mapping_node_name1))
 
     return output_edges_list
@@ -136,7 +136,7 @@ def visualize_and_save(dtl_graph, target_file):
     pydot_dtl_graph = nx.drawing.nx_pydot.to_pydot(nx_dtl_graph)
     try:
         pydot_dtl_graph.write_png(filename + '.png')
-    except Exception as e:
+    except Exception:
         # Exception: "dot" not found in path.
         # For people with who does not have Graphviz installed
         print("Graphviz not installed. Cannot render image as .png, saved as .gv instead", file=sys.stderr)
