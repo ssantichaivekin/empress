@@ -3,9 +3,9 @@
 # Plots the cost space using a matplotlib/pyplot
 # Updated June 2020 to plot costs relative to loss rather than to duplication
 
+import sys
 import matplotlib
 from matplotlib.axes import Axes
-matplotlib.use('tkagg') # need this so plt.show() works
 from matplotlib import pyplot as plt
 from shapely.geometry import Polygon, LineString, Point
 
