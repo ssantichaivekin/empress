@@ -1,7 +1,8 @@
 # test_Tree.py
-# Tests the Tree class and TreeFormatConverter.py
+# Tests the Tree class and tree_format_converter.py
 
-from empress.topo_sort.TreeFormatConverter import *
+from empress.topo_sort import Tree
+from empress.topo_sort.tree_format_converter import dict_to_tree
 
 # Edge-based format is the primary format used by eMPRess algorithms.  This is the format that newickFormatReader.py
 # constructs from a .newick input file.

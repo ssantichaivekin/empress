@@ -1,4 +1,4 @@
-# TreeFormatConverter.py
+# tree_format_converter.py
 # Converts between different formats of trees
 
 from empress.topo_sort import Tree  # Tree class

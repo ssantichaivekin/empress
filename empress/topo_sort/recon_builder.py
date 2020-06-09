@@ -5,7 +5,7 @@
 
 from empress.topo_sort.Tree import NodeLayout
 from empress.topo_sort.Tree import TreeType
-from empress.topo_sort.TreeFormatConverter import dict_to_tree
+from empress.topo_sort.tree_format_converter import dict_to_tree
 
 __all__ = ["build_trees_with_temporal_order"]
 
