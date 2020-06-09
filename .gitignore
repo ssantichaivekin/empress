@@ -9,4 +9,13 @@ __pycache__/
 # editor-generated files
 .vscode/
 .idea/
+
+# Images and Documents
+*.gv
+*.jpg
+*.jpeg
+*.png
+*.pdf
+
+# Unix-generated files
 *.swp

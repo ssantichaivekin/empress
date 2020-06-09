@@ -1,28 +1,13 @@
-from empress.clumpr import ClusterUtil, HistogramDisplay, DTLMedian
-
 from pathlib import Path
+
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 
-# Ideas
-# - Correlate normality with improvement
-# - Correlate improvement with depth / no. of graphs before clustering
-# - Correlate improvement with the number of clusters
-# - Just a histogram of the improvements for each tree
-# - Normality distance (i.e. Normality statistic instead of average for the PDV)
-#   - How does this correlate with improvements in the other metrics?
-# - Generally, for each metric how does it improve the other metrics
-#   - Ex. correlate PDV improvement with Support improvement for clusterings created
-#       using the PDV (or support) distance.
-# - Use "increases average improvement the most" rather than "smallest distance between pairs"
-#   for deciding which to merge
-#   - is this the same?
+from empress.clumpr import ClusterUtil, HistogramDisplay, DTLMedian
 
-# Improvement vs. number of clusters, but improvement is vs. 1 cluster only
 
-# The width parameter is unused -- it's here to maintain compatibility with HistogramDisplay.plot_histogram
 def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):
     """
     Creates Support visualization
@@ -30,12 +15,12 @@ def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x
     :param hist_def <tuple> - size 2, hist and bins
     :param width <float> - width of the plot
     :param tree_name <str> - name of the tree file
-    :param d <float> - the input gene tree
-    :param t <float> - the value of the gene root
-    :param l <float> - reconciliation graph
-    :max_x d <float> - the input gene tree
-    :max_y t <float> - the value of the gene root
-    :title l <str> - Title for the plot
+    :param d <float> - duplication cost
+    :param t <float> - transfer cost
+    :param l <float> - loss cost
+    :max_x <float> - maximum x value
+    :max_y <float> - maximum y value
+    :title <str> - Title for the plot
     """
     hist, bins = hist_def
     width = bins[1] - bins[0]
@@ -53,8 +38,6 @@ def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x
     plt.savefig(plot_file, bbox_inches="tight")
     plt.clf()
 
-# My attempt at leveraging the fact that we want to generate the plots in the same
-# manner regardless of which type of plot to use...
 def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, tree_data):
     """
     Creates Support visualization
@@ -124,8 +107,7 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
     :param species_tree <OrderedDict> - the input species tree
     :param gene_root <str> - the value of the gene root
     :param best_roots <list> - list of str of the best roots
-    :return get_median <func get_median> - the function that calculate
-    :median for a given graph
+    :return get_median <func get_median> - the function that calculates the median for a graph
     """
     def get_median(graph):
         """
@@ -143,9 +125,9 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
 def perform_clustering(tree_data, d, t, l, k, args):
     """
     :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
-    :param d <float>: the cost of a duplication
-    :param t <float>: ^^ transfer
-    :param l <float>: ^^ loss
+    :param d <float>: cost of a duplication
+    :param t <float>: cost of a transfer
+    :param l <float>: cost of a loss
     :param k <float>: number of clusters
     :param args <ArgumentParser>: args parse object that contains all parameters needed 
     to run a functionality.
