@@ -9,13 +9,13 @@
 # parasite tree must be named "pTop".
 
 # python libraries
-from collections import *
 import copy
+from collections import *
 from functools import cmp_to_key   # required for cmp_to_key
 
 # xscape libraries
-from .common import *
-from .CostVector import *
+from empress.xscape.common import INF
+from empress.xscape.CostVector import CostVector
 
 # The three dictionaries below correspond to the A, C, and Best DP tables
 # described in the technical report.

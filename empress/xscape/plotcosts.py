@@ -7,11 +7,11 @@ import random
 import collections
 
 # matplotlib libraries
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 
 # xscape libraries
-from common import *
-from CostVector import *
+from empress.xscape.common import frange, getBestCV
+from empress.xscape.CostVector import CostVector
 
 def plotcosts(CVlist, switchMin, switchMax, dupMin, dupMax, steps, outfile,
               log=True, display=False):

@@ -3,8 +3,8 @@ This demo demonstrates how you would use the reconciliation graph visualizer
 written by me and Dennis.
 '''
 
-import DTLReconGraph # for creating a reconciliation graph
-import ReconciliationVisualization # for visualization
+from empress.clumpr import DTLReconGraph # for creating a reconciliation graph
+from empress.clumpr import reconciliation_visualization # for visualization
 
 # Since we currently have no way of storing reconciliation graph in a file,
 # we generate it every time when we run the algorithm
@@ -15,5 +15,5 @@ result = DTLReconGraph.reconcile("./newickSample/size5/test-size5-no700.newick",
 # in the tuple
 host, paras, graph, num_recon, best_roots = result
 # this visualize the graph and save it at './sampleVis700.png'
-ReconciliationVisualization.visualizeAndSave(graph, './sampleVis700.png')
+reconciliation_visualization.visualize_and_save(graph, './sampleVis700.png')
 

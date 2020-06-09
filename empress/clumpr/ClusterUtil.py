@@ -1,9 +1,11 @@
-from empress.clumpr import DTLReconGraph, Diameter, HistogramAlg, DTLMedian
-
 import itertools
 import functools
 from collections import deque
+
 import numpy as np
+
+from empress.clumpr import DTLReconGraph, Diameter, HistogramAlg, DTLMedian
+
 
 def graph_union(g1, g2):
     """

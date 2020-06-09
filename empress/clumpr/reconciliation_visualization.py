@@ -33,116 +33,116 @@ EXAMPLE2 = {
     ('p8', 'h4'): [('T', ('p4', 'h4'), ('p3', 'h2'))]
 }
 
-def eventNodeType(eventNode):
-    '''
+def _event_node_type(event_node):
+    """
     Returns 'S', 'T', 'D', L', or 'C'
     'S': speciation
     'D': duplication
     'T': transfer
     'L': loss
     'C': end event
-    '''
-    return eventNode[0]
+    """
+    return event_node[0]
 
-def mappingNodeToStr(mappingNode):
-    return "{}-{}".format(mappingNode[0], mappingNode[1])
+def _mapping_node_to_str(mapping_node):
+    return "{}-{}".format(mapping_node[0], mapping_node[1])
 
-def firstChild(eventNode):
+def _first_child(event_node):
     # ['T', ('p3', 'h2'), ('p4', 'h4'), 0.5]
     # returns a mapping node
-    assert(eventNode[1][0] and eventNode[1][1])
-    return eventNode[1]
+    assert(event_node[1][0] and event_node[1][1])
+    return event_node[1]
 
-def secondChild(eventNode):
+def _second_child(event_node):
     # ['T', ('p3', 'h2'), ('p4', 'h4'), 0.5]
     # ['C', (None, None), (None, None), 1.0]
     # returns a mapping node
     # do not use on null entities
-    assert(eventNode[2][0] and eventNode[2][1])
-    return eventNode[2]
+    assert(event_node[2][0] and event_node[2][1])
+    return event_node[2]
 
-def eventNodeToStr(eventNode):
+def _event_node_to_str(event_node):
     # ('S', ('p7', 'h1'), ('p8', 'h2'), 0.5], 2)
     # ('S', ('n32', 'm143'), ('n31', 'm144'))
-    if eventNodeType(eventNode) == 'S':
+    if _event_node_type(event_node) == 'S':
         return "spec | {}-{}, {}-{}".format(
-            eventNode[1][0], eventNode[1][1],
-            eventNode[2][0], eventNode[2][1]
+            event_node[1][0], event_node[1][1],
+            event_node[2][0], event_node[2][1]
         )
-    elif eventNodeType(eventNode) == 'T':
+    elif _event_node_type(event_node) == 'T':
         return "tran | {}-{}, {}-{}".format(
-            eventNode[1][0], eventNode[1][1],
-            eventNode[2][0], eventNode[2][1]
+            event_node[1][0], event_node[1][1],
+            event_node[2][0], event_node[2][1]
         )
-    elif eventNodeType(eventNode) == 'D':
+    elif _event_node_type(event_node) == 'D':
         return "dupl | {}-{}, {}-{}".format(
-            eventNode[1][0], eventNode[1][1],
-            eventNode[2][0], eventNode[2][1]
+            event_node[1][0], event_node[1][1],
+            event_node[2][0], event_node[2][1]
         )
-    elif eventNodeType(eventNode) == 'L':
+    elif _event_node_type(event_node) == 'L':
         return "loss | {}-{}".format(
-            eventNode[1][0], eventNode[1][1],
+            event_node[1][0], event_node[1][1],
         )
-    if eventNodeType(eventNode) == 'C':
+    if _event_node_type(event_node) == 'C':
         return "END"
 
-def edgesFromReconciliationGraph(dtlGraph):
-    outputEdgesList = []
-    for mappingNode, eventNodes in list(dtlGraph.items()):
-        mappingNodeName = mappingNodeToStr(mappingNode)
+def edges_from_recongraph(dtl_graph):
+    output_edges_list = []
+    for mappingNode, eventNodes in list(dtl_graph.items()):
+        mappingNodeName = _mapping_node_to_str(mappingNode)
         for eventNode in eventNodes :
             # check whether this is an event node or just
             # extra data -- SEE EXAMPLE1
             try:
                 assert eventNode[0] in ['S', 'T', 'D', 'L', 'C']
-            except:
+            except AssertionError:
                 continue
 
-            eventNodeName = eventNodeToStr(eventNode)
+            event_node_name = _event_node_to_str(eventNode)
             # we do not have to insert the end event to
             # the visualization
-            if eventNodeType(eventNode) == 'C':
+            if _event_node_type(eventNode) == 'C':
                 pass
             # loss has only one children
-            elif eventNodeType(eventNode) == 'L':
-                outputEdgesList.append((mappingNodeName, eventNodeName))
+            elif _event_node_type(eventNode) == 'L':
+                output_edges_list.append((mappingNodeName, event_node_name))
 
-                nextMappingNodeName = mappingNodeToStr(firstChild(eventNode))
-                outputEdgesList.append((eventNodeName, nextMappingNodeName))
+                next_mapping_node_name = _mapping_node_to_str(_first_child(eventNode))
+                output_edges_list.append((event_node_name, next_mapping_node_name))
             # other types have two children
             else:
-                outputEdgesList.append((mappingNodeName, eventNodeName))
+                output_edges_list.append((mappingNodeName, event_node_name))
              
-                nextMappingNodeName0 = mappingNodeToStr(firstChild(eventNode))
-                outputEdgesList.append((eventNodeName, nextMappingNodeName0))
-                nextMappingNodeName1 = mappingNodeToStr(secondChild(eventNode))
-                outputEdgesList.append((eventNodeName, nextMappingNodeName1))
+                next_mapping_node_name0 = _mapping_node_to_str(_first_child(eventNode))
+                output_edges_list.append((event_node_name, next_mapping_node_name0))
+                next_mapping_node_name1 = _mapping_node_to_str(_second_child(eventNode))
+                output_edges_list.append((event_node_name, next_mapping_node_name1))
 
-    return outputEdgesList
+    return output_edges_list
 
-def visualizeAndSave(dtlGraph, targetFile):
-    '''
+def visualize_and_save(dtl_graph, target_file):
+    """
     Receives that graph part of the reconciliation graph.
     Visualizes it and saves it to targetfile.
 
     Note: targetfile must ends with .png
-    '''
-    filename, extension = os.path.splitext(targetFile)
+    """
+    filename, extension = os.path.splitext(target_file)
     # creates an empty graph
-    nxDtlGraph = nx.DiGraph()
+    nx_dtl_graph = nx.DiGraph()
     # add edges -- note that the library already prefers to place
     # topologically lower nodes on the top
-    nxDtlGraph.add_edges_from(edgesFromReconciliationGraph(dtlGraph))
-    pydotDtlGraph = nx.drawing.nx_pydot.to_pydot(nxDtlGraph)
+    nx_dtl_graph.add_edges_from(edges_from_recongraph(dtl_graph))
+    pydot_dtl_graph = nx.drawing.nx_pydot.to_pydot(nx_dtl_graph)
     try:
-        pydotDtlGraph.write_png(filename + '.png')
+        pydot_dtl_graph.write_png(filename + '.png')
     except Exception as e:
         # Exception: "dot" not found in path.
         # For people with who does not have Graphviz installed
         print("Graphviz not installed. Cannot render image as .png, saved as .gv instead", file=sys.stderr)
         print("You can visualize the .gv file in http://www.webgraphviz.com/", file=sys.stderr)
-        pydotDtlGraph.write(filename + '.gv')
+        pydot_dtl_graph.write(filename + '.gv')
 
 if __name__ == '__main__' :
-    visualizeAndSave(EXAMPLE1, "example1.png")
-    visualizeAndSave(EXAMPLE2, "example2.png")
+    visualize_and_save(EXAMPLE1, "example1.png")
+    visualize_and_save(EXAMPLE2, "example2.png")
