@@ -30,7 +30,7 @@ from typing import Tuple, Iterator
 from numpy import mean
 from numpy import median as md
 
-from empress.clumpr import ReconcileMainInput, Greedy
+from empress.clumpr import ReconcileMainInput
 from empress.newickFormatReader import ReconInput
 
 
@@ -72,12 +72,49 @@ def postorder(tree: dict, root_edge_name: Tuple) -> Iterator:
         yield from postorder(tree, right_child_edge_name)
         yield root_edge_name
 
+def _order_dtl(dtl, parasite_root):
+    """This function takes in a DTL graph and the ParasiteRoot. It outputs a
+    list, keys_l, that contains tuples. Each tuple has two elements. The first
+    is a mapping node of the form (p, h), where p is a parasite node and h is
+    a host node. The second element is a level representing the depth of that
+    mapping node within the tree."""
+
+    keys_l = []
+    top_nodes = []
+    for key in dtl:
+        if key[0] == parasite_root:
+            top_nodes.append(key)
+    for vertex in top_nodes:
+        keys_l.extend(_order_dtl_roots(dtl, vertex, 0))
+    return keys_l
+
+def _order_dtl_roots(dtl, vertex, level):
+    """This function takes a DTL graph, one node, a vertex, of the DTL graph,
+    and level, and returns a list, keys_l, that contains tuples. Each tuple has
+    two elements. The first is a mapping node of the form (p, h), where p is a
+    parasite node and h is a host node. The second element is a level
+    representing the depth of that mapping node within the tree. This function
+    adds the input vertex to keys_l and recurses on its children."""
+
+    keys_l = []
+    # Loop through each event associated with key in DTL
+    for i in range(len(dtl[vertex]) - 1):
+        event = dtl[vertex][i]
+        child1 = event[1]
+        child2 = event[2]
+        keys_l = keys_l + [(vertex, level)]
+        if child1[0] is not None:
+            keys_l.extend(_order_dtl_roots(dtl, child1, level + 1))
+        if child2[0] is not None:
+            keys_l.extend(_order_dtl_roots(dtl, child2, level + 1))
+    return keys_l
+
 def contemporaneous(host_1, host_1_parent, host_2, host_2_parent, distances):
     """
     :param host_1: the first host node
     :param host_1_parent: its parent
     :param host_2: the second host node
-    :param host_2_paren: its parent
+    :param host_2_parent: its parent
     :param distances: the distance dictionary for the host tree
     :return: bool of whether the two lineages overlap in time
     """
@@ -426,7 +463,7 @@ def preorder_dtl_sort(dtl_recon_graph: dict, parasite_root: str) -> list:
     tuple occurs. Note level 0 is the root and the highest level represents tips.
     """
 
-    keys_l = Greedy.orderDTL(dtl_recon_graph, parasite_root)
+    keys_l = _order_dtl(dtl_recon_graph, parasite_root)
     ordered_keys_l = []  # We could marginally improve efficiency here by locking list length, but we don't do that here
     level_counter = 0
     while len(ordered_keys_l) < len(keys_l):
