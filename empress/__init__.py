@@ -73,10 +73,10 @@ class ReconGraphWrapper(Drawable):
         pass
 
 
-class CostRegionWrapper(Drawable):
+class CostRegionsWrapper(Drawable):
     def __init__(self, cost_vectors, transfer_min, transfer_max, dup_min, dup_max):
         """
-        CostRegionWrapper wraps all information required to display a cost region plot.
+        CostRegionsWrapper wraps all information required to display a cost region plot.
         """
         self._cost_vectors = cost_vectors
         self._transfer_min = transfer_min
@@ -89,8 +89,8 @@ class CostRegionWrapper(Drawable):
                                   self._dup_min, self._dup_max, log=False)
 
 
-def compute_cost_region(recon_input: ReconInput, transfer_min: float, transfer_max: float,
-                        dup_min: float, dup_max: float) -> CostRegionWrapper:
+def compute_cost_regions(recon_input: ReconInput, transfer_min: float, transfer_max: float,
+                         dup_min: float, dup_max: float) -> CostRegionsWrapper:
     """
     Compute the cost polygon of recon_input. The cost polygon can be used
     to create a figure that separate costs into different regions.
@@ -99,7 +99,7 @@ def compute_cost_region(recon_input: ReconInput, transfer_min: float, transfer_m
     host_tree = recon_input.host_tree
     tip_mapping = recon_input.phi
     cost_vectors = xscape_reconcile(parasite_tree, host_tree, tip_mapping, transfer_min, transfer_max, dup_min, dup_max)
-    return CostRegionWrapper(cost_vectors, transfer_min, transfer_max, dup_min, dup_max)
+    return CostRegionsWrapper(cost_vectors, transfer_min, transfer_max, dup_min, dup_max)
 
 
 def reconcile(recon_input: ReconInput, dup_cost: int, trans_cost: int, loss_cost: int) -> ReconGraphWrapper:
