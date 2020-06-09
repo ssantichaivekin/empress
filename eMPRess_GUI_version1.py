@@ -1,12 +1,12 @@
-# eMPRess_GUI_iteration4
+# eMPRess_GUI_iteration5
 
 import tkinter as tk
+from tkinter import messagebox
+from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import MouseEvent, key_press_handler
-#import sys
-#sys.path.append('/Users/YangQing/Desktop/eMPRess')
 import empress
 
 class App:
@@ -50,22 +50,22 @@ class App:
         self.output_frame.grid_propagate(False)
 
         ### "Load File" button ###
-        # loads in an input file
-        # and displays the number of leaves in each tree and entry boxes for DTL costs
+        # loads in an input .newick file
+        # and displays the number of leaves in each tree (DEMO for now) and entry boxes for DTL costs
         load_file_btn = tk.Button(self.func_frame, text="Load File", background="green", height=2, width=9, command=self.load_file)
         load_file_btn.grid(row=0, column=0)
-        # creates a Label to overwrite in the grid system (old path will be destroyed before new path is displayed)
+        # creates a Label to overwrite the old file path 
         self.file_path_label = tk.Label(self.output_frame)
 
         ### "View Event Cost Landscape" button ###
-        # pops up a matplotlib graph
+        # pops up a matplotlib graph for the cost landscape
         self.view_cost_btn = tk.Button(self.func_frame, text="View Event Cost Landscape", command=self.plot_cost_landscape, state=tk.DISABLED)
         self.view_cost_btn.grid(row=1, column=0)
 
         ### "Compute Reconciliations" button ###
-        # displays reconciliation results(numbers) and three options(checkboxes) for viewing graphical results
+        # displays reconciliation results(numbers) and three options(checkboxes) for viewing graphical analysis
         self.compute_recon_button = tk.Button(self.func_frame, text="Compute Reconciliations", command=self.recon_analysis, state=tk.DISABLED)
-        self.compute_recon_button.grid(row=2, column=0)#, padx=10, pady=10)
+        self.compute_recon_button.grid(row=2, column=0)
 
     def load_file(self):
         """Loads in an input file and displays the number of leaves in each tree when "Load File" button is clicked."""
@@ -78,21 +78,26 @@ class App:
         recon_input_info_frame.grid_rowconfigure(2, weight=1)
         recon_input_info_frame.grid_propagate(False)
 
-        # allows selecting a file but not opening the file currently
-        # filetypes selection doesn't work on Mac
-        recon_input_info_frame.filePath = tk.filedialog.askopenfilename(initialdir="/desktop", title="Select a file")
-        self.file_path_label.destroy()  # overwrites the old file path in the grid system
-
-        self.file_path_label = tk.Label(recon_input_info_frame, text=recon_input_info_frame.filePath)
-        self.file_path_label.grid(row=0, column=0, sticky="w")
-        host_tree_info = tk.Label(recon_input_info_frame, text="Host:  83 tips (DEMO)")
-        host_tree_info.grid(row=1, column=0, sticky="w")
-        parasite_info = tk.Label(recon_input_info_frame, text="Parasite/symbiont:  78 tips (DEMO)")
-        parasite_info.grid(row=2, column=0, sticky="w")
+        # allows loading a .newick file
+        self.file_path = ""
+        input_file = tk.filedialog.askopenfilename(initialdir="/desktop", title="Select a file")
+        if Path(input_file).suffix == '.newick': 
+            self.file_path = input_file
+            self.file_path_label.destroy()  # overwrites the old file path in the grid system
+            self.file_path_label = tk.Label(recon_input_info_frame, text=input_file)
+            self.file_path_label.grid(row=0, column=0, sticky="w")
+            # this is only DEMO for now
+            host_tree_info = tk.Label(recon_input_info_frame, text="Host:  83 tips (DEMO)")
+            host_tree_info.grid(row=1, column=0, sticky="w")
+            parasite_info = tk.Label(recon_input_info_frame, text="Parasite/symbiont:  78 tips (DEMO)")
+            parasite_info.grid(row=2, column=0, sticky="w")           
+        else:
+            messagebox.showinfo("Warning", "Please load a '.newick' file.")
 
         # enables the next step, setting DTL costs
-        self.DTL_cost()
-        if recon_input_info_frame.filePath != "": self.view_cost_btn.configure(state=tk.NORMAL)
+        if self.file_path != "": 
+            self.view_cost_btn.configure(state=tk.NORMAL)
+            self.DTL_cost()
 
     def DTL_cost(self):
         """Sets DTL costs by clicking on the matplotlib graph or by entering manually."""
@@ -118,12 +123,15 @@ class App:
         dup_entry = tk.Entry(costs_frame, width=3, textvariable=self.dup_cost)
         trans_entry = tk.Entry(costs_frame, width=3, textvariable=self.trans_cost)
         loss_entry = tk.Entry(costs_frame, width=3, textvariable=self.loss_cost)
+        dup_entry.bind('<Return>', self.check_dup_input)
+        trans_entry.bind('<Return>', self.check_trans_input)
+        loss_entry.bind('<Return>', self.check_loss_input)
+        #dup_entry.bind('<FocusOut>', self.check_dup_input)  # (bug) this will make the invalid input warning appear twice
+        #trans_entry.bind('<FocusOut>', self.check_trans_input)  # same as above 
+        #loss_entry.bind('<FocusOut>', self.check_loss_input)  # same as above 
         dup_entry.grid(row=0, column=1, sticky="w")
         trans_entry.grid(row=1, column=1, sticky="w")
         loss_entry.grid(row=2, column=1, sticky="w")
-
-        # enables the next step, viewing reconciliation results
-        self.compute_recon_button.configure(state=tk.NORMAL)
 
     def plot_cost_landscape(self):
         """Plots the cost landscape using matplotlib and embeds the graph in a tkinter window."""    
@@ -135,35 +143,75 @@ class App:
         plt_frame = tk.Frame(plt_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
         plt_frame.pack_propagate(False)
-        # use empress
-        recon_input = empress.read_input("./examples/heliconius.newick")
-        cost_region = empress.compute_cost_region(recon_input, 0.5, 10, 0.5, 10)  # create
-        cost_region.draw_to_file('./examples/cost_poly.png')  # draw to a file
+        # use empress wrapper
+        recon_input = empress.read_input(self.file_path)
+        cost_region = empress.compute_cost_region(recon_input, 0.5, 10, 0.5, 10)  
+        #cost_region.draw_to_file('./examples/cost_poly.png')  # draw and save to a file
         fig = cost_region.draw()  # draw to figure (creates matplotlib figure)
-
         canvas = FigureCanvasTkAgg(fig, plt_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         toolbar = NavigationToolbar2Tk(canvas, plt_frame)
         toolbar.update()
         canvas.get_tk_widget().pack(side=tk.TOP)
-        # prints the x,y coordinates clicked by the user inside the graph otherwise prints an error message
+        # updates the DTL costs using the x,y coordinates clicked by the user inside the graph 
+        # otherwise pops up a warning message window
         fig.canvas.callbacks.connect('button_press_event', self.get_xy_coordinates)
 
     def get_xy_coordinates(self, event):
-        """Gets the x,y coordinates when user clicks on the matplotlib graph."""
+        """Updates the DTL costs when user clicks on the matplotlib graph, otherwise pops up a warning message window."""
         if event.inaxes is not None:
-            self.ix, self.iy = event.xdata, event.ydata
-            print (self.ix, self.iy)
-            self.update_DTL_costs()
+            self.dup_cost.set("1")
+            self.trans_cost.set(str(round(event.ydata, 2)))
+            self.loss_cost.set(str(round(event.xdata, 2)))
+            # enables the next step, viewing reconciliation result
+            self.has_dup_cost = True
+            self.has_trans_cost = True
+            self.has_loss_cost = True
+            self.enable_recon_btn()
         else:
-            print ('Please click inside the axes bounds')
+            messagebox.showinfo("Warning", "Please click inside the axes bounds.")
 
-    def update_DTL_costs(self):
-        """Updates the corresponding integer DTL costs when user clicks on the matplotlib graph."""
-        self.dup_cost.set("1")
-        self.trans_cost.set(str(int(self.iy)))
-        self.loss_cost.set(str(int(self.ix)))
+    def enable_recon_btn(self):
+        """Enables the next step, viewing reconciliation results, after DTL costs are set correctly."""
+        if self.has_dup_cost == True and self.has_trans_cost == True and self.has_loss_cost == True:
+            self.compute_recon_button.configure(state=tk.NORMAL)
+
+    def check_dup_input(self, *args):
+        """Checks and updates the duplication cost when user enters a value in the entry box."""
+        dupValue_without_decimal_point = self.dup_cost.get().replace(".", "")
+        if str.isdigit(dupValue_without_decimal_point) and ("-" not in dupValue_without_decimal_point):
+                self.dup_cost.set(str(round(float(self.dup_cost.get()), 2)))
+                self.has_dup_cost = True
+                self.enable_recon_btn()
+        else:
+            messagebox.showinfo("Warning", "Please enter a non-negative number.")
+            self.dup_cost.set("")
+            self.has_dup_cost = False
+
+    def check_trans_input(self, *args):
+        """Checks and updates the transfer cost when user enters a value in the entry box."""
+        transValue_without_decimal_point = self.trans_cost.get().replace(".", "")
+        if str.isdigit(transValue_without_decimal_point) and ("-" not in transValue_without_decimal_point):
+                self.trans_cost.set(str(round(float(self.trans_cost.get()), 2)))
+                self.has_trans_cost = True
+                self.enable_recon_btn()
+        else:
+            messagebox.showinfo("Warning", "Please enter a non-negative number.")
+            self.trans_cost.set("")
+            self.has_trans_cost = False
+    
+    def check_loss_input(self, *args):
+        """Checks and updates the loss cost when user enters a value in the entry box."""
+        lossValue_without_decimal_point = self.loss_cost.get().replace(".", "")
+        if str.isdigit(lossValue_without_decimal_point) and ("-" not in lossValue_without_decimal_point):
+                self.loss_cost.set(str(round(float(self.loss_cost.get()), 2)))
+                self.has_loss_cost = True
+                self.enable_recon_btn()
+        else:
+            messagebox.showinfo("Warning", "Please enter a non-negative number.")
+            self.loss_cost.set("")
+            self.has_loss_cost = False
 
     def recon_analysis(self):
         """Displays reconciliation results in numbers and further viewing options for graphical analysis."""
