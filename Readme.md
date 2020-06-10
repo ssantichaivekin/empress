@@ -20,10 +20,10 @@ Every time you restart the terminal, make sure you run `pipenv shell` before run
 ## Running eMPRess
 
 On the command line, the structure of the inputs are:    
-* `python empress.py -fn <path to tree data file> <functionality>`
+* `python empress_cli.py -fn <path to tree data file> <functionality>`
 
 For example, to run Costscape with default parameters, you run:
-* `python empress.py -fn examples/heliconius.newick costscape`
+* `python empress_cli.py -fn examples/heliconius.newick costscape`
 
 For specific parameters of each functionality, consult the list below:
 
@@ -41,7 +41,7 @@ Note: value in parenthesis denotes default value, asterisk denotes boolean flags
 
 For example, the following example runs Costscape with duplication low value of 0.5, duplication high value of 10, transfer low value of 0.5, 
 and transfer high value of 10, that saves to a file called `foo.pdf` display it in log scale.
-* `python empress.py -fn examples/heliconius.newick costscape -tl 0.5 -th 10 -dl 0.5 -dh 10 --outfile costscape-example-img.pdf --log`
+* `python empress_cli.py -fn examples/heliconius.newick costscape -tl 0.5 -th 10 -dl 0.5 -dh 10 --outfile costscape-example-img.pdf --log`
 
 ### DTL Reconciliation
 * `-d` : Duplication cost (2)
@@ -49,7 +49,7 @@ and transfer high value of 10, that saves to a file called `foo.pdf` display it 
 * `-l` : Lost cost (1)
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 0, you run
-* `python empress.py -fn examples/heliconius.newick reconcile -d 4 -t 2 -l 0`
+* `python empress_cli.py -fn examples/heliconius.newick reconcile -d 4 -t 2 -l 0`
 
 ### Pair distance Histogram
 * `-d` : Duplication cost (2)
@@ -65,7 +65,7 @@ For example, to run DTL Reconciliation with duplication cost of 4, transfer cost
 * `--time` : Time the diameter algorithm*
 
 For example, to run Pair-distance Histogram that outputs a csv file at `foo.csv`, outputs a histogram to `bar.pdf` and normalizes the y-axis, you run
-* `python empress.py -fn examples/heliconius.newick histogram --csv foo.csv --histogram bar.pdf --ynorm`
+* `python empress_cli.py -fn examples/heliconius.newick histogram --csv foo.csv --histogram bar.pdf --ynorm`
 
 ### Cluster MPR
 * `-d` : Duplication cost (2)
@@ -81,4 +81,4 @@ For example, to run Pair-distance Histogram that outputs a csv file at `foo.csv`
 * `--support` : Use the weighted average event support to evaluate clusters*
 
 For example, to run Cluster MPR that prints out the medians of each cluster with 4 MPRs using the weighted average event support, you run 
-* `python empress.py -fn examples/heliconius.newick clumpr --median --nmprs 4 --support`
+* `python empress_cli.py -fn examples/heliconius.newick clumpr --median --nmprs 4 --support`

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# empress.py
+# empress_cli.py
 # Cat Ngo, April 2020
 # Updated 6/1/2020 by RLH
 
