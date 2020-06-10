@@ -550,7 +550,7 @@ def usage():
             ' respectively')
 
 
-# This should be called in empress.py when the user wants to run reconcile
+# This should be called in empress_cli.py when the user wants to run reconcile
 def reconcile_inter(tree_data: ReconInput):
     """ 
     :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
@@ -561,7 +561,7 @@ def reconcile_inter(tree_data: ReconInput):
         print((str(result[i]) + '\n'))
 
 
-# This should be called in empress.py when the user already supplied the DTL values
+# This should be called in empress_cli.py when the user already supplied the DTL values
 def reconcile_noninter(tree_data: ReconInput, duplication: float, transfer: float, loss: float):
     """ 
     :param tree_data <ReconInput> : Output of newickFormatReader.getInput()
