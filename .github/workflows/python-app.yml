@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         pipenv install --dev
-    - name: [Not Run] Lint with flake8
+    - name: (Not Run) Lint with flake8
       run: |
         # pipenv install flake8
         # stop the build if there are Python syntax errors or undefined names
