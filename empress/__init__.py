@@ -1,8 +1,16 @@
 """
 Wraps empress functionalities
 """
+import matplotlib
+# the tkagg backend is for pop-up windows, and will not work in environments
+# without graphics such as a remote server. Refer to issue #49
+try: 
+    matplotlib.use("tkagg")
+except ImportError:
+    print("Using Agg backend: will not be able to create pop-up windows.")
+    matplotlib.use("Agg")
 from matplotlib import pyplot as plt
-from typing import List
+from typing import List, Iterable
 from abc import ABC, abstractmethod
 
 from empress.xscape.CostVector import CostVector

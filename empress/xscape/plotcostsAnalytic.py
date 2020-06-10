@@ -2,9 +2,9 @@
 # Ran Libeskind-Hadas, October 2013
 # Plots the cost space using a matplotlib/pyplot
 
+import sys
 import matplotlib
 from matplotlib.axes import Axes
-matplotlib.use('tkagg') # need this so plt.show() works
 from matplotlib import pyplot as plt
 from shapely.geometry import Polygon, LineString, Point
 
