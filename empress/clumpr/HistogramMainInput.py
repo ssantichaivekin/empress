@@ -1,6 +1,7 @@
 # HistogramMainInput.py
 # Adrian Garcia, March 2020
 # Main input function for HistogramMain
+from pathlib import Path
 
 def getInput(filename, d, t, l, args):
     """ 
