@@ -4,9 +4,9 @@
 
 def getInput(d, t, l, k, args):
     """ 
-    :param d <float> - the cost of a duplication
-    :param t <float> - ^^ transfer
-    :param l <float> - ^^ loss
+    :param d <float> - cost of a duplication
+    :param t <float> - cost of a transfer
+    :param l <float> - cost of a loss
     :param k <float>: number of clusters
     :param relev_params: relevant parameters
     :param args <dict str->str> - dictionary that contains all parameters needed 
@@ -24,7 +24,7 @@ def getInput(d, t, l, k, args):
 #TODO: Add better docstrings!!!
 def getMutuallyExclusiveInput(inputs):
     """
-    This method is for interactively asking for arguments that are mutually exclusive 
+    Interactively ask for arguments that are mutually exclusive 
     :param inputs: dictionary of arguments where key is parameter name and value is parameter value.
     """
 
@@ -87,7 +87,6 @@ def getMutuallyExclusiveInput(inputs):
 def getOptionalInput(inputs):
     """ 
     :param inputs: dictionary of arguments where key is parameter name and value is parameter value.
-
     """
     bool_params = ("medians")
     for param in bool_params:

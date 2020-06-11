@@ -1,9 +1,11 @@
 # commonAnalytic.py
 # Updated 6/1/2020: loss = 1, x-axis is duplication, y-axis is transfer
 
-from shapely.geometry import *
-from .CostVector import *
 import random
+
+from shapely.geometry import Polygon
+
+from empress.xscape.CostVector import CostVector
 
 def getRegions(CVlist, transferMin, transferMax, dupMin, dupMax,
                restrict=True):

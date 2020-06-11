@@ -1,8 +1,16 @@
 """
 Wraps empress functionalities
 """
-import matplotlib.pyplot as plt
-from typing import List
+import matplotlib
+# the tkagg backend is for pop-up windows, and will not work in environments
+# without graphics such as a remote server. Refer to issue #49
+try:
+    matplotlib.use("tkagg")
+except ImportError:
+    print("Using Agg backend: will not be able to create pop-up windows.")
+    matplotlib.use("Agg")
+from matplotlib import pyplot as plt
+from typing import List, Iterable
 from abc import ABC, abstractmethod
 
 from empress.xscape.CostVector import CostVector
@@ -12,8 +20,6 @@ from empress.newickFormatReader import getInput as read_input
 from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
 from empress.clumpr import DTLReconGraph
-from empress.clumpr import ReconciliationVisualization
-
 
 class Drawable(ABC):
     """
@@ -78,25 +84,24 @@ class ReconGraphWrapper(Drawable):
         pass
 
 
-class CostRegionWrapper(Drawable):
-    def __init__(self, cost_vectors, switch_min, switch_max, loss_min, loss_max):
+class CostRegionsWrapper(Drawable):
+    def __init__(self, cost_vectors, transfer_min, transfer_max, dup_min, dup_max):
         """
-        CostRegionWrapper wraps all information required to display a cost region plot.
+        CostRegionsWrapper wraps all information required to display a cost region plot.
         """
         self._cost_vectors = cost_vectors
-        self._switch_min = switch_min
-        self._switch_max = switch_max
-        self._loss_min = loss_min
-        self._loss_max = loss_max
-        pass
+        self._transfer_min = transfer_min
+        self._transfer_max = transfer_max
+        self._dup_min = dup_min
+        self._dup_max = dup_max
 
     def draw_on(self, axes: plt.Axes, log=False):
-        xscape_plot_costs_on_axis(axes, self._cost_vectors, self._switch_min, self._switch_max,
-                                  self._loss_min, self._loss_max, log=False)
+        xscape_plot_costs_on_axis(axes, self._cost_vectors, self._transfer_min, self._transfer_max,
+                                  self._dup_min, self._dup_max, log=False)
 
 
-def compute_cost_region(recon_input: ReconInput, switch_low: float, switch_high: float,
-                        lost_low: float, lost_high: float) -> CostRegionWrapper:
+def compute_cost_regions(recon_input: ReconInput, transfer_min: float, transfer_max: float,
+                         dup_min: float, dup_max: float) -> CostRegionsWrapper:
     """
     Compute the cost polygon of recon_input. The cost polygon can be used
     to create a figure that separate costs into different regions.
@@ -104,8 +109,8 @@ def compute_cost_region(recon_input: ReconInput, switch_low: float, switch_high:
     parasite_tree = recon_input.parasite_tree
     host_tree = recon_input.host_tree
     tip_mapping = recon_input.phi
-    cost_vectors = xscape_reconcile(parasite_tree, host_tree, tip_mapping, switch_low, switch_high, lost_low, lost_high)
-    return CostRegionWrapper(cost_vectors, switch_low, switch_high, lost_low, lost_high)
+    cost_vectors = xscape_reconcile(parasite_tree, host_tree, tip_mapping, transfer_min, transfer_max, dup_min, dup_max)
+    return CostRegionsWrapper(cost_vectors, transfer_min, transfer_max, dup_min, dup_max)
 
 
 def reconcile(recon_input: ReconInput, dup_cost: int, trans_cost: int, loss_cost: int) -> ReconGraphWrapper:

@@ -1,7 +1,6 @@
 # DTLReconGraph.py  --  was previously named DP.py
 # Ran Libeskind-Hadas, June 2015
-# The basic DP algorithm for reconciling pairs of trees
-
+# The DP algorithm for reconciling pairs of trees
 # Altered and expanded by Carter Slocum and Annalise Schweickart
 # Altered and expanded by Andrew Ramirez and Eli Zupke
 
@@ -25,23 +24,22 @@
 # mean and median numbers of event nodes per mapping node.
 
 import sys
+from typing import Tuple, Iterator
 
 from numpy import mean
 from numpy import median as md
 
-from empress.clumpr import ReconcileMainInput, Greedy
+from empress.clumpr import ReconcileMainInput
 from empress.newickFormatReader import ReconInput
-
-from typing import Tuple, Iterator
 
 Infinity = float('inf')
 
+
 def preorder(tree: dict, root_edge_name: Tuple) -> Iterator:
     """
-    :param tree: host or parasite tree (see description above)
-    :param root_edge_name: the name associated with the root of the given tree
-    :yield: list of edges in the given tree in preorder (high to low edges). See
-    tech report for more information on post- or pre-order.
+    :param tree <tree> - host or parasite tree (see description above)
+    :param root_edge_name <str> - the name associated with the root of the given tree
+    :yield: list of edges in the given tree in preorder (high to low edges).
     """
 
     value = tree[root_edge_name]
@@ -58,8 +56,7 @@ def preorder(tree: dict, root_edge_name: Tuple) -> Iterator:
 
 def postorder(tree: dict, root_edge_name: Tuple) -> Iterator:
     """ The parameters of this function are the same as that of preorder above, except it
-    returns the edge list in postorder (low to high edges; see tech report for more
-    info on post- or pre-order)."""
+    yields the edge list in postorder. """
 
     value = tree[root_edge_name]
     _, _, left_child_edge_name, right_child_edge_name = value
@@ -73,14 +70,33 @@ def postorder(tree: dict, root_edge_name: Tuple) -> Iterator:
         yield root_edge_name
 
 
-def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:  
+def contemporaneous(host_1, host_1_parent, host_2, host_2_parent, distances):
     """
-    :param host_tree: a host tree in newick format
-    :param parasite_tree: a parasite tree in newick format
-    :param phi: an output of the newick formatter that maps tips from the parasite tree to tips of the host tree
-    :param dup_cost: cost of a duplication event
-    :param transfer_cost: cost of a transfer event
-    :param loss_cost: cost of a loss event
+    :param host_1: the first host node
+    :param host_1_parent: its parent
+    :param host_2: the second host node
+    :param host_2_parent: its parent
+    :param distances: the distance dictionary for the host tree
+    :return: bool of whether the two lineages overlap in time
+    """
+    start_1 = distances[host_1_parent]
+    end_1 = distances[host_1]
+    start_2 = distances[host_2_parent]
+    end_2 = distances[host_2]
+    # They must overlap unless one comes completely before the other
+    if end_1 < start_2:
+        return False
+    if end_2 < start_1:
+        return False
+    return True
+
+
+def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:
+    """
+    :param tree_data <ReconInput> object - See newickFormatReader (data comes from getInput)
+    :param dup_cost <float> - cost of a duplication event
+    :param transfer_cost <float> - cost of a transfer event
+    :param loss_cost <float> - cost of a loss event
     :return: the DTL reconciliation graph in the form of a dictionary, the total cost of the best reconciliation,
     the number of maximum parsimony reconciliations, and the roots for a reconciliation graph that could produce a
     Maximum Parsimony Reconciliation.
@@ -155,7 +171,6 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
                 h_child2 = eh2[1]
 
             # Compute A(ep, eh)
-
             if vh_is_a_tip:
 
                 # Check if the tips map to one another
@@ -174,7 +189,6 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
             else:
 
                 # Compute Co and create event list to add to events_dict
-
                 if not vp_is_a_tip:
 
                     # Calculate cospeciation cost assuming the cost is 0
@@ -183,10 +197,10 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
                     co_min = []  # List to keep track lowest cost speciation
                     if co_ep_eh == C[(ep2, eh1)] + C[(ep1, eh2)]:
                         co_min.append(("S", (p_child2, h_child1),
-                                      (p_child1, h_child2)))
+                                       (p_child1, h_child2)))
                     if co_ep_eh == C[(ep1, eh1)] + C[(ep2, eh2)]:
                         co_min.append(("S", (p_child1, h_child1),
-                                      (p_child2, h_child2)))
+                                       (p_child2, h_child2)))
                 else:
                     co_ep_eh = Infinity
                     co_min = [Infinity]
@@ -242,12 +256,11 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
                     # Search for the optimal switch location by searching through the best switch
                     # locations for the given child and vh pair
                     for location in best_switch_locations[(p_child2, vh)]:
-
                         # Proposed new landing site
                         current_loc = location[1]
                         # Append the proposed event to the list of possible switches
                         switch_list.append(("T", (p_child1, vh), (p_child2,
-                                           current_loc)))
+                                                                  current_loc)))
                 # If ep1 switching has the lowest cost or equal to the other
                 elif (C[(ep2, eh)] + best_switch[(ep1, eh)]) <= (C[(ep1, eh)] +
                                                                  best_switch[(ep2, eh)]):
@@ -255,14 +268,13 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
                     # Search for the optimal switch location by searching through the best switch
                     # locations for the given child and vh pair
                     for location in best_switch_locations[(p_child1, vh)]:
-
                         # Proposed new landing site
                         current_loc = location[1]
 
                         # Append the proposed event to the list of possible switches
                         switch_list.append(("T", (p_child2, vh),
-                                           (p_child1, current_loc)))
-            
+                                            (p_child1, current_loc)))
+
             else:  # vp is a tip
                 switch_ep_eh = Infinity
                 switch_list = [Infinity]
@@ -283,7 +295,6 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
                 events_dict[(vp, vh)].extend(A_min)
 
             # Calculate O for eh's children
-            
             # Remove all 'impossible' events from the options
             if min_cost[(vp, vh)] == Infinity:
                 del min_cost[(vp, vh)]
@@ -345,21 +356,21 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
 
                 # Add best switch locations for child 1
                 if best_switch[(ep, eh1)] == best_switch[(ep, eh)] and \
-                   best_switch_locations[(vp, vh)] != [(None, None)]:
+                        best_switch_locations[(vp, vh)] != [(None, None)]:
                     best_switch_locations[(vp, h_child1)].extend(
                         best_switch_locations[(vp, vh)])
                 if best_switch[(ep, eh1)] == O[(ep, eh2)] and \
-                   o_best[(vp, h_child2)] != [(None, None)]:
+                        o_best[(vp, h_child2)] != [(None, None)]:
                     best_switch_locations[(vp, h_child1)].extend(
                         o_best[(vp, h_child2)])
 
                 # Add best switch locations for child 2
                 if best_switch[(ep, eh2)] == best_switch[(ep, eh)] and \
-                   best_switch_locations[(vp, vh)] != [(None, None)]:
+                        best_switch_locations[(vp, vh)] != [(None, None)]:
                     best_switch_locations[(vp, h_child2)].extend(
                         best_switch_locations[(vp, vh)])
                 if best_switch[(ep, eh2)] == O[(ep, eh1)] and \
-                   o_best[(vp, h_child1)] != [(None, None)]:
+                        o_best[(vp, h_child1)] != [(None, None)]:
                     best_switch_locations[(vp, h_child2)].extend(
                         o_best[(vp, h_child1)])
 
@@ -396,86 +407,6 @@ def calculate_mean_med_event_nodes_per_mapping_node(dtl_recon_graph: dict) -> Tu
     median_event_nodes_per_mapping_node = md(data)
 
     return mean_event_nodes_per_mapping_node, median_event_nodes_per_mapping_node, data
-
-
-# Note that this function was used in an old version of this code, but has since
-# been replaced in favor of a more efficient method of implementing frequency
-# scoring. So it plays no significant part in the algorithm at this time - 7/5/2017
-def preorder_dtl_sort(dtl_recon_graph: dict, parasite_root: str) -> list:
-    """
-    :param dtl_recon_graph: one of the outputs from DP, directly outputted by buildDTLReconGraph (see
-    top of file for structure of the DTLReconGraph)
-    :param parasite_root: The root node of the parasite tree, represented as a string
-    :return: an ordered list of tuples, in order of increasing level. Each element is of the form ((P, H), L),
-    where P is a parasite node and H is a host node, and the parasite node is mapped onto the host node in
-    the first tuple in the overarching tuple. The second element is the level in the tree at which the (P,H)
-    tuple occurs. Note level 0 is the root and the highest level represents tips.
-    """
-
-    keys_l = Greedy.orderDTL(dtl_recon_graph, parasite_root)
-    ordered_keys_l = []  # We could marginally improve efficiency here by locking list length, but we don't do that here
-    level_counter = 0
-    while len(ordered_keys_l) < len(keys_l):
-        to_add = []
-        for mapping in keys_l:
-            if mapping[-1] == level_counter:
-                    to_add += [mapping]
-        ordered_keys_l += to_add
-        level_counter += 1
-
-    return ordered_keys_l
-
-
-# As with the function above, this function is no longer used
-def preorder_check(preorder_list: list) -> list:
-    """
-    :param preorder_list: output from preorder_DTL_sort. See that function for the structure
-    of the input.
-    :return: The same ordered list inputted as preOrderList, except duplicate tuples
-    in the list have been removed
-    """
-
-    # new_list = [(a1, a2), b] where a is the map node and b is the depth level
-    # Filtering for multiple instances of a with different b by keeping biggest
-    # b instance. This is safe: ensures that all possible parents of a node will
-    # be handled before a node to prevent considering duplicates in the
-    # addScores function. Correction by Jean Sung, July 2016
-    #
-    # - Note by Andrew Ramirez, July 5 2017: the addScores
-    # function, along with frequency scoring in general, has since been removed
-    # from this file and that functionality is implemented in a separate file now.
-
-    new_list = []
-    pre_dict = {}
-    for root in preorder_list:
-        if root not in new_list:
-            new_list.append(root)
-    for x in range(len(new_list)):
-        current_root = new_list[x][0]
-        current_level = new_list[x][1]
-        if current_root in pre_dict:
-            if pre_dict[current_root][0] > current_level:
-                new_list[x] = (None, None)
-            else:
-                location = pre_dict[current_root][1]
-                new_list[location] = (None, None)
-        else:
-            pre_dict[current_root] = (current_level, x)
-
-    final_list = []
-    for item in new_list:
-        node = item[0]
-        depth = item[1]
-        final_list.append(item)
-
-        # Check for duplicate instances with smaller depth levels
-        for newItem in final_list:
-            new_node = newItem[0]
-            new_depth = newItem[1]
-            if (node == new_node) and (depth > new_depth):
-                final_list.remove(newItem)
-                break
-    return final_list
 
 
 def count_mprs_wrapper(mapping_node_list: list, dtl_recon_graph: dict) -> int:
@@ -532,7 +463,6 @@ def count_mprs(mapping_node: tuple, dtl_recon_graph: dict, memo: dict) -> int:
 
     # Loop over all event nodes corresponding to the current mapping node
     for eventNode in dtl_recon_graph[mapping_node]:
-
         # Save the children produced by the current event
         mapping_child1 = eventNode[1]
         mapping_child2 = eventNode[2]
@@ -591,7 +521,8 @@ def build_dtl_recon_graph(best_roots: list, event_dict: dict, unique_dict: dict)
     return unique_dict
 
 
-def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, dict, dict, int, list]:
+def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[
+    dict, dict, dict, int, list]:
     """
     :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
     :param dup_cost: the cost associated with a duplication event
@@ -602,6 +533,8 @@ def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss
     for details on the format of the host and parasite trees as well as the DTLReconGraph
     """
     # Note: I have made modifications to the return statement to make Diameter.py possible without re-reconciling.
+    host = tree_data.host_tree
+    paras = tree_data.parasite_tree
     graph, best_cost, num_recon, best_roots = DP(tree_data, dup_cost, transfer_cost, loss_cost)
     return host, paras, graph, num_recon, best_roots
 
@@ -615,8 +548,9 @@ def usage():
     return ('usage: DTLReconGraph filename D_cost T_cost L_cost\n\t  filename: the name of the file that contains'
             ' the data \n\t  D_cost, T_cost, L_cost: costs for duplication, transfer, and loss events,'
             ' respectively')
-            
-# This should be called in empress.py when the user wants to run reconcile
+
+
+# This should be called in empress_cli.py when the user wants to run reconcile
 def reconcile_inter(tree_data: ReconInput):
     """ 
     :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
@@ -626,7 +560,8 @@ def reconcile_inter(tree_data: ReconInput):
     for i in range(len(result)):
         print((str(result[i]) + '\n'))
 
-# This should be called in empress.py when the user already supplied the DTL values
+
+# This should be called in empress_cli.py when the user already supplied the DTL values
 def reconcile_noninter(tree_data: ReconInput, duplication: float, transfer: float, loss: float):
     """ 
     :param tree_data <ReconInput> : Output of newickFormatReader.getInput()
@@ -635,27 +570,3 @@ def reconcile_noninter(tree_data: ReconInput, duplication: float, transfer: floa
     for i in range(len(result)):
         print((str(result[i]) + '\n'))
 
-# If the user runs this from the command line
-if __name__ == "__main__":  # Only run if this has been called
-
-    if len(sys.argv) != 1:  # Would indicate an interactive mode invocation
-
-        # Save the arguments in a new list
-        arglst = sys.argv[:]
-
-        # Check user input - the length consideration handles the user not giving sufficient arguments
-        if len(arglst) not in [5, 6] or "-h" in arglst or "-H" in arglst or "--help" in arglst or "--Help" in arglst:
-            print((usage()))
-        else:
-            try:
-                result = reconcile(arglst[1], float(arglst[2]), float(arglst[3]), float(arglst[4]))
-                for i in range(len(result)):
-                    print((str(result[i]) + '\n'))
-            except ValueError:
-                print((usage()))
-            except IOError:
-                print('Bad filename')
-                print((usage()))
-    else:  # Show the user usage anyway, in case they happen to just call the file name wanting usage info
-        print((usage()))
-    

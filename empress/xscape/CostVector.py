@@ -6,9 +6,6 @@
 # Cost vectors are in CDSL format: 
 # c(ospeciation), d(uplication), s(witch), l(oss)
 
-# python libraries
-from string import *
-
 class CostVector:
     def __init__(self, c, d, s, l, count):
         self.c = c
