@@ -82,7 +82,7 @@ if __name__ == '__main__' :
                 expected_n_pairs = HistogramAlgTools.calculate_n_pairs(mpr_count)
                 brute_force_n_pairs = HistogramAlgTools.count_mpr_pairs(brute_force_hist)
                 diag_force_n_pairs = HistogramAlgTools.count_mpr_pairs(diameter_alg_hist)
-                print("ID = ", file_id, "DTL = ", D, T, L)
+                print("File = ", tree_file, "DTL = ", D, T, L)
                 print("Expected pairs ", expected_n_pairs)
                 print("Brute Force: ", brute_force_hist, "pairs: ", brute_force_n_pairs)
                 print("Diameter Alg: ", diameter_alg_hist, "pairs: ", diag_force_n_pairs)

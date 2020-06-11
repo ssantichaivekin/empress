@@ -11,3 +11,4 @@ numpy = '*'
 
 [dev-packages]
 coverage = '*'
+flake8 = "*"
