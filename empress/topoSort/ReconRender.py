@@ -71,7 +71,7 @@ def compute_host_logical_rows(host_tree_object):
             row_counter += 1
 
     #helper function to assign row values, postorder traversal
-    compute_host_logical_rows_helper(host_tree_object.rootNode)
+    compute_host_logical_rows_helper(host_tree_object.root_node)
 
     
 def compute_host_logical_rows_helper(node):
