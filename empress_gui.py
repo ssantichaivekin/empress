@@ -14,26 +14,26 @@ class App:
 
     def __init__(self, master):
         self.master = master
-        # configures the master frame 
+        # Configures the master frame 
         master.grid_rowconfigure(0, weight=1)
         master.grid_rowconfigure(1, weight=2)
         master.grid_columnconfigure(0, weight=1)
         master.grid_columnconfigure(1, weight=1)
 
-        # creates a logo frame on top of the master frame 
+        # Creates a logo frame on top of the master frame 
         self.logo_frame = tk.Frame(master)
         # sticky="nsew" means that self.logo_frame expands in all four directions (north, south, east and west) 
         # to fully occupy the allocated space in the grid system (row 0 column 0&1)
         self.logo_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
         self.logo_frame.grid_propagate(False)
 
-        # adds background image
-        photo = tk.PhotoImage(file="./assets/Jane_TransLogo_thin.png")
+        # Adds background image
+        photo = tk.PhotoImage(file="./assets/jane_logo_thin.png")
         label = tk.Label(self.logo_frame, image=photo)
         label.place(x=0, y=0)
         label.image = photo
 
-        # creates an input frame on the left side of the master frame 
+        # Creates an input frame on the left side of the master frame 
         self.func_frame = tk.Frame(master)
         self.func_frame.grid(row=1, column=0, sticky="nsew")
         self.func_frame.grid_rowconfigure(0, weight=1)
@@ -43,7 +43,7 @@ class App:
         self.func_frame.grid_columnconfigure(0, weight=1)
         self.func_frame.grid_propagate(False)
 
-        # creates an output frame on the right side of the master frame
+        # Creates an output frame on the right side of the master frame
         self.output_frame = tk.Frame(master)
         self.output_frame.grid(row=1, column=1, sticky="nsew")
         self.output_frame.grid_rowconfigure(0, weight=1)
@@ -53,26 +53,26 @@ class App:
         self.output_frame.grid_propagate(False)
 
         # "Load File" button 
-        # loads in an input .newick file
+        # Loads in an input .newick file
         # and displays the number of leaves in each tree (DEMO for now) and entry boxes for DTL costs
         load_file_btn = tk.Button(self.func_frame, text="Load File", background="green", height=2, width=9, command=self.load_file)
         load_file_btn.grid(row=0, column=0)
-        # creates a Label to overwrite the old file path 
+        # Creates a Label to overwrite the old file path 
         self.file_path_label = tk.Label(self.output_frame)
 
         # "View Event Cost Regions" button 
-        # pops up a matplotlib graph for the cost regions
+        # Pops up a matplotlib graph for the cost regions
         self.view_cost_btn = tk.Button(self.func_frame, text="View Event Cost Regions", command=self.plot_cost_regions, state=tk.DISABLED)
         self.view_cost_btn.grid(row=1, column=0)
 
         # "Compute Reconciliations" button 
-        # displays reconciliation results(numbers) and three options(checkboxes) for viewing graphical analysis
+        # Displays reconciliation results(numbers) and three options(checkboxes) for viewing graphical analysis
         self.compute_recon_button = tk.Button(self.func_frame, text="Compute Reconciliations", command=self.recon_analysis, state=tk.DISABLED)
         self.compute_recon_button.grid(row=2, column=0)
 
     def load_file(self):
         """Loads in an input file and displays the number of leaves in each tree when "Load File" button is clicked."""
-        # creates a frame to display the number of leaves and the file path
+        # Creates a frame to display the number of leaves and the file path
         input_info_frame = tk.Frame(self.output_frame)
         input_info_frame.grid(row=0, column=0, sticky="nsew")
         input_info_frame.grid_columnconfigure(0, weight=1)
@@ -81,16 +81,16 @@ class App:
         input_info_frame.grid_rowconfigure(2, weight=1)
         input_info_frame.grid_propagate(False)
 
-        # allows loading a .newick file
+        # Allows loading a .newick file
         self.file_path = None
         # initialdir is set to be the current working directory
         input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a file")
         if Path(input_file).suffix == '.newick': 
             self.file_path = input_file
-            self.file_path_label.destroy()  # overwrites the old file path in the grid system
+            self.file_path_label.destroy()  # Overwrites the old file path in the grid system
             self.file_path_label = tk.Label(input_info_frame, text=input_file)
             self.file_path_label.grid(row=0, column=0, sticky="w")
-            # this is only DEMO for now
+            # This is only DEMO for now
             host_tree_info = tk.Label(input_info_frame, text="Host:  83 tips (DEMO)")
             host_tree_info.grid(row=1, column=0, sticky="w")
             parasite_info = tk.Label(input_info_frame, text="Parasite/symbiont:  78 tips (DEMO)")
@@ -98,14 +98,14 @@ class App:
         else:
             messagebox.showinfo("Warning", "Please load a '.newick' file.")
 
-        # enables the next step, setting DTL costs
+        # Enables the next step, setting DTL costs
         if self.file_path is not None: 
             self.view_cost_btn.configure(state=tk.NORMAL)
             self.DTL_cost()
 
     def DTL_cost(self):
         """Sets DTL costs by clicking on the matplotlib graph or by entering manually."""
-        # creates a frame for setting DTL costs
+        # Creates a frame for setting DTL costs
         costs_frame = tk.Frame(self.output_frame)
         costs_frame.grid(row=1, column=0, sticky="nsew")
         costs_frame.grid_columnconfigure(0, weight=1)
@@ -142,11 +142,11 @@ class App:
 
     def plot_cost_regions(self):
         """Plots the cost regions using matplotlib and embeds the graph in a tkinter window."""    
-        # creates a new tkinter window 
+        # Creates a new tkinter window 
         plt_window = tk.Toplevel(self.master)
         plt_window.geometry("550x550")
         plt_window.title("Matplotlib Graph DEMO")
-        # creates a new frame
+        # Creates a new frame
         plt_frame = tk.Frame(plt_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
         plt_frame.pack_propagate(False)
@@ -157,12 +157,12 @@ class App:
         canvas = FigureCanvasTkAgg(fig, plt_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        # the toolbar allows the user to zoom in/out, drag the graph and save the graph
+        # The toolbar allows the user to zoom in/out, drag the graph and save the graph
         toolbar = NavigationToolbar2Tk(canvas, plt_frame)
         toolbar.update()
         canvas.get_tk_widget().pack(side=tk.TOP)
-        # updates the DTL costs using the x,y coordinates clicked by the user inside the graph 
-        # otherwise pops up a warning message window
+        # Updates the DTL costs using the x,y coordinates clicked by the user inside the graph 
+        # Otherwise pops up a warning message window
         fig.canvas.callbacks.connect('button_press_event', self.get_xy_coordinates)
 
     def get_xy_coordinates(self, event):
@@ -171,7 +171,7 @@ class App:
             self.dup_cost.set("1.00")
             self.trans_cost.set(round(event.ydata, 2))
             self.loss_cost.set(round(event.xdata, 2))
-            # enables the next step, viewing reconciliation result
+            # Enables the next step, viewing reconciliation result
             self.valid_dup_entry = 1.00
             self.valid_trans_entry = event.ydata
             self.valid_loss_entry = event.xdata
@@ -182,9 +182,8 @@ class App:
     def check_dup_entry(self, *args):
         """Checks and updates the duplication cost when user enters a value in the entry box."""
         try:
-            self.numbers_dup_entry = float(self.dup_cost.get())
-            if self.numbers_dup_entry >= 0:
-                self.valid_dup_entry = self.numbers_dup_entry
+            if self.dup_cost.get() >= 0:
+                self.valid_dup_entry = self.dup_cost.get()
                 self.dup_cost.set(round(self.valid_dup_entry, 2))
                 self.enable_recon_btn()
             else:
@@ -195,9 +194,8 @@ class App:
     def check_trans_entry(self, *args):
         """Checks and updates the transfer cost when user enters a value in the entry box."""
         try:
-            self.numbers_trans_entry = float(self.trans_cost.get())
-            if self.numbers_trans_entry >= 0:
-                self.valid_trans_entry = self.numbers_trans_entry
+            if self.trans_cost.get() >= 0:
+                self.valid_trans_entry = self.trans_cost.get()
                 self.trans_cost.set(round(self.valid_trans_entry, 2))
                 self.enable_recon_btn()
             else:
@@ -208,9 +206,8 @@ class App:
     def check_loss_entry(self, *args):
         """Checks and updates the loss cost when user enters a value in the entry box."""
         try:
-            self.numbers_loss_entry = float(self.loss_cost.get())
-            if self.numbers_loss_entry >= 0:
-                self.valid_loss_entry = self.numbers_loss_entry
+            if self.loss_cost.get() >= 0:
+                self.valid_loss_entry = self.loss_cost.get()
                 self.loss_cost.set(round(self.valid_loss_entry, 2))
                 self.enable_recon_btn()
             else:
@@ -225,21 +222,27 @@ class App:
 
     def recon_analysis(self):
         """Displays reconciliation results in numbers and further viewing options for graphical analysis."""
-        # creates a frame for the three checkbuttons
+        # Creates a frame for the three checkbuttons
         recon_checkbox_frame = tk.Frame(self.func_frame)
         recon_checkbox_frame.grid(row=3, column=0, sticky="nsew")
         recon_checkbox_frame.pack_propagate(False)
         self.recon_space_btn_var = tk.IntVar()
         self.recons_btn_var = tk.IntVar()
         self.histogram_btn_var = tk.IntVar()
-        recon_space_btn = tk.Checkbutton(recon_checkbox_frame, text="View solution space", padx=10, variable=self.recon_space_btn_var, command=self.open_and_close_window_recon_space)
-        recons_btn = tk.Checkbutton(recon_checkbox_frame, text="View reconciliations", padx=10, variable=self.recons_btn_var, command=self.open_and_close_window_recons)
-        histogram_btn = tk.Checkbutton(recon_checkbox_frame, text="Stats mode", padx=36, variable=self.histogram_btn_var, command=self.open_and_close_window_histogram)
+        recon_space_btn = tk.Checkbutton(recon_checkbox_frame, text="View solution space", 
+            padx=10, variable=self.recon_space_btn_var, 
+            command=self.open_and_close_window_recon_space)
+        recons_btn = tk.Checkbutton(recon_checkbox_frame, text="View reconciliations", 
+            padx=10, variable=self.recons_btn_var, 
+            command=self.open_and_close_window_recons)
+        histogram_btn = tk.Checkbutton(recon_checkbox_frame, text="Stats mode", 
+            padx=36, variable=self.histogram_btn_var, 
+            command=self.open_and_close_window_histogram)
         recon_space_btn.pack()
         recons_btn.pack()
         histogram_btn.pack()
 
-        # shows reconciliation results as numbers
+        # Shows reconciliation results as numbers
         recon_nums_frame = tk.Frame(self.output_frame)
         recon_nums_frame.grid(row=2, column=0, sticky="nsew")
         recon_nums_frame.grid_propagate(False)
@@ -296,7 +299,7 @@ class App:
             if self.histogram_window.winfo_exists() == 1:
                 self.histogram_window.destroy()
 
-### View reconciliation space ###
+# View reconciliation space 
 class Recon_space_window:
     def __init__(self, master):
         self.master = master        
@@ -304,7 +307,7 @@ class Recon_space_window:
         self.frame.pack(fill=tk.BOTH, expand=1)
         self.frame.pack_propagate(False)
 
-### View reconciliations ###
+# View reconciliations 
 class Recon_window:
     def __init__(self, master):
         self.master = master        
@@ -312,7 +315,7 @@ class Recon_window:
         self.frame.pack(fill=tk.BOTH, expand=1)
         self.frame.pack_propagate(False)
 
-### View p-value histogram ###
+# View p-value histogram 
 class Histogram_window:
     def __init__(self, master):
         self.master = master        
