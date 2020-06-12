@@ -69,8 +69,6 @@ def compute_host_logical_rows(host_tree_object):
         if node.is_leaf:
             node.layout.row = row_counter
             row_counter += 1
-        else:
-            node.layout.row = (node.left_node.layout.row + node.right_node.layout.row) / 2
 
     #helper function to assign row values, postorder traversal
     computetHostNodeLogicalPositions_helper(host_tree_object.rootNode)
@@ -93,6 +91,10 @@ def computetHostNodeLogicalPositions_helper(node):
     
     #finally, calculate logical row value of node using just-calculated children values
     node.row = ((node.right_node.row+node.left_node.row)/2)
+
+
+
+    
 def compute_parasite_logical_rows(parasite_tree_object, reconciliation):
     """
     Sets the row values of each Node in the parasite tree.
