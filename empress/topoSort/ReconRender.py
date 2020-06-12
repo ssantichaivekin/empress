@@ -42,9 +42,9 @@ def render_tree(host_tree, parasite_tree, reconciliation):
 
 def compute_node_logical_rows(host_tree_object, parasite_tree_object, reconciliation):
     """
-    Sets the logicalRow values of each Node in the host and parasite tree.
+    Sets the row values of each Node in the host and parasite tree.
     Assumes that each Node has its logical column set already and this function
-    uses those values and the reconfiguration to set logicalRow and logicalCol
+    uses those values and the reconfiguration to set row and logicalCol
     :param host_tree_object:  A Tree object representing the host tree
     :param parasite_tree_object:  A Tree object representing the parasite tree
     :param reconciliation:  reconciliation dictionary
@@ -58,9 +58,9 @@ def compute_node_logical_rows(host_tree_object, parasite_tree_object, reconcilia
 
 def compute_host_logical_rows(host_tree_object):
     """
-    Sets the logicalRow values of each Node in the host tree.
+    Sets the row values of each Node in the host tree.
     Assumes that each host Node has its column set already and this function
-    uses those values and structure of the tree to set the logicalRow
+    uses those values and structure of the tree to set the row
     :param host_tree_object:  A Tree object representing the host tree
     """
 
@@ -72,12 +72,32 @@ def compute_host_logical_rows(host_tree_object):
         else:
             node.layout.row = (node.left_node.layout.row + node.right_node.layout.row) / 2
 
+    #helper function to assign row values, postorder traversal
+    computetHostNodeLogicalPositions_helper(host_tree_object.rootNode)
 
+    
+def computetHostNodeLogicalPositions_helper(node):
+    """takes a Node, and calculates logical row values"""
+
+    #if both children of node have a logical row value, we can calculate the logical row value of node
+    if node.right_node.row is not None and node.left_node.row is not None:
+        node.row = ((node.right_node.row+node.left_node.row)/2)
+        return
+
+    #recursively calculate logical row values of the right subtree 
+    if node.right_node.row == None:
+        computetHostNodeLogicalPositions_helper(node.right_node)
+    #recursively calculate logical row values of the left subtree
+    if node.left_node.row == None:
+        computetHostNodeLogicalPositions_helper(node.left_node)
+    
+    #finally, calculate logical row value of node using just-calculated children values
+    node.row = ((node.right_node.row+node.left_node.row)/2)
 def compute_parasite_logical_rows(parasite_tree_object, reconciliation):
     """
-    Sets the logicalRow values of each Node in the parasite tree.
+    Sets the row values of each Node in the parasite tree.
     Assumes that each host Node has its column set already and this function
-    uses those values and structure of the tree to set the logicalRow
+    uses those values and structure of the tree to set the row
     :param parasite_tree_object:  A Tree object representing the parasite tree
     """
     # TODO Get this to work with new Recon class
