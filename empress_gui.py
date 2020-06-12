@@ -28,7 +28,7 @@ class App:
         self.logo_frame.grid_propagate(False)
 
         # Adds background image
-        photo = tk.PhotoImage(file="./assets/jane_logo_thin.png")
+        photo = tk.PhotoImage(file="./assets/jane_logo_thin.gif")
         label = tk.Label(self.logo_frame, image=photo)
         label.place(x=0, y=0)
         label.image = photo
@@ -101,9 +101,9 @@ class App:
         # Enables the next step, setting DTL costs
         if self.file_path is not None: 
             self.view_cost_btn.configure(state=tk.NORMAL)
-            self.DTL_cost()
+            self.dtl_cost()
 
-    def DTL_cost(self):
+    def dtl_cost(self):
         """Sets DTL costs by clicking on the matplotlib graph or by entering manually."""
         # Creates a frame for setting DTL costs
         costs_frame = tk.Frame(self.output_frame)
@@ -116,28 +116,28 @@ class App:
         costs_frame.grid_propagate(False)
 
         dup_label = tk.Label(costs_frame, text="Duplication:")
-        trans_label = tk.Label(costs_frame, text="Transfer:")
-        loss_label = tk.Label(costs_frame, text="Loss:")
         dup_label.grid(row=0, column=0, sticky="w")
-        trans_label.grid(row=1, column=0, sticky="w")
-        loss_label.grid(row=2, column=0, sticky="w")
-        self.dup_cost = tk.DoubleVar()
-        self.trans_cost = tk.DoubleVar()
-        self.loss_cost = tk.DoubleVar()
-        dup_entry = tk.Entry(costs_frame, width=3, textvariable=self.dup_cost)
-        trans_entry = tk.Entry(costs_frame, width=3, textvariable=self.trans_cost)
-        loss_entry = tk.Entry(costs_frame, width=3, textvariable=self.loss_cost)
-        self.valid_dup_entry = None
-        self.valid_trans_entry = None
-        self.valid_loss_entry = None
-        dup_entry.bind('<Return>', self.check_dup_entry)
-        trans_entry.bind('<Return>', self.check_trans_entry)
-        loss_entry.bind('<Return>', self.check_loss_entry)
-        #dup_entry.bind('<FocusOut>', self.check_dup_input)  # (bug) this will make the invalid input warning appear twice
-        #trans_entry.bind('<FocusOut>', self.check_trans_input)  # same as above 
-        #loss_entry.bind('<FocusOut>', self.check_loss_input)  # same as above 
+        self.dup_input = tk.DoubleVar()
+        dup_entry = tk.Entry(costs_frame, width=3, textvariable=self.dup_input)
+        self.dup_cost = None
+        dup_entry.bind('<Key>', self.receive_dup_input)
         dup_entry.grid(row=0, column=1, sticky="w")
-        trans_entry.grid(row=1, column=1, sticky="w")
+
+        trans_label = tk.Label(costs_frame, text="Transfer:")
+        trans_label.grid(row=1, column=0, sticky="w")
+        self.trans_input = tk.DoubleVar()
+        trans_entry_box = tk.Entry(costs_frame, width=3, textvariable=self.trans_input)
+        self.trans_cost = None
+        trans_entry_box.bind('<Key>', self.check_trans_entry)
+        trans_entry_box.grid(row=1, column=1, sticky="w")
+
+        loss_label = tk.Label(costs_frame, text="Loss:")
+        loss_label.grid(row=2, column=0, sticky="w")
+        self.loss_input = tk.DoubleVar()
+        # TODO: rename to entry_box
+        loss_entry = tk.Entry(costs_frame, width=3, textvariable=self.loss_input)  
+        self.loss_cost = None
+        loss_entry.bind('<Key>', self.check_loss_entry)
         loss_entry.grid(row=2, column=1, sticky="w")
 
     def plot_cost_regions(self):
@@ -168,57 +168,64 @@ class App:
     def get_xy_coordinates(self, event):
         """Updates the DTL costs when user clicks on the matplotlib graph, otherwise pops up a warning message window."""
         if event.inaxes is not None:
-            self.dup_cost.set("1.00")
-            self.trans_cost.set(round(event.ydata, 2))
-            self.loss_cost.set(round(event.xdata, 2))
+            self.dup_input.set("1.00")
+            self.trans_input.set(round(event.ydata, 2))
+            self.loss_input.set(round(event.xdata, 2))
             # Enables the next step, viewing reconciliation result
-            self.valid_dup_entry = 1.00
-            self.valid_trans_entry = event.ydata
-            self.valid_loss_entry = event.xdata
+            self.dup_cost = 1.00
+            self.trans_cost = event.ydata
+            self.loss_cost = event.xdata
             self.enable_recon_btn()
         else:
             messagebox.showinfo("Warning", "Please click inside the axes bounds.")
 
-    def check_dup_entry(self, *args):
-        """Checks and updates the duplication cost when user enters a value in the entry box."""
+    def receive_dup_input(self, *args):  # *args needed for tkinter callback
+        """Check and update the duplication cost when user enters a value in the entry box."""
         try:
-            if self.dup_cost.get() >= 0:
-                self.valid_dup_entry = self.dup_cost.get()
-                self.dup_cost.set(round(self.valid_dup_entry, 2))
+            dup_cost = self.dup_input.get()
+        except tk.TclError as e:
+            messagebox.showinfo("Warning", "Please enter a floating point number:\n" + str(e))
+            return
+        
+        if dup_cost >= 0:
+            self.dup_cost = dup_cost
+            if self.verify_valid_dtl():
+                self.enable_recon_btn()
+        else:
+            messagebox.showinfo("Warning", "Please enter a non-negative number.")
+    
+    # TODO: rename and edit
+    def check_trans_entry(self, *args):  # *args needed for tkinter callback
+        """Check and update the transfer cost when user enters a value in the entry box."""
+        try:
+            if self.trans_input.get() >= 0:
+                self.trans_cost = self.trans_input.get()
+                self.trans_input.set(round(self.trans_cost, 2))
                 self.enable_recon_btn()
             else:
                 messagebox.showinfo("Warning", "Please enter a non-negative number.")
         except:
             messagebox.showinfo("Warning", "Please enter a non-negative number.")
     
-    def check_trans_entry(self, *args):
-        """Checks and updates the transfer cost when user enters a value in the entry box."""
+    # TODO: rename and edit
+    def check_loss_entry(self, *args):  # *args needed for tkinter callback
+        """Check and update the loss cost when user enters a value in the entry box."""
         try:
-            if self.trans_cost.get() >= 0:
-                self.valid_trans_entry = self.trans_cost.get()
-                self.trans_cost.set(round(self.valid_trans_entry, 2))
+            if self.loss_input.get() >= 0:
+                self.loss_cost = self.loss_input.get()
+                self.loss_input.set(round(self.loss_cost, 2))
                 self.enable_recon_btn()
             else:
                 messagebox.showinfo("Warning", "Please enter a non-negative number.")
         except:
             messagebox.showinfo("Warning", "Please enter a non-negative number.")
     
-    def check_loss_entry(self, *args):
-        """Checks and updates the loss cost when user enters a value in the entry box."""
-        try:
-            if self.loss_cost.get() >= 0:
-                self.valid_loss_entry = self.loss_cost.get()
-                self.loss_cost.set(round(self.valid_loss_entry, 2))
-                self.enable_recon_btn()
-            else:
-                messagebox.showinfo("Warning", "Please enter a non-negative number.")
-        except:
-            messagebox.showinfo("Warning", "Please enter a non-negative number.")
+    def verify_valid_dtl(self):
+        return self.dup_cost and self.trans_cost and self.loss_cost
 
     def enable_recon_btn(self):
         """Enables the next step, viewing reconciliation results, after DTL costs are set correctly."""
-        if self.valid_dup_entry is not None and self.valid_trans_entry is not None and self.valid_loss_entry is not None:
-            self.compute_recon_button.configure(state=tk.NORMAL)
+        self.compute_recon_button.configure(state=tk.NORMAL)
 
     def recon_analysis(self):
         """Displays reconciliation results in numbers and further viewing options for graphical analysis."""
@@ -300,6 +307,7 @@ class App:
                 self.histogram_window.destroy()
 
 # View reconciliation space 
+# TODO: rename
 class Recon_space_window:
     def __init__(self, master):
         self.master = master        
@@ -308,6 +316,7 @@ class Recon_space_window:
         self.frame.pack_propagate(False)
 
 # View reconciliations 
+# TODO: rename
 class Recon_window:
     def __init__(self, master):
         self.master = master        
@@ -316,6 +325,7 @@ class Recon_window:
         self.frame.pack_propagate(False)
 
 # View p-value histogram 
+# TODO: rename
 class Histogram_window:
     def __init__(self, master):
         self.master = master        
