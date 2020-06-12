@@ -71,26 +71,26 @@ def compute_host_logical_rows(host_tree_object):
             row_counter += 1
 
     #helper function to assign row values, postorder traversal
-    computetHostNodeLogicalPositions_helper(host_tree_object.rootNode)
+    compute_host_logical_rows_helper(host_tree_object.rootNode)
 
     
-def computetHostNodeLogicalPositions_helper(node):
+def compute_host_logical_rows_helper(node):
     """takes a Node, and calculates logical row values"""
 
     #if both children of node have a logical row value, we can calculate the logical row value of node
-    if node.right_node.row is not None and node.left_node.row is not None:
-        node.row = ((node.right_node.row+node.left_node.row)/2)
+    if node.right_node.layout.row is not None and node.left_node.layout.row is not None:
+        node.layout.row = ((node.right_node.layout.row+node.left_node.layout.row)/2)
         return
 
     #recursively calculate logical row values of the right subtree 
-    if node.right_node.row == None:
-        computetHostNodeLogicalPositions_helper(node.right_node)
+    if node.right_node.layout.row == None:
+        compute_host_logical_rows_helper(node.right_node)
     #recursively calculate logical row values of the left subtree
-    if node.left_node.row == None:
-        computetHostNodeLogicalPositions_helper(node.left_node)
+    if node.left_node.layout.row == None:
+        compute_host_logical_rows_helper(node.left_node)
     
     #finally, calculate logical row value of node using just-calculated children values
-    node.row = ((node.right_node.row+node.left_node.row)/2)
+    node.layout.row = ((node.right_node.layout.row+node.left_node.layout.row)/2)
 
 
 
