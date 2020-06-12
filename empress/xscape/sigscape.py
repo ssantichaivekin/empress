@@ -5,6 +5,7 @@
 
 # python libraries
 import random
+import sys
 import time
 from multiprocessing import Process, Queue  # For multiprocessing random trials
 

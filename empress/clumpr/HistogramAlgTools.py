@@ -195,4 +195,4 @@ class BFVerifier:
         bf_hist = BF_exit_hist(self.recongraph, uA, uB)
         if alg_exit_hist != bf_hist:
             message = "Failed exit %s %s" % (str(uA), str(uB))
-            self.error_func(alg_enter_hist, bf_hist, message)
+            self.error_func(alg_exit_hist, bf_hist, message)
