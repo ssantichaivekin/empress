@@ -1,11 +1,13 @@
 import csv
 
-import matplotlib
-# Don't require an X-Server
-matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
 from empress.clumpr import Histogram
+
+def plot_histogram_to_ax(ax: plt.Axes, histogram):
+    ax.bar(list(histogram.keys()), list(histogram.values()))
+    ax.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+    ax.set_ylabel("Number of MPR Pairs")
 
 
 def plot_histogram(plot_file, histogram, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):
