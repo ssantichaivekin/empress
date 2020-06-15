@@ -3,18 +3,19 @@ recon_viewer.py
 View a single reconciliation using matplotlib
 """
 
-from recon import EventType
-import utils
-import plot_tools
-from render_settings import LEAF_NODE_COLOR, COSPECIATION_NODE_COLOR, \
+from empress.clumpr.recon_vis.recon import EventType
+from empress.clumpr.recon_vis import utils
+from empress.clumpr.recon_vis import plot_tools
+from empress.clumpr.recon_vis.render_settings import LEAF_NODE_COLOR, COSPECIATION_NODE_COLOR, \
     DUPLICATION_NODE_COLOR, TRANSFER_NODE_COLOR, HOST_NODE_COLOR, HOST_EDGE_COLOR, \
     PARASITE_EDGE_COLOR, VERTICAL_OFFSET, COSPECIATION_OFFSET
+
 
 def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False, show_freq=False):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
     :param parasite_dict:  Parasite tree represented in dictionary format
-    :recon_dict: Reconciliation represented in dictionary format
+    :param recon_dict: Reconciliation represented in dictionary format
     """
     host_tree, parasite_tree, recon = utils.convert_to_objects(host_dict, parasite_dict, recon_dict)
     fig = plot_tools.FigureWrapper("Reconciliation")
@@ -23,6 +24,7 @@ def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False, sho
     render_parasite(fig, parasite_tree, recon, host_lookup, show_internal_labels, show_freq)
     fig.show()
 
+
 def render_host(fig, host_tree, show_internal_labels):
     """ Renders the host tree """
     set_host_node_layout(host_tree)
@@ -30,9 +32,11 @@ def render_host(fig, host_tree, show_internal_labels):
     draw_host_handle(fig, root)
     render_host_helper(fig, root, show_internal_labels)
 
+
 def draw_host_handle(fig, root):
     """ Draw edge leading to root of host tree. """
     fig.line((0, root.layout.y), (root.layout.x, root.layout.y), HOST_EDGE_COLOR)
+
 
 def render_host_helper(fig, node, show_internal_labels):
     """ Helper function for rendering the host tree. """
@@ -54,10 +58,12 @@ def render_host_helper(fig, node, show_internal_labels):
         render_host_helper(fig, node.left_node, show_internal_labels)
         render_host_helper(fig, node.right_node, show_internal_labels)
 
+
 def render_parasite(fig, parasite_tree, recon, host_lookup, show_internal_labels, show_freq):
     """ Render the parasite tree. """
     root = parasite_tree.root_node
     render_parasite_helper(fig, root, recon, host_lookup, show_internal_labels, show_freq)
+
 
 def render_parasite_helper(fig, node, recon, host_lookup, show_internal_labels, show_freq):
     """ Helper function for rendering the parasite tree. """
@@ -91,12 +97,13 @@ def render_parasite_helper(fig, node, recon, host_lookup, show_internal_labels, 
     if node.is_leaf:
         render_parasite_node(fig, node, event)
         return
-    render_parasite_helper(fig, node.left_node, recon, host_lookup, \
-        show_internal_labels, show_freq)
-    render_parasite_helper(fig, node.right_node, recon, host_lookup, \
-        show_internal_labels, show_freq)
+    render_parasite_helper(fig, node.left_node, recon, host_lookup,
+                           show_internal_labels, show_freq)
+    render_parasite_helper(fig, node.right_node, recon, host_lookup,
+                           show_internal_labels, show_freq)
     render_parasite_node(fig, node, event, show_internal_labels, show_freq)
     render_parasite_branches(fig, node)
+
 
 def render_parasite_node(fig, node, event, show_internal_labels=False, show_freq=False):
     """
@@ -111,6 +118,7 @@ def render_parasite_node(fig, node, event, show_internal_labels=False, show_freq
     if show_freq:
         fig.text(node_xy, event.freq, render_color)
 
+
 def render_parasite_branches(fig, node):
     """ Very basic branch drawing """
     node_xy = (node.layout.x, node.layout.y)
@@ -118,6 +126,7 @@ def render_parasite_branches(fig, node):
     right_xy = (node.right_node.layout.x, node.right_node.layout.y)
     fig.line(node_xy, left_xy, PARASITE_EDGE_COLOR)
     fig.line(node_xy, right_xy, PARASITE_EDGE_COLOR)
+
 
 def event_color(event):
     """ Return color for drawing event, depending on event type. """
@@ -131,6 +140,7 @@ def event_color(event):
         return TRANSFER_NODE_COLOR
     return plot_tools.BLACK
 
+
 def set_host_node_layout(host_tree):
     """
     Sets the logicalRow and logicalCol values of each Node in host_tree.
@@ -139,15 +149,16 @@ def set_host_node_layout(host_tree):
     :param host_tree:  A Tree object representing the host tree
     :return None
     """
-    #sets logical row values for leaves in the order they appear in the list of host tree leaves
+    # sets logical row values for leaves in the order they appear in the list of host tree leaves
     logical_row_counter = 0
     for leaf in host_tree.leaf_list:
         leaf.layout.row = logical_row_counter
-        leaf.layout.x = leaf.layout.col           # This can be scaled if desired
-        leaf.layout.y = leaf.layout.row           # This can be scaled if desired
+        leaf.layout.x = leaf.layout.col  # This can be scaled if desired
+        leaf.layout.y = leaf.layout.row  # This can be scaled if desired
         logical_row_counter += 1
-    #helper function to assign row values, postorder traversal
+    # helper function to assign row values, postorder traversal
     set_internal_host_nodes(host_tree.root_node)
+
 
 def set_internal_host_nodes(node):
     """ Helper function for set_host_node_layout. """
@@ -155,6 +166,6 @@ def set_internal_host_nodes(node):
         return
     set_internal_host_nodes(node.left_node)
     set_internal_host_nodes(node.right_node)
-    node.layout.row = (node.left_node.layout.row + node.right_node.layout.row)/2
-    node.layout.x = node.layout.col         # This can be scaled if desired
-    node.layout.y = node.layout.row         # This can be scaled if desired
+    node.layout.row = (node.left_node.layout.row + node.right_node.layout.row) / 2
+    node.layout.x = node.layout.col  # This can be scaled if desired
+    node.layout.y = node.layout.row  # This can be scaled if desired
