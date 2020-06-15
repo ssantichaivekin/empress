@@ -118,27 +118,26 @@ class App:
         dup_label = tk.Label(costs_frame, text="Duplication:")
         dup_label.grid(row=0, column=0, sticky="w")
         self.dup_input = tk.DoubleVar()
-        dup_entry = tk.Entry(costs_frame, width=3, textvariable=self.dup_input)
+        dup_entry_box = tk.Entry(costs_frame, width=3, textvariable=self.dup_input)
         self.dup_cost = None
-        dup_entry.bind('<Key>', self.receive_dup_input)
-        dup_entry.grid(row=0, column=1, sticky="w")
+        dup_entry_box.bind('<Key>', self.receive_dup_input)
+        dup_entry_box.grid(row=0, column=1, sticky="w")
 
         trans_label = tk.Label(costs_frame, text="Transfer:")
         trans_label.grid(row=1, column=0, sticky="w")
         self.trans_input = tk.DoubleVar()
         trans_entry_box = tk.Entry(costs_frame, width=3, textvariable=self.trans_input)
         self.trans_cost = None
-        trans_entry_box.bind('<Key>', self.check_trans_entry)
+        trans_entry_box.bind('<Key>', self.receive_trans_input)
         trans_entry_box.grid(row=1, column=1, sticky="w")
 
         loss_label = tk.Label(costs_frame, text="Loss:")
         loss_label.grid(row=2, column=0, sticky="w")
         self.loss_input = tk.DoubleVar()
-        # TODO: rename to entry_box
-        loss_entry = tk.Entry(costs_frame, width=3, textvariable=self.loss_input)  
+        loss_entry_box = tk.Entry(costs_frame, width=3, textvariable=self.loss_input)  
         self.loss_cost = None
-        loss_entry.bind('<Key>', self.check_loss_entry)
-        loss_entry.grid(row=2, column=1, sticky="w")
+        loss_entry_box.bind('<Key>', self.receive_loss_input)
+        loss_entry_box.grid(row=2, column=1, sticky="w")
 
     def plot_cost_regions(self):
         """Plots the cost regions using matplotlib and embeds the graph in a tkinter window."""    
@@ -194,30 +193,34 @@ class App:
         else:
             messagebox.showinfo("Warning", "Please enter a non-negative number.")
     
-    # TODO: rename and edit
-    def check_trans_entry(self, *args):  # *args needed for tkinter callback
+    def receive_trans_input(self, *args):  # *args needed for tkinter callback
         """Check and update the transfer cost when user enters a value in the entry box."""
         try:
-            if self.trans_input.get() >= 0:
-                self.trans_cost = self.trans_input.get()
-                self.trans_input.set(round(self.trans_cost, 2))
+            trans_cost = self.trans_input.get()
+        except tk.TclError as e:
+            messagebox.showinfo("Warning", "Please enter a floating point number:\n" + str(e))
+            return
+        
+        if trans_cost >= 0:
+            self.trans_cost = trans_cost
+            if self.verify_valid_dtl():
                 self.enable_recon_btn()
-            else:
-                messagebox.showinfo("Warning", "Please enter a non-negative number.")
-        except:
+        else:
             messagebox.showinfo("Warning", "Please enter a non-negative number.")
     
-    # TODO: rename and edit
-    def check_loss_entry(self, *args):  # *args needed for tkinter callback
+    def receive_loss_input(self, *args):  # *args needed for tkinter callback
         """Check and update the loss cost when user enters a value in the entry box."""
         try:
-            if self.loss_input.get() >= 0:
-                self.loss_cost = self.loss_input.get()
-                self.loss_input.set(round(self.loss_cost, 2))
+            trans_cost = self.trans_input.get()
+        except tk.TclError as e:
+            messagebox.showinfo("Warning", "Please enter a floating point number:\n" + str(e))
+            return
+        
+        if trans_cost >= 0:
+            self.trans_cost = trans_cost
+            if self.verify_valid_dtl():
                 self.enable_recon_btn()
-            else:
-                messagebox.showinfo("Warning", "Please enter a non-negative number.")
-        except:
+        else:
             messagebox.showinfo("Warning", "Please enter a non-negative number.")
     
     def verify_valid_dtl(self):
@@ -233,9 +236,9 @@ class App:
         recon_checkbox_frame = tk.Frame(self.func_frame)
         recon_checkbox_frame.grid(row=3, column=0, sticky="nsew")
         recon_checkbox_frame.pack_propagate(False)
-        self.recon_space_btn_var = tk.IntVar()
-        self.recons_btn_var = tk.IntVar()
-        self.histogram_btn_var = tk.IntVar()
+        self.recon_space_btn_var = tk.BooleanVar()
+        self.recons_btn_var = tk.BooleanVar()
+        self.histogram_btn_var = tk.BooleanVar()
         recon_space_btn = tk.Checkbutton(recon_checkbox_frame, text="View solution space", 
             padx=10, variable=self.recon_space_btn_var, 
             command=self.open_and_close_window_recon_space)
@@ -269,12 +272,12 @@ class App:
         Opens a new window titled "View reconciliation space" when the checkbox is checked,
         and closes the window when the checkbox is unchecked.
         """
-        if self.recon_space_btn_var.get() == 1:
+        if self.recon_space_btn_var.get() == True:
             self.recon_space_window = tk.Toplevel(self.master)
             self.recon_space_window.geometry("400x400")
             self.recon_space_window.title("View reconciliation space")
-            Recon_space_window(self.recon_space_window)
-        if self.recon_space_btn_var.get() == 0:
+            ReconSpaceWindow(self.recon_space_window)
+        if self.recon_space_btn_var.get() == False:
             if self.recon_space_window.winfo_exists() == 1:
                 self.recon_space_window.destroy()
 
@@ -283,12 +286,12 @@ class App:
         Opens a new window titled "View reconciliations" when the checkbox is checked,
         and closes the window when the checkbox is unchecked.
         """
-        if self.recons_btn_var.get() == 1:
+        if self.recons_btn_var.get() == True:
             self.recons_window = tk.Toplevel(self.master)
             self.recons_window.geometry("400x400")
             self.recons_window.title("View reconciliations")
-            Recon_window(self.recons_window)
-        if self.recons_btn_var.get() == 0:
+            ReconsWindow(self.recons_window)
+        if self.recons_btn_var.get() == False:
             if self.recons_window.winfo_exists() == 1:
                 self.recons_window.destroy()
 
@@ -297,18 +300,17 @@ class App:
         Opens a new window titled "View p-value histogram" when the checkbox is checked,
         and closes the window when the checkbox is unchecked.
         """
-        if self.histogram_btn_var.get() == 1:
+        if self.histogram_btn_var.get() == True:
             self.histogram_window = tk.Toplevel(self.master)
             self.histogram_window.geometry("400x400")
             self.histogram_window.title("View p-value histogram")
-            Histogram_window(self.histogram_window)
-        if self.histogram_btn_var.get() == 0:
+            HistogramWindow(self.histogram_window)
+        if self.histogram_btn_var.get() == False:
             if self.histogram_window.winfo_exists() == 1:
                 self.histogram_window.destroy()
 
 # View reconciliation space 
-# TODO: rename
-class Recon_space_window:
+class ReconSpaceWindow:
     def __init__(self, master):
         self.master = master        
         self.frame = tk.Frame(master)
@@ -316,8 +318,7 @@ class Recon_space_window:
         self.frame.pack_propagate(False)
 
 # View reconciliations 
-# TODO: rename
-class Recon_window:
+class ReconsWindow:
     def __init__(self, master):
         self.master = master        
         self.frame = tk.Frame(master)
@@ -325,8 +326,7 @@ class Recon_window:
         self.frame.pack_propagate(False)
 
 # View p-value histogram 
-# TODO: rename
-class Histogram_window:
+class HistogramWindow:
     def __init__(self, master):
         self.master = master        
         self.frame = tk.Frame(master)
