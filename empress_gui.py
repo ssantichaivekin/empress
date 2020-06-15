@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import MouseEvent, key_press_handler
 import empress
+import ReconInput
 
 class App:
 
@@ -55,10 +56,21 @@ class App:
         # "Load File" button 
         # Loads in an input .newick file
         # and displays the number of leaves in each tree (DEMO for now) and entry boxes for DTL costs
-        load_file_btn = tk.Button(self.func_frame, text="Load File", background="green", height=2, width=9, command=self.load_file)
-        load_file_btn.grid(row=0, column=0)
+        # load_file_btn = tk.Button(self.func_frame, text="Load File", background="green", height=2, width=9, command=self.load_file)
+        # load_file_btn.grid(row=0, column=0)
         # Creates a Label to overwrite the old file path 
-        self.file_path_label = tk.Label(self.output_frame)
+        # self.file_path_label = tk.Label(self.output_frame)
+
+        self.file_to_load = tk.StringVar(self.func_frame) 
+        self.file_to_load.set("Load Files")
+        self.options = ["Load host tree file", "Load parasite tree file", "Load mapping"]
+        self.load_file_list = tk.OptionMenu(self.func_frame, self.file_to_load, *self.options, command=self.load_three_files)
+        self.load_file_list.grid(row=0, column=0)
+        self.R = ReconInput.ReconInput()
+        # Creates Labels to overwrite the old displayed information 
+        self.host_tree_info = tk.Label(self.output_frame)
+        self.parasite_tree_info = tk.Label(self.output_frame)
+        self.mapping_info = tk.Label(self.output_frame)
 
         # "View Event Cost Regions" button 
         # Pops up a matplotlib graph for the cost regions
@@ -70,9 +82,9 @@ class App:
         self.compute_recon_button = tk.Button(self.func_frame, text="Compute Reconciliations", command=self.recon_analysis, state=tk.DISABLED)
         self.compute_recon_button.grid(row=2, column=0)
 
-    def load_file(self):
-        """Loads in an input file and displays the number of leaves in each tree when "Load File" button is clicked."""
-        # Creates a frame to display the number of leaves and the file path
+    def load_three_files(self, event):
+        """
+        """ 
         input_info_frame = tk.Frame(self.output_frame)
         input_info_frame.grid(row=0, column=0, sticky="nsew")
         input_info_frame.grid_columnconfigure(0, weight=1)
@@ -81,27 +93,98 @@ class App:
         input_info_frame.grid_rowconfigure(2, weight=1)
         input_info_frame.grid_propagate(False)
 
-        # Allows loading a .newick file
-        self.file_path = None
-        # initialdir is set to be the current working directory
-        input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a file")
-        if Path(input_file).suffix == '.newick': 
-            self.file_path = input_file
-            self.file_path_label.destroy()  # Overwrites the old file path in the grid system
-            self.file_path_label = tk.Label(input_info_frame, text=input_file)
-            self.file_path_label.grid(row=0, column=0, sticky="w")
-            # This is only DEMO for now
-            host_tree_info = tk.Label(input_info_frame, text="Host:  83 tips (DEMO)")
-            host_tree_info.grid(row=1, column=0, sticky="w")
-            parasite_info = tk.Label(input_info_frame, text="Parasite/symbiont:  78 tips (DEMO)")
-            parasite_info.grid(row=2, column=0, sticky="w")           
-        else:
-            messagebox.showinfo("Warning", "Please load a '.newick' file.")
+        # Clicking on "Load host tree file" 
+        if self.file_to_load.get() == "Load host tree file":
+            # Allows loading a .newick file
+            self.host_file_path = None
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file")
+            if Path(input_file).suffix == '.nwk':
+                print(self.R.read_host(input_file)) 
+                if self.R.read_host(input_file) is not None:
+                    self.host_file_path = input_file
+                    self.host_tree_info.destroy()  # Overwrites the old file path in the grid system
+                    # This is only DEMO for now
+                    self.host_tree_info = tk.Label(input_info_frame, text="Host:  83 tips (DEMO)")
+                    self.host_tree_info.grid(row=0, column=0, sticky="w")
+                else: 
+                    messagebox.showinfo("Warning", "The input file cannot be read.")          
+            else:
+                messagebox.showinfo("Warning", "Please load a '.nwk' file.")
+
+        # Clicking on "Load parasite tree file" 
+        elif self.file_to_load.get() == "Load parasite tree file":
+            # Allows loading a .newick file
+            self.host_file_path = None
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file")
+            if Path(input_file).suffix == '.nwk': 
+                if self.R.read_parasite(input_file) is not None:
+                    self.host_file_path = input_file
+                    self.host_tree_info.destroy()  # Overwrites the old file path in the grid system
+                    # This is only DEMO for now
+                    self.parasite_tree_info = tk.Label(input_info_frame, text="Parasite/symbiont:  78 tips (DEMO)")
+                    self.parasite_tree_info.grid(row=1, column=0, sticky="w")
+                else: 
+                    messagebox.showinfo("Warning", "The input file cannot be read.")          
+            else:
+                messagebox.showinfo("Warning", "Please load a '.nwk' file.")
+
+        # Clicking on "Load mapping" 
+        elif self.file_to_load.get() == "Load mapping":
+            # Allows loading a .newick file
+            self.host_file_path = None
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file")
+            if Path(input_file).suffix == '.mapping': 
+                if self.R.read_mapping(input_file) is not None:
+                    self.host_file_path = input_file
+                    self.host_tree_info.destroy()  # Overwrites the old file path in the grid system
+                    # This is only DEMO for now
+                    self.mapping_info = tk.Label(input_info_frame, text="Mapping:  (DEMO)")
+                    self.mapping_info.grid(row=2, column=0, sticky="w")
+                else: 
+                    messagebox.showinfo("Warning", "The input file cannot be read.")          
+            else:
+                messagebox.showinfo("Warning", "Please load a '.mapping' file.")
 
         # Enables the next step, setting DTL costs
-        if self.file_path is not None: 
+        if self.R.complete(): 
             self.view_cost_btn.configure(state=tk.NORMAL)
             self.dtl_cost()
+
+    # def load_file(self):
+    #     """Loads in an input file and displays the number of leaves in each tree when "Load File" button is clicked."""
+    #     # Creates a frame to display the number of leaves and the file path
+    #     input_info_frame = tk.Frame(self.output_frame)
+    #     input_info_frame.grid(row=0, column=0, sticky="nsew")
+    #     input_info_frame.grid_columnconfigure(0, weight=1)
+    #     input_info_frame.grid_rowconfigure(0, weight=1)
+    #     input_info_frame.grid_rowconfigure(1, weight=1)
+    #     input_info_frame.grid_rowconfigure(2, weight=1)
+    #     input_info_frame.grid_propagate(False)
+
+    #     # Allows loading a .newick file
+    #     self.file_path = None
+    #     # initialdir is set to be the current working directory
+    #     input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a file")
+    #     if Path(input_file).suffix == '.newick': 
+    #         self.file_path = input_file
+    #         self.file_path_label.destroy()  # Overwrites the old file path in the grid system
+    #         self.file_path_label = tk.Label(input_info_frame, text=input_file)
+    #         self.file_path_label.grid(row=0, column=0, sticky="w")
+    #         # This is only DEMO for now
+    #         host_tree_info = tk.Label(input_info_frame, text="Host:  83 tips (DEMO)")
+    #         host_tree_info.grid(row=1, column=0, sticky="w")
+    #         parasite_info = tk.Label(input_info_frame, text="Parasite/symbiont:  78 tips (DEMO)")
+    #         parasite_info.grid(row=2, column=0, sticky="w")           
+    #     else:
+    #         messagebox.showinfo("Warning", "Please load a '.newick' file.")
+
+    #     # Enables the next step, setting DTL costs
+    #     if self.file_path is not None: 
+    #         self.view_cost_btn.configure(state=tk.NORMAL)
+    #         self.dtl_cost()
 
     def dtl_cost(self):
         """Sets DTL costs by clicking on the matplotlib graph or by entering manually."""
@@ -149,7 +232,8 @@ class App:
         plt_frame = tk.Frame(plt_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
         plt_frame.pack_propagate(False)
-        recon_input = empress.read_input(self.file_path)
+        #recon_input = empress.read_input(self.file_path)
+        recon_input = empress.read_input(self.R)
         cost_regions = empress.compute_cost_regions(recon_input, 0.5, 10, 0.5, 10)  
         #cost_regions.draw_to_file('./examples/cost_poly.png')  # draw and save to a file
         fig = cost_regions.draw()  # draw to figure (creates matplotlib figure)
