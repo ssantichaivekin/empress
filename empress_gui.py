@@ -10,9 +10,10 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.backend_bases import MouseEvent, key_press_handler
 import empress
 
-class App:
+class App(tk.Frame):
 
     def __init__(self, master):
+        tk.Frame.__init__(self, master)
         self.master = master
         # Configures the master frame 
         master.grid_rowconfigure(0, weight=1)
@@ -115,29 +116,95 @@ class App:
         costs_frame.grid_rowconfigure(2, weight=1)
         costs_frame.grid_propagate(False)
 
-        dup_label = tk.Label(costs_frame, text="Duplication:")
-        dup_label.grid(row=0, column=0, sticky="w")
-        self.dup_input = tk.DoubleVar()
-        dup_entry_box = tk.Entry(costs_frame, width=3, textvariable=self.dup_input)
         self.dup_cost = None
-        dup_entry_box.bind('<Key>', self.receive_dup_input)
-        dup_entry_box.grid(row=0, column=1, sticky="w")
+        self.trans_cost = None
+        self.loss_cost = None
+
+        dup_label = tk.Label(costs_frame, text="Duplication:")
+        self.dup_error = tk.Label(costs_frame, text="")
+        # %P = value of the entry if the edit is allowed
+        # see https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
+        dup_vcmd = (self.register(self.validate_dup_input), '%P')
+        self.dup_input = tk.DoubleVar()
+        self.dup_entry_box = tk.Entry(costs_frame, width=3, validate="all", textvariable=self.dup_input, validatecommand=dup_vcmd)
+        
+        dup_label.grid(row=0, column=0, sticky="w")
+        self.dup_entry_box.grid(row=0, column=1, sticky="w")
+        self.dup_error.grid(row=0, column=2, sticky="w")
 
         trans_label = tk.Label(costs_frame, text="Transfer:")
-        trans_label.grid(row=1, column=0, sticky="w")
+        self.trans_error = tk.Label(costs_frame, text="")
+        # %P = value of the entry if the edit is allowed
+        # see https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
+        trans_vcmd = (self.register(self.validate_trans_input), '%P')
         self.trans_input = tk.DoubleVar()
-        trans_entry_box = tk.Entry(costs_frame, width=3, textvariable=self.trans_input)
-        self.trans_cost = None
-        trans_entry_box.bind('<Key>', self.receive_trans_input)
-        trans_entry_box.grid(row=1, column=1, sticky="w")
+        self.trans_entry_box = tk.Entry(costs_frame, width=3, textvariable=self.trans_input, validate="all", validatecommand=trans_vcmd)
+        trans_label.grid(row=1, column=0, sticky="w")
+        self.trans_entry_box.grid(row=1, column=1, sticky="w")
+        self.trans_error.grid(row=1, column=2, sticky="w")
 
         loss_label = tk.Label(costs_frame, text="Loss:")
         loss_label.grid(row=2, column=0, sticky="w")
+        self.loss_error = tk.Label(costs_frame, text="")
+        # %P = value of the entry if the edit is allowed
+        # see https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
+        loss_vcmd = (self.register(self.validate_loss_input), '%P')
         self.loss_input = tk.DoubleVar()
-        loss_entry_box = tk.Entry(costs_frame, width=3, textvariable=self.loss_input)  
-        self.loss_cost = None
-        loss_entry_box.bind('<Key>', self.receive_loss_input)
-        loss_entry_box.grid(row=2, column=1, sticky="w")
+        self.loss_entry_box = tk.Entry(costs_frame, width=3, validate="all", textvariable=self.loss_input, validatecommand=loss_vcmd)
+        loss_label.grid(row=2, column=0, sticky="w")
+        self.loss_entry_box.grid(row=2, column=1, sticky="w")
+        self.loss_error.grid(row=2, column=2, sticky="w")
+    
+    def validate_dup_input(self, input_after_change: str):
+        try:
+            val = float(input_after_change)
+            if val >= 0:
+                self.dup_cost = val
+            else:
+                self.dup_cost = None   
+                self.dup_error.config(text="should be non-negative", fg="red")    
+        except ValueError:
+            self.dup_cost = None
+            self.dup_error.config(text="should be a number", fg="red")
+        
+        if self.dup_cost is not None:
+            self.dup_error.config(text="valid", fg="green")
+        self.update_recon_btn()
+        return True # return True means allowing the change to happen
+
+    def validate_trans_input(self, input_after_change: str):
+        try:
+            val = float(input_after_change)
+            if val >= 0:
+                self.trans_cost = val
+            else:
+                self.trans_cost = None   
+                self.trans_error.config(text="should be non-negative", fg="red")    
+        except ValueError:
+            self.trans_cost = None
+            self.trans_error.config(text="should be a number", fg="red")
+        
+        if self.trans_cost is not None:
+            self.trans_error.config(text="valid", fg="green")
+        self.update_recon_btn()
+        return True # return True means allowing the change to happen
+    
+    def validate_loss_input(self, input_after_change: str):
+        try:
+            val = float(input_after_change)
+            if val >= 0:
+                self.loss_cost = val
+            else:
+                self.loss_cost = None   
+                self.loss_error.config(text="should be non-negative", fg="red")    
+        except ValueError:
+            self.loss_cost = None
+            self.loss_error.config(text="should be a number", fg="red")
+        
+        if self.loss_cost is not None:
+            self.loss_error.config(text="valid", fg="green")
+        self.update_recon_btn()
+        return True # return True means allowing the change to happen
 
     def plot_cost_regions(self):
         """Plots the cost regions using matplotlib and embeds the graph in a tkinter window."""    
@@ -178,57 +245,11 @@ class App:
         else:
             messagebox.showinfo("Warning", "Please click inside the axes bounds.")
 
-    def receive_dup_input(self, *args):  # *args needed for tkinter callback
-        """Check and update the duplication cost when user enters a value in the entry box."""
-        try:
-            dup_cost = self.dup_input.get()
-        except tk.TclError as e:
-            messagebox.showinfo("Warning", "Please enter a floating point number:\n" + str(e))
-            return
-        
-        if dup_cost >= 0:
-            self.dup_cost = dup_cost
-            if self.verify_valid_dtl():
-                self.enable_recon_btn()
+    def update_recon_btn(self):
+        if self.dup_cost is not None and self.trans_cost is not None and self.loss_cost is not None:
+            self.compute_recon_button.configure(state=tk.NORMAL)
         else:
-            messagebox.showinfo("Warning", "Please enter a non-negative number.")
-    
-    def receive_trans_input(self, *args):  # *args needed for tkinter callback
-        """Check and update the transfer cost when user enters a value in the entry box."""
-        try:
-            trans_cost = self.trans_input.get()
-        except tk.TclError as e:
-            messagebox.showinfo("Warning", "Please enter a floating point number:\n" + str(e))
-            return
-        
-        if trans_cost >= 0:
-            self.trans_cost = trans_cost
-            if self.verify_valid_dtl():
-                self.enable_recon_btn()
-        else:
-            messagebox.showinfo("Warning", "Please enter a non-negative number.")
-    
-    def receive_loss_input(self, *args):  # *args needed for tkinter callback
-        """Check and update the loss cost when user enters a value in the entry box."""
-        try:
-            trans_cost = self.trans_input.get()
-        except tk.TclError as e:
-            messagebox.showinfo("Warning", "Please enter a floating point number:\n" + str(e))
-            return
-        
-        if trans_cost >= 0:
-            self.trans_cost = trans_cost
-            if self.verify_valid_dtl():
-                self.enable_recon_btn()
-        else:
-            messagebox.showinfo("Warning", "Please enter a non-negative number.")
-    
-    def verify_valid_dtl(self):
-        return self.dup_cost and self.trans_cost and self.loss_cost
-
-    def enable_recon_btn(self):
-        """Enables the next step, viewing reconciliation results, after DTL costs are set correctly."""
-        self.compute_recon_button.configure(state=tk.NORMAL)
+            self.compute_recon_button.configure(state=tk.DISABLED)
 
     def recon_analysis(self):
         """Displays reconciliation results in numbers and further viewing options for graphical analysis."""
