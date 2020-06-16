@@ -241,7 +241,7 @@ class App(tk.Frame):
             self.dup_cost = 1.00
             self.trans_cost = event.ydata
             self.loss_cost = event.xdata
-            self.enable_recon_btn()
+            self.update_recon_btn()
         else:
             messagebox.showinfo("Warning", "Please click inside the axes bounds.")
 
