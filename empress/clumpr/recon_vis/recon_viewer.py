@@ -42,7 +42,7 @@ def render_host_helper(fig, node, show_internal_labels):
     """ Helper function for rendering the host tree. """
     node_x, node_y = node.layout.x, node.layout.y
     node_xy = (node_x, node_y)
-    if node.is_leaf:
+    if node.is_leaf():
         fig.dot(node_xy)
         fig.text(node_xy, node.name)
     else:
@@ -94,7 +94,7 @@ def render_parasite_helper(fig, node, recon, host_lookup, show_internal_labels, 
     if event.event_type is EventType.COSPECIATION:
         node.layout.x += COSPECIATION_OFFSET
     # Render parasite node and recurse if not a leaf
-    if node.is_leaf:
+    if node.is_leaf():
         render_parasite_node(fig, node, event)
         return
     render_parasite_helper(fig, node.left_node, recon, host_lookup,
@@ -151,7 +151,7 @@ def set_host_node_layout(host_tree):
     """
     # sets logical row values for leaves in the order they appear in the list of host tree leaves
     logical_row_counter = 0
-    for leaf in host_tree.leaf_list:
+    for leaf in host_tree.leaf_list():
         leaf.layout.row = logical_row_counter
         leaf.layout.x = leaf.layout.col  # This can be scaled if desired
         leaf.layout.y = leaf.layout.row  # This can be scaled if desired
@@ -162,7 +162,7 @@ def set_host_node_layout(host_tree):
 
 def set_internal_host_nodes(node):
     """ Helper function for set_host_node_layout. """
-    if node.is_leaf:
+    if node.is_leaf():
         return
     set_internal_host_nodes(node.left_node)
     set_internal_host_nodes(node.right_node)

@@ -16,6 +16,7 @@ __pycache__/
 *.jpeg
 *.png
 *.pdf
+*.csv
 
 # Unix-generated files
 *.swp

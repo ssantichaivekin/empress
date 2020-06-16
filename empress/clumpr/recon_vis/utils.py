@@ -22,11 +22,11 @@ def convert_to_objects(host_dict, parasite_dict, recon_dict):
     :return - corresondoing host_tree and parasite_tree Tree objects
         and recon Reconciliation object
     """
-    host_tree, parasite_tree = build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
+    host_tree, parasite_tree, ok = build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
     recon = dict_to_reconciliation(recon_dict)
     return host_tree, parasite_tree, recon
 
-def dict_to_tree(tree_dict, tree_type):
+def dict_to_tree(tree_dict: dict, tree_type: tree.TreeType) -> tree.Tree:
     """
     :param tree_dict: An edge-based representation of a tree as in the example above.
     :param tree_type: tree.TreeType.{HOST, PARASITE} indicating the type of the tree.
@@ -172,7 +172,8 @@ def dict_to_recongraph(old_recon_graph: Dict[Tuple, List]):
 
 # Temporal ordering utilities
 
-def build_trees_with_temporal_order(host_tree, parasite_tree, reconciliation):
+def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconciliation: dict) \
+        -> Tuple[tree.Tree, tree.Tree, bool]:
     """
     This function uses topological sort to order the nodes inside host and parasite tree.
     The output trees can be used for visualization.
@@ -393,7 +394,7 @@ def populate_nodes_with_order(tree_node, tree_type, ordering_dict, leaf_order):
     :param leaf_order: the temporal order we should assign to the leaves of the tree
     """
     layout = NodeLayout()
-    if tree_node.is_leaf:
+    if tree_node.is_leaf():
         layout.col = leaf_order
         tree_node.layout = layout
     else:

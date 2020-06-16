@@ -19,14 +19,10 @@ class Node:
         self.parent_node = None     # Node:  parent Node or None
         self.layout = None          # NodeLayout object: layout of this node
 
-    # The @property decorator allows this to be called as .is_leaf rather than .is_leaf()
-    @property
     def is_leaf(self):
         """ returns True iff this node is a leaf/tip of the tree """
         return self.left_node is None and self.right_node is None
 
-    # The @property decorator allows this to be called as .is_root rather than .is_root()
-    @property
     def is_root(self):
         """ returns True iff this node is the root of the tree """
         return self.parent_node is None
@@ -53,23 +49,18 @@ class Tree:
         self.root_node = None       # Node:  Root Node of the Tree
         self.tree_type = None       # TreeType: HOST or PARASITE
 
-    # The @property decorator allows this to be called as .leaf_list rather than .leaf_list()
-    @property
     def leaf_list(self):
         """ Returns list of leaf Nodes from left to right. """
         return self._leaf_list_helper(self.root_node)
 
     def _leaf_list_helper(self, node):
-        if node.is_leaf:
+        if node.is_leaf():
             return [node]
         list1 = self._leaf_list_helper(node.left_node)
         list2 = self._leaf_list_helper(node.right_node)
         list1.extend(list2)
         return list1
 
-    # The @property decorator allows this to be called as .postorder_list
-    # rather than .postorder_list()
-    @property
     def postorder_list(self):
         """ returns list of all Nodes in postorder """
         return self._postorder_list_helper(self.root_node)
@@ -88,13 +79,13 @@ class Tree:
 
     def _name_to_node_dict_helper(self, node, ntn_dict):
         ntn_dict[node.name] = node
-        if node.is_leaf:
+        if node.is_leaf():
             return
         self._name_to_node_dict_helper(node.left_node, ntn_dict)
         self._name_to_node_dict_helper(node.right_node, ntn_dict)
 
     def _postorder_list_helper(self, node):
-        if node.is_leaf:
+        if node.is_leaf():
             return [node]
         list1 = self._postorder_list_helper(node.left_node)
         list2 = self._postorder_list_helper(node.right_node)
