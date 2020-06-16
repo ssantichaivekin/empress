@@ -56,7 +56,7 @@ class App(tk.Frame):
         # "Load File" button 
         # Loads in an input .newick file
         # and displays the number of leaves in each tree (DEMO for now) and entry boxes for DTL costs
-        load_file_btn = tk.Button(self.func_frame, text="Load File", background="green", height=2, width=9, command=self.load_file)
+        load_file_btn = tk.Button(self.func_frame, text="Load File", command=self.load_file)
         load_file_btn.grid(row=0, column=0)
         # Creates a Label to overwrite the old file path 
         self.file_path_label = tk.Label(self.output_frame)
