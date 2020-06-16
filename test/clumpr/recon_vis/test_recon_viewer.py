@@ -1,5 +1,9 @@
-       
-       
+"""
+render_test1.py
+Tester for render function
+"""
+from empress.clumpr.recon_vis.recon_viewer import render
+
 host_dict1 = { 'hTop': ('Top', 'm0', ('m0', 'm1'), ('m0', 'm4')),
 ('m0', 'm1'): ('m0', 'm1', ('m1', 'm2'), ('m1', 'm3')),
 ('m0', 'm4'): ('m0', 'm4', None, None),
@@ -26,3 +30,10 @@ recon_dict2 = { ('n0', 'm1'): [('T', ('n1', 'm1'), ('n4', 'm4'))],
 ('n2', 'm2'): [('C', (None, None), (None, None))],
 ('n3', 'm3'): [('C', (None, None), (None, None))],
 ('n4', 'm4'): [('C', (None, None), (None, None))]}
+
+
+fig = render(host_dict1, parasite_dict1, recon_dict1, show_internal_labels=True, show_freq=True)
+fig.show()
+
+fig = render(host_dict1, parasite_dict1, recon_dict2, show_internal_labels=True, show_freq=True)
+fig.show()

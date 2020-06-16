@@ -4,11 +4,11 @@ Utilities related to conversion between data types
 """
 
 from typing import Dict, Tuple, List
-from recon import MappingNode, ReconGraph, Reconciliation
-from recon import Cospeciation, Duplication, Transfer, Loss, TipTip
-import tree
-from tree import NodeLayout
-from tree import TreeType
+from empress.clumpr.recon_vis.recon import MappingNode, ReconGraph, Reconciliation
+from empress.clumpr.recon_vis.recon import Cospeciation, Duplication, Transfer, Loss, TipTip
+from empress.clumpr.recon_vis import tree
+from empress.clumpr.recon_vis.tree import NodeLayout
+from empress.clumpr.recon_vis.tree import TreeType
 
 __all__ = ['dict_to_tree', 'dict_to_reconciliation', 'build_trees_with_temporal_order']
 
@@ -25,50 +25,6 @@ def convert_to_objects(host_dict, parasite_dict, recon_dict):
     host_tree, parasite_tree = build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
     recon = dict_to_reconciliation(recon_dict)
     return host_tree, parasite_tree, recon
-
-# Tree utilities
-
-# Edge-based format is the primary format used by eMPRess algorithms.
-# This format comprises a dictionary in which each key is either the string
-# "hTop" ("pTop") for the edge corresponding to the handle of a host (parasite) tree
-# or an edge tuple of the form (v1, v2) where v1 and v2 are strings denoting the
-# name of the top and bottom vertices of that edge.  Values are 4-tuples of the form
-# (v1, v2, edge1, edge2) where edge1 and edge2 are the edge tuples for the
-# branches emanating from (v1, v2).  If the branch terminates at a leaf
-# then edge1 and edge2 are both None.
-# Here is an example of the host tree for the heliconius.newick file:
-
-host = {'hTop': ('Top', 'm1', ('m1', 'm2'), ('m1', 'm8')),
-        ('m1', 'm2'): ('m1', 'm2', ('m2', 'm3'), ('m2', 'm6')),
-        ('m2', 'm3'): ('m2', 'm3', ('m3', 'm4'), ('m3', 'm5')),
-        ('m3', 'm4'): ('m3', 'm4', ('m4', 'aglaope_EastPE'), ('m4', 'amaryllis_EastPE')),
-        ('m4', 'aglaope_EastPE'): ('m4', 'aglaope_EastPE', None, None),
-        ('m4', 'amaryllis_EastPE'): ('m4', 'amaryllis_EastPE', None, None),
-        ('m3', 'm5'): ('m3', 'm5', ('m5', 'ecuadoriensis_EastE'), ('m5', 'malleti_EastE')), 
-        ('m5', 'ecuadoriensis_EastE'): ('m5', 'ecuadoriensis_EastE', None, None),
-        ('m5', 'malleti_EastE'): ('m5', 'malleti_EastE', None, None),
-        ('m2', 'm6'): ('m2', 'm6', ('m6', 'm7'), ('m6', 'melpomene_EastT')),
-        ('m6', 'm7'): ('m6', 'm7', ('m7', 'thelxiopeia_EastFG'), ('m7', 'melpomene_EastFG')), 
-        ('m7', 'thelxiopeia_EastFG'): ('m7', 'thelxiopeia_EastFG', None, None),
-        ('m7', 'melpomene_EastFG'): ('m7', 'melpomene_EastFG', None, None),
-        ('m6', 'melpomene_EastT'): ('m6', 'melpomene_EastT', None, None),
-        ('m1', 'm8'): ('m1', 'm8', ('m8', 'm9'), ('m8', 'm11')),
-        ('m8', 'm9'): ('m8', 'm9', ('m9', 'm10'), ('m9', 'rosina_WestPA')),
-        ('m9', 'm10'): ('m9', 'm10', ('m10', 'melpomene_WestPA'),
-        ('m10', 'rosina_WestCR')), ('m10', 'melpomene_WestPA'): ('m10', 'melpomene_WestPA', None, None),
-        ('m10', 'rosina_WestCR'): ('m10', 'rosina_WestCR', None, None),
-        ('m9', 'rosina_WestPA'): ('m9', 'rosina_WestPA', None, None),
-        ('m8', 'm11'): ('m8', 'm11', ('m11', 'melpomene_EastC'), ('m11', 'cythera_WestE')),
-        ('m11', 'melpomene_EastC'): ('m11', 'melpomene_EastC', None, None),
-        ('m11', 'cythera_WestE'): ('m11', 'cythera_WestE', None, None)}
-
-
-def tester():
-    """ Tester for dict_to_tree """
-    host_converted = dict_to_tree(host, tree.TreeType.HOST)
-    print("Leaves: ", host_converted.leaf_list)
-    print()
-    print("All nodes in postorder: ", host_converted.postorder_list)
 
 def dict_to_tree(tree_dict, tree_type):
     """
@@ -170,7 +126,7 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List]):
         elif etype == 'C':
             recon.set_event(mapping_node, TipTip())
         else:
-            raise ValueError('%s not in "SDTLC' % etype)
+            raise ValueError('%s not in "SDTLC"' % etype)
     return recon
 
 def dict_to_recongraph(old_recon_graph: Dict[Tuple, List]):

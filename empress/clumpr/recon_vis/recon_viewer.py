@@ -22,7 +22,7 @@ def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False, sho
     render_host(fig, host_tree, show_internal_labels)
     host_lookup = host_tree.name_to_node_dict()
     render_parasite(fig, parasite_tree, recon, host_lookup, show_internal_labels, show_freq)
-    fig.show()
+    return fig
 
 
 def render_host(fig, host_tree, show_internal_labels):
