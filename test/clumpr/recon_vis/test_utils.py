@@ -3,7 +3,7 @@ import os
 import itertools
 import shutil
 from empress import newickFormatReader
-from empress.topo_sort import recon_builder
+from empress.clumpr.recon_vis import utils
 from empress.clumpr import DTLReconGraph
 from empress.clumpr import HistogramAlgTools
 from empress.clumpr.script02_gen_newick_trees import generateNewickTestsMultipleSizes
@@ -46,12 +46,12 @@ class TestReconBuilder(unittest.TestCase):
         function instantiates the tree objects correctly and indicates the reconciliation
         is temporally consistent
         """
-        temporal_graph = recon_builder.build_temporal_graph(host_tree, parasite_tree, reconciliation)
-        ordering_dict = recon_builder.topological_order(temporal_graph)
+        temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
+        ordering_dict = utils.topological_order(temporal_graph)
         self.assertIsNotNone(ordering_dict)
         self.check_topological_order(temporal_graph, ordering_dict)
 
-        host, parasite, if_consistent = recon_builder.build_trees_with_temporal_order(host_tree,
+        host, parasite, if_consistent = utils.build_trees_with_temporal_order(host_tree,
                                                                     parasite_tree, reconciliation)
         self.assertIsNotNone(host)
         self.assertIsNotNone(parasite)
@@ -63,11 +63,11 @@ class TestReconBuilder(unittest.TestCase):
         a topological order for the host and parasite nodes, and build_temporal_graph
         function returns None, None, False
         """
-        temporal_graph = recon_builder.build_temporal_graph(host_tree, parasite_tree, reconciliation)
-        ordering_dict = recon_builder.topological_order(temporal_graph)
+        temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
+        ordering_dict = utils.topological_order(temporal_graph)
         self.assertIsNone(ordering_dict)
 
-        host, parasite, if_consistent = recon_builder.build_trees_with_temporal_order(host_tree,
+        host, parasite, if_consistent = utils.build_trees_with_temporal_order(host_tree,
                                                                     parasite_tree, reconciliation)
         self.assertIsNone(host)
         self.assertIsNone(parasite)
@@ -213,8 +213,8 @@ class TestReconBuilder(unittest.TestCase):
                 for d, t, l in itertools.product(range(1, 5), repeat=3):
                     recon_graph, _, _, best_roots = DTLReconGraph.DP(recon_input, d, t, l)
                     for reconciliation, _ in HistogramAlgTools.BF_enumerate_MPRs(recon_graph, best_roots):
-                        temporal_graph = recon_builder.build_temporal_graph(host_tree, parasite_tree, reconciliation)
-                        ordering_dict = recon_builder.topological_order(temporal_graph)
+                        temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
+                        ordering_dict = utils.topological_order(temporal_graph)
                         # if there is no temporal inconsistency
                         if ordering_dict != None:
                             self.check_topological_order(temporal_graph, ordering_dict)
