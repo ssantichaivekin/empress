@@ -160,8 +160,8 @@ def perform_clustering(tree_data, d, t, l, k, args):
     # Actually perform the clustering
     if args.depth is not None:
         graphs,scores,_ = ClusterUtil.cluster_graph(recon_g, gene_root, score, args.depth, k, 200)
-    elif args.nmprs is not None:
-        graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args.nmprs, mpr_count, k, 200)
+    elif args.nsplits is not None:
+        graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args.nsplits, mpr_count, k, 200)
     else:
         assert False
     # Visualization

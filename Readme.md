@@ -73,12 +73,12 @@ For example, to run Pair-distance Histogram that outputs a csv file at `foo.csv`
 * `-l` : Lost cost (1)
 * `-k` : Number of clusters
 * `--median` : Print out medians of each cluster
-* `--depth` : How far down the graph to consider event splits
-* `--nmprs` : How many MPRs to consider
+* `--depth` : How far down to split the graph before clustering
+* `--nsplits` : As an alternative to passing the depth directly, split the reconciliation graph into at least n distinct pieces before merging
 * `--pdv-vis` : Visualize the resulting clusters using the PDV*
 * `--support-vis` : Visualize the resulting clusters using a histogram of the event supports*
 * `--pdv` : Use the weighted average distance to evaluate clusters*
 * `--support` : Use the weighted average event support to evaluate clusters*
 
-For example, to run Cluster MPR that prints out the medians of each cluster with 4 MPRs using the weighted average event support, you run 
-* `python empress_cli.py -fn examples/heliconius.newick clumpr --median --nmprs 4 --support`
+For example, to find at least 8 distinct parts of reconciliation-space before merging them into clusters, use `--nsplits 8`. To merge those splits into three clusters, use `-k 3`. The clusters are merged based on a cluster-distance that is calculated either using the average event support or the pairwise distance. To use the event support use `--support`. Finally, to get the median reconciliation of each of the three clusters, use `--median`. Putting it all together, the full command is
+* `python empress_cli.py -fn examples/heliconius.newick clumpr -k 3 --median --nsplits 8 --support`
