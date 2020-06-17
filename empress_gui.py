@@ -391,24 +391,27 @@ class App(tk.Frame):
                 self.histogram_window.destroy()
 
 # View reconciliation space 
-class ReconSpaceWindow:
+class ReconSpaceWindow(tk.Frame):
     def __init__(self, master):
+        super().__init__(master)
         self.master = master        
         self.frame = tk.Frame(master)
         self.frame.pack(fill=tk.BOTH, expand=1)
         self.frame.pack_propagate(False)
 
 # View reconciliations 
-class ReconsWindow:
+class ReconsWindow(tk.Frame):
     def __init__(self, master):
+        super().__init__(master)
         self.master = master        
         self.frame = tk.Frame(master)
         self.frame.pack(fill=tk.BOTH, expand=1)
         self.frame.pack_propagate(False)
 
 # View p-value histogram 
-class HistogramWindow:
+class HistogramWindow(tk.Frame):
     def __init__(self, master):
+        super().__init__(master)
         self.master = master        
         self.frame = tk.Frame(master)
         self.frame.pack(fill=tk.BOTH, expand=1)
