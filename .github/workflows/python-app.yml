@@ -44,3 +44,7 @@ jobs:
     - name: Run cluster example in Readme.md
       run: |
         pipenv run python empress_cli.py -fn examples/heliconius.newick clumpr --median --nmprs 4 --support
+    - name: Run unittests
+      run: |
+        pipenv run python unittest
+
