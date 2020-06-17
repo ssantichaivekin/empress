@@ -17,6 +17,10 @@ __pycache__/
 *.png
 *.pdf
 *.csv
+*.gif
 
 # Unix-generated files
 *.swp
+
+# Exclude assets
+!assets/*.gif
