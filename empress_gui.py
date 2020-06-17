@@ -17,83 +17,90 @@ class App(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.master = master
-        # Configures the master frame 
+        # Configure the master frame 
         master.grid_rowconfigure(0, weight=1)
         master.grid_rowconfigure(1, weight=2)
         master.grid_columnconfigure(0, weight=1)
         master.grid_columnconfigure(1, weight=1)
 
-        # Creates a logo frame on top of the master frame 
+        # Create a logo frame on top of the master frame 
         self.logo_frame = tk.Frame(master)
         # sticky="nsew" means that self.logo_frame expands in all four directions (north, south, east and west) 
         # to fully occupy the allocated space in the grid system (row 0 column 0&1)
         self.logo_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
         self.logo_frame.grid_propagate(False)
 
-        # Adds background image
+        # Add logo image
         photo = tk.PhotoImage(file="./assets/jane_logo_thin.gif")
         label = tk.Label(self.logo_frame, image=photo)
         label.place(x=0, y=0)
         label.image = photo
 
-        # Creates an input frame on the left side of the master frame 
+        # Create an input frame on the left side of the master frame 
         self.input_frame = tk.Frame(master)
         self.input_frame.grid(row=1, column=0, sticky="nsew")
-        self.input_frame.grid_rowconfigure(0, weight=1)
-        self.input_frame.grid_rowconfigure(1, weight=1)
-        self.input_frame.grid_rowconfigure(2, weight=1)
-        self.input_frame.grid_rowconfigure(3, weight=1)
+        self.input_frame.grid_rowconfigure(0, weight=3)
+        self.input_frame.grid_rowconfigure(1, weight=3)
+        self.input_frame.grid_rowconfigure(2, weight=5)
         self.input_frame.grid_columnconfigure(0, weight=1)
         self.input_frame.grid_propagate(False)
 
-        # Creates an output frame on the right side of the master frame
+        # Create an output frame on the right side of the master frame
         self.output_frame = tk.Frame(master)
         self.output_frame.grid(row=1, column=1, sticky="nsew")
-        self.output_frame.grid_rowconfigure(0, weight=1)
-        self.output_frame.grid_rowconfigure(1, weight=1)
-        self.output_frame.grid_rowconfigure(2, weight=1)
+        self.output_frame.grid_rowconfigure(0, weight=2)
+        self.output_frame.grid_rowconfigure(1, weight=3)
+        self.output_frame.grid_rowconfigure(2, weight=3)
         self.output_frame.grid_columnconfigure(0, weight=1)
         self.output_frame.grid_propagate(False)
 
-        # Creates an input information frame on top of the output frame
+        # Create an input information frame on top of the output frame
         # to display the numbers of tips for host and parasite trees
         self.input_info_frame = tk.Frame(self.output_frame)
         self.input_info_frame.grid(row=0, column=0, sticky="nsew")
-        self.input_info_frame.grid_columnconfigure(0, weight=1)
         self.input_info_frame.grid_rowconfigure(0, weight=1)
         self.input_info_frame.grid_rowconfigure(1, weight=1)
         self.input_info_frame.grid_rowconfigure(2, weight=1)
+        self.input_info_frame.grid_columnconfigure(0, weight=1)
         self.input_info_frame.grid_propagate(False)
 
         # "Load Files" button 
-        # Loads in three input files (two .nwk and one .mapping)
-        # and displays the number of leaves in each tree and the entry boxes for setting DTL costs (next step)
+        # Load in three input files (two .nwk and one .mapping)
+        # and display the number of leaves in each tree and the entry boxes for setting DTL costs (next step)
         self.file_to_load = tk.StringVar(self.input_frame) 
         self.file_to_load.set("Load Files")
         self.options = ["Load host tree file", "Load parasite tree file", "Load mapping file"]
         self.load_file_list = tk.OptionMenu(self.input_frame, self.file_to_load, *self.options, command=self.load_input_files)
         self.load_file_list.grid(row=0, column=0)
         self.R = ReconInput.ReconInput()
-        # Creates Labels to overwrite the old displayed information 
+        # Create Labels to overwrite the old displayed information 
         self.host_tree_info = tk.Label(self.input_info_frame)
         self.parasite_tree_info = tk.Label(self.input_info_frame)
         self.mapping_info = tk.Label(self.input_info_frame)
 
         # "View Event Cost Regions" button 
-        # Pops up a matplotlib graph for the cost regions
+        # Pop up a matplotlib graph for the cost regions
         self.view_cost_btn = tk.Button(self.input_frame, text="View Event Cost Regions", command=self.plot_cost_regions, state=tk.DISABLED)
         self.view_cost_btn.grid(row=1, column=0)
 
+        # Create a frame for "Compute Reconciliations" button and its checkbuttons
+        self.compute_recon_frame = tk.Frame(self.input_frame)
+        self.compute_recon_frame.grid(row=2, column=0, sticky="nsew")
+        self.compute_recon_frame.grid_rowconfigure(0, weight=1)
+        self.compute_recon_frame.grid_rowconfigure(1, weight=4)
+        self.compute_recon_frame.grid_columnconfigure(0, weight=1)
+        self.compute_recon_frame.grid_propagate(False)
         # "Compute Reconciliations" button 
-        # Displays reconciliation results(numbers) and three options(checkboxes) for viewing graphical analysis
-        self.compute_recon_button = tk.Button(self.input_frame, text="Compute Reconciliations", command=self.recon_analysis, state=tk.DISABLED)
-        self.compute_recon_button.grid(row=2, column=0)
+        # Display reconciliation results(numbers) and three options(checkboxes) for viewing graphical analysis
+        self.compute_recon_button = tk.Button(self.compute_recon_frame, text="Compute Reconciliations", command=self.recon_analysis, state=tk.DISABLED)
+        self.compute_recon_button.grid(row=0, column=0)
 
     def load_input_files(self, event):
         """
         Load in two .nwk files for the host tree and parasite tree, and one .mapping file. Display the number of tips for 
         the trees and a message to indicate the successful reading of the tips mapping.
         """ 
+        self.recon_graph = None
         # Clicking on "Load host tree file" 
         if self.file_to_load.get() == "Load host tree file":
             # Allows loading a .newick file
@@ -171,7 +178,8 @@ class App(tk.Frame):
         costs_frame = tk.Frame(self.output_frame)
         costs_frame.grid(row=1, column=0, sticky="nsew")
         costs_frame.grid_columnconfigure(0, weight=1)
-        costs_frame.grid_columnconfigure(1, weight=3)
+        costs_frame.grid_columnconfigure(1, weight=1)
+        costs_frame.grid_columnconfigure(2, weight=10)
         costs_frame.grid_rowconfigure(0, weight=1)
         costs_frame.grid_rowconfigure(1, weight=1)
         costs_frame.grid_rowconfigure(2, weight=1)
@@ -314,28 +322,53 @@ class App(tk.Frame):
     def recon_analysis(self):
         """Display reconciliation results in numbers and further viewing options for graphical analysis."""
         # Creates a frame for the three checkbuttons
-        recon_checkbox_frame = tk.Frame(self.input_frame)
-        recon_checkbox_frame.grid(row=3, column=0, sticky="nsew")
-        recon_checkbox_frame.pack_propagate(False)
+        recon_checkbox_frame = tk.Frame(self.compute_recon_frame)
+        recon_checkbox_frame.grid(row=1, column=0, sticky="nsew")
+        recon_checkbox_frame.grid_rowconfigure(0, weight=3)
+        recon_checkbox_frame.grid_rowconfigure(1, weight=1)
+        recon_checkbox_frame.grid_rowconfigure(2, weight=1)
+        recon_checkbox_frame.grid_columnconfigure(0, weight=1)
+        recon_checkbox_frame.grid_propagate(False)
+
+        num_cluster_frame = tk.Frame(recon_checkbox_frame)
+        num_cluster_frame.grid(row=0, column=0, sticky="nsew")
+        num_cluster_frame.grid_rowconfigure(0, weight=1)
+        num_cluster_frame.grid_columnconfigure(0, weight=1)
+        num_cluster_frame.grid_columnconfigure(1, weight=1)
+        num_cluster_frame.grid_columnconfigure(2, weight=1)
+        num_cluster_frame.grid_propagate(False)
+
+        num_cluster_label = tk.Label(num_cluster_frame, text="Number of clusters:")
+        self.num_cluster_error = tk.Label(num_cluster_frame, text="")
+        num_cluster_vcmd = (self.register(self.validate_num_cluster_input), '%P')
+        self.num_cluster_input = tk.IntVar()
+        self.num_cluster_input.set(1)
+        self.num_cluster_entry_box = tk.Entry(num_cluster_frame, width=2, textvariable=self.num_cluster_input, validate="all", validatecommand=num_cluster_vcmd)
+        num_cluster_label.grid(row=0, column=0, sticky="e")
+        self.num_cluster_entry_box.grid(row=0, column=1)
+        self.num_cluster_error.grid(row=0, column=2, sticky="w")
+
         self.recon_space_btn_var = tk.BooleanVar()
-        self.recons_btn_var = tk.BooleanVar()
-        self.histogram_btn_var = tk.BooleanVar()
         recon_space_btn = tk.Checkbutton(recon_checkbox_frame, text="View solution space", 
             padx=10, variable=self.recon_space_btn_var, 
             command=self.open_and_close_window_recon_space)
+        recon_space_btn.grid(row=1, column=0)
+
+        self.recons_btn_var = tk.BooleanVar()
         recons_btn = tk.Checkbutton(recon_checkbox_frame, text="View reconciliations", 
             padx=10, variable=self.recons_btn_var, 
             command=self.open_and_close_window_recons)
-        histogram_btn = tk.Checkbutton(recon_checkbox_frame, text="Stats mode", 
-            padx=36, variable=self.histogram_btn_var, 
-            command=self.open_and_close_window_histogram)
-        recon_space_btn.pack()
-        recons_btn.pack()
-        histogram_btn.pack()
+        recons_btn.grid(row=2, column=0)
 
         # Shows reconciliation results as numbers
         recon_nums_frame = tk.Frame(self.output_frame)
         recon_nums_frame.grid(row=2, column=0, sticky="nsew")
+        recon_nums_frame.grid_rowconfigure(0, weight=1)
+        recon_nums_frame.grid_rowconfigure(1, weight=1)
+        recon_nums_frame.grid_rowconfigure(2, weight=1)
+        recon_nums_frame.grid_rowconfigure(3, weight=1)
+        recon_nums_frame.grid_rowconfigure(4, weight=1)
+        recon_nums_frame.grid_columnconfigure(0, weight=1)
         recon_nums_frame.grid_propagate(False)
         recon_MPRs_label = tk.Label(recon_nums_frame, text="Number of MPRs:")
         recon_cospeci_label = tk.Label(recon_nums_frame, text="# Cospeciations:")
@@ -348,6 +381,44 @@ class App(tk.Frame):
         recon_trans_label.grid(row=3, column=0, sticky="w")
         recon_loss_label.grid(row=4, column=0, sticky="w")
 
+    def validate_num_cluster_input(self, input_after_change: str):
+        global num_cluster
+        try:
+            val = int(input_after_change)
+            if val >= 1:
+                num_cluster = val
+            else:
+                num_cluster = None   
+                self.num_cluster_error.config(text=">= 1", fg="red")    
+        except ValueError:
+            num_cluster = None
+            self.num_cluster_error.config(text="number", fg="red")
+        
+        if num_cluster is not None:
+            self.num_cluster_error.config(text="valid", fg="green")
+            self.compute_recon_solutions()
+        return True # return True means allowing the change to happen
+
+    def compute_recon_solutions(self):
+        """
+        """
+        global clusters_list
+        global recon_graph
+        global median_reconciliation
+        # Compute ReconGraph
+        recon_graph = empress.reconcile(self.R, 1, 1, 1)
+
+        # Compute all clusters from 1 to num_cluster
+        # and store them in a list called clusters_list
+        # clusters_list[0] contains recon_graph.cluster(1) and so on
+        # Each clusters_list[num] is a list of ReconGraph
+        clusters_list = []
+        for num in range(num_cluster):
+            clusters_list.append(recon_graph.cluster(num+1))
+        
+        # Find median
+        median_reconciliation = recon_graph.median()
+
     def open_and_close_window_recon_space(self):
         """
         Open a new window titled "View reconciliation space" when the checkbox is checked,
@@ -355,7 +426,7 @@ class App(tk.Frame):
         """
         if self.recon_space_btn_var.get() == True:
             self.recon_space_window = tk.Toplevel(self.master)
-            self.recon_space_window.geometry("400x400")
+            self.recon_space_window.geometry("900x900")
             self.recon_space_window.title("View reconciliation space")
             ReconSpaceWindow(self.recon_space_window)
         if self.recon_space_btn_var.get() == False:
@@ -369,26 +440,12 @@ class App(tk.Frame):
         """
         if self.recons_btn_var.get() == True:
             self.recons_window = tk.Toplevel(self.master)
-            self.recons_window.geometry("400x400")
+            self.recons_window.geometry("600x600")
             self.recons_window.title("View reconciliations")
             ReconsWindow(self.recons_window)
         if self.recons_btn_var.get() == False:
             if self.recons_window.winfo_exists() == 1:
                 self.recons_window.destroy()
-
-    def open_and_close_window_histogram(self):
-        """
-        Open a new window titled "View p-value histogram" when the checkbox is checked,
-        and close the window when the checkbox is unchecked.
-        """
-        if self.histogram_btn_var.get() == True:
-            self.histogram_window = tk.Toplevel(self.master)
-            self.histogram_window.geometry("400x400")
-            self.histogram_window.title("View p-value histogram")
-            HistogramWindow(self.histogram_window)
-        if self.histogram_btn_var.get() == False:
-            if self.histogram_window.winfo_exists() == 1:
-                self.histogram_window.destroy()
 
 # View reconciliation space 
 class ReconSpaceWindow(tk.Frame):
@@ -398,6 +455,26 @@ class ReconSpaceWindow(tk.Frame):
         self.frame = tk.Frame(master)
         self.frame.pack(fill=tk.BOTH, expand=1)
         self.frame.pack_propagate(False)
+        self.draw_clusters()
+    
+    def draw_clusters(self):
+        """
+        """
+        if len(clusters_list) == 1:
+            fig = recon_graph.draw()
+        else:
+            fig, axs = plt.subplots(len(clusters_list), len(clusters_list))
+            for i in range(len(clusters_list)):
+                for j in range(len(clusters_list[i])):
+                    clusters_list[i][j].draw_on(axs[i,j])
+        
+        canvas = FigureCanvasTkAgg(fig, self.frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # The toolbar allows the user to zoom in/out, drag the graph and save the graph
+        toolbar = NavigationToolbar2Tk(canvas, self.frame)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side=tk.TOP)
 
 # View reconciliations 
 class ReconsWindow(tk.Frame):
@@ -407,21 +484,24 @@ class ReconsWindow(tk.Frame):
         self.frame = tk.Frame(master)
         self.frame.pack(fill=tk.BOTH, expand=1)
         self.frame.pack_propagate(False)
-
-# View p-value histogram 
-class HistogramWindow(tk.Frame):
-    def __init__(self, master):
-        super().__init__(master)
-        self.master = master        
-        self.frame = tk.Frame(master)
-        self.frame.pack(fill=tk.BOTH, expand=1)
-        self.frame.pack_propagate(False)
+        self.draw_median_recons()
+    
+    def draw_median_recons(self):
+        """
+        """
+        fig = median_reconciliation.draw()
+        canvas = FigureCanvasTkAgg(fig, self.frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # The toolbar allows the user to zoom in/out, drag the graph and save the graph
+        toolbar = NavigationToolbar2Tk(canvas, self.frame)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side=tk.TOP)
 
 def on_closing():
     """Kills the matplotlib program and all other tkinter programs when the master window is closed."""
     plt.close("all")
     root.destroy()
-
 
 root = tk.Tk()
 root.geometry("600x600")
