@@ -19,13 +19,13 @@ from empress.newickFormatReader import ReconInput
 from empress.newickFormatReader import getInput as read_input
 from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
-from empress.clumpr import DTLReconGraph
-from empress.clumpr import reconciliation_visualization
-from empress.clumpr import DTLMedian
-from empress.clumpr import Diameter
-from empress.clumpr import HistogramDisplay
-from empress.clumpr import HistogramAlg
-from empress.clumpr import ClusterUtil
+from empress.reconcile import DTLReconGraph
+from empress.reconcile import reconciliation_visualization
+from empress.reconcile import DTLMedian
+from empress.reconcile import Diameter
+from empress.histogram import HistogramDisplay
+from empress.histogram import HistogramAlg
+from empress.cluster import ClusterUtil
 
 def _find_roots(old_recon_graph) -> list:
     not_roots = set()
