@@ -4,11 +4,11 @@ Utilities related to conversion between data types
 """
 
 from typing import Dict, Tuple, List
-from empress.clumpr.recon_vis.recon import MappingNode, ReconGraph, Reconciliation
-from empress.clumpr.recon_vis.recon import Cospeciation, Duplication, Transfer, Loss, TipTip
-from empress.clumpr.recon_vis import tree
-from empress.clumpr.recon_vis.tree import NodeLayout
-from empress.clumpr.recon_vis.tree import TreeType
+from empress.reconcile.recon_vis.recon import MappingNode, ReconGraph, Reconciliation
+from empress.reconcile.recon_vis.recon import Cospeciation, Duplication, Transfer, Loss, TipTip
+from empress.reconcile.recon_vis import tree
+from empress.reconcile.recon_vis.tree import NodeLayout
+from empress.reconcile.recon_vis.tree import TreeType
 
 __all__ = ['dict_to_tree', 'dict_to_reconciliation', 'build_trees_with_temporal_order']
 

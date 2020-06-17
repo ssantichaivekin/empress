@@ -7,7 +7,7 @@ from pathlib import Path
 import shutil
 import unittest
 
-from empress.clumpr.recon_vis import recon_viewer
+from empress.reconcile.recon_vis import recon_viewer
 
 
 class TestReconViewer(unittest.TestCase):

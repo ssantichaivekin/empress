@@ -3,10 +3,10 @@ import os
 import itertools
 import shutil
 from empress import newickFormatReader
-from empress.clumpr.recon_vis import utils
-from empress.clumpr import DTLReconGraph
-from empress.clumpr import HistogramAlgTools
-from empress.clumpr.script02_gen_newick_trees import generateNewickTestsMultipleSizes
+from empress.reconcile.recon_vis import utils
+from empress.reconcile import DTLReconGraph
+from empress.histogram import HistogramAlgTools
+from empress.reconcile.script02_gen_newick_trees import generateNewickTestsMultipleSizes
 
 class TestReconBuilder(unittest.TestCase):
     """
