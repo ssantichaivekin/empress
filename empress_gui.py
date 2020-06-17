@@ -272,7 +272,7 @@ class App(tk.Frame):
         # Creates a new tkinter window 
         plt_window = tk.Toplevel(self.master)
         plt_window.geometry("550x550")
-        plt_window.title("Matplotlib Graph DEMO")
+        plt_window.title("Matplotlib Graph - Cost regions")
         # Creates a new frame
         plt_frame = tk.Frame(plt_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
