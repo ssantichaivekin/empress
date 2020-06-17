@@ -1,15 +1,179 @@
-# ReconBuilder.py
-# This code builds a representation of a host tree, parasite tree, and a reconfiguration
-# as specified in Recon.py using the host tree, parasite tree, and reconfiguration 
-# representation in the DTL.
+"""
+utils.py
+Utilities related to conversion between data types
+"""
 
-from empress.topo_sort.Tree import NodeLayout
-from empress.topo_sort.Tree import TreeType
-from empress.topo_sort.tree_format_converter import dict_to_tree
+from typing import Dict, Tuple, List
+from empress.clumpr.recon_vis.recon import MappingNode, ReconGraph, Reconciliation
+from empress.clumpr.recon_vis.recon import Cospeciation, Duplication, Transfer, Loss, TipTip
+from empress.clumpr.recon_vis import tree
+from empress.clumpr.recon_vis.tree import NodeLayout
+from empress.clumpr.recon_vis.tree import TreeType
 
-__all__ = ["build_trees_with_temporal_order"]
+__all__ = ['dict_to_tree', 'dict_to_reconciliation', 'build_trees_with_temporal_order']
 
-def build_trees_with_temporal_order(host_tree, parasite_tree, reconciliation):
+# Master utility function coverts from dictionaries to objects
+
+def convert_to_objects(host_dict, parasite_dict, recon_dict):
+    """
+    :param host_dict - dictionary representation of host tree
+    :param parasite_dict - dictionary representation of parasite tree
+    :param recon_dict - dictionary representation of reconciliation
+    :return - corresondoing host_tree and parasite_tree Tree objects
+        and recon Reconciliation object
+    """
+    host_tree, parasite_tree, ok = build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
+    recon = dict_to_reconciliation(recon_dict)
+    return host_tree, parasite_tree, recon
+
+def dict_to_tree(tree_dict: dict, tree_type: tree.TreeType) -> tree.Tree:
+    """
+    :param tree_dict: An edge-based representation of a tree as in the example above.
+    :param tree_type: tree.TreeType.{HOST, PARASITE} indicating the type of the tree.
+        This is used to determine if the handle of the tree is "hTop" (host) or
+        "pTop" (parasite)
+    :return: A representation of the tree in Tree format (see tree.py)
+    """
+
+    root = "hTop" if tree_type == tree.TreeType.HOST else "pTop"
+    output_tree = tree.Tree()
+    output_tree.tree_type = tree_type
+    output_tree.root_node = _dict_to_tree_helper(tree_dict, root)
+    return output_tree
+
+def _dict_to_tree_helper(tree_dict, root_edge):
+    """
+    Helper function for dict_to_tree.
+    """
+    root_name = tree_dict[root_edge][1]
+    new_node = tree.Node(root_name)
+    left_edge = tree_dict[root_edge][2]
+    right_edge = tree_dict[root_edge][3]
+    
+    if left_edge is None and right_edge is None:
+        return new_node
+    else:
+        new_left_node = _dict_to_tree_helper(tree_dict, left_edge)
+        new_right_node = _dict_to_tree_helper(tree_dict, right_edge)
+        new_node.left_node = new_left_node
+        new_left_node.parent_node = new_node
+        new_node.right_node = new_right_node
+        new_left_node.parent_node = new_node
+        return new_node
+
+# ReconGraph utilities
+
+def _find_roots(old_recon_graph) -> List[MappingNode]:
+    not_roots = set()
+    for mapping in old_recon_graph:
+        for event in old_recon_graph[mapping]:
+            etype, left, right = event
+            if etype in 'SDT':
+                not_roots.add(left)
+                not_roots.add(right)
+            elif etype == 'L':
+                child = left
+                not_roots.add(child)
+            elif etype == 'C':
+                pass
+            else:
+                raise ValueError('%s not in "SDTLC' % etype)
+    roots = []
+    for mapping in old_recon_graph:
+        if mapping not in not_roots:
+            roots.append(mapping)
+    return roots
+
+def dict_to_reconciliation(old_recon: Dict[Tuple, List]):
+    """
+    Convert the old reconciliation graph format to Reconciliation.
+
+    Example of old format:
+    old_recon = {
+        ('n0', 'm2'): [('S', ('n2', 'm3'), ('n1', 'm4'))],
+        ('n1', 'm4'): [('C', (None, None), (None, None))],
+        ('n2', 'm3'): [('T', ('n3', 'm3'), ('n4', 'm1'))],
+        ('n3', 'm3'): [('C', (None, None), (None, None))],
+        ('n4', 'm1'): [('C', (None, None), (None, None))],
+    }
+    """
+    roots = _find_roots(old_recon)
+    if len(roots) > 1:
+        raise ValueError("old_recon has many roots")
+    root = roots[0]
+    recon = Reconciliation(root)
+    for mapping in old_recon:
+        host, parasite = mapping
+        if len(old_recon[mapping]) != 1:
+            raise ValueError('old_recon mapping node has no or multiple events')
+        etype, left, right = old_recon[mapping][0]
+        mapping_node = MappingNode(host, parasite)
+        if etype in 'SDT':
+            left_parasite, left_host = left
+            right_parasite, right_host = right
+            left_mapping = MappingNode(left_parasite, left_host)
+            right_mapping = MappingNode(right_parasite, right_host)
+            if etype == 'S':
+                recon.set_event(mapping_node, Cospeciation(left_mapping, right_mapping))
+            if etype == 'D':
+                recon.set_event(mapping_node, Duplication(left_mapping, right_mapping))
+            if etype == 'T':
+                recon.set_event(mapping_node, Transfer(left_mapping, right_mapping))
+        elif etype == 'L':
+            child_parasite, child_host = left
+            child_mapping = MappingNode(child_parasite, child_host)
+            recon.set_event(mapping_node, Loss(child_mapping))
+        elif etype == 'C':
+            recon.set_event(mapping_node, TipTip())
+        else:
+            raise ValueError('%s not in "SDTLC"' % etype)
+    return recon
+
+def dict_to_recongraph(old_recon_graph: Dict[Tuple, List]):
+    """
+    Convert the old reconciliation graph format to ReconGraph.
+
+    Example of old format:
+    old_recon_graph = {
+        ('n0', 'm2'): [('S', ('n2', 'm3'), ('n1', 'm4'))],
+        ('n1', 'm4'): [('C', (None, None), (None, None))],
+        ('n2', 'm3'): [('T', ('n3', 'm3'), ('n4', 'm1'))],
+        ('n3', 'm3'): [('C', (None, None), (None, None))],
+        ('n4', 'm1'): [('C', (None, None), (None, None))],
+    }
+    """
+    roots = _find_roots(old_recon_graph)
+    recon_graph = ReconGraph(roots)
+    for mapping in old_recon_graph:
+        host, parasite = mapping
+        for event in old_recon_graph[mapping]:
+            etype, left, right = event
+            mapping_node = MappingNode(host, parasite)
+            if etype in 'SDT':
+                left_parasite, left_host = left
+                right_parasite, right_host = right
+                left_mapping = MappingNode(left_parasite, left_host)
+                right_mapping = MappingNode(right_parasite, right_host)
+                if etype == 'S':
+                    recon_graph.add_event(mapping_node, Cospeciation(left_mapping, right_mapping))
+                if etype == 'D':
+                    recon_graph.add_event(mapping_node, Duplication(left_mapping, right_mapping))
+                if etype == 'T':
+                    recon_graph.add_event(mapping_node, Transfer(left_mapping, right_mapping))
+            elif etype == 'L':
+                child_parasite, child_host = left
+                child_mapping = MappingNode(child_parasite, child_host)
+                recon_graph.add_event(mapping_node, Loss(child_mapping))
+            elif etype == 'C':
+                recon_graph.add_event(mapping_node, TipTip())
+            else:
+                raise ValueError('%s not in "SDTLC' % etype)
+    return recon_graph
+
+# Temporal ordering utilities
+
+def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconciliation: dict) \
+        -> Tuple[tree.Tree, tree.Tree, bool]:
     """
     This function uses topological sort to order the nodes inside host and parasite tree.
     The output trees can be used for visualization.
@@ -32,7 +196,7 @@ def build_trees_with_temporal_order(host_tree, parasite_tree, reconciliation):
     parasite_tree_object = dict_to_tree(parasite_tree, TreeType.PARASITE)
 
     # if there is a valid temporal ordering, we populate the layout with the order corresponding to the node
-    if ordering_dict != None:
+    if ordering_dict is not None:
         # calculate the temporal order for leaves, which all have the largest order
         max_order = 1
         for node in ordering_dict:
@@ -230,7 +394,7 @@ def populate_nodes_with_order(tree_node, tree_type, ordering_dict, leaf_order):
     :param leaf_order: the temporal order we should assign to the leaves of the tree
     """
     layout = NodeLayout()
-    if tree_node.is_leaf:
+    if tree_node.is_leaf():
         layout.col = leaf_order
         tree_node.layout = layout
     else:
@@ -239,10 +403,7 @@ def populate_nodes_with_order(tree_node, tree_type, ordering_dict, leaf_order):
         tree_node.layout = layout
         populate_nodes_with_order(tree_node.left_node, tree_type, ordering_dict, leaf_order)
         populate_nodes_with_order(tree_node.right_node, tree_type, ordering_dict, leaf_order)
-
-
-# _get_names_of_internal_nodes(host_tree) will return [m0, m2]
-#  _get_names_of_internal_nodes(parasite_tree) will return [n0, n2]
+        
 
 def _get_names_of_internal_nodes(tree):
     """
