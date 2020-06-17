@@ -1,7 +1,6 @@
 # plotcostsAnalytic.py
 # Ran Libeskind-Hadas, October 2013
 # Plots the cost space using a matplotlib/pyplot
-# Updated June 2020 to plot costs relative to loss rather than to duplication
 
 import sys
 import matplotlib
