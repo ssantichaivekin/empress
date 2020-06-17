@@ -490,7 +490,7 @@ def cluster_graph_n(graph, gene_root, score, n, mpr_count, k, max_splits):
     :param mpr_count <int> - the number of MPRs in the original graph
     :param k <int> - the desired number of final clusters
     :param max_splits <int> - if more splits than this are generated, we will
-        stop immediately rather than trying to comput the clustering.
+        stop immediately rather than trying to compute the clustering.
     :return - reference return values for combine
     """
     # First split the graph
