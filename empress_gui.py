@@ -4,11 +4,13 @@ import tkinter as tk
 from tkinter import messagebox
 from pathlib import Path
 import os
-import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import MouseEvent, key_press_handler
 import empress
+import ReconInput
+from empress.topo_sort.tree_format_converter import dict_to_tree
+from empress.topo_sort import Tree
 
 class App(tk.Frame):
 
@@ -35,14 +37,14 @@ class App(tk.Frame):
         label.image = photo
 
         # Creates an input frame on the left side of the master frame 
-        self.func_frame = tk.Frame(master)
-        self.func_frame.grid(row=1, column=0, sticky="nsew")
-        self.func_frame.grid_rowconfigure(0, weight=1)
-        self.func_frame.grid_rowconfigure(1, weight=1)
-        self.func_frame.grid_rowconfigure(2, weight=1)
-        self.func_frame.grid_rowconfigure(3, weight=1)
-        self.func_frame.grid_columnconfigure(0, weight=1)
-        self.func_frame.grid_propagate(False)
+        self.input_frame = tk.Frame(master)
+        self.input_frame.grid(row=1, column=0, sticky="nsew")
+        self.input_frame.grid_rowconfigure(0, weight=1)
+        self.input_frame.grid_rowconfigure(1, weight=1)
+        self.input_frame.grid_rowconfigure(2, weight=1)
+        self.input_frame.grid_rowconfigure(3, weight=1)
+        self.input_frame.grid_columnconfigure(0, weight=1)
+        self.input_frame.grid_propagate(False)
 
         # Creates an output frame on the right side of the master frame
         self.output_frame = tk.Frame(master)
@@ -53,59 +55,118 @@ class App(tk.Frame):
         self.output_frame.grid_columnconfigure(0, weight=1)
         self.output_frame.grid_propagate(False)
 
-        # "Load File" button 
-        # Loads in an input .newick file
-        # and displays the number of leaves in each tree (DEMO for now) and entry boxes for DTL costs
-        load_file_btn = tk.Button(self.func_frame, text="Load File", command=self.load_file)
-        load_file_btn.grid(row=0, column=0)
-        # Creates a Label to overwrite the old file path 
-        self.file_path_label = tk.Label(self.output_frame)
+        # Creates an input information frame on top of the output frame
+        # to display the numbers of tips for host and parasite trees
+        self.input_info_frame = tk.Frame(self.output_frame)
+        self.input_info_frame.grid(row=0, column=0, sticky="nsew")
+        self.input_info_frame.grid_columnconfigure(0, weight=1)
+        self.input_info_frame.grid_rowconfigure(0, weight=1)
+        self.input_info_frame.grid_rowconfigure(1, weight=1)
+        self.input_info_frame.grid_rowconfigure(2, weight=1)
+        self.input_info_frame.grid_propagate(False)
+
+        # "Load Files" button 
+        # Loads in three input files (two .nwk and one .mapping)
+        # and displays the number of leaves in each tree and the entry boxes for setting DTL costs (next step)
+        self.file_to_load = tk.StringVar(self.input_frame) 
+        self.file_to_load.set("Load Files")
+        self.options = ["Load host tree file", "Load parasite tree file", "Load mapping file"]
+        self.load_file_list = tk.OptionMenu(self.input_frame, self.file_to_load, *self.options, command=self.load_input_files)
+        self.load_file_list.grid(row=0, column=0)
+        self.R = ReconInput.ReconInput()
+        # Creates Labels to overwrite the old displayed information 
+        self.host_tree_info = tk.Label(self.input_info_frame)
+        self.parasite_tree_info = tk.Label(self.input_info_frame)
+        self.mapping_info = tk.Label(self.input_info_frame)
 
         # "View Event Cost Regions" button 
         # Pops up a matplotlib graph for the cost regions
-        self.view_cost_btn = tk.Button(self.func_frame, text="View Event Cost Regions", command=self.plot_cost_regions, state=tk.DISABLED)
+        self.view_cost_btn = tk.Button(self.input_frame, text="View Event Cost Regions", command=self.plot_cost_regions, state=tk.DISABLED)
         self.view_cost_btn.grid(row=1, column=0)
 
         # "Compute Reconciliations" button 
         # Displays reconciliation results(numbers) and three options(checkboxes) for viewing graphical analysis
-        self.compute_recon_button = tk.Button(self.func_frame, text="Compute Reconciliations", command=self.recon_analysis, state=tk.DISABLED)
+        self.compute_recon_button = tk.Button(self.input_frame, text="Compute Reconciliations", command=self.recon_analysis, state=tk.DISABLED)
         self.compute_recon_button.grid(row=2, column=0)
 
-    def load_file(self):
-        """Loads in an input file and displays the number of leaves in each tree when "Load File" button is clicked."""
-        # Creates a frame to display the number of leaves and the file path
-        input_info_frame = tk.Frame(self.output_frame)
-        input_info_frame.grid(row=0, column=0, sticky="nsew")
-        input_info_frame.grid_columnconfigure(0, weight=1)
-        input_info_frame.grid_rowconfigure(0, weight=1)
-        input_info_frame.grid_rowconfigure(1, weight=1)
-        input_info_frame.grid_rowconfigure(2, weight=1)
-        input_info_frame.grid_propagate(False)
+    def load_input_files(self, event):
+        """
+        Load in two .nwk files for the host tree and parasite tree, and one .mapping file. Display the number of tips for 
+        the trees and a message to indicate the successful reading of the tips mapping.
+        """ 
+        # Clicking on "Load host tree file" 
+        if self.file_to_load.get() == "Load host tree file":
+            # Allows loading a .newick file
+            self.host_file_path = None
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file")
+            if Path(input_file).suffix == '.nwk':
+                self.R.read_host(input_file)
+                if self.R.host_tree is not None:
+                    self.host_file_path = input_file
+                    self.host_tree_info.destroy()  # Overwrites the old file path in the grid system
+                    host_tree_tips_number = self.compute_tree_tips("host tree")
+                    self.host_tree_info = tk.Label(self.input_info_frame, text="Host: " + str(host_tree_tips_number) + " tips")
+                    self.host_tree_info.grid(row=0, column=0, sticky="w")
+                else: 
+                    messagebox.showinfo("Warning", "The input file cannot be read.")          
+            else:
+                messagebox.showinfo("Warning", "Please load a '.nwk' file.")
 
-        # Allows loading a .newick file
-        self.file_path = None
-        # initialdir is set to be the current working directory
-        input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a file")
-        if Path(input_file).suffix == '.newick': 
-            self.file_path = input_file
-            self.file_path_label.destroy()  # Overwrites the old file path in the grid system
-            self.file_path_label = tk.Label(input_info_frame, text=input_file)
-            self.file_path_label.grid(row=0, column=0, sticky="w")
-            # This is only DEMO for now
-            host_tree_info = tk.Label(input_info_frame, text="Host:  83 tips (DEMO)")
-            host_tree_info.grid(row=1, column=0, sticky="w")
-            parasite_info = tk.Label(input_info_frame, text="Parasite/symbiont:  78 tips (DEMO)")
-            parasite_info.grid(row=2, column=0, sticky="w")           
-        else:
-            messagebox.showinfo("Warning", "Please load a '.newick' file.")
+        # Clicking on "Load parasite tree file" 
+        elif self.file_to_load.get() == "Load parasite tree file":
+            # Allows loading a .newick file
+            self.parasite_file_path = None
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a parasite file")
+            if Path(input_file).suffix == '.nwk': 
+                self.R.read_parasite(input_file)
+                if self.R.parasite_tree is not None:
+                    self.parasite_file_path = input_file
+                    self.parasite_tree_info.destroy()  # Overwrites the old file path in the grid system
+                    parasite_tree_tips_number = self.compute_tree_tips("parasite tree")
+                    self.parasite_tree_info = tk.Label(self.input_info_frame, text="Parasite/symbiont: " + str(parasite_tree_tips_number) + " tips")
+                    self.parasite_tree_info.grid(row=1, column=0, sticky="w")
+                else: 
+                    messagebox.showinfo("Warning", "The input file cannot be read.")          
+            else:
+                messagebox.showinfo("Warning", "Please load a '.nwk' file.")
+
+        # Clicking on "Load mapping" 
+        elif self.file_to_load.get() == "Load mapping file":
+            # Allows loading a .newick file
+            self.mapping_file_path = None
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a mapping file")
+            if Path(input_file).suffix == '.mapping': 
+                self.R.read_mapping(input_file)
+                if self.R.phi is not None:
+                    self.mapping_file_path = input_file
+                    self.mapping_info.destroy()  # Overwrites the old file path in the grid system
+                    # This is only DEMO for now
+                    self.mapping_info = tk.Label(self.input_info_frame, text="Tip mapping has been read successfully.")
+                    self.mapping_info.grid(row=2, column=0, sticky="w")
+                else: 
+                    messagebox.showinfo("Warning", "The input file cannot be read.")          
+            else:
+                messagebox.showinfo("Warning", "Please load a '.mapping' file.")
 
         # Enables the next step, setting DTL costs
-        if self.file_path is not None: 
+        if self.R.complete(): 
             self.view_cost_btn.configure(state=tk.NORMAL)
             self.dtl_cost()
 
+    def compute_tree_tips(self, tree_type):
+        """Compute the number of tips for the input host tree and parasite tree."""
+        if tree_type == "host tree":
+            host_tree_object = dict_to_tree(self.R.host_tree, Tree.TreeType.HOST)
+            return len(host_tree_object.leaf_list())
+        elif tree_type == "parasite tree":
+            parasite_tree_object = dict_to_tree(self.R.parasite_tree, Tree.TreeType.PARASITE)
+            return len(parasite_tree_object.leaf_list())
+
     def dtl_cost(self):
-        """Sets DTL costs by clicking on the matplotlib graph or by entering manually."""
+        """Set DTL costs by clicking on the matplotlib graph or by entering manually."""
         # Creates a frame for setting DTL costs
         costs_frame = tk.Frame(self.output_frame)
         costs_frame.grid(row=1, column=0, sticky="nsew")
@@ -207,17 +268,16 @@ class App(tk.Frame):
         return True # return True means allowing the change to happen
 
     def plot_cost_regions(self):
-        """Plots the cost regions using matplotlib and embeds the graph in a tkinter window."""    
+        """Plot the cost regions using matplotlib and embed the graph in a tkinter window."""    
         # Creates a new tkinter window 
         plt_window = tk.Toplevel(self.master)
         plt_window.geometry("550x550")
-        plt_window.title("Matplotlib Graph DEMO")
+        plt_window.title("Matplotlib Graph - Cost regions")
         # Creates a new frame
         plt_frame = tk.Frame(plt_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
         plt_frame.pack_propagate(False)
-        recon_input = empress.read_input(self.file_path)
-        cost_regions = empress.compute_cost_regions(recon_input, 0.5, 10, 0.5, 10)  
+        cost_regions = empress.compute_cost_regions(self.R, 0.5, 10, 0.5, 10)  
         #cost_regions.draw_to_file('./examples/cost_poly.png')  # draw and save to a file
         fig = cost_regions.draw()  # draw to figure (creates matplotlib figure)
         canvas = FigureCanvasTkAgg(fig, plt_frame)
@@ -232,7 +292,7 @@ class App(tk.Frame):
         fig.canvas.callbacks.connect('button_press_event', self.get_xy_coordinates)
 
     def get_xy_coordinates(self, event):
-        """Updates the DTL costs when user clicks on the matplotlib graph, otherwise pops up a warning message window."""
+        """Update the DTL costs when user clicks on the matplotlib graph, otherwise pop up a warning message window."""
         if event.inaxes is not None:
             self.dup_input.set("1.00")
             self.trans_input.set(round(event.ydata, 2))
@@ -252,9 +312,9 @@ class App(tk.Frame):
             self.compute_recon_button.configure(state=tk.DISABLED)
 
     def recon_analysis(self):
-        """Displays reconciliation results in numbers and further viewing options for graphical analysis."""
+        """Display reconciliation results in numbers and further viewing options for graphical analysis."""
         # Creates a frame for the three checkbuttons
-        recon_checkbox_frame = tk.Frame(self.func_frame)
+        recon_checkbox_frame = tk.Frame(self.input_frame)
         recon_checkbox_frame.grid(row=3, column=0, sticky="nsew")
         recon_checkbox_frame.pack_propagate(False)
         self.recon_space_btn_var = tk.BooleanVar()
@@ -290,8 +350,8 @@ class App(tk.Frame):
 
     def open_and_close_window_recon_space(self):
         """
-        Opens a new window titled "View reconciliation space" when the checkbox is checked,
-        and closes the window when the checkbox is unchecked.
+        Open a new window titled "View reconciliation space" when the checkbox is checked,
+        and close the window when the checkbox is unchecked.
         """
         if self.recon_space_btn_var.get() == True:
             self.recon_space_window = tk.Toplevel(self.master)
@@ -304,8 +364,8 @@ class App(tk.Frame):
 
     def open_and_close_window_recons(self):
         """
-        Opens a new window titled "View reconciliations" when the checkbox is checked,
-        and closes the window when the checkbox is unchecked.
+        Open a new window titled "View reconciliations" when the checkbox is checked,
+        and close the window when the checkbox is unchecked.
         """
         if self.recons_btn_var.get() == True:
             self.recons_window = tk.Toplevel(self.master)
@@ -318,8 +378,8 @@ class App(tk.Frame):
 
     def open_and_close_window_histogram(self):
         """
-        Opens a new window titled "View p-value histogram" when the checkbox is checked,
-        and closes the window when the checkbox is unchecked.
+        Open a new window titled "View p-value histogram" when the checkbox is checked,
+        and close the window when the checkbox is unchecked.
         """
         if self.histogram_btn_var.get() == True:
             self.histogram_window = tk.Toplevel(self.master)
