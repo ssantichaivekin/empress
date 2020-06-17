@@ -1,23 +1,40 @@
-# TODO: To be converted to automated tests
-# https://github.com/ssantichaivekin/eMPRess/issues/32
 import empress
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import unittest
 import matplotlib.pyplot as plt
-import tkinter as tk
 
-# Read Reconciliation Input
-recon_input = empress.read_input("./examples/test-size5-no924.newick")
+class TestEmpressWrappers(unittest.TestCase):
 
-cost_regions = empress.compute_cost_regions(recon_input, 0.5, 10, 0.5, 10)
-cost_regions.draw_to_file('./examples/cost_poly.png')
+    example_input_path = "./examples/test-size5-no924.newick"
 
-# Compute ReconGraph
-recongraph = empress.reconcile(recon_input, 1, 1, 1)
-print(recongraph.n_recon)
+    def test_read_input(self):
+        recon_input = empress.read_input(self.example_input_path)
+        self.assertTrue(isinstance(recon_input, empress.newickFormatReader.ReconInput))
 
-# Draw Reconciliation Graph to file
-recongraph.draw_graph_to_file("./recongraph_example.pdf")
-recongraph.draw_to_file("./recongraph_hist_example.pdf")
+    def test_compute_cost_regions(self):
+        recon_input = empress.read_input(self.example_input_path)
+        cost_regions = empress.compute_cost_regions(recon_input, 0.5, 10, 0.5, 10)
+        fig = cost_regions.draw()
+        self.assertTrue(isinstance(fig, plt.Axes))
+
+    def test_reconcile(self):
+        recon_input = empress.read_input(self.example_input_path)
+        recongraph = empress.reconcile(recon_input, 1, 1, 1)
+        self.assertTrue(isinstance(recongraph, empress.ReconGraphWrapper))
+        self.assertTrue(isinstance(recongraph.n_recon, int))
+        # the testing recongraph should be designed to have multiple MPRs for DTL = 111
+        self.assertGreater(recongraph, 1)
+
+    def test_draw_recongraph(self):
+        recon_input = empress.read_input(self.example_input_path)
+        recongraph = empress.reconcile(recon_input, 1, 1, 1)
+        fig = recongraph.draw()
+        # Uncomment for examples:
+        # recongraph.draw_graph_to_file("./recongraph_example.pdf")
+        # recongraph.draw_to_file("./recongraph_hist_example.pdf")
+        self.assertTrue(isinstance(fig, plt.Axes))
+
+    def test_median(self):
+
 
 # Find median
 median_reconciliation = recongraph.median()
