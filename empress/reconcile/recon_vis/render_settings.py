@@ -1,5 +1,5 @@
 # render_settings.py
-from empress.clumpr.recon_vis import plot_tools
+from empress.reconcile.recon_vis import plot_tools
 
 VERTICAL_OFFSET = 0.1       # Offset for drawing parasite nodes above host nodes
 COSPECIATION_OFFSET = 0.8   # Offest for drawing parasite nodes closer to host 

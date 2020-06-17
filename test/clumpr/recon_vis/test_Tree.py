@@ -2,8 +2,8 @@
 # Tests the Tree class and tree_format_converter.py
 import unittest
 
-from empress.clumpr.recon_vis import tree
-from empress.clumpr.recon_vis.utils import dict_to_tree
+from empress.reconcile.recon_vis import tree
+from empress.reconcile.recon_vis.utils import dict_to_tree
 
 # Edge-based format is the primary format used by eMPRess algorithms.  This is the format that newickFormatReader.py
 # constructs from a .newick input file.

@@ -1,6 +1,6 @@
 import unittest
 
-from empress.clumpr.Histogram import Histogram
+from empress.histogram.Histogram import Histogram
 
 
 class HistogramTestCase(unittest.TestCase):
