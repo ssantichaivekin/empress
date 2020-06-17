@@ -3,10 +3,10 @@ recon_viewer.py
 View a single reconciliation using matplotlib
 """
 
-from empress.clumpr.recon_vis.recon import EventType
-from empress.clumpr.recon_vis import utils
-from empress.clumpr.recon_vis import plot_tools
-from empress.clumpr.recon_vis.render_settings import LEAF_NODE_COLOR, COSPECIATION_NODE_COLOR, \
+from empress.reconcile.recon_vis.recon import EventType
+from empress.reconcile.recon_vis import utils
+from empress.reconcile.recon_vis import plot_tools
+from empress.reconcile.recon_vis.render_settings import LEAF_NODE_COLOR, COSPECIATION_NODE_COLOR, \
     DUPLICATION_NODE_COLOR, TRANSFER_NODE_COLOR, HOST_NODE_COLOR, HOST_EDGE_COLOR, \
     PARASITE_EDGE_COLOR, VERTICAL_OFFSET, COSPECIATION_OFFSET
 
