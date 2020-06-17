@@ -29,7 +29,7 @@ from typing import Tuple, Iterator
 from numpy import mean
 from numpy import median as md
 
-from empress.clumpr import ReconcileMainInput
+from empress.reconcile import ReconcileMainInput
 from empress.newickFormatReader import ReconInput
 
 Infinity = float('inf')

@@ -29,8 +29,7 @@ from operator import itemgetter
 
 import numpy as np
 
-from empress.clumpr import DTLReconGraph, Diameter
-
+from empress.reconcile import DTLReconGraph, Diameter
 
 def mapping_node_sort(ordered_gene_node_list, ordered_species_node_list, mapping_node_list):
     """

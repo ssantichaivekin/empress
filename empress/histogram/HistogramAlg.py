@@ -2,8 +2,8 @@
 
 from itertools import product
 
-from empress.clumpr.Histogram import Histogram
-from empress.clumpr.HistogramAlgTools import BFVerifier
+from empress.histogram.Histogram import Histogram
+from empress.histogram.HistogramBruteForce import BFVerifier
 
 # def reformat_tree(tree, root):
 #     """A recursive function that changes the format of a (species or gene) tree from edge to vertex, as described

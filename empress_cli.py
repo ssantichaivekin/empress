@@ -8,7 +8,9 @@ import argparse
 from pathlib import Path
 
 from empress.newickFormatReader import getInput
-from empress.clumpr import DTLReconGraph, ClusterMain, HistogramMain
+from empress.reconcile import DTLReconGraph
+from empress.cluster import ClusterMain
+from empress.histogram import HistogramMain
 from empress.xscape import costscape
 
 def process_arg():

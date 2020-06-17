@@ -2,8 +2,8 @@ import time
 import math
 from pathlib import Path
 
-from empress.clumpr import DTLReconGraph, Diameter, HistogramAlg, HistogramDisplay
-
+from empress.histogram import HistogramAlg, HistogramDisplay
+from empress.reconcile import DTLReconGraph, Diameter
 
 def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False):
     """
