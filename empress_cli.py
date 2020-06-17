@@ -9,7 +9,7 @@ from pathlib import Path
 
 from empress.newickFormatReader import getInput
 from empress.reconcile import DTLReconGraph
-from empress.clustering import ClusterMain
+from empress.cluster import ClusterMain
 from empress.histogram import HistogramMain
 from empress.xscape import costscape
 

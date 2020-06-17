@@ -4,7 +4,7 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
-from empress.clustering import ClusterUtil
+from empress.cluster import ClusterUtil
 from empress.histogram import HistogramDisplay
 from empress.reconcile import DTLMedian
 
