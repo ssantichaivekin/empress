@@ -57,16 +57,15 @@ def process_arg():
         default = 3, help="Transfer cost")
     clumpr_parser.add_argument("-l", type=float, metavar="<loss_cost>", 
         default = 1, help="Loss cost")
-    clumpr_parser.add_argument("-k", type=int, metavar="<number_of_clusters>",
-        default = 3, help="Number of clusters")
+    clumpr_parser.add_argument("-k", type=int, metavar="<number_of_clusters>", help="Number of clusters")
     clumpr_parser.add_argument("--medians", action="store_true", required=False,
         help="Whether or not to print out medians for each cluster")
     # Specifies how far down to go when finding splits
     depth_or_n = clumpr_parser.add_mutually_exclusive_group(required=True)
     depth_or_n.add_argument("--depth", type=int, metavar="<tree_depth>",
-        help="How far down the graph to consider event splits")
-    depth_or_n.add_argument("--nmprs", type=int, metavar="<tree_depth>",
-        help="Number of MPRs to consider")
+        help="How far down to split the graph before clustering")
+    depth_or_n.add_argument("--nsplits", type=int, metavar="<tree_depth>",
+        help="Find at least n splits before combining the splits into clusters")
     # What visualizations to produce
     vis_type = clumpr_parser.add_mutually_exclusive_group(required=False)
     vis_type.add_argument("--pdv-vis", action="store_true",
