@@ -6,10 +6,11 @@
 # of solution costs.
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC379178/
 
-from clumpr import DTLReconGraph
 import random
 import matplotlib
 import matplotlib.pyplot as plt
+
+from empress.reconcile import DTLReconGraph
 
 def _trials(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, loss_cost: float, num_trials: int) -> list:
     """

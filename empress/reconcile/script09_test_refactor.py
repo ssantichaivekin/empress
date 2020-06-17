@@ -13,11 +13,10 @@ import os
 import re
 from sys import stdout
 
-from empress.clumpr import DTLReconGraph, reconciliation_visualization, Diameter, HistogramAlg, HistogramAlgTools
-from empress.clumpr.Histogram import Histogram
+from empress.reconcile import DTLReconGraph, reconciliation_visualization, Diameter
+from empress.histogram.Histogram import Histogram, HistogramAlg, HistogramAlgTools
 
 random.seed(1)
-
 
 def get_tree_paths(tree_dir, min_size):
     paths = []

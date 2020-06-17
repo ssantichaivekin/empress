@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
-from empress.clumpr import Histogram
+from empress.histogram import Histogram
 
 
 def plot_histogram(plot_file, histogram, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):

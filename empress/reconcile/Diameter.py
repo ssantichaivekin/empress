@@ -92,7 +92,6 @@ from collections import OrderedDict
 from itertools import product
 import sys
 
-
 def reformat_tree(tree, root):
     """
     A recursive function that changes the format of a (species or gene) tree from edge to vertex, as described

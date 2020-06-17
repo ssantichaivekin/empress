@@ -4,7 +4,8 @@ from collections import deque
 
 import numpy as np
 
-from empress.clumpr import DTLReconGraph, Diameter, HistogramAlg, DTLMedian
+from empress.histogram import HistogramAlg
+from empress.reconcile import DTLReconGraph, Diameter, DTLMedian
 
 
 def graph_union(g1, g2):

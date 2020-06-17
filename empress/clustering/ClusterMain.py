@@ -1,12 +1,12 @@
 from pathlib import Path
-
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
-from empress.clumpr import ClusterUtil, HistogramDisplay, DTLMedian
-
+from empress.clustering import ClusterUtil
+from empress.histogram import HistogramDisplay
+from empress.reconcile import DTLMedian
 
 def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):
     """
