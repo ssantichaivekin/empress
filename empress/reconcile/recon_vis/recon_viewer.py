@@ -21,16 +21,15 @@ def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False,
     :param recon_dict: Reconciliation represented in dictionary format
     :param axes: If specified, draw on the axes instead of creating a new figure
     """
-    host, parasite, ok = utils.build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
-    if not ok:
-        fig = plot_tools.FigureWrapper("Inconsistent", axes)
-        return fig
+    # convert host and parasite dicts to objects and populate nodes with their temporal order
+    host_tree, parasite_tree, consistency_type = utils.build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
     recon = utils.dict_to_reconciliation(recon_dict)
 
-    fig = plot_tools.FigureWrapper("Reconciliation", axes)
-    render_host(fig, host, show_internal_labels)
-    host_lookup = host.name_to_node_dict()
-    render_parasite(fig, parasite, recon, host_lookup, show_internal_labels, show_freq)
+    fig = plot_tools.FigureWrapper(consistency_type, axes)
+    if consistency_type != utils.ConsistencyType.NO_CONSISTENCY:
+        render_host(fig, host_tree, show_internal_labels)
+        host_lookup = host_tree.name_to_node_dict()
+        render_parasite(fig, parasite_tree, recon, host_lookup, show_internal_labels, show_freq)
     return fig
 
 
