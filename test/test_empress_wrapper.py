@@ -25,7 +25,6 @@ class TestEmpressWrappers(unittest.TestCase):
         filename = "./cost_region_draw_example.png"
         fig.savefig(filename)
         os.path.exists(filename)
-        os.remove(filename)
 
     def test_reconcile(self):
         recon_input = empress.read_input(self.example_input_path)
@@ -60,6 +59,11 @@ class TestEmpressWrappers(unittest.TestCase):
         median_reconciliation = recongraph.median()
         fig = median_reconciliation.draw()
         self.assertTrue(isinstance(fig, plt.Figure))
+        # TODO: move to visualization test
+        # https://github.com/ssantichaivekin/eMPRess/issues/83
+        filename = "./reconciliation_draw_example.png"
+        fig.savefig(filename)
+        os.path.exists(filename)
 
     def test_clusters(self):
         recon_input = empress.read_input(self.example_input_path)
@@ -95,7 +99,6 @@ class TestEmpressWrappers(unittest.TestCase):
         filename = "./temp_multi_pdv_histogram_example.png"
         fig.savefig(filename)
         os.path.exists(filename)
-        os.remove(filename)
 
     def test_cluster_reconcile_draw(self):
         # TODO: move to visualization test
@@ -111,7 +114,6 @@ class TestEmpressWrappers(unittest.TestCase):
         filename = "./temp_three_medians_example.png"
         fig.savefig(filename)
         os.path.exists(filename)
-        os.remove(filename)
 
 if __name__ == '__main__':
     unittest.main()

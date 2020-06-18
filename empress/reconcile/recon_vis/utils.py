@@ -129,47 +129,6 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List]):
             raise ValueError('%s not in "SDTLC"' % etype)
     return recon
 
-def dict_to_recongraph(old_recon_graph: Dict[Tuple, List]):
-    """
-    Convert the old reconciliation graph format to ReconGraph.
-
-    Example of old format:
-    old_recon_graph = {
-        ('n0', 'm2'): [('S', ('n2', 'm3'), ('n1', 'm4'))],
-        ('n1', 'm4'): [('C', (None, None), (None, None))],
-        ('n2', 'm3'): [('T', ('n3', 'm3'), ('n4', 'm1'))],
-        ('n3', 'm3'): [('C', (None, None), (None, None))],
-        ('n4', 'm1'): [('C', (None, None), (None, None))],
-    }
-    """
-    roots = _find_roots(old_recon_graph)
-    recon_graph = ReconGraph(roots)
-    for mapping in old_recon_graph:
-        host, parasite = mapping
-        for event in old_recon_graph[mapping]:
-            etype, left, right = event
-            mapping_node = MappingNode(host, parasite)
-            if etype in 'SDT':
-                left_parasite, left_host = left
-                right_parasite, right_host = right
-                left_mapping = MappingNode(left_parasite, left_host)
-                right_mapping = MappingNode(right_parasite, right_host)
-                if etype == 'S':
-                    recon_graph.add_event(mapping_node, Cospeciation(left_mapping, right_mapping))
-                if etype == 'D':
-                    recon_graph.add_event(mapping_node, Duplication(left_mapping, right_mapping))
-                if etype == 'T':
-                    recon_graph.add_event(mapping_node, Transfer(left_mapping, right_mapping))
-            elif etype == 'L':
-                child_parasite, child_host = left
-                child_mapping = MappingNode(child_parasite, child_host)
-                recon_graph.add_event(mapping_node, Loss(child_mapping))
-            elif etype == 'C':
-                recon_graph.add_event(mapping_node, TipTip())
-            else:
-                raise ValueError('%s not in "SDTLC' % etype)
-    return recon_graph
-
 # Temporal ordering utilities
 
 def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconciliation: dict) \
