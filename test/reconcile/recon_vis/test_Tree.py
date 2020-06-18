@@ -13,7 +13,7 @@ from empress.reconcile.recon_vis.utils import dict_to_tree
 # edge1 and edge2 are the edge tuples for the branches emanating from (v1, v2).  If the branch terminates at a leaf
 # then edge1 and edge2 are both None.
 
-class TestReconBuilder(unittest.TestCase):
+class TestTree(unittest.TestCase):
     host = {'hTop': ('Top', 'm1', ('m1', 'm2'), ('m1', 'm8')),
             ('m1', 'm2'): ('m1', 'm2', ('m2', 'm3'), ('m2', 'm6')),
             ('m2', 'm3'): ('m2', 'm3', ('m3', 'm4'), ('m3', 'm5')),
