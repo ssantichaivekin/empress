@@ -496,7 +496,6 @@ def cluster_graph_n(graph, gene_root, score, n, mpr_count, k, max_splits):
     """
     # First split the graph
     gs = full_split_n(graph, gene_root, n, mpr_count)
-    print(("Number of splits: {}".format(len(gs))))
     if len(gs) > max_splits:
         return None
     mpr_counter = mk_count_mprs(gene_root)
@@ -512,7 +511,6 @@ def cluster_graph(graph, gene_root, distance, depth, k, max_splits):
     """
     # First split the graph
     gs = full_split(graph, gene_root, depth)
-    print(("Number of splits: {}".format(len(gs))))
     if len(gs) > max_splits:
         return None
     mpr_counter = mk_count_mprs(gene_root)
