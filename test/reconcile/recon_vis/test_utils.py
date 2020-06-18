@@ -11,9 +11,10 @@ from empress.reconcile.script02_gen_newick_trees import generateNewickTestsMulti
 class TestUtils(unittest.TestCase):
     """
     Test the build_trees_with_temporal_order function from ReconBuilder.
-    The first two test examples are temporally consistent, and next
-    two test examples are temporally inconsistent. The last test genereates
-    examples that might be temporally consistent or inconsistent.
+    The first two test examples are strongly temporally consistent, and the
+    third example is weakly temporally consistent, the fourth test example is
+    temporally inconsistent. The last test generates examples that might be
+    temporally consistent or inconsistent.
     """
 
     size_range = [5] # range of sizes of the tree examples we want to generate
@@ -39,23 +40,45 @@ class TestUtils(unittest.TestCase):
                     continue
                 self.assertTrue(ordering_dict[node_tuple] < ordering_dict[node_tuple_child])
 
-    def check_temporally_consistent(self, host_tree, parasite_tree, reconciliation):
+    def check_strongly_temporally_consistent(self, host_tree, parasite_tree, reconciliation):
         """
-        Helper function for checking a temporally consistent reconciliation has a
+        Helper function for checking a strongly temporally consistent reconciliation has a
         topological order for the host and parasite nodes, and build_temporal_graph
         function instantiates the tree objects correctly and indicates the reconciliation
-        is temporally consistent
+        is strongly temporally consistent
         """
         temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
         ordering_dict = utils.topological_order(temporal_graph)
         self.assertIsNotNone(ordering_dict)
         self.check_topological_order(temporal_graph, ordering_dict)
 
-        host, parasite, if_consistent = utils.build_trees_with_temporal_order(host_tree,
+        host, parasite, consistency_type = utils.build_trees_with_temporal_order(host_tree,
                                                                     parasite_tree, reconciliation)
         self.assertIsNotNone(host)
         self.assertIsNotNone(parasite)
-        self.assertTrue(if_consistent)
+        self.assertEqual(consistency_type, utils.ConsistencyType.STRONG_CONSISTENCY)
+    
+    def check_weakly_temporally_consistent(self, host_tree, parasite_tree, reconciliation):
+        """
+        Helper function for checking a weakly temporally consistent reconciliation has a
+        topological order for the host and parasite nodes, and build_temporal_graph
+        function instantiates the tree objects correctly and indicates the reconciliation
+        is weakly temporally consistent
+        """
+        temporal_graph_strong = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
+        ordering_dict_strong = utils.topological_order(temporal_graph_strong)
+        self.assertIsNone(ordering_dict_strong)
+
+        temporal_graph_weak = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation, False)
+        ordering_dict_weak = utils.topological_order(temporal_graph_weak)
+        self.assertIsNotNone(ordering_dict_weak)
+        self.check_topological_order(temporal_graph_weak, ordering_dict_weak)
+
+        host, parasite, consistency_type = utils.build_trees_with_temporal_order(host_tree,
+                                                                    parasite_tree, reconciliation)
+        self.assertIsNotNone(host)
+        self.assertIsNotNone(parasite)
+        self.assertEqual(consistency_type, utils.ConsistencyType.WEAK_CONSISTENCY)
 
     def check_temporally_inconsistent(self, host_tree, parasite_tree, reconciliation):
         """
@@ -63,17 +86,21 @@ class TestUtils(unittest.TestCase):
         a topological order for the host and parasite nodes, and build_temporal_graph
         function returns None, None, False
         """
-        temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
-        ordering_dict = utils.topological_order(temporal_graph)
-        self.assertIsNone(ordering_dict)
+        temporal_graph_strong = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
+        ordering_dict_strong = utils.topological_order(temporal_graph_strong)
+        self.assertIsNone(ordering_dict_strong)
 
-        host, parasite, if_consistent = utils.build_trees_with_temporal_order(host_tree,
+        temporal_graph_weak = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation, False)
+        ordering_dict_weak = utils.topological_order(temporal_graph_weak)
+        self.assertIsNone(ordering_dict_weak)
+
+        host, parasite, consistency_type = utils.build_trees_with_temporal_order(host_tree,
                                                                     parasite_tree, reconciliation)
         self.assertIsNone(host)
         self.assertIsNone(parasite)
-        self.assertFalse(if_consistent)
+        self.assertEqual(consistency_type, utils.ConsistencyType.NO_CONSISTENCY)
 
-    def test_detect_consistency_1(self):
+    def test_detect_strong_consistency_1(self):
         """
         Test build_trees_with_temporal_order on a temporally consistent reconciliation
         """
@@ -96,9 +123,9 @@ class TestUtils(unittest.TestCase):
         ('n3', 'm4'): [('C', (None, None), (None, None))],
         ('n4', 'm4'): [('C', (None, None), (None, None))]}
 
-        self.check_temporally_consistent(host_tree, parasite_tree, reconciliation)
+        self.check_strongly_temporally_consistent(host_tree, parasite_tree, reconciliation)
 
-    def test_detect_consistency_2(self):
+    def test_detect_strong_consistency_2(self):
         """
         Test build_trees_with_temporal_order on another temporally consistent reconciliation
         """
@@ -132,9 +159,9 @@ class TestUtils(unittest.TestCase):
         ('n5', 'm2'): [('C', (None, None), (None, None))],
         ('n6', 'm3'): [('C', (None, None), (None, None))]}
 
-        self.check_temporally_consistent(host_tree, parasite_tree, reconciliation)
+        self.check_strongly_temporally_consistent(host_tree, parasite_tree, reconciliation)
 
-    def test_detect_inconsistency_1(self):
+    def test_detect_weak_consistency(self):
         """
         Test build_trees_with_temporal_order on a temporally inconsistent reconciliation
         """
@@ -164,9 +191,9 @@ class TestUtils(unittest.TestCase):
         ('n6', 'm6'): [('C', (None, None), (None, None))],
         ('n3', 'm4'): [('S', ('n4', 'm5'), ('n6', 'm6'))]}
 
-        self.check_temporally_inconsistent(host_tree, parasite_tree, reconciliation)
+        self.check_weakly_temporally_consistent(host_tree, parasite_tree, reconciliation)
 
-    def test_detect_inconsistency_2(self):
+    def test_detect_inconsistency(self):
         """
         Test build_trees_with_temporal_order on another type of temporally inconsistent reconciliation
         """
@@ -215,9 +242,16 @@ class TestUtils(unittest.TestCase):
                     for reconciliation, _ in HistogramBruteForce.BF_enumerate_MPRs(recon_graph, best_roots):
                         temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
                         ordering_dict = utils.topological_order(temporal_graph)
-                        # if there is no temporal inconsistency
+                        # the reconciliatin is strongly consistent
                         if ordering_dict != None:
                             self.check_topological_order(temporal_graph, ordering_dict)
+                        else:
+                            temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree,
+                                reconciliation, False)
+                            ordering_dict = utils.topological_order(temporal_graph)
+                            # the reconciliatin is weakly consistent
+                            if ordering_dict != None:
+                                self.check_topological_order(temporal_graph, ordering_dict)
                 count += 1
 
     def tearDown(self):

@@ -17,11 +17,15 @@ def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False, sho
     :param parasite_dict:  Parasite tree represented in dictionary format
     :param recon_dict: Reconciliation represented in dictionary format
     """
-    host_tree, parasite_tree, recon = utils.convert_to_objects(host_dict, parasite_dict, recon_dict)
-    fig = plot_tools.FigureWrapper("Reconciliation")
-    render_host(fig, host_tree, show_internal_labels)
-    host_lookup = host_tree.name_to_node_dict()
-    render_parasite(fig, parasite_tree, recon, host_lookup, show_internal_labels, show_freq)
+    # convert host and parasite dicts to objects and populate nodes with their temporal order
+    host_tree, parasite_tree, consistency_type = utils.build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
+    recon = utils.dict_to_reconciliation(recon_dict)
+    
+    fig = plot_tools.FigureWrapper(consistency_type)
+    if consistency_type != utils.ConsistencyType.NO_CONSISTENCY:
+        render_host(fig, host_tree, show_internal_labels)
+        host_lookup = host_tree.name_to_node_dict()
+        render_parasite(fig, parasite_tree, recon, host_lookup, show_internal_labels, show_freq)
     return fig
 
 
