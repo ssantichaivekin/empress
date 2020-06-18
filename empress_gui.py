@@ -459,7 +459,8 @@ class App(tk.Frame):
         self.recons_btn.grid(row=2, column=0)
 
         # Shows reconciliation results as numbers
-        self.recon_MPRs_label = tk.Label(self.recon_nums_frame, text="Number of MPRs:")
+        num_MPRs = App.recon_graph.n_recon
+        self.recon_MPRs_label = tk.Label(self.recon_nums_frame, text="Number of MPRs: " + str(num_MPRs))
         self.recon_cospeci_label = tk.Label(self.recon_nums_frame, text="# Cospeciations:")
         self.recon_dup_label = tk.Label(self.recon_nums_frame, text="# Duplications:")
         self.recon_trans_label = tk.Label(self.recon_nums_frame, text="# Transfers:")
