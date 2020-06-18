@@ -17,7 +17,8 @@ def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False, sho
     :param parasite_dict:  Parasite tree represented in dictionary format
     :param recon_dict: Reconciliation represented in dictionary format
     """
-    host_tree, parasite_tree, recon = utils.convert_to_objects(host_dict, parasite_dict, recon_dict)
+    # TODO: consistency_type is not used
+    host_tree, parasite_tree, recon, consistency_type = utils.convert_to_objects(host_dict, parasite_dict, recon_dict)
     fig = plot_tools.FigureWrapper("Reconciliation")
     render_host(fig, host_tree, show_internal_labels)
     host_lookup = host_tree.name_to_node_dict()

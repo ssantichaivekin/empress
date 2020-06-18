@@ -9,8 +9,15 @@ from empress.reconcile.recon_vis.recon import Cospeciation, Duplication, Transfe
 from empress.reconcile.recon_vis import tree
 from empress.reconcile.recon_vis.tree import NodeLayout
 from empress.reconcile.recon_vis.tree import TreeType
+from enum import Enum
 
 __all__ = ['dict_to_tree', 'dict_to_reconciliation', 'build_trees_with_temporal_order']
+
+class ConsistencyType(Enum):
+    """ Defines type of the temporal consistency of a reconciliation """
+    STRONG_CONSISTENCY = 1
+    WEAK_CONSISTENCY = 2
+    NO_CONSISTENCY = 3
 
 # Master utility function coverts from dictionaries to objects
 
@@ -19,12 +26,12 @@ def convert_to_objects(host_dict, parasite_dict, recon_dict):
     :param host_dict - dictionary representation of host tree
     :param parasite_dict - dictionary representation of parasite tree
     :param recon_dict - dictionary representation of reconciliation
-    :return - corresondoing host_tree and parasite_tree Tree objects
-        and recon Reconciliation object
+    :return - corresondoing host_tree and parasite_tree Tree objects,
+        recon Reconciliation object and a ConsistencyType
     """
-    host_tree, parasite_tree, ok = build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
+    host_tree, parasite_tree, consistency_type = build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
     recon = dict_to_reconciliation(recon_dict)
-    return host_tree, parasite_tree, recon
+    return host_tree, parasite_tree, recon, consistency_type
 
 def dict_to_tree(tree_dict: dict, tree_type: tree.TreeType) -> tree.Tree:
     """
@@ -172,8 +179,8 @@ def dict_to_recongraph(old_recon_graph: Dict[Tuple, List]):
 
 # Temporal ordering utilities
 
-def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconciliation: dict) \
-        -> Tuple[tree.Tree, tree.Tree, bool]:
+def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconciliation: dict,) \
+        -> Tuple[tree.Tree, tree.Tree, ConsistencyType]:
     """
     This function uses topological sort to order the nodes inside host and parasite tree.
     The output trees can be used for visualization.
@@ -181,22 +188,34 @@ def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconc
     :param host_tree: host tree dictionary
     :param parasite_tree: parasite tree dictionary
     :param reconciliation: reconciliation dictionary
-    :return: a Tree object of type HOST, a Tree object of type PARASITE, and a boolean
-             indicator of whether the reconciliation is temporally consistent. If the
-             reconciliation is temporally consistent, then the tree objects have their
+    :return: a Tree object of type HOST, a Tree object of type PARASITE, and the
+             ConsistencyType of the reconciliation. If the reconciliation is either
+             strongly or weakly temporally consistent, then the tree objects have their
              nodes populated and the nodes will contain the temporal order information
-             in the layout field. If the reconciliation is temporally inconsistent, the
-             function returns None, None, False.
+             in the layout field. If the reconciliation is not temporally consistent, the
+             function returns None, None, ConsistencyType.NO_CONSISTENCY.
     """
-    # find the temporal order for host nodes and parasite nodes
+
+    consistency_type = ConsistencyType.NO_CONSISTENCY
+
+    # find the temporal order for host and parasite nodes using strong temporal constraints
     temporal_graph = build_temporal_graph(host_tree, parasite_tree, reconciliation)
     ordering_dict = topological_order(temporal_graph)
+
+    if ordering_dict is not None:
+        consistency_type = ConsistencyType.STRONG_CONSISTENCY
+    else:
+        # the reconciliation is not strongly consistent, we relax the temporal constraints
+        temporal_graph = build_temporal_graph(host_tree, parasite_tree, reconciliation, False)
+        ordering_dict = topological_order(temporal_graph)
+        if ordering_dict is not None:
+            consistency_type = ConsistencyType.WEAK_CONSISTENCY
 
     host_tree_object = dict_to_tree(host_tree, TreeType.HOST)
     parasite_tree_object = dict_to_tree(parasite_tree, TreeType.PARASITE)
 
     # if there is a valid temporal ordering, we populate the layout with the order corresponding to the node
-    if ordering_dict is not None:
+    if consistency_type != ConsistencyType.NO_CONSISTENCY:
         # calculate the temporal order for leaves, which all have the largest order
         max_order = 1
         for node in ordering_dict:
@@ -205,9 +224,9 @@ def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconc
         leaf_order = max_order + 1
         populate_nodes_with_order(host_tree_object.root_node, TreeType.HOST, ordering_dict, leaf_order)
         populate_nodes_with_order(parasite_tree_object.root_node, TreeType.PARASITE, ordering_dict, leaf_order)
-        return host_tree_object, parasite_tree_object, True
+        return host_tree_object, parasite_tree_object, consistency_type
     else:
-        return None, None, False
+        return None, None, ConsistencyType.NO_CONSISTENCY
 
 def create_parent_dict(host_tree, parasite_tree):
     """
@@ -265,11 +284,14 @@ def uniquify(elements):
     """
     return list(set(elements))
 
-def build_temporal_graph(host_tree, parasite_tree, reconciliation):
+def build_temporal_graph(host_tree, parasite_tree, reconciliation, add_strong_constraints = True):
     """
     :param host_tree:  host tree dictionary
     :param parasite_tree:  parasite tree dictionary
     :param reconciliation:  reconciliation dictionary
+    :param add_strong_constraints:  a boolean indicating whether we are using the strongest
+                                    temporal constraints, i.e. adding the constraints implied
+                                    by a transfer event
     :return: The temporal graph which is defined as follows:
         Each key is a node tuple of the form (name, type) where name is a string representing
         the name of a parasite or host tree INTERNAL node and type is either TreeType.HOST or 
@@ -305,7 +327,7 @@ def build_temporal_graph(host_tree, parasite_tree, reconciliation):
             temporal_graph[(host_parent, TreeType.HOST)].append((parasite, TreeType.PARASITE))
         
         # if event is a transfer, then we add two more temporal relations
-        if event_type == 'T':
+        if event_type == 'T' and add_strong_constraints:
             # get the mapping for the right child which is the transferred child
             right_child_mapping = event_tuple[2]
             right_child_parasite, right_child_host = right_child_mapping
