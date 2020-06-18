@@ -19,8 +19,8 @@ class ConsistencyType(Enum):
     WEAK_CONSISTENCY = 2
     NO_CONSISTENCY = 3
 
-    def __repr__(self):
-        return str(self.name)
+    def __str__(self):
+        return str(self.name.lower())
 
 # Utility functions that covert from dictionaries to objects
 
