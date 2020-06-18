@@ -19,19 +19,10 @@ class ConsistencyType(Enum):
     WEAK_CONSISTENCY = 2
     NO_CONSISTENCY = 3
 
-# Master utility function coverts from dictionaries to objects
+    def __repr__(self):
+        return str(self.name)
 
-def convert_to_objects(host_dict, parasite_dict, recon_dict):
-    """
-    :param host_dict - dictionary representation of host tree
-    :param parasite_dict - dictionary representation of parasite tree
-    :param recon_dict - dictionary representation of reconciliation
-    :return - corresondoing host_tree and parasite_tree Tree objects,
-        recon Reconciliation object and a ConsistencyType
-    """
-    host_tree, parasite_tree, consistency_type = build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
-    recon = dict_to_reconciliation(recon_dict)
-    return host_tree, parasite_tree, recon, consistency_type
+# Utility functions that covert from dictionaries to objects
 
 def dict_to_tree(tree_dict: dict, tree_type: tree.TreeType) -> tree.Tree:
     """
@@ -179,7 +170,7 @@ def dict_to_recongraph(old_recon_graph: Dict[Tuple, List]):
 
 # Temporal ordering utilities
 
-def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconciliation: dict,) \
+def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconciliation: dict) \
         -> Tuple[tree.Tree, tree.Tree, ConsistencyType]:
     """
     This function uses topological sort to order the nodes inside host and parasite tree.
