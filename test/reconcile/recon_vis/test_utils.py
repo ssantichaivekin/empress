@@ -212,7 +212,7 @@ class TestReconBuilder(unittest.TestCase):
                 parasite_tree = recon_input.parasite_tree
                 for d, t, l in itertools.product(range(1, 5), repeat=3):
                     recon_graph, _, _, best_roots = DTLReconGraph.DP(recon_input, d, t, l)
-                    for reconciliation, _ in HistogramBruteForce.BF_enumerate_MPRs(recon_graph, best_roots):
+                    for reconciliation, _ in HistogramAlgTools.BF_enumerate_MPRs(recon_graph, best_roots):
                         temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
                         ordering_dict = utils.topological_order(temporal_graph)
                         # if there is no temporal inconsistency
