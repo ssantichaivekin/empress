@@ -100,6 +100,20 @@ def test_inconsistent_reconciliation_draw():
 
 test_inconsistent_reconciliation_draw()
 
+
+def test_cluster_reconciliation_draw():
+    recon_input = empress.read_input(example_input_path)
+    recongraph = empress.reconcile(recon_input, 1, 1, 1)
+    clusters = recongraph.cluster(3)
+    fig, axs = plt.subplots(1, len(clusters))
+    for i in range(len(clusters)):
+        median = clusters[i].median()
+        median.draw_on(axs[i])
+
+    fig.savefig(Path(common.output_path).joinpath("test_cluster_reconciliation_draw.png"))
+
+test_cluster_reconciliation_draw()
+
 def test_cluster_pdv_histogram_draw():
     recon_input = empress.read_input(example_input_path)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
