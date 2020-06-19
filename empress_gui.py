@@ -57,10 +57,10 @@ class App(tk.Frame):
         # "Load Files" button 
         # Load in three input files (two .nwk and one .mapping)
         # and display the number of leaves in each tree and the entry boxes for setting DTL costs (next step)
-        self.file_to_load = tk.StringVar(self.input_frame) 
-        self.file_to_load.set("Load Files")
+        self.recon_input_file_option = tk.StringVar(self.input_frame) 
+        self.recon_input_file_option.set("Load Files")
         self.options = ["Load host tree file", "Load parasite tree file", "Load mapping file"]
-        self.load_file_list = tk.OptionMenu(self.input_frame, self.file_to_load, *self.options, command=self.load_input_files)
+        self.load_file_list = tk.OptionMenu(self.input_frame, self.recon_input_file_option, *self.options, command=self.load_input_files)
         self.load_file_list.grid(row=0, column=0)
         # Force a sequence of loading host tree file first, and then parasite tree file, and then mapping file
         self.load_file_list['menu'].entryconfigure("Load parasite tree file", state = "disabled")
@@ -247,7 +247,7 @@ class App(tk.Frame):
         the trees and a message to indicate the successful reading of the tips mapping.
         """ 
         # Clicking on "Load host tree file" 
-        if self.file_to_load.get() == "Load host tree file":
+        if self.recon_input_file_option.get() == "Load host tree file":
             # Allows loading a .newick file
             self.host_file_path = None
             # initialdir is set to be the current working directory
@@ -271,7 +271,7 @@ class App(tk.Frame):
                 messagebox.showinfo("Warning", "Please load a '.nwk' file.")
 
         # Clicking on "Load parasite tree file" 
-        elif self.file_to_load.get() == "Load parasite tree file":
+        elif self.recon_input_file_option.get() == "Load parasite tree file":
             # Allows loading a .newick file
             self.parasite_file_path = None
             # initialdir is set to be the current working directory
@@ -292,7 +292,7 @@ class App(tk.Frame):
                 messagebox.showinfo("Warning", "Please load a '.nwk' file.")
 
         # Clicking on "Load mapping file" 
-        elif self.file_to_load.get() == "Load mapping file":
+        elif self.recon_input_file_option.get() == "Load mapping file":
             # Allows loading a .newick file
             self.mapping_file_path = None
             # initialdir is set to be the current working directory
