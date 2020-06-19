@@ -2,6 +2,8 @@
 recon_viewer.py
 View a single reconciliation using matplotlib
 """
+from typing import Union
+from matplotlib import pyplot as plt
 
 from empress.reconcile.recon_vis.recon import EventType
 from empress.reconcile.recon_vis import utils
@@ -11,17 +13,19 @@ from empress.reconcile.recon_vis.render_settings import LEAF_NODE_COLOR, COSPECI
     PARASITE_EDGE_COLOR, VERTICAL_OFFSET, COSPECIATION_OFFSET
 
 
-def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False, show_freq=False):
+def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False,
+           show_freq=False, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
     :param parasite_dict:  Parasite tree represented in dictionary format
     :param recon_dict: Reconciliation represented in dictionary format
+    :param axes: If specified, draw on the axes instead of creating a new figure
     """
     # convert host and parasite dicts to objects and populate nodes with their temporal order
     host_tree, parasite_tree, consistency_type = utils.build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
     recon = utils.dict_to_reconciliation(recon_dict)
-    
-    fig = plot_tools.FigureWrapper(consistency_type)
+
+    fig = plot_tools.FigureWrapper(consistency_type, axes)
     if consistency_type != utils.ConsistencyType.NO_CONSISTENCY:
         render_host(fig, host_tree, show_internal_labels)
         host_lookup = host_tree.name_to_node_dict()

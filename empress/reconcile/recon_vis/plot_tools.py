@@ -5,6 +5,7 @@ Plotting tools using matplotlib
 
 # If matplotlib doesn't pop up a window, force it to use tkinter backend
 # matplotlib.use("tkagg")
+from typing import Union
 
 from matplotlib import pyplot as plt
 
@@ -23,9 +24,16 @@ FONTSIZE = 12
 
 class FigureWrapper:
     """ Class definining plotting methods """
-    def __init__(self, title):
-        self.fig = plt.figure()
-        self.axis = self.fig.subplots(1, 1) # creates a figure with one Axes (plot)
+    def __init__(self, title, axes: Union[plt.Axes, None] = None):
+        """
+        If axes is
+        """
+        if axes is None:
+            self.fig = plt.figure()
+            self.axis = self.fig.subplots(1, 1) # creates a figure with one Axes (plot)
+        else:
+            self.fig = axes.get_figure()
+            self.axis = axes
         self.axis.autoscale()
         self.axis.margins(0.1)
         self.axis.axis("off")

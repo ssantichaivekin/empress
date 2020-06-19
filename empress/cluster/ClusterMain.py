@@ -1,7 +1,6 @@
 from pathlib import Path
 import numpy as np
 import matplotlib
-matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
 from empress.cluster import ClusterUtil
