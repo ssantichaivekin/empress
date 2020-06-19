@@ -172,14 +172,42 @@ class App(tk.Frame):
         App.clusters_list = []
         App.median_reconciliation = None
 
-    def reset_everything(self):
-        """Reset everything when user loads in new input files (always starting from the host tree file)."""
-        self.load_file_list['menu'].entryconfigure("Load parasite tree file", state = "normal")
-        self.load_file_list['menu'].entryconfigure("Load host tree file", state = "disabled")
-
+    def reset(self, event):
+        """Reset when user loads in a new input file (can be either of the three options)."""
+        App.recon_graph = None 
+        App.clusters_list = []
+        App.median_reconciliation = None
         # Reset self.recon_input so self.view_cost_btn can be disabled
         self.recon_input = ReconInput.ReconInput()
         self.view_cost_btn.configure(state=tk.DISABLED)
+
+        if event == "Load host tree file":
+            self.load_file_list['menu'].entryconfigure("Load parasite tree file", state = "normal")
+
+            # Read in host tree file after reseting everything
+            self.recon_input.read_host(self.host_file_path)
+
+            self.host_tree_info.destroy() 
+            self.parasite_tree_info.destroy()
+            self.mapping_info.destroy()
+
+        elif event == "Load parasite tree file":
+            self.load_file_list['menu'].entryconfigure("Load mapping file", state = "normal")
+
+            # Read in host and parasite tree files after reseting everything
+            self.recon_input.read_host(self.host_file_path)
+            self.recon_input.read_parasite(self.parasite_file_path)
+
+            self.parasite_tree_info.destroy()
+            self.mapping_info.destroy()
+
+        elif event == "Load mapping file":
+            # Read in host and parasite trees and mapping files after reseting everything
+            self.recon_input.read_host(self.host_file_path)
+            self.recon_input.read_parasite(self.parasite_file_path) 
+            self.recon_input.read_mapping(self.mapping_file_path)
+
+            self.mapping_info.destroy()
 
         # Reset dtl costs so self.compute_recon_button can be disabled
         self.dup_cost = None
@@ -187,6 +215,7 @@ class App(tk.Frame):
         self.loss_cost = None
         self.compute_recon_button.configure(state=tk.DISABLED)
         
+        # Reset the rest
         self.num_cluster_label.destroy()
         self.num_cluster_error.destroy()
         self.num_cluster_entry_box.destroy()
@@ -195,10 +224,6 @@ class App(tk.Frame):
         self.recon_space_btn_var.set(tk.FALSE)
         self.recons_btn.destroy()
         self.recons_btn_var.set(tk.FALSE)
-        
-        self.host_tree_info.destroy() 
-        self.parasite_tree_info.destroy()
-        self.mapping_info.destroy()
 
         self.dup_label.destroy()
         self.dup_error.destroy()
@@ -216,10 +241,6 @@ class App(tk.Frame):
         self.recon_trans_label.destroy()
         self.recon_loss_label.destroy()
 
-        App.recon_graph = None 
-        App.clusters_list = []
-        App.median_reconciliation = None
-
     def load_input_files(self, event):
         """
         Load in two .nwk files for the host tree and parasite tree, and one .mapping file. Display the number of tips for 
@@ -232,14 +253,15 @@ class App(tk.Frame):
             # initialdir is set to be the current working directory
             input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file")
             if Path(input_file).suffix == '.nwk':
-                # Read in host tree file
+                # Try to read in host tree file
                 self.recon_input.read_host(input_file)
                 if self.recon_input.host_tree is not None:
-                    # Reset everything every time user successfully loads in a new host tree file
-                    self.reset_everything()
-                    # Read in host tree file
-                    self.recon_input.read_host(input_file)
                     self.host_file_path = input_file
+                    # Force a sequence of loading host tree file first, and then parasite tree file, and then mapping file
+                    self.load_file_list['menu'].entryconfigure("Load parasite tree file", state = "disabled")
+                    self.load_file_list['menu'].entryconfigure("Load mapping file", state = "disabled")
+                    # Reset everything every time user successfully loads in a new host tree file
+                    self.reset("Load host tree file")      
                     host_tree_tips_number = self.compute_tree_tips("host tree")
                     self.host_tree_info = tk.Label(self.input_info_frame, text="Host: " + str(host_tree_tips_number) + " tips")
                     self.host_tree_info.grid(row=0, column=0, sticky="w")
@@ -255,33 +277,35 @@ class App(tk.Frame):
             # initialdir is set to be the current working directory
             input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a parasite file")
             if Path(input_file).suffix == '.nwk': 
+                # Try to read in parasite tree file
                 self.recon_input.read_parasite(input_file)
                 if self.recon_input.parasite_tree is not None:
                     self.parasite_file_path = input_file
+                    # Reset every time user successfully loads in a new parasite tree file
+                    self.reset("Load parasite tree file")
                     parasite_tree_tips_number = self.compute_tree_tips("parasite tree")
                     self.parasite_tree_info = tk.Label(self.input_info_frame, text="Parasite/symbiont: " + str(parasite_tree_tips_number) + " tips")
                     self.parasite_tree_info.grid(row=1, column=0, sticky="w")
-                    self.load_file_list['menu'].entryconfigure("Load mapping file", state = "normal")
-                    self.load_file_list['menu'].entryconfigure("Load parasite tree file", state = "disabled")
                 else: 
                     messagebox.showinfo("Warning", "The input file cannot be read.")          
             else:
                 messagebox.showinfo("Warning", "Please load a '.nwk' file.")
 
-        # Clicking on "Load mapping" 
+        # Clicking on "Load mapping file" 
         elif self.file_to_load.get() == "Load mapping file":
             # Allows loading a .newick file
             self.mapping_file_path = None
             # initialdir is set to be the current working directory
             input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a mapping file")
             if Path(input_file).suffix == '.mapping': 
+                # Try to read in mapping file
                 self.recon_input.read_mapping(input_file)
                 if self.recon_input.phi is not None:
                     self.mapping_file_path = input_file
+                    # Reset every time user successfully loads in a new mapping file
+                    self.reset("Load mapping file")
                     self.mapping_info = tk.Label(self.input_info_frame, text="Tip mapping has been read successfully.")
                     self.mapping_info.grid(row=2, column=0, sticky="w")
-                    self.load_file_list['menu'].entryconfigure("Load host tree file", state = "normal")
-                    self.load_file_list['menu'].entryconfigure("Load mapping file", state = "disabled")
 
                     # Enables the next step, setting DTL costs
                     if self.recon_input.complete(): 
@@ -540,8 +564,6 @@ class ReconSpaceWindow(tk.Frame):
         self.draw_clusters()
     
     def draw_clusters(self):
-        """
-        """
         if len(App.clusters_list) == 1:
             fig = App.recon_graph.draw()
         else:
@@ -569,8 +591,6 @@ class ReconsWindow(tk.Frame):
         self.draw_median_recons()
     
     def draw_median_recons(self):
-        """
-        """
         fig = App.median_reconciliation.draw()
         canvas = FigureCanvasTkAgg(fig, self.frame)
         canvas.draw()
