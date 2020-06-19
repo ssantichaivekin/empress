@@ -26,7 +26,7 @@ class FigureWrapper:
     """ Class definining plotting methods """
     def __init__(self, title, axes: Union[plt.Axes, None] = None):
         """
-        If axes is
+        If axes is specified, draw on axes instead.
         """
         if axes is None:
             self.fig = plt.figure()
