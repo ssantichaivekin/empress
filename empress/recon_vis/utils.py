@@ -7,8 +7,8 @@ from typing import Dict, Tuple, List
 from empress.recon_vis.recon import MappingNode, Reconciliation
 from empress.recon_vis.recon import Cospeciation, Duplication, Transfer, Loss, TipTip
 from empress.recon_vis import tree
-from empress.recon_vis import NodeLayout
-from empress.recon_vis import TreeType
+from empress.recon_vis.tree import NodeLayout
+from empress.recon_vis.tree import TreeType
 from enum import Enum
 
 __all__ = ['dict_to_tree', 'dict_to_reconciliation', 'build_trees_with_temporal_order']

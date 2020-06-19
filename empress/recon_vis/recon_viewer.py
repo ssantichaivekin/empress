@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 from empress.recon_vis.recon import EventType
 from empress.recon_vis import utils, plot_tools
-from empress.recon_vis import LEAF_NODE_COLOR, COSPECIATION_NODE_COLOR, \
+from empress.recon_vis.render_settings import LEAF_NODE_COLOR, COSPECIATION_NODE_COLOR, \
     DUPLICATION_NODE_COLOR, TRANSFER_NODE_COLOR, HOST_NODE_COLOR, HOST_EDGE_COLOR, \
     PARASITE_EDGE_COLOR, VERTICAL_OFFSET, COSPECIATION_OFFSET
 
