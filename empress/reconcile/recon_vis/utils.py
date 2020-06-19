@@ -20,7 +20,12 @@ class ConsistencyType(Enum):
     NO_CONSISTENCY = 3
 
     def __str__(self):
-        return str(self.name.lower())
+        if self == ConsistencyType.STRONG_CONSISTENCY:
+            return "Strong temporal consistency"
+        elif self == ConsistencyType.WEAK_CONSISTENCY:
+            return "Weak temporal consistency"
+        else:
+            return "Not temporally consistent"
 
 # Utility functions that covert from dictionaries to objects
 
