@@ -29,6 +29,9 @@ jobs:
         pipenv install flake8
         # stop the build if there are Python syntax errors or undefined names
         pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    - name: Run unittests
+      run: |
+        pipenv run python -m unittest
     - name: Run empress_cli help
       run: |
         pipenv run python empress_cli.py --help
@@ -44,9 +47,6 @@ jobs:
     - name: Run cluster example in Readme.md
       run: |
         pipenv run python empress_cli.py -fn examples/heliconius.newick clumpr -k 3 --median --nsplits 4 --support
-    - name: Run unittests
-      run: |
-        pipenv run python -m unittest
     - name: Run draw examples for empress wrapper
       run: |
         pipenv run python -m draw.draw_empress_wrapper
