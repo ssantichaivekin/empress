@@ -58,7 +58,3 @@ jobs:
       with:
         name: draw_examples_output
         path: ./draw_examples_output
-
-
-
-

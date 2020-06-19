@@ -51,4 +51,3 @@ def test_render_2():
     fig.save(filepath)
 
 test_render_2()
-
