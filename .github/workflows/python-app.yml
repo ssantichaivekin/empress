@@ -47,4 +47,18 @@ jobs:
     - name: Run unittests
       run: |
         pipenv run python -m unittest
+    - name: Run draw examples for empress wrapper
+      run: |
+        pipenv run python -m draw.draw_empress_wrapper
+    - name: Run draw examples for recon viewer
+      run: |
+        pipenv run python -m draw.draw_recon_viewer
+    - name: Upload draw examples
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: ./draw_examples_output
+
+
+
 

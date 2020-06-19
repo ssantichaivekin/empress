@@ -2,12 +2,12 @@
 render_test1.py
 Tester for render function
 """
-import os
 from pathlib import Path
+from draw import common
 
 from empress.reconcile.recon_vis import recon_viewer
 
-output_path = "./draw_test_output"
+common.create_output_folder()
 
 host_dict1 = {'hTop': ('Top', 'm0', ('m0', 'm1'), ('m0', 'm4')),
                   ('m0', 'm1'): ('m0', 'm1', ('m1', 'm2'), ('m1', 'm3')),
@@ -39,7 +39,7 @@ recon_dict2 = {('n0', 'm1'): [('T', ('n1', 'm1'), ('n4', 'm4'))],
 def test_render_1():
     fig = recon_viewer.render(host_dict1, parasite_dict1, recon_dict1,
                               show_internal_labels=True, show_freq=True)
-    filepath = Path(output_path).joinpath("test_render_2.png")
+    filepath = Path(common.output_path).joinpath("test_render_1.png")
     fig.save(filepath)
 
 test_render_1()
@@ -47,7 +47,7 @@ test_render_1()
 def test_render_2():
     fig = recon_viewer.render(host_dict1, parasite_dict1, recon_dict2,
                               show_internal_labels=True, show_freq=True)
-    filepath = Path(output_path).joinpath("test_render_2.png")
+    filepath = Path(common.output_path).joinpath("test_render_2.png")
     fig.save(filepath)
 
 test_render_2()

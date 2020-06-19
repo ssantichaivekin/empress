@@ -4,8 +4,10 @@
 import empress
 import matplotlib.pyplot as plt
 from pathlib import Path
+from draw import common
 
-output_path = "./draw_test_output"
+common.create_output_folder()
+
 example_input_path = "./examples/test-size5-no924.newick"
 
 # Wrapper draw examples and tests
@@ -74,7 +76,7 @@ def test_recongraph_draw():
     recon_input = empress.read_input(example_input_path)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     fig = recongraph.draw()
-    fig.savefig(Path(output_path).joinpath("test_recongraph_draw.png"))
+    fig.savefig(Path(common.output_path).joinpath("test_recongraph_draw.png"))
 
 test_recongraph_draw()
 
@@ -82,20 +84,19 @@ def test_recongraph_draw_graph():
     # Draw reconciliation graph to file
     recon_input = empress.read_input(example_input_path)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
-    fig = recongraph.draw()
-    fig.savefig(Path(output_path).joinpath("test_recongraph_draw_graph.png"))
+    recongraph.draw_graph_to_file(Path(common.output_path).joinpath("test_recongraph_draw_graph.png"))
 
 test_recongraph_draw_graph()
 
 def test_strong_consistency_reconciliation_draw():
     fig = example_strong_consistent_reconciliation.draw()
-    fig.savefig(Path(output_path).joinpath("test_strong_consistency_reconciliation_draw.png"))
+    fig.savefig(Path(common.output_path).joinpath("test_strong_consistency_reconciliation_draw.png"))
 
 test_strong_consistency_reconciliation_draw()
 
 def test_inconsistent_reconciliation_draw():
     fig = example_inconsistent_reconciliation.draw()
-    fig.savefig(Path(output_path).joinpath("test_inconsistent_reconciliation_draw.png"))
+    fig.savefig(Path(common.output_path).joinpath("test_inconsistent_reconciliation_draw.png"))
 
 test_inconsistent_reconciliation_draw()
 
@@ -116,6 +117,6 @@ def test_cluster_pdv_histogram_draw():
     clusters_3[1].draw_on(axs[2, 1])
     clusters_3[2].draw_on(axs[2, 2])
 
-    fig.savefig(Path(output_path).joinpath("test_cluster_pdv_histogram_draw.png"))
+    fig.savefig(Path(common.output_path).joinpath("test_cluster_pdv_histogram_draw.png"))
 
 test_cluster_pdv_histogram_draw()
