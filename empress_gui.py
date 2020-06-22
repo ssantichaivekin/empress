@@ -9,8 +9,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.backend_bases import MouseEvent, key_press_handler
 import empress
 import ReconInput
-from empress.topo_sort.tree_format_converter import dict_to_tree
-from empress.topo_sort import Tree
+from empress.reconcile.recon_vis.utils import dict_to_tree
+from empress.reconcile.recon_vis import tree
 
 class App(tk.Frame):
 
@@ -40,8 +40,9 @@ class App(tk.Frame):
         self.input_frame = tk.Frame(master)
         self.input_frame.grid(row=1, column=0, sticky="nsew")
         self.input_frame.grid_rowconfigure(0, weight=3)
-        self.input_frame.grid_rowconfigure(1, weight=3)
-        self.input_frame.grid_rowconfigure(2, weight=5)
+        self.input_frame.grid_rowconfigure(1, weight=8)
+        self.input_frame.grid_rowconfigure(2, weight=8)
+        self.input_frame.grid_rowconfigure(3, weight=2)
         self.input_frame.grid_columnconfigure(0, weight=1)
         self.input_frame.grid_propagate(False)
 
@@ -82,6 +83,10 @@ class App(tk.Frame):
         # Display reconciliation results(numbers) and three options(checkboxes) for viewing graphical analysis
         self.compute_recon_button = tk.Button(self.compute_recon_frame, text="Compute Reconciliations", command=self.recon_analysis, state=tk.DISABLED)
         self.compute_recon_button.grid(row=0, column=0)
+
+        # "P-value Histogram" button
+        self.stats_btn = tk.Button(self.input_frame, text="P-value Histogram", command=self.compute_stats, state=tk.DISABLED)
+        self.stats_btn.grid(row=3, column=0)
 
         # Creates a frame for the "Compute Reconciliations" button's checkbuttons in self.compute_recon_frame
         self.recon_checkbox_frame = tk.Frame(self.compute_recon_frame)
@@ -170,13 +175,13 @@ class App(tk.Frame):
         self.recon_input = ReconInput.ReconInput()
         App.recon_graph = None
         App.clusters_list = []
-        App.median_reconciliation = None
+        App.medians = None
 
     def reset(self, event):
         """Reset when user loads in a new input file (can be either of the three options)."""
         App.recon_graph = None 
         App.clusters_list = []
-        App.median_reconciliation = None
+        App.medians = None
         # Reset self.recon_input so self.view_cost_btn can be disabled
         self.recon_input = ReconInput.ReconInput()
         self.view_cost_btn.configure(state=tk.DISABLED)
@@ -214,7 +219,8 @@ class App(tk.Frame):
         self.trans_cost = None
         self.loss_cost = None
         self.compute_recon_button.configure(state=tk.DISABLED)
-        
+        self.stats_btn.configure(state=tk.DISABLED)
+
         # Reset the rest
         self.num_cluster_label.destroy()
         self.num_cluster_error.destroy()
@@ -321,10 +327,10 @@ class App(tk.Frame):
     def compute_tree_tips(self, tree_type):
         """Compute the number of tips for the input host tree and parasite tree."""
         if tree_type == "host tree":
-            host_tree_object = dict_to_tree(self.recon_input.host_tree, Tree.TreeType.HOST)
+            host_tree_object = dict_to_tree(self.recon_input.host_tree, tree.TreeType.HOST)
             return len(host_tree_object.leaf_list())
         elif tree_type == "parasite tree":
-            parasite_tree_object = dict_to_tree(self.recon_input.parasite_tree, Tree.TreeType.PARASITE)
+            parasite_tree_object = dict_to_tree(self.recon_input.parasite_tree, tree.TreeType.PARASITE)
             return len(parasite_tree_object.leaf_list())
 
     def dtl_cost(self):
@@ -510,6 +516,7 @@ class App(tk.Frame):
         if self.num_cluster is not None:
             self.num_cluster_error.config(text="valid", fg="green")
             self.compute_recon_solutions()
+            self.stats_btn.configure(state=tk.NORMAL)
         return True # return True means allowing the change to happen
 
     def compute_recon_solutions(self):
@@ -521,9 +528,23 @@ class App(tk.Frame):
         App.clusters_list = []
         for num in range(self.num_cluster):
             App.clusters_list.append(App.recon_graph.cluster(num+1))
-        
-        # Find median
-        App.median_reconciliation = App.recon_graph.median()
+
+        # Compute medians for a specific self.num_cluster
+        App.medians = []
+        if self.num_cluster == 1:
+            App.medians.append(App.recon_graph.median())
+        else:
+            clusters = App.recon_graph.cluster(self.num_cluster)
+            for i in range(len(clusters)):
+                App.medians.append(clusters[i].median())
+
+    def compute_stats(self):
+        """Compute the p-value histogram."""
+        App.p_value_histogram = App.recon_graph.draw_stats()
+        self.stats_window = tk.Toplevel(self.master)
+        self.stats_window.geometry("700x700")
+        self.stats_window.title("P-value Histogram")
+        StatsWindow(self.stats_window)
 
     def open_and_close_window_recon_space(self):
         """
@@ -546,7 +567,7 @@ class App(tk.Frame):
         """
         if self.recons_btn_var.get() == True:
             self.recons_window = tk.Toplevel(self.master)
-            self.recons_window.geometry("500x500")
+            self.recons_window.geometry("700x700")
             self.recons_window.title("View reconciliations")
             ReconsWindow(self.recons_window)
         if self.recons_btn_var.get() == False:
@@ -591,8 +612,32 @@ class ReconsWindow(tk.Frame):
         self.draw_median_recons()
     
     def draw_median_recons(self):
-        fig = App.median_reconciliation.draw()
+        if len(App.medians) == 1:
+            fig = App.medians[0].draw()
+        else:
+            fig, axs = plt.subplots(1, len(App.medians))
+            for i in range(len(App.medians)):
+                App.medians[i].draw_on(axs[i])
         canvas = FigureCanvasTkAgg(fig, self.frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # The toolbar allows the user to zoom in/out, drag the graph and save the graph
+        toolbar = NavigationToolbar2Tk(canvas, self.frame)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side=tk.TOP)
+
+# P-value Histogram 
+class StatsWindow(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master        
+        self.frame = tk.Frame(master)
+        self.frame.pack(fill=tk.BOTH, expand=1)
+        self.frame.pack_propagate(False)
+        self.draw_p_value_histogram()
+    
+    def draw_p_value_histogram(self):
+        canvas = FigureCanvasTkAgg(App.p_value_histogram, self.frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
