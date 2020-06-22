@@ -19,13 +19,14 @@ from empress.newickFormatReader import ReconInput
 from empress.newickFormatReader import getInput as read_input
 from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
-from empress.clumpr import DTLReconGraph
-from empress.clumpr import reconciliation_visualization
-from empress.clumpr import DTLMedian
-from empress.clumpr import Diameter
-from empress.clumpr import HistogramDisplay
-from empress.clumpr import HistogramAlg
-from empress.clumpr import ClusterUtil
+from empress.reconcile import DTLReconGraph
+from empress.reconcile import reconciliation_visualization
+from empress.reconcile import DTLMedian
+from empress.reconcile import Diameter
+from empress.histogram import HistogramDisplay
+from empress.histogram import HistogramAlg
+from empress.cluster import ClusterUtil
+from empress.reconcile.recon_vis import recon_viewer
 
 def _find_roots(old_recon_graph) -> list:
     not_roots = set()
@@ -79,17 +80,26 @@ class Drawable(ABC):
 class ReconciliationWrapper(Drawable):
     # TODO: Replace dict with Reconciliation type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
-    def __init__(self, reconciliation: dict):
+    def __init__(self, reconciliation: dict, root: tuple, recon_input: ReconInput, dup_cost, trans_cost, loss_cost,
+                 total_cost: float):
+        self.recon_input = recon_input
+        self.dup_cost = dup_cost
+        self.trans_cost = trans_cost
+        self.loss_cost = loss_cost
+        self.total_cost = total_cost
         self._reconciliation = reconciliation
+        self.root = root
 
     def draw_on(self, axes: plt.Axes):
-        axes.set_title("Reconciliation drawing not implemented")
+        recon_viewer.render(self.recon_input.host_tree, self.recon_input.parasite_tree, self._reconciliation,
+                            axes=axes)
 
 
 class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
-    def __init__(self, recon_input: ReconInput, dup_cost, trans_cost, loss_cost, recongraph: dict, total_cost: float, n_recon: int, roots: list):
+    def __init__(self, recongraph: dict, roots: list, n_recon: int, recon_input: ReconInput, dup_cost, trans_cost,
+                 loss_cost, total_cost: float):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -133,7 +143,9 @@ class ReconGraphWrapper(Drawable):
         med_counts_dict = DTLMedian.get_med_counts(median_reconciliation, roots_for_median)
 
         random_median = DTLMedian.choose_random_median_wrapper(median_reconciliation, roots_for_median, med_counts_dict)
-        return ReconciliationWrapper(random_median)
+        median_root = _find_roots(random_median)[0]
+        return ReconciliationWrapper(random_median, median_root, self.recon_input, self.dup_cost, self.trans_cost,
+                                     self.loss_cost, self.total_cost)
 
     def cluster(self, n) -> List['ReconGraphWrapper']:
         """
@@ -149,8 +161,9 @@ class ReconGraphWrapper(Drawable):
         for graph in graphs:
             roots = _find_roots(graph)
             n = DTLReconGraph.count_mprs_wrapper(roots, graph)
-            new_graphs.append(ReconGraphWrapper(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost,
-                                                graph, self.total_cost, n, roots))
+            new_graphs.append(
+                ReconGraphWrapper(graph, roots, n, self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost,
+                                  self.total_cost))
         return new_graphs
 
 class CostRegionsWrapper(Drawable):
@@ -189,4 +202,4 @@ def reconcile(recon_input: ReconInput, dup_cost: int, trans_cost: int, loss_cost
     and the cost of the three events, computes and returns a reconciliation graph.
     """
     graph, total_cost, n_recon, roots = DTLReconGraph.DP(recon_input, dup_cost, trans_cost, loss_cost)
-    return ReconGraphWrapper(recon_input, dup_cost, trans_cost, loss_cost, graph, total_cost, n_recon, roots)
+    return ReconGraphWrapper(graph, roots, n_recon, recon_input, dup_cost, trans_cost, loss_cost, total_cost)
