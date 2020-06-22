@@ -8,15 +8,14 @@
 
 import random
 import matplotlib
+from empress.newickFormatReader import ReconInput
 import matplotlib.pyplot as plt
 
 from empress.reconcile import DTLReconGraph
 
-def _trials(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, loss_cost: float, num_trials: int) -> list:
+def _trials(recon_input: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float, num_trials: int) -> list:
     """
-    :param host_tree <dict> - dictionary representation of host tree
-    :param parasite_tree <dict> - dictionary representation of parasite tree
-    :param phi <dict> - dictionary representation of parasite tip to host tip mapping
+    :param recon_input <ReconInput> - class containing host tree, parasite tree, tip mapping
     :param dup_cost <float> - duplication cost
     :param transfer_cost <float> - transfer cost
     :param loss_cost <float> -loss cost
@@ -25,14 +24,15 @@ def _trials(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, tr
     """
    
     costs = list()  # List of costs of random trials
-    parasites = phi.keys()
-    hosts = list(phi.values())
+    parasites = recon_input.phi.keys()
+    hosts = list(recon_input.phi.values())
     for t in range(num_trials):
-        random_phi = _create_random_phi(phi)
+        random_phi = _create_random_phi(recon_input.phi)
         for p in parasites:
             h = random.choice(hosts)
             random_phi[p] = h
-        _, cost, _, _ = DTLReconGraph.DP(host_tree, parasite_tree, random_phi, dup_cost, transfer_cost, loss_cost)
+        new_input = ReconInput(recon_input.host_tree, None, recon_input.parasite_tree, None, random_phi)
+        _, cost, _, _ = DTLReconGraph.DP(new_input, dup_cost, transfer_cost, loss_cost)
         costs.append(cost)
     return costs
 
@@ -59,37 +59,34 @@ def _create_random_phi(phi : dict) -> dict:
             parasites.remove(p)
     return random_phi
 
-def plot_histogram(mpr_cost: float, costs: list):
+def draw_stats(ax: plt.Axes, mpr_cost: float, costs: list, pvalue: float = None):
     """
+    :param ax <plt.Axes> - draw histogram on ax
     :param mpr_cost <float> - cost of MPR for given host-parasite-phi and DTL costs
     :param costs <list> -list of floating point costs of Monte Carlo samples
-    :return None -  Displays histogram.
     """
-    plt.hist(costs, color = "blue", density = True)
-    plt.hist(mpr_cost, color="red", rwidth=1)
-    plt.show()
+    if pvalue is not None:
+        ax.set_title("p-value = %f" % pvalue)
+    ax.hist(costs, 10, color="blue", label="random")
+    ax.axvline(mpr_cost, color="red", linewidth=2, label="this reconciliation")
+    ax.set_xlabel("total cost")
+    ax.set_ylabel("count")
 
-def stats(host_tree: dict, parasite_tree: dict, phi: dict, dup_cost: float, transfer_cost: float, \
-    loss_cost: float, num_trials: int) -> (float, list, float):
+def stats(recon_input: ReconInput, dup_cost: float, transfer_cost: float,
+          loss_cost: float, num_trials: int) -> (float, list, float):
     """
-    :param host_tree <dict> - dictionary representation of host tree
-    :param parasite_tree <dict> - dictionary of parasite tree
-    :param phi <dict> - dictionary representation of parasite tip to host tip mapping
+    :param recon_input <ReconInput> - class containing host tree, parasite tree, tip mapping
     :param dup_cost <float> - duplication cost
     :param transfer_cost <float> - float transfer cost
     :param loss_cost <float> -loss cost
     :param num_trials <int> - int number of trials in Monte Carlo simulation
-    :param mpr_cost <float> - cost of the mpr from the original dataset.  If None, we compute it here
     :return: tuple of three items:
         float cost of optimal MPR for given data
         list of floating point costs of reconciliations of the Monte Carlo samples
         float empirical p-value between 0 and 1
     """
-    # If mpr_cost not passed in, we compute it here (only used for ease of testing)
- 
-    _, mpr_cost, _, _ = DTLReconGraph.DP(host_tree, parasite_tree, phi, dup_cost, \
-            transfer_cost, loss_cost)
-    costs = _trials(host_tree, parasite_tree, phi, dup_cost, transfer_cost, loss_cost, num_trials)
+    _, mpr_cost, _, _ = DTLReconGraph.DP(recon_input, dup_cost, transfer_cost, loss_cost)
+    costs = _trials(recon_input, dup_cost, transfer_cost, loss_cost, num_trials)
 
     # Empirical p-value computed as (r+1)/(n+1) where n is the number of trials and r is the number of trials 
     # whose cost is less than or equal to the cost of the MPR for the actual data.
