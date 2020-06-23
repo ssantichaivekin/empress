@@ -134,3 +134,11 @@ def test_cluster_pdv_histogram_draw():
     fig.savefig(Path(common.output_path).joinpath("test_cluster_pdv_histogram_draw.png"))
 
 test_cluster_pdv_histogram_draw()
+
+def test_stats_1():
+    recon_input = empress.read_input(example_input_path)
+    recongraph = empress.reconcile(recon_input, 1, 1, 1)
+    fig = recongraph.draw_stats()
+    fig.savefig(Path(common.output_path).joinpath("test_stats_1.png"))
+
+test_stats_1()
