@@ -10,7 +10,7 @@ except ImportError:
     print("Using Agg backend: will not be able to create pop-up windows.")
     matplotlib.use("Agg")
 from matplotlib import pyplot as plt
-from typing import List, Iterable
+from typing import List
 from abc import ABC, abstractmethod
 
 from empress.xscape.CostVector import CostVector
@@ -27,7 +27,7 @@ from empress.reconcile import Statistics
 from empress.histogram import HistogramDisplay
 from empress.histogram import HistogramAlg
 from empress.cluster import ClusterUtil
-from empress.reconcile.recon_vis import recon_viewer
+from empress.recon_vis import recon_viewer
 
 def _find_roots(old_recon_graph) -> list:
     not_roots = set()
@@ -165,6 +165,9 @@ class ReconGraphWrapper(Drawable):
         """
         Cluster self into list of n ReconGraphWrapper.
         """
+        if n > self.n_recon:
+            raise Exception("Cannot cluster %d Reconciliation into %d clusters" % (self.n_recon, n))
+
         gene_tree, species_tree, gene_root, recon_g, mpr_count, best_roots = \
             ClusterUtil.get_tree_info(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
 
