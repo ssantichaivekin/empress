@@ -18,10 +18,18 @@ class ReconInput(object):
         self.parasite_distances = parasite_distances
         self.phi = phi
 
-    def complete(self):
+    def complete(self, host_file: str, parasite_file: str, mapping_file = None):
+        self._read_host(host_file)
+        self._read_parasite(parasite_file)
+        if mapping_file is not None:
+            self._read_mapping(mapping_file)
+        else:
+            host_tree = Phylo.read(StringIO(open(host_file, "r").read()), "newick")
+            parasite_tree = Phylo.read(StringIO(open(parasite_file, "r").read()), "newick")
+            self._imply_mapping(host_tree, parasite_tree)
         return not self.host_tree is None and not self.parasite_tree is None and not self.phi is None
 
-    def read_host(self, file_name : str):
+    def _read_host(self, file_name: str):
         """
         Takes a host filename as input and sets self.host_dict and self.host_distances
         :param file_name <str>    - filename of host file to parse
@@ -29,7 +37,7 @@ class ReconInput(object):
         """
         self.host_tree, self.host_distances = ReconInput.read_newick_tree(file_name, "host")
   
-    def read_parasite(self, file_name : str):
+    def _read_parasite(self, file_name: str):
         """
         Takes a parasite filename as input and sets self.parasite_dict and self_host_distances
         :param file_name <str>   - filename of parasite file to parse
@@ -37,7 +45,7 @@ class ReconInput(object):
         """
         self.parasite_tree, self.parasite_distances = ReconInput.read_newick_tree(file_name, "parasite")
 
-    def read_mapping(self, file_name : str):
+    def _read_mapping(self, file_name: str):
         """
         Takes a mapping filename as input and reutrns the mapping dictionary between a host and parasite
         :param filename <str>   - filename of the map file to parse
@@ -53,12 +61,12 @@ class ReconInput(object):
         self.phi = ReconInput.parse_phi(map_list)
         map_file.close()
 
-    @staticmethod
-    def imply_mapping(host_tree : tree, parasite_tree : tree):
+    def _imply_mapping(self, host_tree, parasite_tree):
         """
         Takes in a host and parasite tree and tries to implicitely find a mapping for them
         :param host_tree <tree> - the host tree
         :param parasite_tree <tree> - the parasite tree
+        :return None
         """
         prefix_mode = True
         host_tips = host_tree.get_terminals()
@@ -67,32 +75,29 @@ class ReconInput(object):
         for host in host_tips:
             has_val = False
             for parasite in parasite_tips:
-                if parasite.find(host) == 0:
-                    mapping[parasite] = host
+                if parasite.name.find(host.name) == 0:
+                    mapping[parasite.name] = host.name
                     has_val = True
             if not has_val:
                 prefix_mode = False
         if prefix_mode:
-            return mapping
+            self.phi = mapping
 
         mapping = {}
         postfix_mode = True
         for host in host_tips:
             has_val = False
             for parasite in parasite_tips:
-                if parasite.find(host + "_") == 0:
-                    mapping[parasite] = host
+                if parasite.name.find(host.name + "_") == 0:
+                    mapping[parasite.name] = host.name
                     has_val = True
             if not has_val:
                 postfix_mode = False
         if postfix_mode:
-            return mapping
-        
-        print("Unable to match host and parasite trees.")
-        return {}
+            self.phi = mapping
 
     @staticmethod
-    def read_newick_tree(file_name : str, tree_type: str):
+    def read_newick_tree(file_name: str, tree_type: str):
         """
         Take a filename of a newick tree as input and returns the parsed version of that tree.
         :param filename <str>

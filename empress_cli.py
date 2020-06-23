@@ -7,7 +7,7 @@
 import argparse
 from pathlib import Path
 
-from empress.newickFormatReader import getInput
+from empress import fileInput
 from empress.clumpr import DTLReconGraph, ClusterMain, HistogramMain
 from empress.xscape import costscape
 
@@ -17,8 +17,14 @@ def process_arg():
     """
     parser = argparse.ArgumentParser("")
     ### Path to newick file ###
-    parser.add_argument("-fn","--filename", metavar="<filename>", required=True,
-        help="The path to the file with the input trees and tip mapping.")
+    parser.add_argument("-hf", "--host_file", metavar="<host_file>", required=True,
+        help="The path to the file with the input host tree.")
+
+    parser.add_argument("-pf", "--parasite_file", metavar="<parasite_file>", required=True,
+        help="The path to the file with the input parasite tree.")
+
+    parser.add_argument("-mf", "--mapping_file", metavar="<mapping_file>", required=False,
+        help="The path to the file with the tip mapping.")
     
     # subparsers to encode for each functionality 
     subparsers = parser.add_subparsers(dest='functionality',help='Functions empress can run')
@@ -133,7 +139,13 @@ def process_arg():
 
 def main():
     args = process_arg()
-    newick_data = getInput(args.filename)
+    newick_data = fileInput.ReconInput()
+    if(args.mapping_file is not None):
+        print("hi")
+        newick_data.complete(args.host_file, args.parasite_file, args.mapping_file)
+    else:
+        print("jsidf")
+        newick_data.complete(args.host_file, args.parasite_file)
     if args.functionality == "costscape":
         costscape.solve(newick_data, args.dl, args.dh, args.tl, args.th, args)
     elif args.functionality == "reconcile":
