@@ -151,6 +151,9 @@ class ReconGraphWrapper(Drawable):
         """
         Cluster self into list of n ReconGraphWrapper.
         """
+        if n > self.n_recon:
+            raise Exception("Cannot cluster %d Reconciliation into %d clusters" % (self.n_recon, n))
+
         gene_tree, species_tree, gene_root, recon_g, mpr_count, best_roots = \
             ClusterUtil.get_tree_info(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
 
