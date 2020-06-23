@@ -23,7 +23,7 @@ from empress.reconcile import DTLReconGraph
 from empress.reconcile import reconciliation_visualization
 from empress.reconcile import DTLMedian
 from empress.reconcile import Diameter
-from empress.reconcile import Statistics
+from empress.reconcile import statistics
 from empress.histogram import HistogramDisplay
 from empress.histogram import HistogramAlg
 from empress.cluster import ClusterUtil
@@ -130,12 +130,12 @@ class ReconGraphWrapper(Drawable):
         reconciliation_visualization.visualize_and_save(self.recongraph, fname)
 
     def stats(self, num_trials: int = 50):
-        _, costs, p = Statistics.stats(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost, num_trials)
+        _, costs, p = statistics.stats(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost, num_trials)
         return costs, p
 
     def draw_stats_on(self, ax: plt.Axes):
         costs, p = self.stats()
-        Statistics.draw_stats(ax, self.total_cost, costs, p)
+        statistics.draw_stats(ax, self.total_cost, costs, p)
 
     def draw_stats(self):
         figure, ax = plt.subplots(1, 1)

@@ -1,4 +1,4 @@
-# Statistics.py
+# statistics.py
 # Computes statistics and creates cost histogram
 # Ran Libeskind-Hadas, June 2020
 
