@@ -3,7 +3,7 @@ import os
 import itertools
 import shutil
 from empress import newickFormatReader
-from empress.reconcile.recon_vis import utils
+from empress.recon_vis import utils
 from empress.reconcile import DTLReconGraph
 from empress.histogram import HistogramBruteForce
 from empress.reconcile.script02_gen_newick_trees import generateNewickTestsMultipleSizes
@@ -53,7 +53,7 @@ class TestUtils(unittest.TestCase):
         self.check_topological_order(temporal_graph, ordering_dict)
 
         host, parasite, consistency_type = utils.build_trees_with_temporal_order(host_tree,
-                                                                    parasite_tree, reconciliation)
+                                                                                 parasite_tree, reconciliation)
         self.assertIsNotNone(host)
         self.assertIsNotNone(parasite)
         self.assertEqual(consistency_type, utils.ConsistencyType.STRONG_CONSISTENCY)
@@ -75,7 +75,7 @@ class TestUtils(unittest.TestCase):
         self.check_topological_order(temporal_graph_weak, ordering_dict_weak)
 
         host, parasite, consistency_type = utils.build_trees_with_temporal_order(host_tree,
-                                                                    parasite_tree, reconciliation)
+                                                                                 parasite_tree, reconciliation)
         self.assertIsNotNone(host)
         self.assertIsNotNone(parasite)
         self.assertEqual(consistency_type, utils.ConsistencyType.WEAK_CONSISTENCY)
@@ -95,7 +95,7 @@ class TestUtils(unittest.TestCase):
         self.assertIsNone(ordering_dict_weak)
 
         host, parasite, consistency_type = utils.build_trees_with_temporal_order(host_tree,
-                                                                    parasite_tree, reconciliation)
+                                                                                 parasite_tree, reconciliation)
         self.assertIsNone(host)
         self.assertIsNone(parasite)
         self.assertEqual(consistency_type, utils.ConsistencyType.NO_CONSISTENCY)
@@ -247,7 +247,7 @@ class TestUtils(unittest.TestCase):
                             self.check_topological_order(temporal_graph, ordering_dict)
                         else:
                             temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree,
-                                reconciliation, False)
+                                                                        reconciliation, False)
                             ordering_dict = utils.topological_order(temporal_graph)
                             # the reconciliatin is weakly consistent
                             if ordering_dict != None:

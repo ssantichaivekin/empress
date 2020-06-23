@@ -10,7 +10,7 @@ except ImportError:
     print("Using Agg backend: will not be able to create pop-up windows.")
     matplotlib.use("Agg")
 from matplotlib import pyplot as plt
-from typing import List, Iterable
+from typing import List
 from abc import ABC, abstractmethod
 
 from empress.xscape.CostVector import CostVector
@@ -26,7 +26,7 @@ from empress.reconcile import Diameter
 from empress.histogram import HistogramDisplay
 from empress.histogram import HistogramAlg
 from empress.cluster import ClusterUtil
-from empress.reconcile.recon_vis import recon_viewer
+from empress.recon_vis import recon_viewer
 
 def _find_roots(old_recon_graph) -> list:
     not_roots = set()

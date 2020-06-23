@@ -5,7 +5,7 @@ Tester for render function
 from pathlib import Path
 from draw import common
 
-from empress.reconcile.recon_vis import recon_viewer
+from empress.recon_vis import recon_viewer
 
 common.create_output_folder()
 
