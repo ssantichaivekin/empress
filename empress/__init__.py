@@ -21,7 +21,7 @@ from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
 from empress.reconcile import DTLReconGraph
 from empress.reconcile import recongraph_visualization
-from empress.reconcile import DTLMedian
+from empress.reconcile import median
 from empress.reconcile import diameter
 from empress.reconcile import statistics
 from empress.histogram import HistogramDisplay
@@ -151,12 +151,12 @@ class ReconGraphWrapper(Drawable):
         postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_tree, "hTop")
 
         # Compute the median reconciliation graph
-        median_reconciliation, n_meds, roots_for_median = DTLMedian.get_median_graph(
+        median_reconciliation, n_meds, roots_for_median = median.get_median_graph(
             self.recongraph, postorder_parasite_tree, postorder_host_tree, gene_tree_root, self.roots)
 
-        med_counts_dict = DTLMedian.get_med_counts(median_reconciliation, roots_for_median)
+        med_counts_dict = median.get_med_counts(median_reconciliation, roots_for_median)
 
-        random_median = DTLMedian.choose_random_median_wrapper(median_reconciliation, roots_for_median, med_counts_dict)
+        random_median = median.choose_random_median_wrapper(median_reconciliation, roots_for_median, med_counts_dict)
         median_root = _find_roots(random_median)[0]
         return ReconciliationWrapper(random_median, median_root, self.recon_input, self.dup_cost, self.trans_cost,
                                      self.loss_cost, self.total_cost)

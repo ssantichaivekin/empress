@@ -1,4 +1,4 @@
-# DTLMedian.py
+# median.py
 # Written July 2017 by Andrew Ramirez and Eli Zupke
 
 # DATA STRUCTURE QUICK REFERENCE:

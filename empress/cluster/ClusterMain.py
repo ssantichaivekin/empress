@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 from empress.cluster import ClusterUtil
 from empress.histogram import HistogramDisplay
-from empress.reconcile import DTLMedian
+from empress.reconcile import median
 
 def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):
     """
@@ -114,10 +114,10 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
         :param graph <dict> - the input graph
         :return random_median <dict> - the median
         """
-        median_graph, n_meds, median_roots = DTLMedian.get_median_graph(
+        median_graph, n_meds, median_roots = median.get_median_graph(
                 graph, gene_tree, species_tree, gene_root, best_roots)
-        med_counts = DTLMedian.get_med_counts(median_graph, median_roots)
-        random_median = DTLMedian.choose_random_median_wrapper(median_graph, median_roots, med_counts)
+        med_counts = median.get_med_counts(median_graph, median_roots)
+        random_median = median.choose_random_median_wrapper(median_graph, median_roots, med_counts)
         return random_median
     return get_median
 

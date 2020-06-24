@@ -5,7 +5,7 @@ from collections import deque
 import numpy as np
 
 from empress.histogram import HistogramAlg
-from empress.reconcile import DTLReconGraph, diameter, DTLMedian
+from empress.reconcile import DTLReconGraph, diameter, median
 
 
 def graph_union(g1, g2):
@@ -548,9 +548,9 @@ def avg_event_support(species_tree, gene_tree, g, gene_root):
     :return <float> - the average event support in g
     """
     # Compute the event support for each event
-    preorder_mapping_nodes = DTLMedian.mapping_node_sort(gene_tree, species_tree, list(g.keys()))
+    preorder_mapping_nodes = median.mapping_node_sort(gene_tree, species_tree, list(g.keys()))
     event_support, count = \
-        DTLMedian.generate_scores(list(reversed(preorder_mapping_nodes)), g, gene_root)
+        median.generate_scores(list(reversed(preorder_mapping_nodes)), g, gene_root)
     # Take the average over each event
     total_support = 0
     for support in event_support.values():
@@ -600,9 +600,9 @@ def event_support_hist(species_tree, gene_tree, gene_root, graph):
     :return hist <array float> - fraction of events for each bin
     :return bins <array float> - RHS of each bin (see numpy.histogram)
     """
-    preorder_mapping_nodes = DTLMedian.mapping_node_sort(gene_tree, species_tree, list(graph.keys()))
+    preorder_mapping_nodes = median.mapping_node_sort(gene_tree, species_tree, list(graph.keys()))
     event_support, count = \
-        DTLMedian.generate_scores(list(reversed(preorder_mapping_nodes)), graph, gene_root)
+        median.generate_scores(list(reversed(preorder_mapping_nodes)), graph, gene_root)
     supports = list(event_support.values())
     hist, bins = np.histogram(supports, bins=20, range=(0,1))
     total = np.sum(hist)
