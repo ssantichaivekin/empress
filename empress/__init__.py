@@ -26,7 +26,7 @@ from empress.reconcile import diameter
 from empress.reconcile import statistics
 from empress.histogram import histogram_display
 from empress.histogram import histogram_alg
-from empress.cluster import ClusterUtil
+from empress.cluster import cluster_util
 from empress.recon_vis import recon_viewer
 
 def _find_roots(old_recon_graph) -> list:
@@ -169,11 +169,11 @@ class ReconGraphWrapper(Drawable):
             raise Exception("Cannot cluster %d Reconciliation into %d clusters" % (self.n_recon, n))
 
         gene_tree, species_tree, gene_root, recon_g, mpr_count, best_roots = \
-            ClusterUtil.get_tree_info(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
+            cluster_util.get_tree_info(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
 
-        score = ClusterUtil.mk_pdv_score(species_tree, gene_tree, gene_root)
+        score = cluster_util.mk_pdv_score(species_tree, gene_tree, gene_root)
 
-        graphs, scores, _ = ClusterUtil.cluster_graph(self.recongraph, gene_root, score, 4, n, 200)
+        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, gene_root, score, 4, n, 200)
         new_graphs = []
         for graph in graphs:
             roots = _find_roots(graph)

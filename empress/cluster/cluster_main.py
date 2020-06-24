@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 
-from empress.cluster import ClusterUtil
+from empress.cluster import cluster_util
 from empress.histogram import histogram_display
 from empress.reconcile import median
 
@@ -75,7 +75,7 @@ def support_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, t
     :param args <ArgumentParser>: args parse object that contains all parameters needed 
     :param tree_data <str>: file location
     """
-    mk_get_hist = ClusterUtil.mk_get_support_hist
+    mk_get_hist = cluster_util.mk_get_support_hist
     plot_f = plot_support_histogram
     def get_max(l):
         h, b = l
@@ -93,7 +93,7 @@ def pdv_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, tree_
     :param args <ArgumentParser>: args parse object that contains all parameters needed 
     :param tree_data <str>: file location
     """
-    mk_get_hist = ClusterUtil.mk_get_pdv_hist
+    mk_get_hist = cluster_util.mk_get_pdv_hist
     plot_f = histogram_display.plot_histogram
     def get_max(l):
         return max(l.keys()), max(l.values())
@@ -138,14 +138,14 @@ def perform_clustering(tree_data, d, t, l, k, args):
 
     # Choose the distance metric
     if args.support:
-        mk_score = ClusterUtil.mk_support_score
+        mk_score = cluster_util.mk_support_score
     elif args.pdv:
-        mk_score = ClusterUtil.mk_pdv_score
+        mk_score = cluster_util.mk_pdv_score
     else:
         assert False
     # Get the recon graph + other info
     gene_tree, species_tree, gene_root, recon_g, mpr_count, best_roots = \
-        ClusterUtil.get_tree_info(tree_data, d, t, l)
+        cluster_util.get_tree_info(tree_data, d, t, l)
 
     # Visualize the graphs
     #RV.visualizeAndSave(recon_g, "original.png")
@@ -153,14 +153,14 @@ def perform_clustering(tree_data, d, t, l, k, args):
     #for i, g in enumerate(gs):
     #    RV.visualizeAndSave(g, "{}.png".format(i))
     
-    mpr_counter = ClusterUtil.mk_count_mprs(gene_root)
+    mpr_counter = cluster_util.mk_count_mprs(gene_root)
     # Make the distance metric for these specific trees
     score = mk_score(species_tree, gene_tree, gene_root)
     # Actually perform the clustering
     if args.depth is not None:
-        graphs,scores,_ = ClusterUtil.cluster_graph(recon_g, gene_root, score, args.depth, k, 200)
+        graphs,scores,_ = cluster_util.cluster_graph(recon_g, gene_root, score, args.depth, k, 200)
     elif args.nsplits is not None:
-        graphs,scores,_ = ClusterUtil.cluster_graph_n(recon_g, gene_root, score, args.nsplits, mpr_count, k, 200)
+        graphs,scores,_ = cluster_util.cluster_graph_n(recon_g, gene_root, score, args.nsplits, mpr_count, k, 200)
     else:
         assert False
     # Visualization
@@ -176,9 +176,9 @@ def perform_clustering(tree_data, d, t, l, k, args):
             # TODO: print to a better file format?
             print(m)
     # Statistics
-    one_score = ClusterUtil.get_score_nodp([recon_g], score, mpr_counter)
-    k_score = ClusterUtil.get_score_nodp(graphs, score, mpr_counter)
-    improvement = ClusterUtil.calc_improvement(k_score, one_score)
+    one_score = cluster_util.get_score_nodp([recon_g], score, mpr_counter)
+    k_score = cluster_util.get_score_nodp(graphs, score, mpr_counter)
+    improvement = cluster_util.calc_improvement(k_score, one_score)
     print(("Old score: {}".format(one_score)))
     print(("New score: {}".format(k_score)))
     print(("Improvement:  {}".format(improvement)))
