@@ -6,7 +6,7 @@ from empress import newickFormatReader
 from empress.recon_vis import utils
 from empress.reconcile import recongraph_tools
 from empress.histogram import histogram_brute_force
-from empress.reconcile.script02_gen_newick_trees import generateNewickTestsMultipleSizes
+from empress.reconcile.generate_newick_trees import generateNewickTestsMultipleSizes
 
 class TestUtils(unittest.TestCase):
     """
