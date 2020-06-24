@@ -8,7 +8,7 @@ from matplotlib.axes import Axes
 from matplotlib import pyplot as plt
 from shapely.geometry import Polygon, LineString, Point
 
-from empress.xscape.commonAnalytic import getRegions, buildColors
+from empress.xscape.common_analytic import getRegions, buildColors
 
 
 def plot_costs_on_axis(axes: Axes, cost_vectors, transfer_min, transfer_max, dup_min,
