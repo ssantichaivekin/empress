@@ -10,7 +10,7 @@ import time
 # xscape libraries
 from empress import xscape
 from empress.xscape import reconcile
-from empress.xscape import plotcostsAnalytic as plotcosts
+from empress.xscape import plotcosts_analytic as plotcosts
 
 def solve(newick_data, transferMin, transferMax, dupMin, dupMax, optional):
     print("Costscape %s" % xscape.PROGRAM_VERSION_TEXT)

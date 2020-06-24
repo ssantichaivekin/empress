@@ -1,4 +1,4 @@
-# plotcostsAnalytic.py
+# plotcosts_analytic.py
 # Ran Libeskind-Hadas, October 2013
 # Plots the cost space using a matplotlib/pyplot
 
