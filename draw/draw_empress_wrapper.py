@@ -8,7 +8,9 @@ from draw import common
 
 common.create_output_folder()
 
-example_input_path = "./examples/test-size5-no924.newick"
+example_host = "./examples/test-size5-no924-host.nwk"
+example_parasite = "./examples/test-size5-no924-parasite.nwk"
+example_mapping = "./examples/test-size5-no924-mapping.mapping"
 
 # Wrapper draw examples and tests
 
@@ -73,7 +75,7 @@ example_inconsistent_reconciliation = empress.ReconciliationWrapper(
 )
 
 def test_recongraph_draw():
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     fig = recongraph.draw()
     fig.savefig(Path(common.output_path).joinpath("test_recongraph_draw.png"))
@@ -82,7 +84,7 @@ test_recongraph_draw()
 
 def test_recongraph_draw_graph():
     # Draw reconciliation graph to file
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     recongraph.draw_graph_to_file(Path(common.output_path).joinpath("test_recongraph_draw_graph.png"))
 
@@ -102,7 +104,7 @@ test_inconsistent_reconciliation_draw()
 
 
 def test_cluster_reconciliation_draw():
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     clusters = recongraph.cluster(3)
     fig, axs = plt.subplots(1, len(clusters))
@@ -115,7 +117,7 @@ def test_cluster_reconciliation_draw():
 test_cluster_reconciliation_draw()
 
 def test_cluster_pdv_histogram_draw():
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     clusters = recongraph.cluster(3)
     fig, axs = plt.subplots(3, 3)
@@ -136,7 +138,7 @@ def test_cluster_pdv_histogram_draw():
 test_cluster_pdv_histogram_draw()
 
 def test_stats_1():
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     fig = recongraph.draw_stats()
     fig.savefig(Path(common.output_path).joinpath("test_stats_1.png"))

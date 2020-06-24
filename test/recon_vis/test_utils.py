@@ -222,6 +222,9 @@ class TestUtils(unittest.TestCase):
 
         self.check_temporally_inconsistent(host_tree, parasite_tree, reconciliation)
 
+    # TODO: fix this along with the newick tree generation script
+    # https://github.com/ssantichaivekin/eMPRess/issues/100
+    @unittest.skip("TODO: Modify this and newick file generation script to use three files")
     def test_topological_order(self):
         """
         Test topological_order by generating host and parasite trees of different sizes and going through
@@ -234,7 +237,7 @@ class TestUtils(unittest.TestCase):
             for newick in os.listdir(tree_size_Folder):
                 if count >= self.num_examples_to_test: break
                 if newick.startswith('.'): continue
-                recon_input =  input_reader.getInput(os.path.join(tree_size_Folder, newick))
+                recon_input = input_reader.getInput(os.path.join(tree_size_Folder, newick))
                 host_tree = recon_input.host_tree
                 parasite_tree = recon_input.parasite_tree
                 for d, t, l in itertools.product(range(1, 5), repeat=3):
@@ -242,15 +245,15 @@ class TestUtils(unittest.TestCase):
                     for reconciliation, _ in histogram_brute_force.BF_enumerate_MPRs(recon_graph, best_roots):
                         temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
                         ordering_dict = utils.topological_order(temporal_graph)
-                        # the reconciliatin is strongly consistent
-                        if ordering_dict != None:
+                        # the reconciliation is strongly consistent
+                        if ordering_dict is not None:
                             self.check_topological_order(temporal_graph, ordering_dict)
                         else:
                             temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree,
                                                                         reconciliation, False)
                             ordering_dict = utils.topological_order(temporal_graph)
-                            # the reconciliatin is weakly consistent
-                            if ordering_dict != None:
+                            # the reconciliation is weakly consistent
+                            if ordering_dict is not None:
                                 self.check_topological_order(temporal_graph, ordering_dict)
                 count += 1
 
