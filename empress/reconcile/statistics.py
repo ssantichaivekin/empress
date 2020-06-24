@@ -8,7 +8,7 @@
 
 import random
 import matplotlib
-from empress.newickFormatReader import ReconInput
+from empress.input_reader import ReconInput
 import matplotlib.pyplot as plt
 
 from empress.reconcile import recongraph_tools

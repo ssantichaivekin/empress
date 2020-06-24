@@ -30,7 +30,7 @@ from numpy import mean
 from numpy import median as md
 
 from empress.reconcile import reconcile_main_input
-from empress.newickFormatReader import ReconInput
+from empress.input_reader import ReconInput
 
 Infinity = float('inf')
 

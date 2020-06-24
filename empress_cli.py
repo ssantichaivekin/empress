@@ -7,7 +7,7 @@
 import argparse
 from pathlib import Path
 
-from empress.newickFormatReader import getInput
+from empress.input_reader import getInput
 from empress.reconcile import recongraph_tools
 from empress.cluster import cluster_main
 from empress.histogram import histogram_main
