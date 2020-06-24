@@ -9,7 +9,7 @@ from pathlib import Path
 
 from empress.newickFormatReader import getInput
 from empress.reconcile import recongraph_tools
-from empress.cluster import ClusterMain
+from empress.cluster import cluster_main
 from empress.histogram import histogram_main
 from empress.xscape import costscape
 
@@ -143,7 +143,7 @@ def main():
     elif args.functionality == "histogram":
         histogram_main.compute_pdv(args.filename, newick_data, args.d, args.t, args.l, args)
     elif args.functionality == "clumpr":
-        ClusterMain.perform_clustering(newick_data, args.d, args.t, args.l, args.k, args)
+        cluster_main.perform_clustering(newick_data, args.d, args.t, args.l, args.k, args)
 
 
 if __name__ == "__main__": main()
