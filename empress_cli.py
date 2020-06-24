@@ -140,7 +140,7 @@ def process_arg():
 
 def main():
     args = process_arg()
-    recon_input = input_reader.ReconInput.from_files(args.host_file, args.parasite_file, args.mapping_file)
+    recon_input = input_reader.ReconInput.from_files(args.host, args.parasite, args.mapping)
     if args.functionality == "costscape":
         costscape.solve(recon_input, args.dl, args.dh, args.tl, args.th, args)
     elif args.functionality == "reconcile":
