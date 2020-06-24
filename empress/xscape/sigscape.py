@@ -11,7 +11,7 @@ from multiprocessing import Process, Queue  # For multiprocessing random trials
 
 # xscape libraries
 from empress import xscape
-from empress.xscape import getInput
+from empress.xscape import get_input
 from empress.xscape import reconcile
 from empress.xscape import plotsig
 
