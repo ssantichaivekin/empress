@@ -3,7 +3,7 @@
 from itertools import product
 
 from empress.histogram.Histogram import Histogram
-from empress.histogram.HistogramBruteForce import BFVerifier
+from empress.histogram.histogram_brute_force import BFVerifier
 
 # def reformat_tree(tree, root):
 #     """A recursive function that changes the format of a (species or gene) tree from edge to vertex, as described
