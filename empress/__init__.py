@@ -24,7 +24,7 @@ from empress.reconcile import recongraph_visualization
 from empress.reconcile import median
 from empress.reconcile import diameter
 from empress.reconcile import statistics
-from empress.histogram import HistogramDisplay
+from empress.histogram import histogram_display
 from empress.histogram import histogram_alg
 from empress.cluster import ClusterUtil
 from empress.recon_vis import recon_viewer
@@ -121,7 +121,7 @@ class ReconGraphWrapper(Drawable):
         hist = histogram_alg.diameter_algorithm(
             species_tree, gene_tree, gene_tree_root, self.recongraph, self.recongraph,
             False, False)
-        HistogramDisplay.plot_histogram_to_ax(axes, hist.histogram_dict)
+        histogram_display.plot_histogram_to_ax(axes, hist.histogram_dict)
 
     def draw_graph_to_file(self, fname):
         """

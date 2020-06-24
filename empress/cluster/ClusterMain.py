@@ -4,7 +4,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 
 from empress.cluster import ClusterUtil
-from empress.histogram import HistogramDisplay
+from empress.histogram import histogram_display
 from empress.reconcile import median
 
 def plot_support_histogram(plot_file, hist_def, width, tree_name, d, t, l, max_x=None, max_y=None, title=True):
@@ -94,7 +94,7 @@ def pdv_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, tree_
     :param tree_data <str>: file location
     """
     mk_get_hist = ClusterUtil.mk_get_pdv_hist
-    plot_f = HistogramDisplay.plot_histogram
+    plot_f = histogram_display.plot_histogram
     def get_max(l):
         return max(l.keys()), max(l.values())
     vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, tree_data)
