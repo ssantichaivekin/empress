@@ -11,7 +11,6 @@ import numpy
 
 # xscape libraries
 from empress import xscape
-from empress.xscape import get_input
 from empress.xscape import reconcile
 
 

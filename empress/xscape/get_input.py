@@ -4,25 +4,9 @@
 
 # xscape libraries
 from empress.xscape.common import frange, getBestCV, INF
-from empress.xscape.newickFormatReader import newickFormatReader, parseNewick, buildTree, buildTreeDictionary, parsePhi
 
 def getInput(outputExtension, allowEmptyOutfile=False):
     """ outputExtension is the output file extension (e.g, pdf or csv) """
-    
-    # Get input file name and try to open it
-    # while True:
-    #     fileName = input("Enter .newick input file name: ")
-    #     if fileName.endswith(".newick"):
-    #         try:
-    #             fileHandle = open(fileName, 'r')
-    #             break
-    #         except IOError:
-    #             print("Error reading file.  Please try again.")
-    #     else:
-    #         print("File name must end in .newick.  Please try again.")
-    
-    # hostTree, parasiteTree, phi = newickFormatReader(fileHandle)
-    # fileHandle.close()
 
     # Get output file name
     while True:
