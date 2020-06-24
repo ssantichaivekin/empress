@@ -18,7 +18,7 @@ from empress import input_reader
 from empress.input_reader import ReconInput
 from empress.input_reader import getInput as read_input
 from empress.xscape.reconcile import reconcile as xscape_reconcile
-from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
+from empress.xscape.plotcosts_analytic import plot_costs_on_axis as xscape_plot_costs_on_axis
 from empress.reconcile import recongraph_tools
 from empress.reconcile import recongraph_visualization
 from empress.reconcile import median

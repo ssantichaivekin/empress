@@ -1,4 +1,4 @@
-# commonAnalytic.py
+# common_analytic.py
 # Updated 6/1/2020: loss = 1, x-axis is duplication, y-axis is transfer
 
 import random
