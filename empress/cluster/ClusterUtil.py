@@ -4,7 +4,7 @@ from collections import deque
 
 import numpy as np
 
-from empress.histogram import HistogramAlg
+from empress.histogram import histogram_alg
 from empress.reconcile import recongraph_tools, diameter, median
 
 
@@ -534,7 +534,7 @@ def mk_pdv_score(species_tree, gene_tree, gene_root):
     :return score <function recon_graph->float>
     """
     def score(g):
-        hist = HistogramAlg.diameter_algorithm(species_tree, gene_tree, gene_root, g, g, False, False)
+        hist = histogram_alg.diameter_algorithm(species_tree, gene_tree, gene_root, g, g, False, False)
         return hist.mean()
     return score
 
@@ -585,7 +585,7 @@ def mk_get_pdv_hist(species_tree, gene_tree, gene_root):
     :return get_hist <function recon_graph->dict int->int>
     """
     def get_hist(g):
-        h = HistogramAlg.diameter_algorithm(species_tree, gene_tree, gene_root, g, g, False, False)
+        h = histogram_alg.diameter_algorithm(species_tree, gene_tree, gene_root, g, g, False, False)
         return h.histogram_dict
     return get_hist
 

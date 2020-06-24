@@ -2,7 +2,7 @@ import time
 import math
 from pathlib import Path
 
-from empress.histogram import HistogramAlg, HistogramDisplay
+from empress.histogram import histogram_alg, HistogramDisplay
 from empress.reconcile import recongraph_tools, diameter
 
 def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False):
@@ -34,7 +34,7 @@ def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False
     if time_it:
         start = time.time()
     # Calculate the histogram via histogram algorithm
-    diameter_alg_hist = HistogramAlg.diameter_algorithm(
+    diameter_alg_hist = histogram_alg.diameter_algorithm(
         species_tree, gene_tree, gene_tree_root, dtl_recon_graph, dtl_recon_graph,
         False, zero_loss)
     if time_it:
