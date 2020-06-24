@@ -19,7 +19,7 @@ from empress.newickFormatReader import ReconInput
 from empress.newickFormatReader import getInput as read_input
 from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
-from empress.reconcile import DTLReconGraph
+from empress.reconcile import recongraph_tools
 from empress.reconcile import recongraph_visualization
 from empress.reconcile import median
 from empress.reconcile import diameter
@@ -177,7 +177,7 @@ class ReconGraphWrapper(Drawable):
         new_graphs = []
         for graph in graphs:
             roots = _find_roots(graph)
-            n = DTLReconGraph.count_mprs_wrapper(roots, graph)
+            n = recongraph_tools.count_mprs_wrapper(roots, graph)
             new_graphs.append(
                 ReconGraphWrapper(graph, roots, n, self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost,
                                   self.total_cost))
@@ -217,5 +217,5 @@ def reconcile(recon_input: ReconInput, dup_cost: int, trans_cost: int, loss_cost
     Given recon_input (which has parasite tree, host tree, and tip mapping info)
     and the cost of the three events, computes and returns a reconciliation graph.
     """
-    graph, total_cost, n_recon, roots = DTLReconGraph.DP(recon_input, dup_cost, trans_cost, loss_cost)
+    graph, total_cost, n_recon, roots = recongraph_tools.DP(recon_input, dup_cost, trans_cost, loss_cost)
     return ReconGraphWrapper(graph, roots, n_recon, recon_input, dup_cost, trans_cost, loss_cost, total_cost)

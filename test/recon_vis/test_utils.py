@@ -4,7 +4,7 @@ import itertools
 import shutil
 from empress import newickFormatReader
 from empress.recon_vis import utils
-from empress.reconcile import DTLReconGraph
+from empress.reconcile import recongraph_tools
 from empress.histogram import HistogramBruteForce
 from empress.reconcile.script02_gen_newick_trees import generateNewickTestsMultipleSizes
 
@@ -238,7 +238,7 @@ class TestUtils(unittest.TestCase):
                 host_tree = recon_input.host_tree
                 parasite_tree = recon_input.parasite_tree
                 for d, t, l in itertools.product(range(1, 5), repeat=3):
-                    recon_graph, _, _, best_roots = DTLReconGraph.DP(recon_input, d, t, l)
+                    recon_graph, _, _, best_roots = recongraph_tools.DP(recon_input, d, t, l)
                     for reconciliation, _ in HistogramBruteForce.BF_enumerate_MPRs(recon_graph, best_roots):
                         temporal_graph = utils.build_temporal_graph(host_tree, parasite_tree, reconciliation)
                         ordering_dict = utils.topological_order(temporal_graph)

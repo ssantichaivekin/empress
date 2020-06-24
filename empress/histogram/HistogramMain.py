@@ -3,7 +3,7 @@ import math
 from pathlib import Path
 
 from empress.histogram import HistogramAlg, HistogramDisplay
-from empress.reconcile import DTLReconGraph, diameter
+from empress.reconcile import recongraph_tools, diameter
 
 def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False):
     """
@@ -21,7 +21,7 @@ def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False
     """
     # From the newick tree create the reconciliation graph
     edge_species_tree, edge_gene_tree, dtl_recon_graph, mpr_count, best_roots \
-        = DTLReconGraph.reconcile(tree_data, d, t, l)
+        = recongraph_tools.reconcile(tree_data, d, t, l)
 
     # If we want to know the number of MPRs
     #print(mpr_count)

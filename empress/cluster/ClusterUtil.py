@@ -5,7 +5,7 @@ from collections import deque
 import numpy as np
 
 from empress.histogram import HistogramAlg
-from empress.reconcile import DTLReconGraph, diameter, median
+from empress.reconcile import recongraph_tools, diameter, median
 
 
 def graph_union(g1, g2):
@@ -625,7 +625,7 @@ def mk_count_mprs(gene_root):
     def count_mprs(g):
         # Find the mapping nodes involving the gene root
         roots = [k for k in list(g.keys()) if k[0] == gene_root]
-        return DTLReconGraph.count_mprs_wrapper(roots, g)
+        return recongraph_tools.count_mprs_wrapper(roots, g)
     return count_mprs
 
 #NOTE: unused
@@ -668,7 +668,7 @@ def get_tree_info(newick, d,t,l):
     """
     # From the newick tree create the reconciliation graph
     edge_species_tree, edge_gene_tree, dtl_recon_graph, mpr_count, best_roots \
-        = DTLReconGraph.reconcile(newick, d, t, l)
+        = recongraph_tools.reconcile(newick, d, t, l)
     # Reformat the host and parasite tree to use it with the histogram algorithm
     gene_tree, gene_root, gene_node_count = diameter.reformat_tree(edge_gene_tree, "pTop")
     species_tree, species_tree_root, species_node_count \

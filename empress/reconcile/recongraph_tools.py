@@ -1,4 +1,4 @@
-# DTLReconGraph.py  --  was previously named DP.py
+# recongraph_tools.py  --  was previously named DP.py
 # Ran Libeskind-Hadas, June 2015
 # The DP algorithm for reconciling pairs of trees
 # Altered and expanded by Carter Slocum and Annalise Schweickart

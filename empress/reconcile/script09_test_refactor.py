@@ -13,7 +13,7 @@ import os
 import re
 from sys import stdout
 
-from empress.reconcile import DTLReconGraph, recongraph_visualization, diameter
+from empress.reconcile import recongraph_tools, recongraph_visualization, diameter
 from empress.histogram.Histogram import Histogram, HistogramAlg, HistogramAlgTools
 
 random.seed(1)
@@ -55,7 +55,7 @@ if __name__ == '__main__' :
         for D, T, L in itertools.product([1, 2, 3, 4], repeat=3):
             # From the newick tree create the reconciliation graph
             edge_species_tree, edge_gene_tree, dtl_recon_graph, mpr_count, best_roots \
-                = DTLReconGraph.reconcile(tree_file, D, T, L)
+                = recongraph_tools.reconcile(tree_file, D, T, L)
 
             # Sanity check: the mpr_count returned is equal to the count generated via brute force
             assert(mpr_count == sum(1 for _ in HistogramAlgTools.BF_enumerate_MPRs(dtl_recon_graph, best_roots)))

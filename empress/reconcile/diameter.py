@@ -10,7 +10,7 @@
 # 1. ON TREE REPRESENTATION FORMATS:
 #
 #   There are two formats in this code-base for trees: Edge-based trees, and vertex-based trees. The edge-based
-#   trees are what are output from DTLReconGraph.py (which returns them straight from newickFormatReader). For
+#   trees are what are output from recongraph_tools.py (which returns them straight from newickFormatReader). For
 #   readability and convenience purposes, both the gene and species trees are converted into vertex-based trees.
 #
 #   Both formats use dictionaries to store the tree structure, but they differ somewhat in execution
@@ -28,7 +28,7 @@
 
 # 2. ON THE NAMING CONVENTION OF THE TWO TREES:
 #
-#   This file calls the two trees the gene tree and the species tree. Other programs, like DTLReconGraph.py, have
+#   This file calls the two trees the gene tree and the species tree. Other programs, like recongraph_tools.py, have
 #   different naming conventions (such as "host" for the species tree and "parasite" for the gene tree) because they
 #   were coded under different assumptions as to what the two trees represent. Let it be understood that these names are
 #   synonymous, and that references to "hTop" or "pTop" refer to the name of the handle of the species and
