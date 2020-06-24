@@ -13,7 +13,7 @@ import os
 import re
 from sys import stdout
 
-from empress.reconcile import DTLReconGraph, reconciliation_visualization, Diameter
+from empress.reconcile import DTLReconGraph, recongraph_visualization, Diameter
 from empress.histogram.Histogram import Histogram, HistogramAlg, HistogramAlgTools
 
 random.seed(1)
@@ -77,7 +77,7 @@ if __name__ == '__main__' :
             # the error to a folder called errorTrees.
             if brute_force_hist != diameter_alg_hist :
                 outname = './errorTrees/no%d-id%d-%d%d%d.png' % (tree_size, tree_id, D, T, L)
-                reconciliation_visualization.visualize_and_save(dtl_recon_graph, outname)
+                recongraph_visualization.visualize_and_save(dtl_recon_graph, outname)
                 expected_n_pairs = HistogramAlgTools.calculate_n_pairs(mpr_count)
                 brute_force_n_pairs = HistogramAlgTools.count_mpr_pairs(brute_force_hist)
                 diag_force_n_pairs = HistogramAlgTools.count_mpr_pairs(diameter_alg_hist)

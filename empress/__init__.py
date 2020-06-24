@@ -20,7 +20,7 @@ from empress.newickFormatReader import getInput as read_input
 from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_costs_on_axis
 from empress.reconcile import DTLReconGraph
-from empress.reconcile import reconciliation_visualization
+from empress.reconcile import recongraph_visualization
 from empress.reconcile import DTLMedian
 from empress.reconcile import Diameter
 from empress.reconcile import statistics
@@ -127,7 +127,7 @@ class ReconGraphWrapper(Drawable):
         """
         Draw self and save it as image at path fname.
         """
-        reconciliation_visualization.visualize_and_save(self.recongraph, fname)
+        recongraph_visualization.visualize_and_save(self.recongraph, fname)
 
     def stats(self, num_trials: int = 50):
         _, costs, p = statistics.stats(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost, num_trials)
