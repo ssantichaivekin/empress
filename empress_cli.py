@@ -17,7 +17,7 @@ def process_arg():
     """ Returns args parse object that contains all parameters needed to run a functionality
     :return args - the object that contains all necessary params for the desired functionality to run
     """
-    parser = argparse.ArgumentParser("Empress Duplication-Transfer-Loss (DTL) tools")
+    parser = argparse.ArgumentParser()
 
     ### Path to newick file ###
     parser.add_argument("--host", metavar="<host_file>", required=True,

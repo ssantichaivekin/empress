@@ -37,19 +37,19 @@ jobs:
         pipenv run python empress_cli.py --help
     - name: Run cost region example in Readme.md
       run: |
-        pipenv run python empress_cli.py -host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick --mapping examples/heliconius-mapping.mapping \
+        pipenv run python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick --mapping examples/heliconius-mapping.mapping \
                                          costscape -tl 0.5 -th 10 -dl 0.5 -dh 10 --outfile costscape-example-img.pdf --log
     - name: Run reconcile example in Readme.md
       run: |
-        pipenv run python empress_cli.py -host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick --mapping examples/heliconius-mapping.mapping \
+        pipenv run python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick --mapping examples/heliconius-mapping.mapping \
                                          reconcile -d 4 -t 2 -l 0
     - name: Run distance pair histogram example in Readme.md
       run: |
-        pipenv run python empress_cli.py -host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick --mapping examples/heliconius-mapping.mapping \
+        pipenv run python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick --mapping examples/heliconius-mapping.mapping \
                                          histogram --csv foo.csv --histogram bar.pdf --ynorm
     - name: Run cluster example in Readme.md
       run: |
-        pipenv run python empress_cli.py -host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick --mapping examples/heliconius-mapping.mapping \
+        pipenv run python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick --mapping examples/heliconius-mapping.mapping \
                                          clumpr -k 3 --median --nsplits 4 --support
     - name: Run draw examples for empress wrapper
       run: |
