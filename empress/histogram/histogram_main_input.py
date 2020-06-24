@@ -1,4 +1,4 @@
-# HistogramMainInput.py
+# histogram_main_input.py
 # Adrian Garcia, March 2020
 # Main input function for HistogramMain
 from pathlib import Path
