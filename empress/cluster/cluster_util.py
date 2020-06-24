@@ -4,8 +4,8 @@ from collections import deque
 
 import numpy as np
 
-from empress.histogram import HistogramAlg
-from empress.reconcile import DTLReconGraph, Diameter, DTLMedian
+from empress.histogram import histogram_alg
+from empress.reconcile import recongraph_tools, diameter, median
 
 
 def graph_union(g1, g2):
@@ -534,7 +534,7 @@ def mk_pdv_score(species_tree, gene_tree, gene_root):
     :return score <function recon_graph->float>
     """
     def score(g):
-        hist = HistogramAlg.diameter_algorithm(species_tree, gene_tree, gene_root, g, g, False, False)
+        hist = histogram_alg.diameter_algorithm(species_tree, gene_tree, gene_root, g, g, False, False)
         return hist.mean()
     return score
 
@@ -548,9 +548,9 @@ def avg_event_support(species_tree, gene_tree, g, gene_root):
     :return <float> - the average event support in g
     """
     # Compute the event support for each event
-    preorder_mapping_nodes = DTLMedian.mapping_node_sort(gene_tree, species_tree, list(g.keys()))
+    preorder_mapping_nodes = median.mapping_node_sort(gene_tree, species_tree, list(g.keys()))
     event_support, count = \
-        DTLMedian.generate_scores(list(reversed(preorder_mapping_nodes)), g, gene_root)
+        median.generate_scores(list(reversed(preorder_mapping_nodes)), g, gene_root)
     # Take the average over each event
     total_support = 0
     for support in event_support.values():
@@ -585,7 +585,7 @@ def mk_get_pdv_hist(species_tree, gene_tree, gene_root):
     :return get_hist <function recon_graph->dict int->int>
     """
     def get_hist(g):
-        h = HistogramAlg.diameter_algorithm(species_tree, gene_tree, gene_root, g, g, False, False)
+        h = histogram_alg.diameter_algorithm(species_tree, gene_tree, gene_root, g, g, False, False)
         return h.histogram_dict
     return get_hist
 
@@ -600,9 +600,9 @@ def event_support_hist(species_tree, gene_tree, gene_root, graph):
     :return hist <array float> - fraction of events for each bin
     :return bins <array float> - RHS of each bin (see numpy.histogram)
     """
-    preorder_mapping_nodes = DTLMedian.mapping_node_sort(gene_tree, species_tree, list(graph.keys()))
+    preorder_mapping_nodes = median.mapping_node_sort(gene_tree, species_tree, list(graph.keys()))
     event_support, count = \
-        DTLMedian.generate_scores(list(reversed(preorder_mapping_nodes)), graph, gene_root)
+        median.generate_scores(list(reversed(preorder_mapping_nodes)), graph, gene_root)
     supports = list(event_support.values())
     hist, bins = np.histogram(supports, bins=20, range=(0,1))
     total = np.sum(hist)
@@ -625,7 +625,7 @@ def mk_count_mprs(gene_root):
     def count_mprs(g):
         # Find the mapping nodes involving the gene root
         roots = [k for k in list(g.keys()) if k[0] == gene_root]
-        return DTLReconGraph.count_mprs_wrapper(roots, g)
+        return recongraph_tools.count_mprs_wrapper(roots, g)
     return count_mprs
 
 #NOTE: unused
@@ -668,10 +668,10 @@ def get_tree_info(newick, d,t,l):
     """
     # From the newick tree create the reconciliation graph
     edge_species_tree, edge_gene_tree, dtl_recon_graph, mpr_count, best_roots \
-        = DTLReconGraph.reconcile(newick, d, t, l)
+        = recongraph_tools.reconcile(newick, d, t, l)
     # Reformat the host and parasite tree to use it with the histogram algorithm
-    gene_tree, gene_root, gene_node_count = Diameter.reformat_tree(edge_gene_tree, "pTop")
+    gene_tree, gene_root, gene_node_count = diameter.reformat_tree(edge_gene_tree, "pTop")
     species_tree, species_tree_root, species_node_count \
-        = Diameter.reformat_tree(edge_species_tree, "hTop")
+        = diameter.reformat_tree(edge_species_tree, "hTop")
     return gene_tree, species_tree, gene_root, dtl_recon_graph, mpr_count, best_roots
 

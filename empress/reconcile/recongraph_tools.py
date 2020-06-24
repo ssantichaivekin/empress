@@ -1,4 +1,4 @@
-# DTLReconGraph.py  --  was previously named DP.py
+# recongraph_tools.py  --  was previously named DP.py
 # Ran Libeskind-Hadas, June 2015
 # The DP algorithm for reconciling pairs of trees
 # Altered and expanded by Carter Slocum and Annalise Schweickart
@@ -29,8 +29,8 @@ from typing import Tuple, Iterator
 from numpy import mean
 from numpy import median as md
 
-from empress.reconcile import ReconcileMainInput
-from empress.newickFormatReader import ReconInput
+from empress.reconcile import reconcile_main_input
+from empress.input_reader import ReconInput
 
 Infinity = float('inf')
 
@@ -532,7 +532,7 @@ def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss
     a list of the roots that could be used to produce an MPR for the given trees. See preceding functions
     for details on the format of the host and parasite trees as well as the DTLReconGraph
     """
-    # Note: I have made modifications to the return statement to make Diameter.py possible without re-reconciling.
+    # Note: I have made modifications to the return statement to make diameter.py possible without re-reconciling.
     host = tree_data.host_tree
     paras = tree_data.parasite_tree
     graph, best_cost, num_recon, best_roots = DP(tree_data, dup_cost, transfer_cost, loss_cost)
@@ -555,7 +555,7 @@ def reconcile_inter(tree_data: ReconInput):
     """ 
     :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
     """
-    duplication, transfer, loss = ReconcileMainInput.get_inputs()
+    duplication, transfer, loss = reconcile_main_input.get_inputs()
     result = reconcile(tree_data, duplication, transfer, loss)
     for i in range(len(result)):
         print((str(result[i]) + '\n'))

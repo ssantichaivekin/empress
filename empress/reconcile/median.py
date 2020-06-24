@@ -1,4 +1,4 @@
-# DTLMedian.py
+# median.py
 # Written July 2017 by Andrew Ramirez and Eli Zupke
 
 # DATA STRUCTURE QUICK REFERENCE:
@@ -29,7 +29,7 @@ from operator import itemgetter
 
 import numpy as np
 
-from empress.reconcile import DTLReconGraph, Diameter
+from empress.reconcile import recongraph_tools, diameter
 
 def mapping_node_sort(ordered_gene_node_list, ordered_species_node_list, mapping_node_list):
     """
@@ -208,7 +208,7 @@ def compute_median(dtl_recon_graph, event_scores, postorder_mapping_nodes, mpr_r
     :param postorder_mapping_nodes: A list of the mapping nodes in a possible MPR, except sorted first in
     postorder by species node and postorder by gene node
     :param mpr_roots: A list of mapping nodes that could act as roots to an MPR for the species and
-    gene trees in question, output from the findBestRoots function in DTLReconGraph.py
+    gene trees in question, output from the findBestRoots function in recongraph_tools.py
     :return: A new dictionary which is has the same form as a DTL reconciliation graph except every
     mapping node only has one event node, along with the number of median reconciliations for the given DTL
     reconciliation graph, as well as the root of the median MPR for the given graph. Thus, this graph will
@@ -271,23 +271,23 @@ def compute_median(dtl_recon_graph, event_scores, postorder_mapping_nodes, mpr_r
     # Extract just the roots from the previously filtered out list
     best_roots = [root[0] for root in best_root_combos]
 
-    # Adjust the sum_freqs dictionary so we can use it with the buildDTLReconGraph function from DTLReconGraph.py
+    # Adjust the sum_freqs dictionary so we can use it with the buildDTLReconGraph function from recongraph_tools.py
     for map_node in sum_freqs:
 
         # We place the event tuples into lists so they work well with the diameter algorithm
         sum_freqs[map_node] = sum_freqs[map_node][0]  # Only use the events, no longer the associated frequency sum
 
-    # Use the buildDTLReconGraph function from DTLReconGraph.py to find the median recon graph
+    # Use the buildDTLReconGraph function from recongraph_tools.py to find the median recon graph
     # Note that build_dtl... requires a list of the best roots for a reconciliation graph, the events for each
     # mapping node that are viable for an MPR (in our case, the median), and an empty dicitonary to populate
     # as the final return value
-    med_recon_graph = DTLReconGraph.build_dtl_recon_graph(best_roots, sum_freqs, {})
+    med_recon_graph = recongraph_tools.build_dtl_recon_graph(best_roots, sum_freqs, {})
 
     # Check to make sure the median is a subgraph of the DTL reconciliation
     assert check_subgraph(dtl_recon_graph, med_recon_graph), 'Median is not a subgraph of the recon graph!'
 
     # We can use this function to find the number of medians once we've got the final median recon graph
-    n_med_recons = DTLReconGraph.count_mprs_wrapper(best_roots, med_recon_graph)
+    n_med_recons = recongraph_tools.count_mprs_wrapper(best_roots, med_recon_graph)
 
     return med_recon_graph, n_med_recons, best_roots
 

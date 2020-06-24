@@ -1,6 +1,6 @@
-# ReconcileMainInput.py
+# reconcile_main_input.py
 # Parker Andrews and Alberto Garcia, March 2020
-# Main input function for DTLReconGraph.py
+# Main input function for recongraph_tools.py
 
 def get_inputs():
     """ 

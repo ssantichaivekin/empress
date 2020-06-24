@@ -8,7 +8,7 @@ class TestEmpressWrappers(unittest.TestCase):
 
     def test_read_input(self):
         recon_input = empress.read_input(self.example_input_path)
-        self.assertTrue(isinstance(recon_input, empress.newickFormatReader.ReconInput))
+        self.assertTrue(isinstance(recon_input, empress.input_reader.ReconInput))
 
     def test_compute_cost_regions(self):
         recon_input = empress.read_input(self.example_input_path)

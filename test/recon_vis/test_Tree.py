@@ -5,7 +5,7 @@ import unittest
 from empress.recon_vis import tree
 from empress.recon_vis.utils import dict_to_tree
 
-# Edge-based format is the primary format used by eMPRess algorithms.  This is the format that newickFormatReader.py
+# Edge-based format is the primary format used by eMPRess algorithms.  This is the format that input_reader.py
 # constructs from a .newick input file.
 # This format comprises  a dictionary in which each key is either the string "hTop" ("pTop") for the edge corresponding to 
 # the handle of a host (parasite) tree or an edge tuple of the form (v1, v2) where v1 and v2 are strings denoting the
