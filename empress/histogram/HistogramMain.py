@@ -3,7 +3,7 @@ import math
 from pathlib import Path
 
 from empress.histogram import HistogramAlg, HistogramDisplay
-from empress.reconcile import DTLReconGraph, Diameter
+from empress.reconcile import DTLReconGraph, diameter
 
 def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False):
     """
@@ -27,9 +27,9 @@ def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False
     #print(mpr_count)
 
     # Reformat the host and parasite tree to use it with the histogram algorithm
-    gene_tree, gene_tree_root, gene_node_count = Diameter.reformat_tree(edge_gene_tree, "pTop")
+    gene_tree, gene_tree_root, gene_node_count = diameter.reformat_tree(edge_gene_tree, "pTop")
     species_tree, species_tree_root, species_node_count \
-        = Diameter.reformat_tree(edge_species_tree, "hTop")
+        = diameter.reformat_tree(edge_species_tree, "hTop")
 
     if time_it:
         start = time.time()

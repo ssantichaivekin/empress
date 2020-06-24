@@ -22,7 +22,7 @@ from empress.xscape.plotcostsAnalytic import plot_costs_on_axis as xscape_plot_c
 from empress.reconcile import DTLReconGraph
 from empress.reconcile import recongraph_visualization
 from empress.reconcile import DTLMedian
-from empress.reconcile import Diameter
+from empress.reconcile import diameter
 from empress.reconcile import statistics
 from empress.histogram import HistogramDisplay
 from empress.histogram import HistogramAlg
@@ -115,9 +115,9 @@ class ReconGraphWrapper(Drawable):
         Draw Pairwise Distance Histogram on axes
         """
         # Reformat the host and parasite tree to use it with the histogram algorithm
-        gene_tree, gene_tree_root, gene_node_count = Diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
+        gene_tree, gene_tree_root, gene_node_count = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
         species_tree, species_tree_root, species_node_count \
-            = Diameter.reformat_tree(self.recon_input.host_tree, "hTop")
+            = diameter.reformat_tree(self.recon_input.host_tree, "hTop")
         hist = HistogramAlg.diameter_algorithm(
             species_tree, gene_tree, gene_tree_root, self.recongraph, self.recongraph,
             False, False)
@@ -147,8 +147,8 @@ class ReconGraphWrapper(Drawable):
         Return one of the best ReconciliationWrapper that best represents the
         reconciliation graph. The function internally uses random and is not deterministic.
         """
-        postorder_parasite_tree, gene_tree_root, _ = Diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
-        postorder_host_tree, _, _ = Diameter.reformat_tree(self.recon_input.host_tree, "hTop")
+        postorder_parasite_tree, gene_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
+        postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_tree, "hTop")
 
         # Compute the median reconciliation graph
         median_reconciliation, n_meds, roots_for_median = DTLMedian.get_median_graph(

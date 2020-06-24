@@ -13,7 +13,7 @@ import os
 import re
 from sys import stdout
 
-from empress.reconcile import DTLReconGraph, recongraph_visualization, Diameter
+from empress.reconcile import DTLReconGraph, recongraph_visualization, diameter
 from empress.histogram.Histogram import Histogram, HistogramAlg, HistogramAlgTools
 
 random.seed(1)
@@ -64,9 +64,9 @@ if __name__ == '__main__' :
             brute_force_hist = HistogramAlgTools.BF_find_histogram(dtl_recon_graph, best_roots)
 
             # Reformat the host and parasite tree to use it with the histogram algorithm
-            gene_tree, gene_tree_root, gene_node_count = Diameter.reformat_tree(edge_gene_tree, "pTop")
+            gene_tree, gene_tree_root, gene_node_count = diameter.reformat_tree(edge_gene_tree, "pTop")
             species_tree, species_tree_root, species_node_count \
-                = Diameter.reformat_tree(edge_species_tree, "hTop")
+                = diameter.reformat_tree(edge_species_tree, "hTop")
 
             # Calculate the histogram via histogram algorithm
             diameter_alg_hist = HistogramAlg.diameter_algorithm(

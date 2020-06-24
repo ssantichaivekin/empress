@@ -5,7 +5,7 @@ from collections import deque
 import numpy as np
 
 from empress.histogram import HistogramAlg
-from empress.reconcile import DTLReconGraph, Diameter, DTLMedian
+from empress.reconcile import DTLReconGraph, diameter, DTLMedian
 
 
 def graph_union(g1, g2):
@@ -670,8 +670,8 @@ def get_tree_info(newick, d,t,l):
     edge_species_tree, edge_gene_tree, dtl_recon_graph, mpr_count, best_roots \
         = DTLReconGraph.reconcile(newick, d, t, l)
     # Reformat the host and parasite tree to use it with the histogram algorithm
-    gene_tree, gene_root, gene_node_count = Diameter.reformat_tree(edge_gene_tree, "pTop")
+    gene_tree, gene_root, gene_node_count = diameter.reformat_tree(edge_gene_tree, "pTop")
     species_tree, species_tree_root, species_node_count \
-        = Diameter.reformat_tree(edge_species_tree, "hTop")
+        = diameter.reformat_tree(edge_species_tree, "hTop")
     return gene_tree, species_tree, gene_root, dtl_recon_graph, mpr_count, best_roots
 

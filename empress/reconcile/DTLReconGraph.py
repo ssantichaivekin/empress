@@ -532,7 +532,7 @@ def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss
     a list of the roots that could be used to produce an MPR for the given trees. See preceding functions
     for details on the format of the host and parasite trees as well as the DTLReconGraph
     """
-    # Note: I have made modifications to the return statement to make Diameter.py possible without re-reconciling.
+    # Note: I have made modifications to the return statement to make diameter.py possible without re-reconciling.
     host = tree_data.host_tree
     paras = tree_data.parasite_tree
     graph, best_cost, num_recon, best_roots = DP(tree_data, dup_cost, transfer_cost, loss_cost)

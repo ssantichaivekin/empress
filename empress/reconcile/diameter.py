@@ -1,4 +1,4 @@
-# Diameter.py
+# diameter.py
 # Written by Eli Zupke and Andrew Ramirez July 2017
 
 # 0. ON THE PAPER
