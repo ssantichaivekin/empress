@@ -4,9 +4,9 @@ import os
 
 
 class TestEmpressWrappers(unittest.TestCase):
-    example_host = "./examples/test-size5-no924-host.nwk"
-    example_parasite = "./examples/test-size5-no924-parasite.nwk"
-    example_mapping = "./examples/test-size5-no924-mapping.mapping"
+    example_host = "./examples/test_size5_no924_host.nwk"
+    example_parasite = "./examples/test_size5_no924_parasite.nwk"
+    example_mapping = "./examples/test_size5_no924_mapping.mapping"
 
     def test_read_input(self):
         recon_input = empress.ReconInput.from_files(self.example_host, self.example_parasite, self.example_mapping)

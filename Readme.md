@@ -42,8 +42,8 @@ Note: value in parenthesis denotes default value, asterisk denotes boolean flags
 For example, the following example runs Costscape with duplication low value of 0.5, duplication high value of 10, transfer low value of 0.5, 
 and transfer high value of 10, that saves to a file called `foo.pdf` display it in log scale.
 ```bash
-$ python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick \
-                        --mapping examples/heliconius-mapping.mapping \
+$ python empress_cli.py --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk \
+                        --mapping examples/heliconius_mapping.mapping \
                         costscape -tl 0.5 -th 10 -dl 0.5 -dh 10 --outfile costscape-example-img.pdf --log
 ```
 
@@ -54,8 +54,8 @@ $ python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 0, you run
 ```bash
-$ python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick \
-                        --mapping examples/heliconius-mapping.mapping \
+$ python empress_cli.py --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk \
+                        --mapping examples/heliconius_mapping.mapping \
                         reconcile -d 4 -t 2 -l 0
 ```
 
@@ -74,8 +74,8 @@ $ python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/
 
 For example, to run Pair-distance Histogram that outputs a csv file at `foo.csv`, outputs a histogram to `bar.pdf` and normalizes the y-axis, you run
 ```bash
-$ python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick \
-                        --mapping examples/heliconius-mapping.mapping \
+$ python empress_cli.py --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk \
+                        --mapping examples/heliconius_mapping.mapping \
                         histogram --csv foo.csv --histogram bar.pdf --ynorm
 ```
 
@@ -94,7 +94,7 @@ $ python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/
 
 For example, to find at least 8 distinct parts of reconciliation-space before merging them into clusters, use `--nsplits 8`. To merge those splits into three clusters, use `-k 3`. The clusters are merged based on a cluster-distance that is calculated either using the average event support or the pairwise distance. To use the event support use `--support`. Finally, to get the median reconciliation of each of the three clusters, use `--median`. Putting it all together, the full command is
 ```bash
-$ python empress_cli.py --host examples/heliconius-host.nwk --parasite examples/heliconius-parasite.newick \
-                        --mapping examples/heliconius-mapping.mapping \
+$ python empress_cli.py --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk \
+                        --mapping examples/heliconius_mapping.mapping \
                         clumpr -k 3 --median --nsplits 8 --support
 ```

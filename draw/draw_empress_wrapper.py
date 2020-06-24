@@ -8,9 +8,9 @@ from draw import common
 
 common.create_output_folder()
 
-example_host = "./examples/test-size5-no924-host.nwk"
-example_parasite = "./examples/test-size5-no924-parasite.nwk"
-example_mapping = "./examples/test-size5-no924-mapping.mapping"
+example_host = "./examples/test_size5_no924_host.nwk"
+example_parasite = "./examples/test_size5_no924_parasite.nwk"
+example_mapping = "./examples/test_size5_no924_mapping.mapping"
 
 # Wrapper draw examples and tests
 
