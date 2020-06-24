@@ -51,9 +51,17 @@ class ReconInput(object):
         if not isinstance(file_name, str):
             raise ValueError("mapping file_name = %s is not a string" % file_name)
 
+        if self.host_tree is None:
+            raise RuntimeError("attempt to read tip mapping before reading host tree")
+
+        if self.parasite_tree is None:
+            raise RuntimeError("attempt to read tip mapping before reading parasite tree")
+
         with open(file_name) as map_file:
             map_list = map_file.read().split()
-            self.phi = ReconInput._parse_phi(map_list)
+            phi = ReconInput._parse_phi(map_list)
+            ReconInput._verify_phi(self.host_tree, self.parasite_tree, phi)
+            self.phi = phi
 
     @staticmethod
     def _read_newick_tree(file_name: str, tree_type: str):
@@ -169,3 +177,30 @@ class ReconInput(object):
             value = host.strip()
             phi_dict[key] = value
         return phi_dict
+
+    @staticmethod
+    def _node_names_from_tree_dict(tree_dict):
+        names = set()
+        for key in tree_dict:
+            if isinstance(key, tuple):
+                parent, child = key
+                names.add(parent)
+                names.add(child)
+        return names
+
+    @staticmethod
+    def _verify_phi(host_dict, parasite_dict, phi_dict):
+        """
+        Throws exception if phi_dict is not valid
+        """
+        host_names = ReconInput._node_names_from_tree_dict(host_dict)
+        parasite_names = ReconInput._node_names_from_tree_dict(parasite_dict)
+        for parasite in phi_dict:
+            host = phi_dict[parasite]
+            if host not in host_names:
+                raise KeyError("Detect mapping %s [parasite] -> %s [host] but cannot find %s in host_dict" %
+                               (parasite, host, host))
+            if parasite not in parasite_names:
+                raise KeyError("Detect mapping %s [parasite] -> %s [host] but cannot find %s in parasite_dict" %
+                               (parasite, host, parasite))
+
