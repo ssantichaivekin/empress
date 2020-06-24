@@ -29,7 +29,7 @@ from typing import Tuple, Iterator
 from numpy import mean
 from numpy import median as md
 
-from empress.reconcile import ReconcileMainInput
+from empress.reconcile import reconcile_main_input
 from empress.newickFormatReader import ReconInput
 
 Infinity = float('inf')
@@ -555,7 +555,7 @@ def reconcile_inter(tree_data: ReconInput):
     """ 
     :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
     """
-    duplication, transfer, loss = ReconcileMainInput.get_inputs()
+    duplication, transfer, loss = reconcile_main_input.get_inputs()
     result = reconcile(tree_data, duplication, transfer, loss)
     for i in range(len(result)):
         print((str(result[i]) + '\n'))
