@@ -146,7 +146,7 @@ def main():
     elif args.functionality == "reconcile":
         recongraph_tools.reconcile_noninter(recon_input, args.d, args.t, args.l)
     elif args.functionality == "histogram":
-        histogram_main.compute_pdv(args.filename, recon_input, args.d, args.t, args.l, args)
+        histogram_main.compute_pdv(args.host, recon_input, args.d, args.t, args.l, args)
     elif args.functionality == "clumpr":
         cluster_main.perform_clustering(recon_input, args.d, args.t, args.l, args.k, args)
 
