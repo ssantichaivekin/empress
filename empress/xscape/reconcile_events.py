@@ -1,4 +1,4 @@
-# reconcileEvents.py
+# reconcile_events.py
 # Ran Libeskind-Hadas, Jessica Yi-Chieh Wu, Mukul Bansal, November 2013
 # memoized Pareto tree reconciliation software for untimed trees
 

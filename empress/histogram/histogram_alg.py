@@ -1,132 +1,43 @@
-# Diameter.py
-# Written by Eli Zupke and Andrew Ramirez July 2017
+# Modification on the original diameter algorithm to support getting the histogram of the whole graph.
 
-# 0. ON THE PAPER
-#
-#   This program is based on the paper title is "Computing the Diameter
-#   of the Space of Maximum Parsimony Reconciliations in the Duplication-Transfer-Loss Model"
-#   by Haack, et. al.
-
-# 1. ON TREE REPRESENTATION FORMATS:
-#
-#   There are two formats in this code-base for trees: Edge-based trees, and vertex-based trees. The edge-based
-#   trees are what are output from DTLReconGraph.py (which returns them straight from newickFormatReader). For
-#   readability and convenience purposes, both the gene and species trees are converted into vertex-based trees.
-#
-#   Both formats use dictionaries to store the tree structure, but they differ somewhat in execution
-# Example:
-#   When N is a node with parent R and children C1 and C2,
-#
-#   An entry in the edge-based representation looks like this:
-#       {('R','N'): ('R','N', ('N','C1'), ('N','C2')) ...}
-#
-#   And an entry in the vertex-based representation looks like this:
-#       {'N':('C1','C2') ...}
-#
-#   As this file almost exclusively uses vertex-based trees, vertex-based trees will just be named trees, while edge-
-#   based trees contain the word 'edge' in their names.
-
-# 2. ON THE NAMING CONVENTION OF THE TWO TREES:
-#
-#   This file calls the two trees the gene tree and the species tree. Other programs, like DTLReconGraph.py, have
-#   different naming conventions (such as "host" for the species tree and "parasite" for the gene tree) because they
-#   were coded under different assumptions as to what the two trees represent. Let it be understood that these names are
-#   synonymous, and that references to "hTop" or "pTop" refer to the name of the handle of the species and
-#   gene trees that DTLReconGraph outputs.
-
-
-# 3. ON GENE, SPECIES, AND MAPPING NODES:
-#
-#   The convention for variable names in this file is to use lowercase letters to represent gene nodes (commonly
-#   'u'), uppercase letters to represent species nodes (commonly 'A' and 'B') and pairs of lower and upper case letter
-#   to represent mapping nodes (commonly 'uA' and 'uB').
-
-
-# 4. ON THE DYNAMIC PROGRAMMING TABLES AND THEIR FUNCTIONS:
-#
-#   The Diameter algorithm involves the use of three dynamic programming tables:
-#   The enter_table and the two exit_table s.
-#
-#   The tables are described in detail in the paper, but a summary of their functions follows:
-#
-#   The enter_table has the format [u][uA][uB], and it contains the largest number of event nodes that each pair
-#   of reconciliation subtrees rooted at uA and uB can differ for when uA and uB are used to enter Group(u). Running the
-#   program in debug mode will print out this table at every u.
-#
-#   exit_table_a has the format [u][uA][uB] (where uA is an ancestor of uB or uA == uB). exit_table_b has the format
-#   [u][uB][uA] (where uB is an ancestor of uA or uA == uB). They contain the largest
-#   number of event nodes that each pair of reconciliation subtrees rooted at uA and uB can differ for when uA (for
-#   exit_table_a) or uB (for exit_table_b) leads to an exit event. This table is two tables, rather than one, to allow
-#   for the generalization of the Diameter algorithm to work on any pair of reconciliation graphs based on the same
-#   species tree and gene tree.
-
-
-# DATA STRUCTURE QUICK REFERENCE:
-#
-#   Ancestor Comparability:
-#       A ancestor of B:    'an'
-#       A descendant of B:  'des'
-#       A incomparable to B:'in'
-#       A is equal to B:    'eq'
-#
-#   DTL Reconciliation graph:
-#       { mapping_node: [event1, event2, ...] ...}
-#
-#   Event node:
-#       ('type', child_mapping_node1, child_mapping_node2)
-#
-#   Mapping node:
-#       ('gene_node','SPECIES_NODE')
-#   or in loss or contemporary event nodes:
-#       (None, None)
-#
-#   edge_trees:
-#       {('R','N'): ('R','N', ('N','C1'), ('N','C2')) ...}
-#       aka:
-#       {root_edge: (root_edge[0], root_edge[1], child1_edge, child2_edge) ...}
-#
-#   (vertex) trees:
-#       {'N':('C1','C2') ...}
-
-from collections import OrderedDict
 from itertools import product
-import sys
 
-def reformat_tree(tree, root):
-    """
-    A recursive function that changes the format of a (species or gene) tree from edge to vertex, as described
-    above. It returns the tree (in postorder), the root of the tree, and the number of nodes in the tree. The base
-    case of this function is when there are no children for a given root.
-    :param tree <dict>                 - a tree in edge format
-    :param root <str> | <tuple>        - the root of that tree
-    :return                            0 <dict> - the new vertex based tree,
-                                       1 <str>  - the root of that tree, and
-                                       2 <int>  - the number of nodes in that tree. 
-    """
+from empress.histogram.Histogram import Histogram
+from empress.histogram.histogram_brute_force import BFVerifier
 
-    # This line catches the "xTop" handle and replaces
-    new_root = root[1] if isinstance(root, tuple) else tree[root][1]
+# def reformat_tree(tree, root):
+#     """A recursive function that changes the format of a (species or gene) tree from edge to vertex, as described
+#     above. It returns the tree (in postorder), the root of the tree, and the number of nodes in the tree. The base
+#     case of this function is when there are no children for a given root.
+#     :param tree:        A tree in edge format
+#     :param root:        The root of that tree
+#     :return:            0: The new vertex based tree,
+#                         1: The root of that tree, and
+#                         2: The number of nodes in that tree. """
 
-    child1 = tree[root][2][1] if tree[root][2] is not None else None  # These lines handle the leaves, where
-    child2 = tree[root][3][1] if tree[root][3] is not None else None  # there is None in the place of a tuple
+#     # This line catches the "xTop" handle and replaces
+#     new_root = root[1] if isinstance(root, tuple) else tree[root][1]
 
-    # This is the tree that we will be returning. We will add the subtrees of our children first, then add this node.
-    new_vertex_tree = OrderedDict()  # This has to be an OrderedDict, otherwise we can't guarantee it's in postorder
+#     child1 = tree[root][2][1] if tree[root][2] is not None else None  # These lines handle the leaves, where
+#     child2 = tree[root][3][1] if tree[root][3] is not None else None  # there is None in the place of a tuple
 
-    # This is the number of nodes in the subtree rooted at each of our children
-    # We actually don't need to calculate this here at all, since the count will just be the length of new_vertex_tree
-    child1_count = 0
-    child2_count = 0
+#     # This is the tree that we will be returning. We will add the subtrees of our children first, then add this node.
+#     new_vertex_tree = OrderedDict()  # This has to be an OrderedDict, otherwise we can't guarantee it's in postorder
 
-    if child1 is not None:  # If this node has children, then we need to add their children's subtrees to the dict
-        child1_tree, _, child1_count = reformat_tree(tree, tree[root][2])
-        new_vertex_tree.update(child1_tree)
-    if child2 is not None:
-        child2_tree, _, child2_count = reformat_tree(tree, tree[root][3])
-        new_vertex_tree.update(child2_tree)
-    new_vertex_tree.update({new_root: (child1, child2)})  # We add this node last, to ensure postorderness.
+#     # This is the number of nodes in the subtree rooted at each of our children
+#     # We actually don't need to calculate this here at all, since the count will just be the length of new_vertex_tree
+#     child1_count = 0
+#     child2_count = 0
 
-    return new_vertex_tree, new_root, (child1_count + child2_count + 1)
+#     if child1 is not None:  # If this node has children, then we need to add their children's subtrees to the dict
+#         child1_tree, _, child1_count = reformat_tree(tree, tree[root][2])
+#         new_vertex_tree.update(child1_tree)
+#     if child2 is not None:
+#         child2_tree, _, child2_count = reformat_tree(tree, tree[root][3])
+#         new_vertex_tree.update(child2_tree)
+#     new_vertex_tree.update({new_root: (child1, child2)})  # We add this node last, to ensure postorderness.
+
+#     return new_vertex_tree, new_root, (child1_count + child2_count + 1)
 
 
 def intersect_cost(event):
@@ -140,7 +51,7 @@ def intersect_cost(event):
 
 def cost(event, zero_loss):
     """
-    The cost added if exactly one of the reconciliations being looked at share a particular event.
+    The cost added if exactly one of the reconciliations being looked at share a particular event
     :param event <tuple>      - the event being shared
     :param zero_loss <bool>   - whether loss events should have cost = 0
     :return <int>             - the cost
@@ -155,7 +66,7 @@ def calculate_ancestral_table(species_tree):
     """
     :param species_tree <dict> - a species tree, in vertex format and postorder,
     represented as an OrderedDict (output from reformat_tree)
-    :return: A nested dictionary. The first dictionary has vertices in the
+    :return - A nested dictionary. The first dictionary has vertices in the
     tree as keys and the values are dictionaries. These dictionaries have
     as keys vertices of the tree (again) and values which are strings,
     representing how the first index relates to the second (see below
@@ -216,7 +127,7 @@ def is_leaf(u, vertex_tree):
     """
     :param u <str>              - the node to test
     :param vertex_tree <dict>   - the vertex tree that contains the node
-    :return <bool>              - a boolean value representing whether the given node is a leaf of the given tree.
+    :return <bool>              - a boolean value representing whether the given node is a leaf of the given tree
     """
     return vertex_tree[u] == (None, None)
 
@@ -229,9 +140,10 @@ def is_exit_event(event):
     return event[0] not in ('C', 'L')
 
 
-def calculate_score_both_exit(zero_loss, enter_table, u, gene_tree, uA, dtl_recon_graph_a, uB, dtl_recon_graph_b):
+# Modified : use Histogram instead of value
+def calculate_hist_both_exit(zero_loss, enter_table, u, gene_tree, uA, dtl_recon_graph_a, uB, dtl_recon_graph_b):
     """
-    This function computes the score of a 'double exit', where both mapping nodes exit immediately.
+    This function computes the histogram of a 'double exit', where both mapping nodes exit immediately
     :param zero_loss <bool>           - a boolean value representing whether loss events should count for distance
     :param enter_table <dict>         - the enter table, which we use here
     :param u <str>                    - the gene node whose group we're in
@@ -240,14 +152,14 @@ def calculate_score_both_exit(zero_loss, enter_table, u, gene_tree, uA, dtl_reco
     :param dtl_recon_graph_a <dict>   - the 'a' DTL reconciliation graph
     :param uB <str>                   - the 'b' mapping node
     :param dtl_recon_graph_b <dict>   - the 'b' DTL reconciliation graph
-    :return <float>                   - the score of both mapping nodes exiting
+    :return <Histogram>               - the Histogram object of both mapping nodes exiting
     """
-    score_both_exit = float('-inf')
+    hist_both_exit = Histogram(None)
 
     # Test to see if u is a leaf
     if is_leaf(u, gene_tree):
         if uA == uB and ('C', (None, None), (None, None)) in dtl_recon_graph_a[uA]:
-            score_both_exit = 0
+            hist_both_exit = Histogram(0)
     else:
         uA_exit_events = [event for event in dtl_recon_graph_a[uA] if isinstance(event, tuple) and is_exit_event(event)]
         uB_exit_events = [event for event in dtl_recon_graph_b[uB] if isinstance(event, tuple) and is_exit_event(event)]
@@ -258,6 +170,9 @@ def calculate_score_both_exit(zero_loss, enter_table, u, gene_tree, uA, dtl_reco
             A1 = e_a[1][1]
             A2 = e_a[2][1]
             for e_b in uB_exit_events:
+                # If the events are shared, only need the first ordering (the second will overcount)
+                if uA == uB and e_b > e_a:
+                    continue
                 # B1 and B2 are the species nodes of the two mapping nodes of e_b
                 # We need to account for the case that the children of u are in opposite order between the two events
                 if child1 == e_b[1][0]:
@@ -271,19 +186,31 @@ def calculate_score_both_exit(zero_loss, enter_table, u, gene_tree, uA, dtl_reco
                 u1B = (child1, B1)
                 u2A = (child2, A2)
                 u2B = (child2, B2)
-                # If the score of this iteration's double exit is better than the old one, then the old one will
+                # If the histogram of this iteration's double exit is better than the old one, then the old one will
                 # supersede this one
+                left_entry = enter_table[child1][u1A][u1B]
+                right_entry = enter_table[child2][u2A][u2B]
+                # Techically n_choices encodes the number of choices beyond the first.
+                n_choices = 0
+                # 1 choice means either a choice about both children but not the event, or about the event and only one child.
+                if (uA == uB and e_a == e_b) or (u1A == u1B or u2A == u2B):
+                    n_choices = 1
+                # 2 choices means a choice about both children AND the event.
+                if u1A == u1B and u2A == u2B and e_a != e_b:
+                    n_choices = 2
+                # Do the convolution between left and right, then shift based on the difference of the events
+                this_hist = left_entry.product_combine(right_entry, n_choices)
+                if e_a != e_b:
+                    this_hist = this_hist << (cost(e_a, zero_loss) + cost(e_b, zero_loss))
+                else:
+                    this_hist = this_hist << intersect_cost(0)
+                # Final histogram is the sum over all event pairs
+                hist_both_exit = hist_both_exit + this_hist
+    return hist_both_exit
 
-                score_both_exit = max(score_both_exit,
-                                      enter_table[child1][u1A][u1B] + enter_table[child2][u2A][u2B] +
-                                      (cost(e_a, zero_loss) + cost(e_b, zero_loss) if e_a != e_b
-                                       else intersect_cost(0)))
 
-    return score_both_exit
-
-
-def calculate_incomparable_enter_score(zero_loss, enter_table, u, uA, uA_loss_events, uB, uB_loss_events,
-                                       score_both_exit):
+def calculate_incomparable_enter_hist(zero_loss, enter_table, u, uA, uA_loss_events, uB, uB_loss_events,
+                                       hist_both_exit):
     """
     Returns the enter table entry for [uA][uB] with the assumption that A is on a different part of the species
     tree from B
@@ -294,66 +221,76 @@ def calculate_incomparable_enter_score(zero_loss, enter_table, u, uA, uA_loss_ev
     :param uA_loss_events <list>        - a list of the loss events on that mapping node
     :param uB <str>                     - the second mapping node to compare
     :param uB_loss_events <list>        - a list of the loss events on that mapping node
-    :param score_both_exit <int>        - the score of the double-exit that was previously calculated for uA and uB
-    :return <int>                       - the enter table entry for [uA][uB]
+    :param hist_both_exit <Histogram>   - the histogram of the double-exit that was previously calculated for uA and uB
+    :return <Histogram>                 - the enter table entry for [uA][uB]
     """
-    scores = [score_both_exit]
+    hists = [hist_both_exit]
+    lost_hists = []
 
-    # We add up all of the scores for both uA's and uB's loss events.
+    # We add up all of the hists for both uA's and uB's loss events.
     for event in uA_loss_events:
         a_child = event[1][1]
-        scores += [enter_table[u][(u, a_child)][uB] + cost(event, zero_loss)]
+        hists.append(enter_table[u][(u, a_child)][uB] << cost(event, zero_loss))
     for event in uB_loss_events:
         b_child = event[1][1]
-        scores += [enter_table[u][uA][(u, b_child)] + cost(event, zero_loss)]
-    return max(scores)
+        hists.append(enter_table[u][uA][(u, b_child)] << cost(event, zero_loss))
+    # The previous histograms will overcount the possibility of taking a loss in both children.
+    # Since enter[u][(u, a_child)][(u, b_child)] is counted by both
+    # enter[u][uA][(u, b_child)] and enter[u][(u, a_child)][uB]
+    # Here we compute enter[u][(u, a_child)][(u, b_child)] in order to subtract it off
+    for loss_event_A, loss_event_B in product(uA_loss_events, uB_loss_events):
+        a_child = loss_event_A[1][1]
+        b_child = loss_event_B[1][1]
+        loss_cost = cost(loss_event_A, zero_loss) + cost(loss_event_B, zero_loss)
+        lost_hists.append(enter_table[u][(u, a_child)][(u, b_child)] << loss_cost)
+    return Histogram.sum(hists) - Histogram.sum(lost_hists)
 
 
-def calculate_equal_enter_score(zero_loss, enter_table, u, uA, uA_loss_events, uB, uB_loss_events,
-                                score_both_exit, exit_table_a, exit_table_b):
+def calculate_equal_enter_hist(zero_loss, enter_table, u, uA, uA_loss_events, uB, uB_loss_events,
+                                hist_both_exit, exit_table_a, exit_table_b):
     """
     Returns the enter table entry for [uA][uB] with the assumption that uA equals uB (but they might have different
     loss events leading from them!)
     :param zero_loss <bool>             - whether losses should not count
-    :param is_swapped <bool>            - whether B is an ancestor of A (instead of the assumed A is an ancestor of B)
     :param enter_table <dict>           - the DP table we are computing part of
     :param u <str>                      - the gene node whose group we are in
     :param uA <str>                     - the first mapping node to compare
     :param uA_loss_events <list>        - a list of the loss events on that mapping node
     :param uB <str>                     - the second mapping node to compare
     :param uB_loss_events <list>        - a list of the loss events on that mapping node
-    :param score_both_exit <int>        - the score of the double-exit that was previously calculated for uA and uB
+    :param hist_both_exit <Histogram>   - the histogram of the double-exit that was previously calculated for uA and uB
     :param exit_table_a <dict>          - the a exit table, which contains information about the single exit events for
                                           the mapping nodes' children
     :param exit_table_b <dict>          - the b exit table, which contains information about the single exit events for
                                           the mapping nodes' children
-    :return <int>                       - the enter table entry for [uA][uB]
+    :return <Histogram>                 - the enter table entry for [uA][uB]  
     """
     # If uA does not equal uB, then something's gone horribly wrong.
-    assert uA == uB, "calculate_equal_enter_score called on values of uA and uB that are not equal"
+    assert uA == uB, "calculate_equal_enter_hist called on values of uA and uB that are not equal"
 
-    # Build up a list of the possible scores of this pair of mapping nodes, so that we can find the maximum later.
-    scores = [score_both_exit]
+    # Build up a list of the possible histograms of this pair of mapping nodes, so that we can find the maximum later.
+    hists = [hist_both_exit]
 
-    # This finds the scores when both nodes take losses
     for a_event in uA_loss_events:
         a_child = a_event[1][1]
         for b_event in uB_loss_events:
             b_child = b_event[1][1]
-            scores += [enter_table[u][(u, a_child)][(u, b_child)] + cost(a_event, zero_loss) + cost(b_event, zero_loss)]
+            # Only the first ordering matters ((a, b) and (b, a) will both appear, but we should not treat them as distinct)
+            if a_child < b_child:
+                hists.append(enter_table[u][(u, a_child)][(u, b_child)] << 2)
+            # If they are the same, then the same loss was used so there is no shift.
+            elif a_child == b_child:
+                hists.append(enter_table[u][(u, a_child)][(u, b_child)])
 
-    # These find the scores when only one node takes a loss
+    # Only need to iterate through uA_loss_events since if they are equal then uB_loss_events = uA_loss_events.
     for event in uA_loss_events:
         a_child = event[1][1]
-        scores += [exit_table_b[u][uB][(u, a_child)] + cost(event, zero_loss)]
-    for event in uB_loss_events:
-        b_child = event[1][1]
-        scores += [exit_table_a[u][uA][(u, b_child)] + cost(event, zero_loss)]
-    return max(scores)
+        hists.append(exit_table_b[u][uB][(u, a_child)] << cost(event, zero_loss))
+    return Histogram.sum(hists)
 
 
-def calculate_ancestral_enter_score(zero_loss, is_swapped, enter_table, u, uA, uA_loss_events, uB, uB_loss_events,
-                                    score_both_exit, exit_table_a, exit_table_b):
+def calculate_ancestral_enter_hist(zero_loss, is_swapped, enter_table, u, uA, uA_loss_events, uB, uB_loss_events,
+                                    hist_both_exit, exit_table_a, exit_table_b):
     """
     Returns the enter table entry for [uA][uB] with the assumption that A is an ancestor of B (if is_swapped is
     false) or that B is an ancestor of A (if is_swapped is true). In both cases, it will compute the single exit
@@ -366,59 +303,71 @@ def calculate_ancestral_enter_score(zero_loss, is_swapped, enter_table, u, uA, u
     :param uA_loss_events <list>        - a list of the loss events on that mapping node
     :param uB <str>                     - the second mapping node to compare
     :param uB_loss_events <list>        - a list of the loss events on that mapping node
-    :param score_both_exit <int>        - the score of the double-exit that was previously calculated for uA and uB
+    :param hist_both_exit <Histogram>   - the histogram of the double-exit that was previously calculated for uA and uB
     :param exit_table_a <dict>          - the a exit table, which contains information about the single exit events for
                                           the mapping nodes' children
     :param exit_table_b <dict>          - the b exit table, which contains information about the single exit events for
                                           the mapping nodes' children
-    :return <int>                       - the enter table entry for [uA][uB]
+    :return <Histogram>                 - the enter table entry for [uA][uB]
     """
 
-    # In both cases, we will need to tally up the scores of any loss events on the descendant. Scores will hold those
-    # values, and the score of a double exit.
-    scores = [score_both_exit]
+    # In both cases, we will need to tally up the histograms of any loss events on the descendant. Hists will hold those
+    # values, and the histograms of a double exit.
+    hists = [hist_both_exit]
 
     # We check to see if which mapping node is the ancestor is swapped from uA an uB to uB an uA. We can't just
     # swap the arguments in that case unfortunately, because enter_table requires the two arguments be entered in the
     # correct direction.
     if not is_swapped:
         # uA is an ancestor to uB
-        # Tally up the scores of the descendant's (uB's) loss events
+        # Tally up the histograms of the descendant's (uB's) loss events
         for event in uB_loss_events:
             b_child = event[1][1]
-            # Add the score of taking this loss (the exit_table's entry for the mapping node that this loss
+            # Add the histogram of taking this loss (the exit_table's entry for the mapping node that this loss
             # leads to, plus the cost of a loss)
-            scores += [exit_table_a[u][uA][(u, b_child)] + cost(event, zero_loss)]
+            hists += [exit_table_a[u][uA][(u, b_child)] << cost(event, zero_loss)]
 
         # Initialize the ancestor's (uA) entry in exit_table, if need be.
         if uA not in exit_table_a[u]:
             exit_table_a[u][uA] = {}
-        exit_table_a[u][uA][uB] = max(scores)
+        exit_table_a[u][uA][uB] = Histogram.sum(hists)
 
-        enter_scores = [exit_table_a[u][uA][uB]]
+        enter_hists = [exit_table_a[u][uA][uB]]
         for event in uA_loss_events:
             a_child = event[1][1]
-            enter_scores += [enter_table[u][(u, a_child)][uB] + cost(event, zero_loss)]
-        return max(enter_scores)
+            # Double the nonzero entries if one node is the direct child of the other through the loss event.
+            # This occurs because order matters when considering a pair of sub-reconciliations rooted at the child.
+            # Either of those sub-reconciliations may be given the loss event and used as the sub-reconciliation
+            # rooted at the parent.
+            if (u, a_child) == uB:
+                event_enter = enter_table[u][(u, a_child)][uB].double_nonzero_entry()
+            else:
+                event_enter = enter_table[u][(u, a_child)][uB]
+            enter_hists += [event_enter << cost(event, zero_loss)]
+        return Histogram.sum(enter_hists)
     else:
         # uB is an ancestor to uA
-        # Tally up the scores of the descendant's (uA's) loss events
+        # Tally up the histograms of the descendant's (uA's) loss events
         for event in uA_loss_events:
             a_child = event[1][1]
-            # Add the score of taking this loss (the exit_table's entry for the mapping node that this loss
+            # Add the histograms of taking this loss (the exit_table's entry for the mapping node that this loss
             # leads to, plus the cost of a loss)
-            scores += [exit_table_b[u][uB][(u, a_child)] + cost(event, zero_loss)]
+            hists += [exit_table_b[u][uB][(u, a_child)] << cost(event, zero_loss)]
 
         # Initialize the ancestor's (uB) entry in exit_table, if need be.
         if uB not in exit_table_b[u]:
             exit_table_b[u][uB] = {}
-        exit_table_b[u][uB][uA] = max(scores)
+        exit_table_b[u][uB][uA] = Histogram.sum(hists)
         
-        enter_scores = [exit_table_b[u][uB][uA]]
+        enter_hists = [exit_table_b[u][uB][uA]]
         for event in uB_loss_events:
             b_child = event[1][1]
-            enter_scores += [enter_table[u][uA][(u, b_child)] + cost(event, zero_loss)]
-        return max(enter_scores)
+            if uA == (u, b_child):
+                event_enter = enter_table[u][uA][(u, b_child)].double_nonzero_entry()
+            else:
+                event_enter = enter_table[u][uA][(u, b_child)]
+            enter_hists += [event_enter << cost(event, zero_loss)]
+        return Histogram.sum(enter_hists)
 
 
 def make_group_dict(gene_tree, dtl_recon_graph, postorder_species_nodes):
@@ -440,13 +389,13 @@ def make_group_dict(gene_tree, dtl_recon_graph, postorder_species_nodes):
     return postorder_group
 
 
-def diameter_algorithm(species_tree, gene_tree, gene_tree_root, dtl_recon_graph_a, dtl_recon_graph_b, debug, zero_loss):
+def diameter_algorithm(species_tree, gene_tree, gene_tree_root, dtl_recon_graph_a, dtl_recon_graph_b, debug, zero_loss, verify=False):
     """
     This function finds the diameter of a reconciliation graph, as measured by the largest symmetric set difference
-    of any two reconciliation trees inside of a reconciliation graph. While you can get standard diameter behaviour
-    by making dtl_recon_graph_a equal dtl_recon_graph_b, arbitrary restrictions may be placed on which nodes are
-    selected by choosing different graphs, for example by limiting one of the graphs to a single reconciliation tree
-    to find that tree's distance to the furthest reconciliation.
+     of any two reconciliation trees inside of a reconciliation graph. While you can get standard diameter behaviour
+     by making dtl_recon_graph_a equal dtl_recon_graph_b, arbitrary restrictions may be placed on which nodes are
+     selected by choosing different graphs, for example by limiting one of the graphs to a single reconciliation tree
+     to find that tree's distance to the furthest reconciliation.
     :param species_tree <dict>        - the species tree (in vertex form)
     :param gene_tree <dict>           - the gene tree (in vertex form)
     :param gene_tree_root <str>       - the root of the gene tree
@@ -454,8 +403,14 @@ def diameter_algorithm(species_tree, gene_tree, gene_tree_root, dtl_recon_graph_
     :param dtl_recon_graph_b <dict>   - the other reconciliation graph. Both must share the same species and gene trees.
     :param debug <bool>               - whether or not to print out pretty tables
     :param zero_loss <bool>           - whether losses should count at all
-    :return <int>                     - the diameter of the reconciliation.
+    :param verify <bool>              - whether to verify the calculations using brute force
+    :return <Histogram>               - the diameter of the reconciliation
     """
+
+    # Use debugging
+    #assert(dtl_recon_graph_a == dtl_recon_graph_b)
+    if verify:
+        verfier = BFVerifier(dtl_recon_graph_a)
 
     postorder_gene_nodes = list(gene_tree.keys())
     postorder_species_nodes = list(species_tree.keys())
@@ -482,11 +437,11 @@ def diameter_algorithm(species_tree, gene_tree, gene_tree_root, dtl_recon_graph_
             enter_table[u][uA] = {}
             for uB in postorder_group_b[u]:
 
-                score_both_exit = calculate_score_both_exit(zero_loss, enter_table, u, gene_tree, uA, dtl_recon_graph_a,
+                hist_both_exit = calculate_hist_both_exit(zero_loss, enter_table, u, gene_tree, uA, dtl_recon_graph_a,
                                                             uB, dtl_recon_graph_b)
 
                 # Look up ancestry string in the precomputed table (indexed by the species nodes of the mapping nodes)
-                ancestry = ancestral_table[uA[1]][uB[1]]
+                ancestry = ancestral_table[uA[1]][uB[1]] 
 
                 uA_loss_events = [event for event in dtl_recon_graph_a[uA] if isinstance(event, tuple) and event[0] == 'L']
                 uB_loss_events = [event for event in dtl_recon_graph_b[uB] if isinstance(event, tuple) and event[0] == 'L']
@@ -494,24 +449,26 @@ def diameter_algorithm(species_tree, gene_tree, gene_tree_root, dtl_recon_graph_
                 # To compute the proper single exit entry, we must know how the two nodes relate to each other. See the
                 # header for a more complete explanation on this data structure.
                 if ancestry == 'in':
-                    score = calculate_incomparable_enter_score(zero_loss, enter_table, u, uA, uA_loss_events, uB,
-                                                               uB_loss_events, score_both_exit)
+                    hist = calculate_incomparable_enter_hist(zero_loss, enter_table, u, uA, uA_loss_events, uB,
+                                                               uB_loss_events, hist_both_exit)
                 elif ancestry == 'eq':
-                    score = calculate_equal_enter_score(zero_loss, enter_table, u, uA, uA_loss_events, uB,
-                                                        uB_loss_events, score_both_exit, exit_table_a, exit_table_b)
+                    hist = calculate_equal_enter_hist(zero_loss, enter_table, u, uA, uA_loss_events, uB,
+                                                        uB_loss_events, hist_both_exit, exit_table_a, exit_table_b)
                 # The only difference between the 'des' and 'an' cases are whether the nodes should be swapped
                 elif ancestry == 'des':
-                    score = calculate_ancestral_enter_score(zero_loss, True, enter_table, u, uA, uA_loss_events, uB,
-                                                            uB_loss_events, score_both_exit, exit_table_a, exit_table_b)
+                    hist = calculate_ancestral_enter_hist(zero_loss, True, enter_table, u, uA, uA_loss_events, uB,
+                                                            uB_loss_events, hist_both_exit, exit_table_a, exit_table_b)
                 elif ancestry == 'an':
-                    score = calculate_ancestral_enter_score(zero_loss, False, enter_table, u, uA, uA_loss_events, uB,
-                                                            uB_loss_events, score_both_exit, exit_table_a, exit_table_b)
+                    hist = calculate_ancestral_enter_hist(zero_loss, False, enter_table, u, uA, uA_loss_events, uB,
+                                                            uB_loss_events, hist_both_exit, exit_table_a, exit_table_b)
                 else:
                     raise ValueError("Invalid ancestry type '{0}', check calculate_ancestral_table().".format(ancestry))
-                enter_table[u][uA][uB] = score
+                if verify:
+                    verfier.verify_enter(uA, uB, hist)
+                enter_table[u][uA][uB] = hist
                 if debug:
-                    print("{0} -{1}-> {2}, Double-equal\t{3}\tScore:{4}".format(uA, ancestry, uB, score_both_exit,
-                                                                                score))
+                    print("{0} -{1}-> {2}, Double-equal\t{3}\Hist:{4}".format(uA, ancestry, uB, hist_both_exit,
+                                                                                hist))
 
         if debug:
             print_table_nicely(enter_table[u], ", ", "EnterTable({0})".format(u))
@@ -521,12 +478,14 @@ def diameter_algorithm(species_tree, gene_tree, gene_tree_root, dtl_recon_graph_
         print("")
         print("Exit Table B: {0}".format(exit_table_b))
     # Now, the diameter of this reconciliation will be the maximum entry on the enter table.
-    diameter = 0
+    result = Histogram(None)
     for uA in enter_table[gene_tree_root]:
         for uB in enter_table[gene_tree_root][uA]:
-            diameter = max(diameter, enter_table[gene_tree_root][uA][uB])
-
-    return diameter
+            if uB > uA :
+                continue
+            entry = enter_table[gene_tree_root][uA][uB]
+            result = result + entry
+    return result
 
 
 def event_to_string(event):

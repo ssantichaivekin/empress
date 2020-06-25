@@ -7,10 +7,10 @@
 import argparse
 from pathlib import Path
 
-from empress.newickFormatReader import getInput
-from empress.reconcile import DTLReconGraph
-from empress.cluster import ClusterMain
-from empress.histogram import HistogramMain
+from empress.input_reader import getInput
+from empress.reconcile import recongraph_tools
+from empress.cluster import cluster_main
+from empress.histogram import histogram_main
 from empress.xscape import costscape
 
 def process_arg():
@@ -139,11 +139,11 @@ def main():
     if args.functionality == "costscape":
         costscape.solve(newick_data, args.dl, args.dh, args.tl, args.th, args)
     elif args.functionality == "reconcile":
-        DTLReconGraph.reconcile_noninter(newick_data, args.d, args.t, args.l)
+        recongraph_tools.reconcile_noninter(newick_data, args.d, args.t, args.l)
     elif args.functionality == "histogram":
-        HistogramMain.compute_pdv(args.filename, newick_data, args.d, args.t, args.l, args)
+        histogram_main.compute_pdv(args.filename, newick_data, args.d, args.t, args.l, args)
     elif args.functionality == "clumpr":
-        ClusterMain.perform_clustering(newick_data, args.d, args.t, args.l, args.k, args)
+        cluster_main.perform_clustering(newick_data, args.d, args.t, args.l, args.k, args)
 
 
 if __name__ == "__main__": main()

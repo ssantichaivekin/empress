@@ -2,8 +2,8 @@ import time
 import math
 from pathlib import Path
 
-from empress.histogram import HistogramAlg, HistogramDisplay
-from empress.reconcile import DTLReconGraph, Diameter
+from empress.histogram import histogram_alg, histogram_display
+from empress.reconcile import recongraph_tools, diameter
 
 def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False):
     """
@@ -21,20 +21,20 @@ def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False
     """
     # From the newick tree create the reconciliation graph
     edge_species_tree, edge_gene_tree, dtl_recon_graph, mpr_count, best_roots \
-        = DTLReconGraph.reconcile(tree_data, d, t, l)
+        = recongraph_tools.reconcile(tree_data, d, t, l)
 
     # If we want to know the number of MPRs
     #print(mpr_count)
 
     # Reformat the host and parasite tree to use it with the histogram algorithm
-    gene_tree, gene_tree_root, gene_node_count = Diameter.reformat_tree(edge_gene_tree, "pTop")
+    gene_tree, gene_tree_root, gene_node_count = diameter.reformat_tree(edge_gene_tree, "pTop")
     species_tree, species_tree_root, species_node_count \
-        = Diameter.reformat_tree(edge_species_tree, "hTop")
+        = diameter.reformat_tree(edge_species_tree, "hTop")
 
     if time_it:
         start = time.time()
     # Calculate the histogram via histogram algorithm
-    diameter_alg_hist = HistogramAlg.diameter_algorithm(
+    diameter_alg_hist = histogram_alg.diameter_algorithm(
         species_tree, gene_tree, gene_tree_root, dtl_recon_graph, dtl_recon_graph,
         False, zero_loss)
     if time_it:
@@ -62,24 +62,24 @@ def transform_hist(hist, omit_zeros, xnorm, ynorm, cumulative):
     """
     # Omit zeroes
     if omit_zeros:
-        hist_zero = HistogramDisplay.omit_zeros(hist)
+        hist_zero = histogram_display.omit_zeros(hist)
     else:
         hist_zero = hist
     # Normalize the x values
     if xnorm:
         width = 1 / float(max(hist_zero.keys()))
-        hist_xnorm = HistogramDisplay.normalize_xvals(hist_zero)
+        hist_xnorm = histogram_display.normalize_xvals(hist_zero)
     else:
         width = 1
         hist_xnorm = hist_zero
     # Normalize the y values
     if ynorm:
-        hist_ynorm = HistogramDisplay.normalize_yvals(hist_xnorm)
+        hist_ynorm = histogram_display.normalize_yvals(hist_xnorm)
     else:
         hist_ynorm = hist_xnorm
     # Cumulative
     if cumulative:
-        hist_cum = HistogramDisplay.cumulative(hist_ynorm)
+        hist_cum = histogram_display.cumulative(hist_ynorm)
     else:
         hist_cum = hist_ynorm
     return hist_cum, width
@@ -106,14 +106,14 @@ def compute_pdv(filename, tree_data, d, t, l, args):
     # Calculate the statistics (with zeros)
     if args.stats:
         n_mprs = hist[0]
-        diameter, mean, std = HistogramDisplay.compute_stats(hist)
+        diameter, mean, std = histogram_display.compute_stats(hist)
         print("Number of MPRs: {}".format(n_mprs))
         print("Diameter of MPR-space: {}".format(diameter))
         print("Mean MPR distance: {} with standard deviation {}".format(mean, std))
     hist_new, width = transform_hist(hist, args.omit_zeros, args.xnorm, args.ynorm, args.cumulative)
     # Make the histogram image
     if args.histogram is not None:
-        HistogramDisplay.plot_histogram(args.histogram, hist, width, Path(args.filename).stem, args.d, args.t, args.l)
+        histogram_display.plot_histogram(args.histogram, hist, width, Path(args.filename).stem, args.d, args.t, args.l)
     if args.csv is not None:
-        HistogramDisplay.csv_histogram(args.csv, hist)
+        histogram_display.csv_histogram(args.csv, hist)
 

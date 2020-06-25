@@ -1,4 +1,4 @@
-# commonAnalytic.py
+# common_analytic.py
 # Updated 6/1/2020: loss = 1, x-axis is duplication, y-axis is transfer
 
 import random
@@ -24,6 +24,7 @@ def getRegions(CVlist, transferMin, transferMax, dupMin, dupMax,
     # that is
     #     y <= x * (cv2.d - cv1.d)/(cv1.s - cv2.s) + (cv2.l - cv1.l)/(cv1.s - cv2.s)
     for cv1 in CVlist:
+        keep = True     # Keep this region for now
         region = bb
         for cv2 in CVlist:
             if cv2 == cv1:
@@ -80,8 +81,15 @@ def getRegions(CVlist, transferMin, transferMax, dupMin, dupMax,
             P = Polygon(poly)
             region = region.intersection(P)
 
+            # Shapely does strange things when intersecting
+            # a Polygon of zero area with another Polygon.
+            # If P is a Polygon of zero area, the region should
+            # be considered empty and thus not kept.
+            if P.area == 0.0:   
+                keep = False
+                break
+
         # keep region?
-        keep = True
         if restrict:
             if (region.is_empty) or (not region.intersects(bb)):
                 keep = False

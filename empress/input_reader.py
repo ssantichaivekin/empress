@@ -1,4 +1,4 @@
-# newickFormatReader.py
+# input_reader.py
 # Ran Libeskind-Hadas, October 2013
 # Newick file reader and parser
 

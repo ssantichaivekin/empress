@@ -107,8 +107,8 @@ def test_cluster_reconciliation_draw():
     clusters = recongraph.cluster(3)
     fig, axs = plt.subplots(1, len(clusters))
     for i in range(len(clusters)):
-        median = clusters[i].median()
-        median.draw_on(axs[i])
+        median_recon = clusters[i].median()
+        median_recon.draw_on(axs[i])
 
     fig.savefig(Path(common.output_path).joinpath("test_cluster_reconciliation_draw.png"))
 

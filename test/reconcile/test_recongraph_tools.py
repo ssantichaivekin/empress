@@ -1,4 +1,4 @@
-from empress.reconcile import DTLReconGraph
+from empress.reconcile import recongraph_tools
 import unittest
 
 class EdgeTreeTraversalTestCase(unittest.TestCase):
@@ -25,12 +25,12 @@ class EdgeTreeTraversalTestCase(unittest.TestCase):
         }
 
     def test_preorder(self):
-        result = list(DTLReconGraph.preorder(self.tree, ('Top', 'A')))
+        result = list(recongraph_tools.preorder(self.tree, ('Top', 'A')))
         expected = [('Top', 'A'), ('A', 'B'), ('B', 'D'), ('B', 'E'), ('A', 'C')]
         self.assertEqual(result, expected)
 
     def test_postorder(self):
-        result = list (DTLReconGraph.postorder(self.tree, ('Top', 'A')))
+        result = list (recongraph_tools.postorder(self.tree, ('Top', 'A')))
         expected = [('B', 'D'), ('B', 'E'), ('A', 'B'), ('A', 'C'), ('Top', 'A')]
         self.assertEqual(result, expected)
 
