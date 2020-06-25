@@ -56,7 +56,7 @@ class ReconInput:
         :param file_name <str>   - filename of the map file to parse
         """
         if not isinstance(file_name, str):
-            raise ReconInputError("mapping file_name = %s is not a string" % file_name)
+            raise ReconInputError("file_name %s is not a string" % file_name)
 
         if self.host_tree is None:
             raise ReconInputError("attempt to read tip mapping before reading host tree")
@@ -76,7 +76,7 @@ class ReconInput:
     @staticmethod
     def _read_newick_tree(file_name: str, tree_type: str):
         if not isinstance(file_name, str):
-            raise ReconInputError("newick tree file_name = %s is not a string" % file_name)
+            raise ReconInputError("file_name %s is not a string" % file_name)
 
         try:
             with open(file_name) as host_file:
@@ -210,9 +210,9 @@ class ReconInput:
         for parasite in phi_dict:
             host = phi_dict[parasite]
             if host not in host_leaves:
-                raise ReconInputError("Detect mapping %s [parasite] -> %s [host] but no %s in host_dict" %
+                raise ReconInputError("Mapping %s [parasite] -> %s [host] found but %s is not in host tree" %
                                (parasite, host, host))
             if parasite not in parasite_leaves:
-                raise ReconInputError("Detect mapping %s [parasite] -> %s [host] but no %s in parasite_dict" %
+                raise ReconInputError("Mapping %s [parasite] -> %s [host] found but %s is not in parasite tree" %
                                (parasite, host, parasite))
 
