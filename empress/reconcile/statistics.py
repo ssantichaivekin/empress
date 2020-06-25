@@ -8,11 +8,7 @@
 
 import random
 import matplotlib
-<<<<<<< HEAD:empress/reconcile/Statistics.py
-from empress.newickFormatReader import ReconInput
-=======
 from empress.input_reader import ReconInput
->>>>>>> master:empress/reconcile/statistics.py
 import matplotlib.pyplot as plt
 
 from empress.reconcile import recongraph_tools
@@ -36,11 +32,7 @@ def _trials(recon_input: ReconInput, dup_cost: float, transfer_cost: float, loss
             h = random.choice(hosts)
             random_phi[p] = h
         new_input = ReconInput(recon_input.host_tree, None, recon_input.parasite_tree, None, random_phi)
-<<<<<<< HEAD:empress/reconcile/Statistics.py
-        _, cost, _, _ = DTLReconGraph.DP(new_input, dup_cost, transfer_cost, loss_cost)
-=======
         _, cost, _, _ = recongraph_tools.DP(new_input, dup_cost, transfer_cost, loss_cost)
->>>>>>> master:empress/reconcile/statistics.py
         costs.append(cost)
     return costs
 
@@ -93,11 +85,7 @@ def stats(recon_input: ReconInput, dup_cost: float, transfer_cost: float,
         list of floating point costs of reconciliations of the Monte Carlo samples
         float empirical p-value between 0 and 1
     """
-<<<<<<< HEAD:empress/reconcile/Statistics.py
-    _, mpr_cost, _, _ = DTLReconGraph.DP(recon_input, dup_cost, transfer_cost, loss_cost)
-=======
     _, mpr_cost, _, _ = recongraph_tools.DP(recon_input, dup_cost, transfer_cost, loss_cost)
->>>>>>> master:empress/reconcile/statistics.py
     costs = _trials(recon_input, dup_cost, transfer_cost, loss_cost, num_trials)
 
     # Empirical p-value computed as (r+1)/(n+1) where n is the number of trials and r is the number of trials 
