@@ -12,7 +12,7 @@ from empress.recon_vis.render_settings import LEAF_NODE_COLOR, COSPECIATION_NODE
     PARASITE_EDGE_COLOR, VERTICAL_OFFSET, COSPECIATION_OFFSET
 
 
-def render(host_dict, parasite_dict, recon_dict, event_scores, show_internal_labels=False,
+def render(host_dict, parasite_dict, recon_dict, event_scores = None, show_internal_labels=False,
            show_freq=False, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
