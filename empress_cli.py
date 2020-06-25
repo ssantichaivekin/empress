@@ -116,7 +116,7 @@ def process_arg():
         help="Time the diameter algorithm")
     args = parser.parse_args()
     if args.functionality == "histogram":
-        fname = Path(args.filename)
+        fname = Path(args.host)
         cost_suffix = ".{}-{}-{}".format(args.d, args.t, args.l)
         # If args is unset, use the original .newick file path but replace .newick with .pdf
         if args.histogram is None:
