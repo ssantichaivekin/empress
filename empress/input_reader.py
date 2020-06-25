@@ -4,7 +4,12 @@ from io import StringIO
 # BioPython libraries
 from Bio import Phylo
 
-class ReconInput(object):
+from empress.recon_vis import utils as tree_utils
+
+class ReconInputError(Exception):
+    pass
+
+class ReconInput:
     """
     Storage class for the newick data (trees, tip mapping, and optional distance parameters)
     Distances encode branch lengths in the newick file, if given
@@ -51,28 +56,34 @@ class ReconInput(object):
         :param file_name <str>   - filename of the map file to parse
         """
         if not isinstance(file_name, str):
-            raise ValueError("mapping file_name = %s is not a string" % file_name)
+            raise ReconInputError("mapping file_name = %s is not a string" % file_name)
 
         if self.host_tree is None:
-            raise RuntimeError("attempt to read tip mapping before reading host tree")
+            raise ReconInputError("attempt to read tip mapping before reading host tree")
 
         if self.parasite_tree is None:
-            raise RuntimeError("attempt to read tip mapping before reading parasite tree")
+            raise ReconInputError("attempt to read tip mapping before reading parasite tree")
 
-        with open(file_name) as map_file:
-            map_list = map_file.read().split()
-            phi = ReconInput._parse_phi(map_list)
-            ReconInput._verify_phi(self.host_tree, self.parasite_tree, phi)
-            self.phi = phi
+        try:
+            with open(file_name) as map_file:
+                map_list = map_file.read().split()
+                phi = ReconInput._parse_phi(map_list)
+                ReconInput._verify_phi(self.host_tree, self.parasite_tree, phi)
+                self.phi = phi
+        except Exception as e:
+            raise ReconInputError(e)
 
     @staticmethod
     def _read_newick_tree(file_name: str, tree_type: str):
         if not isinstance(file_name, str):
-            raise ValueError("newick tree file_name = %s is not a string" % file_name)
+            raise ReconInputError("newick tree file_name = %s is not a string" % file_name)
 
-        with open(file_name) as host_file:
-            tree_string = host_file.read().strip()
-            return ReconInput._parse_newick(tree_string, tree_type)
+        try:
+            with open(file_name) as host_file:
+                tree_string = host_file.read().strip()
+                return ReconInput._parse_newick(tree_string, tree_type)
+        except Exception as e:
+            raise ReconInputError(e)
 
     @staticmethod
     def _parse_newick(newick_string, tree_type):
@@ -91,7 +102,7 @@ class ReconInput(object):
             name = clade.name
             dist = distance_dict[clade]
             D[name] = dist
-        dfs_list = [(node.name, int(D[node.name])) for node in tree.find_clades()]
+        dfs_list = [(node.name, float(D[node.name])) for node in tree.find_clades()]
         tree_dict = {}
         ReconInput._build_tree_dictionary(ReconInput._build_tree(dfs_list), "Top", tree_dict, tree_type)
         real_distances = tree.depths()
@@ -181,28 +192,27 @@ class ReconInput(object):
         return phi_dict
 
     @staticmethod
-    def _node_names_from_tree_dict(tree_dict):
-        names = set()
+    def _leaves_from_tree_dict(tree_dict):
+        leaves = set()
         for key in tree_dict:
-            if isinstance(key, tuple):
-                parent, child = key
-                names.add(parent)
-                names.add(child)
-        return names
+            parent, child, left_edge, right_edge = tree_dict[key]
+            if left_edge is None and right_edge is None:
+                leaves.add(child)
+        return leaves
 
     @staticmethod
     def _verify_phi(host_dict, parasite_dict, phi_dict):
         """
         Throws exception if phi_dict is not valid
         """
-        host_names = ReconInput._node_names_from_tree_dict(host_dict)
-        parasite_names = ReconInput._node_names_from_tree_dict(parasite_dict)
+        host_leaves = ReconInput._leaves_from_tree_dict(host_dict)
+        parasite_leaves = ReconInput._leaves_from_tree_dict(parasite_dict)
         for parasite in phi_dict:
             host = phi_dict[parasite]
-            if host not in host_names:
-                raise KeyError("Detect mapping %s [parasite] -> %s [host] but cannot find %s in host_dict" %
+            if host not in host_leaves:
+                raise ReconInputError("Detect mapping %s [parasite] -> %s [host] but no %s in host_dict" %
                                (parasite, host, host))
-            if parasite not in parasite_names:
-                raise KeyError("Detect mapping %s [parasite] -> %s [host] but cannot find %s in parasite_dict" %
+            if parasite not in parasite_leaves:
+                raise ReconInputError("Detect mapping %s [parasite] -> %s [host] but no %s in parasite_dict" %
                                (parasite, host, parasite))
 
