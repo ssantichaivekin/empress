@@ -12,6 +12,7 @@ class ReconInput(object):
 
     def __init__(self, host_tree=None, host_distances=None, parasite_tree=None,
                 parasite_distances=None, phi=None):
+        ReconInput._verify_phi(host_tree, parasite_tree, phi)
         self.host_tree = host_tree
         self.host_distances = host_distances
         self.parasite_tree = parasite_tree
