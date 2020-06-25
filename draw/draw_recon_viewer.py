@@ -6,6 +6,7 @@ from pathlib import Path
 from draw import common
 
 from empress.recon_vis import recon_viewer
+import empress
 
 common.create_output_folder()
 
@@ -38,7 +39,7 @@ recon_dict2 = {('n0', 'm1'): [('T', ('n1', 'm1'), ('n4', 'm4'))],
 
 def test_render_1():
     fig = recon_viewer.render(host_dict1, parasite_dict1, recon_dict1,
-                              show_internal_labels=True, show_freq=True)
+                            event_scores = None, show_internal_labels=True, show_freq=False)
     filepath = Path(common.output_path).joinpath("test_render_1.png")
     fig.save(filepath)
 
@@ -46,8 +47,24 @@ test_render_1()
 
 def test_render_2():
     fig = recon_viewer.render(host_dict1, parasite_dict1, recon_dict2,
-                              show_internal_labels=True, show_freq=True)
+                              event_scores = None, show_internal_labels=True, show_freq=False)
     filepath = Path(common.output_path).joinpath("test_render_2.png")
     fig.save(filepath)
 
 test_render_2()
+
+def test_render_with_frequency_1():
+    """
+    render a reconciliation and displays the frequency of events in the reconciliation
+    """
+    example_input_path = "./examples/test-size5-no924.newick"
+    recon_input = empress.read_input(example_input_path)
+    recon_wrapper = empress.reconcile(recon_input, 1, 1, 1)
+    event_scores = recon_wrapper.compute_event_frequencies()
+    median_reconciliation = recon_wrapper.median()
+    fig = recon_viewer.render(recon_input.host_tree, recon_input.parasite_tree,
+            median_reconciliation._reconciliation, event_scores, show_internal_labels=True, show_freq=True)
+    filepath = Path(common.output_path).joinpath("test_render_with_frequency_1.png")
+    fig.save(filepath)
+
+test_render_with_frequency_1()

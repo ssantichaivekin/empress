@@ -115,11 +115,11 @@ class ReconGraphWrapper(Drawable):
         Draw Pairwise Distance Histogram on axes
         """
         # Reformat the host and parasite tree to use it with the histogram algorithm
-        gene_tree, gene_tree_root, gene_node_count = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
-        species_tree, species_tree_root, species_node_count \
+        parasite_tree, parasite_tree_root, parasite_node_count = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
+        host_tree, host_tree_root, host_node_count \
             = diameter.reformat_tree(self.recon_input.host_tree, "hTop")
         hist = histogram_alg.diameter_algorithm(
-            species_tree, gene_tree, gene_tree_root, self.recongraph, self.recongraph,
+            host_tree, parasite_tree, parasite_tree_root, self.recongraph, self.recongraph,
             False, False)
         histogram_display.plot_histogram_to_ax(axes, hist.histogram_dict)
 
@@ -142,17 +142,30 @@ class ReconGraphWrapper(Drawable):
         self.draw_stats_on(ax)
         return figure
 
+    def compute_event_frequencies(self) -> dict:
+        """
+        Return a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
+        indicated by the recongraph
+        """
+        postorder_parasite_tree, parasite_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
+        postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_tree, "hTop")
+        postorder_mapping_node_list = median.mapping_node_sort(postorder_parasite_tree, postorder_host_tree,
+                                                    list(self.recongraph.keys()))
+        event_scores = median.generate_scores(postorder_mapping_node_list[::-1], self.recongraph, parasite_tree_root)[0]
+        return event_scores
+
+
     def median(self) -> ReconciliationWrapper:
         """
         Return one of the best ReconciliationWrapper that best represents the
         reconciliation graph. The function internally uses random and is not deterministic.
         """
-        postorder_parasite_tree, gene_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
+        postorder_parasite_tree, parasite_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
         postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_tree, "hTop")
 
         # Compute the median reconciliation graph
         median_reconciliation, n_meds, roots_for_median = median.get_median_graph(
-            self.recongraph, postorder_parasite_tree, postorder_host_tree, gene_tree_root, self.roots)
+            self.recongraph, postorder_parasite_tree, postorder_host_tree, parasite_tree_root, self.roots)
 
         med_counts_dict = median.get_med_counts(median_reconciliation, roots_for_median)
 
@@ -168,12 +181,12 @@ class ReconGraphWrapper(Drawable):
         if n > self.n_recon:
             raise Exception("Cannot cluster %d Reconciliation into %d clusters" % (self.n_recon, n))
 
-        gene_tree, species_tree, gene_root, recon_g, mpr_count, best_roots = \
+        parasite_tree, host_tree, parasite_root, recon_g, mpr_count, best_roots = \
             cluster_util.get_tree_info(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
 
-        score = cluster_util.mk_pdv_score(species_tree, gene_tree, gene_root)
+        score = cluster_util.mk_pdv_score(host_tree, parasite_tree, parasite_root)
 
-        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, gene_root, score, 4, n, 200)
+        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, parasite_root, score, 4, n, 200)
         new_graphs = []
         for graph in graphs:
             roots = _find_roots(graph)

@@ -12,7 +12,7 @@ from empress.recon_vis.render_settings import LEAF_NODE_COLOR, COSPECIATION_NODE
     PARASITE_EDGE_COLOR, VERTICAL_OFFSET, COSPECIATION_OFFSET
 
 
-def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False,
+def render(host_dict, parasite_dict, recon_dict, event_scores, show_internal_labels=False,
            show_freq=False, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
@@ -22,7 +22,7 @@ def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False,
     """
     # convert host and parasite dicts to objects and populate nodes with their temporal order
     host_tree, parasite_tree, consistency_type = utils.build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
-    recon = utils.dict_to_reconciliation(recon_dict)
+    recon = utils.dict_to_reconciliation(recon_dict, event_scores)
 
     fig = plot_tools.FigureWrapper(consistency_type, axes)
     if consistency_type != utils.ConsistencyType.NO_CONSISTENCY:
@@ -123,7 +123,7 @@ def render_parasite_node(fig, node, event, show_internal_labels=False, show_freq
     if show_internal_labels:
         fig.text(node_xy, node.name, render_color)
     if show_freq:
-        fig.text(node_xy, event.freq, render_color)
+        fig.text(node_xy, round(event.freq, 3), render_color)
 
 
 def render_parasite_branches(fig, node):
