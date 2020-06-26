@@ -4,10 +4,7 @@ Visualizes tanglegrams using matplotlib
 Berto Garcia, Sonia Sehra
 """
 
-import newickFormatReader
-import tree_format_converter
-import tree
-import plot_tools
+from empress.recon_vis import utils, plot_tools
 
 VERTICAL_OFFSET = 20
 HORIZONTAL_SPACING = 10
@@ -15,25 +12,19 @@ LEAF_SPACING = 5
 HOST_COUNTER = 0
 PARASITE_COUNTER = 0
 
-def get_host_parasite_phi(filename):
-    """
-    To be removed
-    """
-    host_dict, parasite_dict, phi = newickFormatReader.getInput(filename)
-    return host_dict, parasite_dict, phi
-
 def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels: bool) -> None:
     """
     Render tanglegram
     :param host_dict - host tree (dictionary representation)
     :param parasite_dict - parasite tree (dictionary representation)
     :param phi - tip mapping dictionary
-    :param show_internal_labes - boolean indicator of whether internal node names should
+    :param show_internal_labels - boolean indicator of whether internal node names should
         be displayed
+    :return FigureWrapper object 
     """
     fig = plot_tools.FigureWrapper("Host | Parasite")
-    host_tree = tree_format_converter.dict_to_tree(host_dict, tree.TreeType.HOST)
-    parasite_tree = tree_format_converter.dict_to_tree(parasite_dict, tree.TreeType.PARASITE)
+    host_tree = utils.dict_to_tree(host_dict, tree.TreeType.HOST)
+    parasite_tree = utils.dict_to_tree(parasite_dict, tree.TreeType.PARASITE)
     render_helper_host(fig, host_tree.root_node, show_internal_labels)
     render_helper_parasite(fig, parasite_tree.root_node, show_internal_labels)
 
@@ -47,15 +38,14 @@ def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels
         host = host_dict[phi[leaf.name]]
         fig.line((host.layout.col, host.layout.row), (parasite.layout.col, parasite.layout.row),
                  col=plot_tools.GRAY, style='--')
-
-    fig.show()
+    return fig
 
 def render_helper_host(fig, node, show_internal_labels):
     """
     Render helper for host tree
     """
+    global HOST_COUNTER
     if node.is_leaf:
-        global HOST_COUNTER
 
         # set up layout for node (will be used later for drawing lines between nodes)
         leaf_layout = tree.NodeLayout()
@@ -149,11 +139,3 @@ def render_helper_parasite(fig, node, show_internal_labels):
         fig.line(current_loc, (node.layout.col, right_layout.row), col=plot_tools.BLACK)
         fig.line((node.layout.col, right_layout.row), right_loc, col=plot_tools.BLACK)
 
-def main():
-    file_name = input("Filename: ")
-    host_dict, parasite_dict, phi = get_host_parasite_phi(file_name)
-    render(host_dict, parasite_dict, phi, show_internal_labels=True)
-
-
-if __name__ == '__main__':
-    main()

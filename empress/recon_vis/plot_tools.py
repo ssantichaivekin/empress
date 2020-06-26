@@ -1,6 +1,7 @@
 """
 plot_tools.py
 Plotting tools using matplotlib
+Modified June 26, 2020
 """
 
 # If matplotlib doesn't pop up a window, force it to use tkinter backend
