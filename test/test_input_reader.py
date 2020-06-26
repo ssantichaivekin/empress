@@ -22,9 +22,9 @@ class TestInputReader(unittest.TestCase):
     def test_init_empty(self):
         recon_input = input_reader.ReconInput()
         self.assertTrue(isinstance(recon_input, input_reader.ReconInput))
-        self.assertIsNone(recon_input.host_tree)
-        self.assertIsNone(recon_input.parasite_tree)
-        self.assertIsNone(recon_input.phi)
+        self.assertIsNone(recon_input.host_dict)
+        self.assertIsNone(recon_input.parasite_dict)
+        self.assertIsNone(recon_input.tip_mapping)
 
     def test_init_success(self):
         recon_input = input_reader.ReconInput(self.example_host, None, self.example_parasite, None,

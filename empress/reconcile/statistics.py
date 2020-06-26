@@ -24,14 +24,14 @@ def _trials(recon_input: ReconInput, dup_cost: float, transfer_cost: float, loss
     """
    
     costs = list()  # List of costs of random trials
-    parasites = recon_input.phi.keys()
-    hosts = list(recon_input.phi.values())
+    parasites = recon_input.tip_mapping.keys()
+    hosts = list(recon_input.tip_mapping.values())
     for t in range(num_trials):
-        random_phi = _create_random_phi(recon_input.phi)
+        random_phi = _create_random_phi(recon_input.tip_mapping)
         for p in parasites:
             h = random.choice(hosts)
             random_phi[p] = h
-        new_input = ReconInput(recon_input.host_tree, None, recon_input.parasite_tree, None, random_phi)
+        new_input = ReconInput(recon_input.host_dict, None, recon_input.parasite_dict, None, random_phi)
         _, cost, _, _ = recongraph_tools.DP(new_input, dup_cost, transfer_cost, loss_cost)
         costs.append(cost)
     return costs

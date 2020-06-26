@@ -238,8 +238,8 @@ class TestUtils(unittest.TestCase):
                 if count >= self.num_examples_to_test: break
                 if newick.startswith('.'): continue
                 recon_input = input_reader.getInput(os.path.join(tree_size_Folder, newick))
-                host_tree = recon_input.host_tree
-                parasite_tree = recon_input.parasite_tree
+                host_tree = recon_input.host_dict
+                parasite_tree = recon_input.parasite_dict
                 for d, t, l in itertools.product(range(1, 5), repeat=3):
                     recon_graph, _, _, best_roots = recongraph_tools.DP(recon_input, d, t, l)
                     for reconciliation, _ in histogram_brute_force.BF_enumerate_MPRs(recon_graph, best_roots):

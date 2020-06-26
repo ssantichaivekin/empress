@@ -15,15 +15,15 @@ class ReconInput:
     Distances encode branch lengths in the newick file, if given
     """
 
-    def __init__(self, host_tree=None, host_distances=None, parasite_tree=None,
-                parasite_distances=None, phi=None):
-        if phi is not None:
-            ReconInput._verify_phi(host_tree, parasite_tree, phi)
-        self.host_tree = host_tree
+    def __init__(self, host_dict=None, host_distances=None, parasite_dict=None,
+                 parasite_distances=None, tip_mapping=None):
+        if tip_mapping is not None:
+            ReconInput._verify_tip_mapping(host_dict, parasite_dict, tip_mapping)
+        self.host_dict = host_dict
         self.host_distances = host_distances
-        self.parasite_tree = parasite_tree
+        self.parasite_dict = parasite_dict
         self.parasite_distances = parasite_distances
-        self.phi = phi
+        self.tip_mapping = tip_mapping
 
     @classmethod
     def from_files(cls, host_fname: str, parasite_fname: str, mapping_fname: str):
@@ -34,21 +34,21 @@ class ReconInput:
         return recon_input
 
     def is_complete(self):
-        return self.host_tree is not None and self.parasite_tree is not None and self.phi is not None
+        return self.host_dict is not None and self.parasite_dict is not None and self.tip_mapping is not None
 
     def read_host(self, file_name: str):
         """
         Takes a host filename as input and sets self.host_dict and self.host_distances
         :param file_name <str>    - filename of host file to parse
         """
-        self.host_tree, self.host_distances = ReconInput._read_newick_tree(file_name, "host")
+        self.host_dict, self.host_distances = ReconInput._read_newick_tree(file_name, "host")
   
     def read_parasite(self, file_name: str):
         """
         Takes a parasite filename as input and sets self.parasite_dict and self_host_distances
         :param file_name <str>   - filename of parasite file to parse
         """
-        self.parasite_tree, self.parasite_distances = ReconInput._read_newick_tree(file_name, "parasite")
+        self.parasite_dict, self.parasite_distances = ReconInput._read_newick_tree(file_name, "parasite")
 
     def read_mapping(self, file_name: str):
         """
@@ -58,18 +58,18 @@ class ReconInput:
         if not isinstance(file_name, str):
             raise ReconInputError("file_name %s is not a string" % file_name)
 
-        if self.host_tree is None:
+        if self.host_dict is None:
             raise ReconInputError("attempt to read tip mapping before reading host tree")
 
-        if self.parasite_tree is None:
+        if self.parasite_dict is None:
             raise ReconInputError("attempt to read tip mapping before reading parasite tree")
 
         try:
             with open(file_name) as map_file:
                 map_list = map_file.read().split()
-                phi = ReconInput._parse_phi(map_list)
-                ReconInput._verify_phi(self.host_tree, self.parasite_tree, phi)
-                self.phi = phi
+                tip_mapping = ReconInput._parse_tip_mapping(map_list)
+                ReconInput._verify_tip_mapping(self.host_dict, self.parasite_dict, tip_mapping)
+                self.tip_mapping = tip_mapping
         except Exception as e:
             raise ReconInputError(e)
 
@@ -178,18 +178,18 @@ class ReconInput:
             ReconInput._build_tree_dictionary(right_tree, root, tree_dict, tree_type)
 
     @staticmethod
-    def _parse_phi(pairs):
+    def _parse_tip_mapping(pairs):
         """
         :param pairs <list>   - list of strings of the form parasite_tip:host_tip
         :return <dict>        - maps parasite_tip to host_tip for every string in pairs
         """
-        phi_dict = {}
+        tip_mapping_dict = {}
         for pair in pairs:
             parasite, colon, host = pair.partition(":")
             key = parasite.strip()
             value = host.strip()
-            phi_dict[key] = value
-        return phi_dict
+            tip_mapping_dict[key] = value
+        return tip_mapping_dict
 
     @staticmethod
     def _leaves_from_tree_dict(tree_dict):
@@ -201,14 +201,14 @@ class ReconInput:
         return leaves
 
     @staticmethod
-    def _verify_phi(host_dict, parasite_dict, phi_dict):
+    def _verify_tip_mapping(host_dict, parasite_dict, tip_mapping_dict):
         """
-        Throws exception if phi_dict is not valid
+        Throws exception if tip_mapping_dict is not valid
         """
         host_leaves = ReconInput._leaves_from_tree_dict(host_dict)
         parasite_leaves = ReconInput._leaves_from_tree_dict(parasite_dict)
-        for parasite in phi_dict:
-            host = phi_dict[parasite]
+        for parasite in tip_mapping_dict:
+            host = tip_mapping_dict[parasite]
             if host not in host_leaves:
                 raise ReconInputError("Mapping %s [parasite] -> %s [host] found but %s is not in host tree" %
                                (parasite, host, host))
