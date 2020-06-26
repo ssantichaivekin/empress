@@ -14,9 +14,7 @@ from typing import List
 from abc import ABC, abstractmethod
 
 from empress.xscape.CostVector import CostVector
-from empress import input_reader
 from empress.input_reader import ReconInput
-from empress.input_reader import getInput as read_input
 from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcosts_analytic import plot_costs_on_axis as xscape_plot_costs_on_axis
 from empress.reconcile import recongraph_tools
@@ -92,7 +90,7 @@ class ReconciliationWrapper(Drawable):
         self.root = root
 
     def draw_on(self, axes: plt.Axes):
-        recon_viewer.render(self.recon_input.host_tree, self.recon_input.parasite_tree, self._reconciliation,
+        recon_viewer.render(self.recon_input.host_dict, self.recon_input.parasite_dict, self._reconciliation,
                             axes=axes)
 
 
@@ -115,9 +113,9 @@ class ReconGraphWrapper(Drawable):
         Draw Pairwise Distance Histogram on axes
         """
         # Reformat the host and parasite tree to use it with the histogram algorithm
-        gene_tree, gene_tree_root, gene_node_count = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
+        gene_tree, gene_tree_root, gene_node_count = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
         species_tree, species_tree_root, species_node_count \
-            = diameter.reformat_tree(self.recon_input.host_tree, "hTop")
+            = diameter.reformat_tree(self.recon_input.host_dict, "hTop")
         hist = histogram_alg.diameter_algorithm(
             species_tree, gene_tree, gene_tree_root, self.recongraph, self.recongraph,
             False, False)
@@ -147,8 +145,8 @@ class ReconGraphWrapper(Drawable):
         Return one of the best ReconciliationWrapper that best represents the
         reconciliation graph. The function internally uses random and is not deterministic.
         """
-        postorder_parasite_tree, gene_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
-        postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_tree, "hTop")
+        postorder_parasite_tree, gene_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
+        postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_dict, "hTop")
 
         # Compute the median reconciliation graph
         median_reconciliation, n_meds, roots_for_median = median.get_median_graph(
@@ -205,9 +203,9 @@ def compute_cost_regions(recon_input: ReconInput, transfer_min: float, transfer_
     Compute the cost polygon of recon_input. The cost polygon can be used
     to create a figure that separate costs into different regions.
     """
-    parasite_tree = recon_input.parasite_tree
-    host_tree = recon_input.host_tree
-    tip_mapping = recon_input.phi
+    parasite_tree = recon_input.parasite_dict
+    host_tree = recon_input.host_dict
+    tip_mapping = recon_input.tip_mapping
     cost_vectors = xscape_reconcile(parasite_tree, host_tree, tip_mapping, transfer_min, transfer_max, dup_min, dup_max)
     return CostRegionsWrapper(cost_vectors, transfer_min, transfer_max, dup_min, dup_max)
 

@@ -106,10 +106,10 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
     corresponding to lists which include all valid event nodes for a given
     mapping node for the MPR.
     """
-    host_tree = tree_data.host_tree
+    host_tree = tree_data.host_dict
     host_distances = tree_data.host_distances
-    parasite_tree = tree_data.parasite_tree
-    phi = tree_data.phi
+    parasite_tree = tree_data.parasite_dict
+    phi = tree_data.tip_mapping
 
     # A, C, O, and best_switch are all defined in tech report. Keys are edges and values are as defined in tech report
     A = {}
@@ -533,8 +533,8 @@ def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss
     for details on the format of the host and parasite trees as well as the DTLReconGraph
     """
     # Note: I have made modifications to the return statement to make diameter.py possible without re-reconciling.
-    host = tree_data.host_tree
-    paras = tree_data.parasite_tree
+    host = tree_data.host_dict
+    paras = tree_data.parasite_dict
     graph, best_cost, num_recon, best_roots = DP(tree_data, dup_cost, transfer_cost, loss_cost)
     return host, paras, graph, num_recon, best_roots
 
