@@ -4,7 +4,7 @@ Visualizes tanglegrams using matplotlib
 Berto Garcia, Sonia Sehra
 """
 
-from empress.recon_vis import utils, plot_tools
+from empress.recon_vis import utils, plot_tools, tree
 
 VERTICAL_OFFSET = 20
 HORIZONTAL_SPACING = 10
