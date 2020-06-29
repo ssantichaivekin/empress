@@ -106,10 +106,10 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
     corresponding to lists which include all valid event nodes for a given
     mapping node for the MPR.
     """
-    host_tree = tree_data.host_dict
+    host_dict = tree_data.host_dict
     host_distances = tree_data.host_distances
-    parasite_tree = tree_data.parasite_dict
-    phi = tree_data.tip_mapping
+    parasite_dict = tree_data.parasite_dict
+    tip_mapping = tree_data.tip_mapping
 
     # A, C, O, and best_switch are all defined in tech report. Keys are edges and values are as defined in tech report
     A = {}
@@ -130,11 +130,11 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
     best_switch_locations = {}
 
     # Following logic taken from tech report, we loop over all ep and eh
-    for ep in postorder(parasite_tree, "pTop"):
+    for ep in postorder(parasite_dict, "pTop"):
 
         # Get the parasite tree info in the format
         # (vp top, vp bottom, edge of child 1, edge of child 2)
-        _, vp, ep1, ep2 = parasite_tree[ep]
+        _, vp, ep1, ep2 = parasite_dict[ep]
 
         # If there's no child 1, there's no child 2 and vp is a tip
         if ep1 is None:
@@ -149,10 +149,10 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
             p_child2 = ep2[1]
 
         # Begin looping over host edges
-        for eh in postorder(host_tree, "hTop"):
+        for eh in postorder(host_dict, "hTop"):
 
             # Similar format to that of the parasite tree above
-            _, vh, eh1, eh2 = host_tree[eh]
+            _, vh, eh1, eh2 = host_dict[eh]
 
             # Initialize entries for this iteration of ep and eh
             events_dict[(vp, vh)] = []
@@ -174,7 +174,7 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
             if vh_is_a_tip:
 
                 # Check if the tips map to one another
-                if vp_is_a_tip and phi[vp] == vh:
+                if vp_is_a_tip and tip_mapping[vp] == vh:
 
                     # The cost of matching mapped tips (thus, their edges) is 0
                     A[(ep, eh)] = 0
@@ -326,11 +326,11 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
 
         # Compute best_switch values
         best_switch[(ep, "hTop")] = Infinity
-        best_switch_locations[(vp, host_tree["hTop"][1])] = [(None, None)]
-        for eh in preorder(host_tree, "hTop"):
+        best_switch_locations[(vp, host_dict["hTop"][1])] = [(None, None)]
+        for eh in preorder(host_dict, "hTop"):
 
             # Redefine the host information for this new loop
-            _, vh, eh1, eh2 = host_tree[eh]
+            _, vh, eh1, eh2 = host_dict[eh]
 
             # Is vh a tip?
             if eh1 is None:  # Then eh2 == None too and vh is a tip!
@@ -339,8 +339,8 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
                 h_child2 = None
             else:
                 vh_is_a_tip = False
-                h_child1 = host_tree[eh][2][1]
-                h_child2 = host_tree[eh][3][1]
+                h_child1 = host_dict[eh][2][1]
+                h_child2 = host_dict[eh][3][1]
 
             # Find best cost for a switch to occur (best_switch)
             # and the location to which the edge switches (best_switch_locations)
@@ -375,7 +375,7 @@ def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: 
                         o_best[(vp, h_child1)])
 
     # Create the list of minimum cost mapping nodes involving root of parasite tree
-    tree_min = find_best_roots(parasite_tree, min_cost)
+    tree_min = find_best_roots(parasite_dict, min_cost)
 
     # Build the reconciliation graph as a dictionary, with keys as mapping nodes and values as event nodes
     dtl_recon_graph = build_dtl_recon_graph(tree_min, events_dict, {})
@@ -476,9 +476,9 @@ def count_mprs(mapping_node: tuple, dtl_recon_graph: dict, memo: dict) -> int:
     return count
 
 
-def find_best_roots(parasite_tree: dict, min_cost_dict: dict) -> list:
+def find_best_roots(parasite_dict: dict, min_cost_dict: dict) -> list:
     """
-    :param parasite_tree: parasite tree in the format described at the
+    :param parasite_dict: parasite tree in the format described at the
     top of this file
     :param min_cost_dict: a dictionary - keys representing mappings of
     parasite vertices onto host vertices (p, h) and values representing
@@ -489,7 +489,7 @@ def find_best_roots(parasite_tree: dict, min_cost_dict: dict) -> list:
     """
     tree_tops = []
     for key in min_cost_dict:
-        if key[0] == parasite_tree['pTop'][1]:
+        if key[0] == parasite_dict['pTop'][1]:
             tree_tops.append(key)
     tree_min = []
     min_score = min([min_cost_dict[root] for root in tree_tops])
