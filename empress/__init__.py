@@ -203,10 +203,10 @@ def compute_cost_regions(recon_input: ReconInput, transfer_min: float, transfer_
     Compute the cost polygon of recon_input. The cost polygon can be used
     to create a figure that separate costs into different regions.
     """
-    parasite_tree = recon_input.parasite_dict
-    host_tree = recon_input.host_dict
+    parasite_dict = recon_input.parasite_dict
+    host_dict = recon_input.host_dict
     tip_mapping = recon_input.tip_mapping
-    cost_vectors = xscape_reconcile(parasite_tree, host_tree, tip_mapping, transfer_min, transfer_max, dup_min, dup_max)
+    cost_vectors = xscape_reconcile(parasite_dict, host_dict, tip_mapping, transfer_min, transfer_max, dup_min, dup_max)
     return CostRegionsWrapper(cost_vectors, transfer_min, transfer_max, dup_min, dup_max)
 
 
