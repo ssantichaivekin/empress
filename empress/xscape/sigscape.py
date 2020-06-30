@@ -30,14 +30,14 @@ def getSeed(prompt):
         except ValueError:
             print("Non-numeric input.  Please try again.")
 
-def seqTrials(parasiteTree, hostTree, phi, numTrials, 
+def seqTrials(parasiteTree, hostTree, tip_mapping, numTrials,
               switchLo, switchHi, lossLo, lossHi,
               verbose=True):
     ''' Perform numTrials randomization trials sequentially.  Although
         parTrials could be used to do this too, this function doesn't
         require the multiprocessing package and thus may be preferable
         to some users in some situation.'''
-    parasiteTips, hostTips = getTipLists(parasiteTree, hostTree, phi)
+    parasiteTips, hostTips = getTipLists(parasiteTree, hostTree, tip_mapping)
     output = []
     for t in range(numTrials):
         if verbose:
@@ -51,11 +51,11 @@ def seqTrials(parasiteTree, hostTree, phi, numTrials,
         print()               # Newline
     return output
 
-def parTrials(parasiteTree, hostTree, phi, numTrials,  \
+def parTrials(parasiteTree, hostTree, tip_mapping, numTrials,  \
               switchLo, switchHi, lossLo, lossHi, result,
               verbose=True):
     ''' Perform numTrials randomization trials in one process. '''
-    parasiteTips, hostTips = getTipLists(parasiteTree, hostTree, phi)
+    parasiteTips, hostTips = getTipLists(parasiteTree, hostTree, tip_mapping)
     output = []
     for t in range(numTrials):
         if verbose:
@@ -66,7 +66,7 @@ def parTrials(parasiteTree, hostTree, phi, numTrials,  \
                                           switchLo, switchHi, lossLo, lossHi))
     result.put(output)
 
-def parallelTrials(parasiteTree, hostTree, phi, numTrials, numProcs, \
+def parallelTrials(parasiteTree, hostTree, tip_mapping, numTrials, numProcs, \
                    switchLo, switchHi, lossLo, lossHi):
     ''' This form of dumb parallelism is required to avoid overflowing
         buffers due to a Python bug. See the stackoverflow.com
@@ -79,7 +79,7 @@ def parallelTrials(parasiteTree, hostTree, phi, numTrials, numProcs, \
         procs = []
         for p in range(numProcs):
             proc = Process(target=parTrials, \
-                       args = (parasiteTree, hostTree, phi, 1,\
+                       args = (parasiteTree, hostTree, tip_mapping, 1,\
                                switchLo, switchHi, lossLo, lossHi, result))
             procs.append(proc)
             proc.start()
@@ -89,12 +89,12 @@ def parallelTrials(parasiteTree, hostTree, phi, numTrials, numProcs, \
             output.extend(result.get())
     return output
     
-def getTipLists(parasiteTree, hostTree, phi):
+def getTipLists(parasiteTree, hostTree, tip_mapping):
     ''' Return the lists of tips in the given parasite and host trees.'''
-    parasiteTips = list(phi.keys())
+    parasiteTips = list(tip_mapping.keys())
     hostTips = []
     for p in parasiteTips:
-        h = phi[p]
+        h = tip_mapping[p]
         if not h in hostTips: hostTips.append(h)
     return parasiteTips, hostTips
 

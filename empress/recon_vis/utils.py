@@ -139,14 +139,14 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_scores = None):
 
 # Temporal ordering utilities
 
-def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconciliation: dict) \
+def build_trees_with_temporal_order(host_dict: dict, parasite_dict: dict, reconciliation: dict) \
         -> Tuple[tree.Tree, tree.Tree, ConsistencyType]:
     """
     This function uses topological sort to order the nodes inside host and parasite tree.
     The output trees can be used for visualization.
     
-    :param host_tree: host tree dictionary
-    :param parasite_tree: parasite tree dictionary
+    :param host_dict: host tree dictionary
+    :param parasite_dict: parasite tree dictionary
     :param reconciliation: reconciliation dictionary
     :return: a Tree object of type HOST, a Tree object of type PARASITE, and the
              ConsistencyType of the reconciliation. If the reconciliation is either
@@ -159,20 +159,20 @@ def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconc
     consistency_type = ConsistencyType.NO_CONSISTENCY
 
     # find the temporal order for host and parasite nodes using strong temporal constraints
-    temporal_graph = build_temporal_graph(host_tree, parasite_tree, reconciliation)
+    temporal_graph = build_temporal_graph(host_dict, parasite_dict, reconciliation)
     ordering_dict = topological_order(temporal_graph)
 
     if ordering_dict is not None:
         consistency_type = ConsistencyType.STRONG_CONSISTENCY
     else:
         # the reconciliation is not strongly consistent, we relax the temporal constraints
-        temporal_graph = build_temporal_graph(host_tree, parasite_tree, reconciliation, False)
+        temporal_graph = build_temporal_graph(host_dict, parasite_dict, reconciliation, False)
         ordering_dict = topological_order(temporal_graph)
         if ordering_dict is not None:
             consistency_type = ConsistencyType.WEAK_CONSISTENCY
 
-    host_tree_object = dict_to_tree(host_tree, TreeType.HOST)
-    parasite_tree_object = dict_to_tree(parasite_tree, TreeType.PARASITE)
+    host_tree_object = dict_to_tree(host_dict, TreeType.HOST)
+    parasite_tree_object = dict_to_tree(parasite_dict, TreeType.PARASITE)
 
     # if there is a valid temporal ordering, we populate the layout with the order corresponding to the node
     if consistency_type != ConsistencyType.NO_CONSISTENCY:
@@ -188,21 +188,21 @@ def build_trees_with_temporal_order(host_tree: dict, parasite_tree: dict, reconc
     else:
         return None, None, ConsistencyType.NO_CONSISTENCY
 
-def create_parent_dict(host_tree, parasite_tree):
+def create_parent_dict(host_dict: dict, parasite_dict: dict):
     """
-    :param host_tree:  host tree dictionary
-    :param parasite_tree:  parasite tree dictionary
+    :param host_dict:  host tree dictionary
+    :param parasite_dict:  parasite tree dictionary
     :return: A dictionary that maps the name of a child node to the name of its parent
              for both the host tree and the parasite tree.
     """
     parent_dict = {}
-    for edge_name in host_tree:
-        child_node = _bottom_node(host_tree[edge_name])
-        parent_node = _top_node(host_tree[edge_name])
+    for edge_name in host_dict:
+        child_node = _bottom_node(host_dict[edge_name])
+        parent_node = _top_node(host_dict[edge_name])
         parent_dict[child_node] = parent_node
-    for edge_name in parasite_tree:
-        child_node = _bottom_node(parasite_tree[edge_name])
-        parent_node = _top_node(parasite_tree[edge_name])
+    for edge_name in parasite_dict:
+        child_node = _bottom_node(parasite_dict[edge_name])
+        parent_node = _top_node(parasite_dict[edge_name])
         parent_dict[child_node] = parent_node
     return parent_dict
 
@@ -244,10 +244,10 @@ def uniquify(elements):
     """
     return list(set(elements))
 
-def build_temporal_graph(host_tree, parasite_tree, reconciliation, add_strong_constraints = True):
+def build_temporal_graph(host_dict: dict, parasite_dict: dict, reconciliation: dict, add_strong_constraints = True):
     """
-    :param host_tree:  host tree dictionary
-    :param parasite_tree:  parasite tree dictionary
+    :param host_dict:  host tree dictionary
+    :param parasite_dict:  parasite tree dictionary
     :param reconciliation:  reconciliation dictionary
     :param add_strong_constraints:  a boolean indicating whether we are using the strongest
                                     temporal constraints, i.e. adding the constraints implied
@@ -261,10 +261,10 @@ def build_temporal_graph(host_tree, parasite_tree, reconciliation, add_strong_co
         in the temporal graph.
     """
     # create a dictionary that maps each host and parasite node to its parent
-    parent = create_parent_dict(host_tree, parasite_tree)
+    parent = create_parent_dict(host_dict, parasite_dict)
     # create temporal graphs for the host and parasite tree
-    temporal_host_tree = build_formatted_tree(host_tree)
-    temporal_parasite_tree = build_formatted_tree(parasite_tree)
+    temporal_host_tree = build_formatted_tree(host_dict)
+    temporal_parasite_tree = build_formatted_tree(parasite_dict)
     # initialize the final temporal graph to the combined temporal graphs of host and parasite tree
     temporal_graph = temporal_host_tree
     temporal_graph.update(temporal_parasite_tree)
@@ -306,7 +306,7 @@ def build_temporal_graph(host_tree, parasite_tree, reconciliation, add_strong_co
 # https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
 def topological_order(temporal_graph):
     """
-    :param temporal graph: as described in the return type of build_temporal_graph
+    :param temporal_graph: as described in the return type of build_temporal_graph
     :return: A dictionary in which a key is a node tuple (name, type) as described
         in build_temporal_graph and the value is a positive integer representing its topological ordering.
         The ordering numbers are consecutive values beginning at 1.
