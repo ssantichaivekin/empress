@@ -95,7 +95,6 @@ class ReconciliationWrapper(Drawable):
         recon_viewer.render(self.recon_input.host_tree, self.recon_input.parasite_tree, self._reconciliation,
                             axes=axes)
 
-
 class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
