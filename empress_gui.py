@@ -425,7 +425,7 @@ class App(tk.Frame):
         # self.dup_input is tk.DoubleVar(), initialized to be 1.00
         self.dup_entry_box = CustomEntry(self.costs_frame, width=3, textvariable=self.dup_input)
         self.dup_entry_box.set_border_color("green")
-        self.dup_entry_box.validate(validate="all", validatecommand=dup_vcmd)
+        self.dup_entry_box.validate(validate="key", validatecommand=dup_vcmd)
         #self.dup_entry_box = CustomEntry(self.costs_frame, width=3, validate="all", textvariable=self.dup_input, validatecommand=dup_vcmd)
         self.dup_entry_box.grid(row=0, column=1, sticky="w")
         self.validate_dup_input(str(1.00))
@@ -615,7 +615,7 @@ class App(tk.Frame):
         self.set_num_cluster_frame.pack(fill=tk.BOTH, expand=tk.YES)
         self.set_num_cluster_frame.pack_propagate(False)
 
-        self.enter_num_clusters_btn = tk.Button(self.set_num_cluster_frame, text="Enter", command=self.open_window_solution_space, state=tk.NORMAL)
+        self.enter_num_clusters_btn = tk.Button(self.set_num_cluster_frame, text="Enter", command=self.click_on_enter_num_clusters_btn, state=tk.NORMAL)
         self.enter_num_clusters_btn.grid(row=1, column=0)
         
         self.num_cluster_label = tk.Label(self.set_num_cluster_frame, text="Number of clusters:")
@@ -624,7 +624,7 @@ class App(tk.Frame):
         # self.num_cluster_input is tk.IntVar(), initialized to be 1
         self.num_cluster_entry_box = CustomEntry(self.set_num_cluster_frame, width=3, textvariable=self.num_cluster_input)
         self.num_cluster_entry_box.set_border_color("green")
-        self.num_cluster_entry_box.validate(validate="all", validatecommand=num_cluster_vcmd)
+        self.num_cluster_entry_box.validate(validate="key", validatecommand=num_cluster_vcmd)
         #self.num_cluster_entry_box = CustomEntry(self.set_num_cluster_frame, width=2, textvariable=self.num_cluster_input, validate="all", validatecommand=num_cluster_vcmd)
         self.num_cluster_label.grid(row=0, column=0, sticky="e")
         self.num_cluster_entry_box.grid(row=0, column=1, sticky="w")
@@ -636,23 +636,32 @@ class App(tk.Frame):
             if val >= 1 and val <= self.num_MPRs:
                 self.num_cluster = val
                 self.num_cluster_entry_box.set_border_color("green")
+                self.enter_num_clusters_btn.configure(state=tk.NORMAL)
             else:
                 self.num_cluster = None
                 self.num_cluster_entry_box.set_border_color("red")   
+                self.enter_num_clusters_btn.configure(state=tk.DISABLED)
                 #self.num_cluster_error.config(text="invalid", fg="red")  
         except ValueError:
             self.num_cluster = None
             self.num_cluster_entry_box.set_border_color("red")  
+            self.enter_num_clusters_btn.configure(state=tk.DISABLED)
             #self.num_cluster_error.config(text="number", fg="red")
         
         if self.num_cluster is not None:
             self.num_cluster_entry_box.set_border_color("green")
             #self.num_cluster_error.config(text="valid", fg="green")
-            self.compute_recon_solutions()
+            self.enter_num_clusters_btn.configure(state=tk.NORMAL)
             self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
             self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state = "disabled")
             self.view_pvalue_histogram_btn.configure(state=tk.NORMAL)
         return True # return True means allowing the change to happen
+
+    def click_on_enter_num_clusters_btn(self):
+        """
+        """
+        self.compute_recon_solutions()
+        self.open_window_solution_space()
 
     def compute_recon_solutions(self):
         """Compute cluster histograms and median reconciliations and store them in variables for drawing later."""
