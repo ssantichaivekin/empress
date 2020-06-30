@@ -3,6 +3,7 @@ utils.py
 Utilities related to conversion between data types
 """
 
+from collections import OrderedDict 
 from typing import Dict, Tuple, List
 from empress.recon_vis.recon import MappingNode, Reconciliation
 from empress.recon_vis.recon import Cospeciation, Duplication, Transfer, Loss, TipTip
@@ -310,13 +311,14 @@ def topological_order(temporal_graph):
     """
     # the ordering of nodes starts at 1
     next_order = 1
-    unvisited_nodes = set(temporal_graph.keys())
+    unvisited_nodes = OrderedDict.fromkeys(sorted(temporal_graph.keys()))
     # the visitng_nodes is used to detect cycles. If the visiting_nodes add an element that is already
     # in the list, then we have found a cycle
     visiting_nodes = set()
     ordering_dict = {}
     while unvisited_nodes:
-        start_node = unvisited_nodes.pop()
+        # removes the first node from unvisited_nodes
+        start_node = unvisited_nodes.popitem(last=False)[0]
         has_cycle, next_order = topological_order_helper(start_node, next_order, visiting_nodes,
                                unvisited_nodes, temporal_graph, ordering_dict)
         if has_cycle: return None
@@ -347,13 +349,13 @@ def topological_order_helper(start_node, start_order, visiting_nodes, unvisited_
         if has_cycle:
             return True, next_order
         visiting_nodes.add(start_node)
-        child_nodes = temporal_graph[start_node]
+        child_nodes = sorted(temporal_graph[start_node])
         for child_node in child_nodes:
             # if the child_node is already labeled, we skip it
             if child_node in ordering_dict:
                 continue
             if child_node in unvisited_nodes:
-                unvisited_nodes.remove(child_node)
+                unvisited_nodes.pop(child_node)
             has_cycle_child, next_order = topological_order_helper(child_node, next_order,  visiting_nodes,
                                    unvisited_nodes, temporal_graph, ordering_dict)
             # if we find a cycle, we stop the process

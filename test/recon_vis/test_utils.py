@@ -221,6 +221,79 @@ class TestUtils(unittest.TestCase):
         ('n6', 'm4'): [('C', (None, None), (None, None))]}
 
         self.check_temporally_inconsistent(host_dict, parasite_dict, reconciliation)
+    
+    def test_deterministic_temporal_order(self):
+        """
+        Test topological_order gives the same deterministic ordering for the same input
+        """
+        host_dict = { 'hTop': ('Top', 'm0', ('m0', 'm1'), ('m0', 'm2')),
+        ('m0', 'm1'): ('m0', 'm1', ('m1', 'm3'), ('m1', 'G. bursarius')),
+        ('m0', 'm2'): ('m0', 'm2', ('m2', 'T. bottae'), ('m2', 'T. talpoides')),
+        ('m1', 'm3'): ('m1', 'm3', ('m3', 'm4'), ('m3', 'O. hispidus')),
+        ('m3', 'm4'): ('m3', 'm4', ('m4', 'm5'), ('m4', 'O. cavator')),
+        ('m4', 'm5'): ('m4', 'm5', ('m5', 'm6'), ('m5', 'O. underwoodi')),
+        ('m5', 'm6'): ('m5', 'm6', ('m6', 'O. heterodus'), ('m6', 'O. cherriei')),
+        ('m1', 'G. bursarius'): ('m1', 'G. bursarius', None, None),
+        ('m2', 'T. bottae'): ('m2', 'T. bottae', None, None),
+        ('m2', 'T. talpoides'): ('m2', 'T. talpoides', None, None),
+        ('m3', 'O. hispidus'): ('m3', 'O. hispidus', None, None),
+        ('m4', 'O. cavator'): ('m4', 'O. cavator', None, None),
+        ('m5', 'O. underwoodi'): ('m5', 'O. underwoodi', None, None),
+        ('m6', 'O. heterodus'): ('m6', 'O. heterodus', None, None),
+        ('m6', 'O. cherriei'): ('m6', 'O. cherriei', None, None)}
+
+        parasite_dict = { 'pTop': ('Top', 'n0', ('n0', 'n1'), ('n0', 'n2')),
+        ('n0', 'n1'): ('n0', 'n1', ('n1', 'n4'), ('n1', 'n3')),
+        ('n0', 'n2'): ('n0', 'n2', ('n2', 'T. minor'), ('n2', 'T. wardi')),
+        ('n1', 'n3'): ('n1', 'n3', ('n3', 'n8'), ('n3', 'G. thomomyus')),
+        ('n1', 'n4'): ('n1', 'n4', ('n4', 'n5'), ('n4', 'G. chapini')),
+        ('n3', 'n8'): ('n3', 'n8', ('n8', 'G. actuosi'), ('n8', 'G. ewingi')),
+        ('n4', 'n5'): ('n4', 'n5', ('n5', 'n6'), ('n5', 'n7')),
+        ('n5', 'n6'): ('n5', 'n6', ('n6', 'G. costaricensis'), ('n6', 'G. cherriei')),
+        ('n5', 'n7'): ('n5', 'n7', ('n7', 'G. setzeri'), ('n7', 'G. panamensis')),
+        ('n2', 'T. minor'): ('n2', 'T. minor', None, None),
+        ('n2', 'T. wardi'): ('n2', 'T. wardi', None, None),
+        ('n3', 'G. thomomyus'): ('n3', 'G. thomomyus', None, None),
+        ('n4', 'G. chapini'): ('n4', 'G. chapini', None, None),
+        ('n6', 'G. costaricensis'): ('n6', 'G. costaricensis', None, None),
+        ('n6', 'G. cherriei'): ('n6', 'G. cherriei', None, None),
+        ('n7', 'G. setzeri'): ('n7', 'G. setzeri', None, None),
+        ('n7', 'G. panamensis'): ('n7', 'G. panamensis', None, None),
+        ('n8', 'G. actuosi'): ('n8', 'G. actuosi', None, None),
+        ('n8', 'G. ewingi'): ('n8', 'G. ewingi', None, None)}
+
+        reconciliation = { 
+        ('n0', 'm0'): [('D', ('n1', 'm0'), ('n2', 'm0'))],
+        ('n1', 'm0'): [('S', ('n4', 'm1'), ('n3', 'm2'))],
+        ('n2', 'm0'): [('L', ('n2', 'm2'), (None, None))],
+        ('n2', 'm2'): [('S', ('T. minor', 'T. bottae'), ('T. wardi', 'T. talpoides'))],
+        ('n3', 'm2'): [('S', ('n8', 'T. bottae'), ('G. thomomyus', 'T. talpoides'))],
+        ('n4', 'm1'): [('L', ('n4', 'm3'), (None, None))],
+        ('n4', 'm3'): [('S', ('n5', 'm4'), ('G. chapini', 'O. hispidus'))],
+        ('n5', 'm4'): [('L', ('n5', 'm5'), (None, None))],
+        ('n5', 'm5'): [('S', ('n6', 'm6'), ('n7', 'O. underwoodi'))],
+        ('n6', 'm6'): [('S', ('G. costaricensis', 'O. heterodus'), ('G. cherriei', 'O. cherriei'))],
+        ('n7', 'O. underwoodi'): [('T', ('G. setzeri', 'O. underwoodi'), ('G. panamensis', 'O. cavator'))],
+        ('n8', 'T. bottae'): [('T', ('G. actuosi', 'T. bottae'), ('G. ewingi', 'G. bursarius'))],
+        ('T. wardi', 'T. talpoides'): [('C', (None, None), (None, None))],
+        ('G. thomomyus', 'T. talpoides'): [('C', (None, None), (None, None))],
+        ('T. minor', 'T. bottae'): [('C', (None, None), (None, None))],
+        ('G. actuosi', 'T. bottae'): [('C', (None, None), (None, None))],
+        ('G. ewingi', 'G. bursarius'): [('C', (None, None), (None, None))],
+        ('G. chapini', 'O. hispidus'): [('C', (None, None), (None, None))],
+        ('G. panamensis', 'O. cavator'): [('C', (None, None), (None, None))],
+        ('G. setzeri', 'O. underwoodi'): [('C', (None, None), (None, None))],
+        ('G. cherriei', 'O. cherriei'): [('C', (None, None), (None, None))],
+        ('G. costaricensis', 'O. heterodus'): [('C', (None, None), (None, None))]}
+
+        temporal_graph = utils.build_temporal_graph(host_dict, parasite_dict, reconciliation)
+        ordering_dict = utils.topological_order(temporal_graph)
+        # try generating the ordering dict numRepeat times and check they are equal
+        numRepeat = 100
+        for i in range(numRepeat):
+            current_temporal_graph = utils.build_temporal_graph(host_dict, parasite_dict, reconciliation)
+            current_ordering_dict = utils.topological_order(current_temporal_graph)
+            self.assertEqual(ordering_dict, current_ordering_dict)
 
     # TODO: fix this along with the newick tree generation script
     # https://github.com/ssantichaivekin/eMPRess/issues/100
