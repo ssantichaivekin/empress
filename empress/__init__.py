@@ -143,12 +143,12 @@ class ReconGraphWrapper(Drawable):
         return figure
 
     def stats(self, num_trials: int = 50):
-        _, costs, p = Statistics.stats(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost, num_trials)
+        _, costs, p = statistics.stats(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost, num_trials)
         return costs, p
 
     def draw_stats_on(self, ax: plt.Axes):
         costs, p = self.stats()
-        Statistics.draw_stats(ax, self.total_cost, costs, p)
+        statistics.draw_stats(ax, self.total_cost, costs, p)
 
     def draw_stats(self):
         figure, ax = plt.subplots(1, 1)
