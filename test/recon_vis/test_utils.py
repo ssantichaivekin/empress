@@ -7,7 +7,6 @@ from empress.miscs import input_generator
 from empress.recon_vis import utils
 from empress.reconcile import recongraph_tools
 from empress.histogram import histogram_brute_force
-from empress.reconcile.generate_newick_trees import generateNewickTestsMultipleSizes
 
 class TestUtils(unittest.TestCase):
     """
