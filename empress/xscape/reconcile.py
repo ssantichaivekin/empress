@@ -52,9 +52,9 @@ dupMax = None
 # This is the main function for this file.  It seeks to find the best
 # reconciliation for the parasite tree, rooted at every possible edge of the
 # host tree.
-def reconcile(parasiteTree, hostTree, phi, tmin, tmax, dmin, dmax):
+def reconcile(parasiteTree, hostTree, tip_mapping, tmin, tmax, dmin, dmax):
     ''' Takes dictionary representations of the parasite tree, host tree
-        and phi as input and returns a list of the Pareto optimal solutions. '''
+        and tip_mapping as input and returns a list of the Pareto optimal solutions. '''
             
     global transferMin, transferMax, dupMin, dupMax
     global Amemo, Cmemo, Bestmemo
@@ -68,10 +68,10 @@ def reconcile(parasiteTree, hostTree, phi, tmin, tmax, dmin, dmax):
         
     solutions = []
     for eh in hostTree:
-        solutions.extend(C(parasiteTree, hostTree, phi, "pTop", eh))
+        solutions.extend(C(parasiteTree, hostTree, tip_mapping, "pTop", eh))
     return paretoFilter(solutions)
 
-def A(parasiteTree, hostTree, phi, ep, eh):
+def A(parasiteTree, hostTree, tip_mapping, ep, eh):
     ''' The A table for the dynamic program. '''
     
     global Amemo
@@ -80,7 +80,7 @@ def A(parasiteTree, hostTree, phi, ep, eh):
 
     if tipEdge(eh, hostTree):
         if tipEdge(ep, parasiteTree) and \
-           phi[endVertex(ep, parasiteTree)] == endVertex(eh, hostTree):
+           tip_mapping[endVertex(ep, parasiteTree)] == endVertex(eh, hostTree):
             return [CostVector(0, 0, 0, 0, 1)]
         else:
             return [CostVector(INF, INF, INF, INF, 0)]
@@ -96,21 +96,21 @@ def A(parasiteTree, hostTree, phi, ep, eh):
             epRightChild = rightChildEdge(ep, parasiteTree)
 
             cospeciation1 = CostVector(1, 0, 0, 0, 1) * \
-              merge(C(parasiteTree, hostTree, phi, epLeftChild, ehLeftChild), \
-                    C(parasiteTree, hostTree, phi, epRightChild, ehRightChild))
+              merge(C(parasiteTree, hostTree, tip_mapping, epLeftChild, ehLeftChild), \
+                    C(parasiteTree, hostTree, tip_mapping, epRightChild, ehRightChild))
 
             cospeciation2 = CostVector(1, 0, 0, 0, 1) * \
-              merge(C(parasiteTree, hostTree, phi, epLeftChild, ehRightChild), \
-                    C(parasiteTree, hostTree, phi, epRightChild, ehLeftChild)) \
+              merge(C(parasiteTree, hostTree, tip_mapping, epLeftChild, ehRightChild), \
+                    C(parasiteTree, hostTree, tip_mapping, epRightChild, ehLeftChild)) \
 
             cospeciation = cospeciation1 + cospeciation2
             
         # Loss
         loss1 = CostVector(0, 0, 0, 1, 1) * \
-                C(parasiteTree, hostTree, phi, ep, ehLeftChild)
+                C(parasiteTree, hostTree, tip_mapping, ep, ehLeftChild)
 
         loss2 = CostVector(0, 0, 0, 1, 1) * \
-                C(parasiteTree, hostTree, phi, ep, ehRightChild)
+                C(parasiteTree, hostTree, tip_mapping, ep, ehRightChild)
 
         loss = loss1 + loss2
         
@@ -118,7 +118,7 @@ def A(parasiteTree, hostTree, phi, ep, eh):
         Amemo[(ep, eh)] = output
         return output
         
-def C(parasiteTree, hostTree, phi, ep, eh):
+def C(parasiteTree, hostTree, tip_mapping, ep, eh):
     ''' The C table for the dynamic program. '''
     
     global Cmemo
@@ -126,7 +126,7 @@ def C(parasiteTree, hostTree, phi, ep, eh):
     if (ep, eh) in Cmemo: return Cmemo[(ep, eh)]
     
     # Option 1:  Pass through
-    passThrough = A(parasiteTree, hostTree, phi, ep, eh)
+    passThrough = A(parasiteTree, hostTree, tip_mapping, ep, eh)
     
     if tipEdge(ep, parasiteTree):   # The options below don't apply to tips
         return passThrough
@@ -137,18 +137,18 @@ def C(parasiteTree, hostTree, phi, ep, eh):
     
         # Option 2:  Duplicate here
         duplicate = CostVector(0, 1, 0, 0, 1) * \
-                    merge(C(parasiteTree, hostTree, phi, epLeftChild, eh), \
-                          C(parasiteTree, hostTree, phi, epRightChild, eh)) 
+                    merge(C(parasiteTree, hostTree, tip_mapping, epLeftChild, eh), \
+                          C(parasiteTree, hostTree, tip_mapping, epRightChild, eh))
     
         # Option 3:  Switch here
 
         switch1 = CostVector(0, 0, 1, 0, 1) * \
-                  merge(C(parasiteTree, hostTree, phi, epLeftChild, eh), \
-                        switches(parasiteTree, hostTree, phi, epRightChild, eh))
+                  merge(C(parasiteTree, hostTree, tip_mapping, epLeftChild, eh), \
+                        switches(parasiteTree, hostTree, tip_mapping, epRightChild, eh))
 
         switch2 = CostVector(0, 0, 1, 0, 1) * \
-                  merge(C(parasiteTree, hostTree, phi, epRightChild, eh), \
-                        switches(parasiteTree, hostTree, phi, epLeftChild, eh))
+                  merge(C(parasiteTree, hostTree, tip_mapping, epRightChild, eh), \
+                        switches(parasiteTree, hostTree, tip_mapping, epLeftChild, eh))
 
         switch = switch1 + switch2
         
@@ -165,7 +165,7 @@ def merge(CVlist1, CVlist2):
             output.append(v+w)
     return output
 
-def switches(parasiteTree, hostTree, phi, ep, eh):
+def switches(parasiteTree, hostTree, tip_mapping, ep, eh):
     ''' Returns the list of all CostVectors in which the given parasite edge ep
         switches to all possible host edges. '''
         
@@ -177,7 +177,7 @@ def switches(parasiteTree, hostTree, phi, ep, eh):
     for switchEdge in hostTree:     # for every possible host edge
         if switchEdge != eh and switchEdge not in Ancestors[eh] and \
            switchEdge not in Descendants[eh]:
-            output.extend(C(parasiteTree, hostTree, phi, ep, switchEdge))
+            output.extend(C(parasiteTree, hostTree, tip_mapping, ep, switchEdge))
     Bestmemo[(ep, eh)] = output
     return output
 
