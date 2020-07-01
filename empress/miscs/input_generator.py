@@ -4,14 +4,26 @@ import random
 
 from empress import input_reader
 random.seed(1)
-"""
-    Example:
-    {'hTop':       ('Top', 'm0', ('m0', 'm1'), ('m0', 'm2')),
-     ('m0', 'm1'): ('m0', 'm1', ('m1', 'm3'), ('m1', 'm4')),
-     ('m1', 'm3'): ('m1', 'm3', None, None),
-     ('m1', 'm4'): ('m1', 'm4', None, None),
-     ('m0', 'm2'): ('m0', 'm2', None, None)}
-"""
+
+def generate_all_recon_input(n_leaves: int) -> input_reader.ReconInput:
+    """
+    Create an iterable of all possible ReconInput object with specified number of host/parasite leaves.
+    """
+    for host_dict in _generate_all_host_dict(n_leaves):
+        for parasite_dict in _generate_all_parasite_dict(n_leaves):
+            for mapping in _generate_all_tip_mapping(host_dict, parasite_dict):
+                yield input_reader.ReconInput(host_dict, None, parasite_dict, None, mapping)
+
+def generate_random_recon_input(n_leaves: int) -> input_reader.ReconInput:
+    """
+    Randomly create one ReconInput object with specified number of host/parasite leaves.
+    The randomization is not guaranteed to be uniform.
+    """
+    host_dict = _generate_random_host_dict(n_leaves)
+    parasite_dict = _generate_random_parasite_dict(n_leaves)
+    mapping = _generate_random_tip_mapping(host_dict, parasite_dict)
+    return input_reader.ReconInput(host_dict, None, parasite_dict, None, mapping)
+
 
 def _generate_all_host_dict(n_leaves):
     yield from _generate_all_trees(n_leaves, 'hTop', 'h')
@@ -147,15 +159,3 @@ def _generate_random_tip_mapping(host_dict, parasite_dict):
     for key in parasite_leaves:
         mapping[key] = random.choice(host_leaves)
     return mapping
-
-def generate_all_recon_input(n_leaves):
-    for host_dict in _generate_all_host_dict(n_leaves):
-        for parasite_dict in _generate_all_parasite_dict(n_leaves):
-            for mapping in _generate_all_tip_mapping(host_dict, parasite_dict):
-                yield input_reader.ReconInput(host_dict, None, parasite_dict, None, mapping)
-
-def generate_random_recon_input(n_leaves):
-    host_dict = _generate_random_host_dict(n_leaves)
-    parasite_dict = _generate_random_parasite_dict(n_leaves)
-    mapping = _generate_random_tip_mapping(host_dict, parasite_dict)
-    return input_reader.ReconInput(host_dict, None, parasite_dict, None, mapping)
