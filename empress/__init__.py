@@ -1,6 +1,7 @@
 """
 Wraps empress functionalities
 """
+from typing import Dict
 import matplotlib
 # the tkagg backend is for pop-up windows, and will not work in environments
 # without graphics such as a remote server. Refer to issue #49
@@ -80,7 +81,7 @@ class ReconciliationWrapper(Drawable):
     # TODO: Replace dict with Reconciliation type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, reconciliation: dict, root: tuple, recon_input: ReconInput, dup_cost, trans_cost, loss_cost,
-                 total_cost: float):
+                 total_cost: float, event_scores: Dict[tuple, float] = None):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -88,17 +89,17 @@ class ReconciliationWrapper(Drawable):
         self.total_cost = total_cost
         self._reconciliation = reconciliation
         self.root = root
+        self.event_scores = event_scores
 
     def draw_on(self, axes: plt.Axes):
         recon_viewer.render(self.recon_input.host_dict, self.recon_input.parasite_dict, self._reconciliation,
                             axes=axes)
 
-
 class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, recongraph: dict, roots: list, n_recon: int, recon_input: ReconInput, dup_cost, trans_cost,
-                 loss_cost, total_cost: float):
+                 loss_cost, total_cost: float, event_scores: Dict[tuple, float] = None):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -107,17 +108,18 @@ class ReconGraphWrapper(Drawable):
         self.total_cost = total_cost
         self.n_recon = n_recon
         self.roots = roots
+        self.event_scores = event_scores
 
     def draw_on(self, axes: plt.Axes):
         """
         Draw Pairwise Distance Histogram on axes
         """
         # Reformat the host and parasite tree to use it with the histogram algorithm
-        gene_tree, gene_tree_root, gene_node_count = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
-        species_tree, species_tree_root, species_node_count \
+        parasite_tree, parasite_tree_root, parasite_node_count = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
+        host_tree, host_tree_root, host_node_count \
             = diameter.reformat_tree(self.recon_input.host_dict, "hTop")
         hist = histogram_alg.diameter_algorithm(
-            species_tree, gene_tree, gene_tree_root, self.recongraph, self.recongraph,
+            host_tree, parasite_tree, parasite_tree_root, self.recongraph, self.recongraph,
             False, False)
         histogram_display.plot_histogram_to_ax(axes, hist.histogram_dict)
 
@@ -145,19 +147,19 @@ class ReconGraphWrapper(Drawable):
         Return one of the best ReconciliationWrapper that best represents the
         reconciliation graph. The function internally uses random and is not deterministic.
         """
-        postorder_parasite_tree, gene_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
+        postorder_parasite_tree, parasite_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
         postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_dict, "hTop")
 
         # Compute the median reconciliation graph
         median_reconciliation, n_meds, roots_for_median = median.get_median_graph(
-            self.recongraph, postorder_parasite_tree, postorder_host_tree, gene_tree_root, self.roots)
+            self.recongraph, postorder_parasite_tree, postorder_host_tree, parasite_tree_root, self.roots)
 
         med_counts_dict = median.get_med_counts(median_reconciliation, roots_for_median)
 
         random_median = median.choose_random_median_wrapper(median_reconciliation, roots_for_median, med_counts_dict)
         median_root = _find_roots(random_median)[0]
         return ReconciliationWrapper(random_median, median_root, self.recon_input, self.dup_cost, self.trans_cost,
-                                     self.loss_cost, self.total_cost)
+                                     self.loss_cost, self.total_cost, self.event_scores)
 
     def cluster(self, n) -> List['ReconGraphWrapper']:
         """
@@ -166,20 +168,33 @@ class ReconGraphWrapper(Drawable):
         if n > self.n_recon:
             raise Exception("Cannot cluster %d Reconciliation into %d clusters" % (self.n_recon, n))
 
-        gene_tree, species_tree, gene_root, recon_g, mpr_count, best_roots = \
+        parasite_tree, host_tree, parasite_root, recon_g, mpr_count, best_roots = \
             cluster_util.get_tree_info(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
 
-        score = cluster_util.mk_pdv_score(species_tree, gene_tree, gene_root)
+        score = cluster_util.mk_pdv_score(host_tree, parasite_tree, parasite_root)
 
-        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, gene_root, score, 4, n, 200)
+        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, parasite_root, score, 4, n, 200)
         new_graphs = []
         for graph in graphs:
             roots = _find_roots(graph)
             n = recongraph_tools.count_mprs_wrapper(roots, graph)
             new_graphs.append(
                 ReconGraphWrapper(graph, roots, n, self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost,
-                                  self.total_cost))
+                                  self.total_cost, self.event_scores))
         return new_graphs
+
+    def set_event_frequencies(self):
+        """
+        Set self.event_scores,
+        event_scores is a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
+        indicated by the recongraph
+        """
+        postorder_parasite_tree, parasite_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
+        postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_dict, "hTop")
+        postorder_mapping_node_list = median.mapping_node_sort(postorder_parasite_tree, postorder_host_tree,
+                                                    list(self.recongraph.keys()))
+        event_scores = median.generate_scores(postorder_mapping_node_list[::-1], self.recongraph, parasite_tree_root)[0]
+        self.event_scores = event_scores
 
 class CostRegionsWrapper(Drawable):
     def __init__(self, cost_vectors, transfer_min, transfer_max, dup_min, dup_max):
@@ -216,4 +231,6 @@ def reconcile(recon_input: ReconInput, dup_cost: int, trans_cost: int, loss_cost
     and the cost of the three events, computes and returns a reconciliation graph.
     """
     graph, total_cost, n_recon, roots = recongraph_tools.DP(recon_input, dup_cost, trans_cost, loss_cost)
-    return ReconGraphWrapper(graph, roots, n_recon, recon_input, dup_cost, trans_cost, loss_cost, total_cost)
+    recongraph = ReconGraphWrapper(graph, roots, n_recon, recon_input, dup_cost, trans_cost, loss_cost, total_cost)
+    recongraph.set_event_frequencies()
+    return recongraph
