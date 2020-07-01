@@ -99,7 +99,7 @@ class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, recongraph: dict, roots: list, n_recon: int, recon_input: ReconInput, dup_cost, trans_cost,
-                 loss_cost, total_cost: float):
+                 loss_cost, total_cost: float, event_scores: Dict[tuple, float] = None):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -108,7 +108,7 @@ class ReconGraphWrapper(Drawable):
         self.total_cost = total_cost
         self.n_recon = n_recon
         self.roots = roots
-        self.event_scores = self.__compute_event_frequencies()
+        self.event_scores = event_scores
 
     def draw_on(self, axes: plt.Axes):
         """
@@ -180,13 +180,13 @@ class ReconGraphWrapper(Drawable):
             n = recongraph_tools.count_mprs_wrapper(roots, graph)
             new_graphs.append(
                 ReconGraphWrapper(graph, roots, n, self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost,
-                                  self.total_cost))
+                                  self.total_cost, self.event_scores))
         return new_graphs
 
-    def __compute_event_frequencies(self) -> dict:
+    def set_event_frequencies(self) -> dict:
         """
-        Helper function for __init__.
-        Return a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
+        Set self.event_scores,
+        event_scores is a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
         indicated by the recongraph
         """
         postorder_parasite_tree, parasite_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
@@ -194,7 +194,7 @@ class ReconGraphWrapper(Drawable):
         postorder_mapping_node_list = median.mapping_node_sort(postorder_parasite_tree, postorder_host_tree,
                                                     list(self.recongraph.keys()))
         event_scores = median.generate_scores(postorder_mapping_node_list[::-1], self.recongraph, parasite_tree_root)[0]
-        return event_scores
+        self.event_scores = event_scores
 
 class CostRegionsWrapper(Drawable):
     def __init__(self, cost_vectors, transfer_min, transfer_max, dup_min, dup_max):
@@ -231,4 +231,6 @@ def reconcile(recon_input: ReconInput, dup_cost: int, trans_cost: int, loss_cost
     and the cost of the three events, computes and returns a reconciliation graph.
     """
     graph, total_cost, n_recon, roots = recongraph_tools.DP(recon_input, dup_cost, trans_cost, loss_cost)
-    return ReconGraphWrapper(graph, roots, n_recon, recon_input, dup_cost, trans_cost, loss_cost, total_cost)
+    recongraph = ReconGraphWrapper(graph, roots, n_recon, recon_input, dup_cost, trans_cost, loss_cost, total_cost)
+    recongraph.set_event_frequencies()
+    return recongraph

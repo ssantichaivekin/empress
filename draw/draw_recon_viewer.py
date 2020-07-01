@@ -39,7 +39,7 @@ recon_dict2 = {('n0', 'm1'): [('T', ('n1', 'm1'), ('n4', 'm4'))],
 
 def test_render_1():
     fig = recon_viewer.render(host_dict1, parasite_dict1, recon_dict1,
-                            event_scores = None, show_internal_labels=True, show_freq=False)
+                              event_scores = None, show_internal_labels=True, show_freq=False)
     filepath = Path(common.output_path).joinpath("test_render_1.png")
     fig.save(filepath)
 
