@@ -7,7 +7,7 @@
 import argparse
 from pathlib import Path
 
-from empress.input_reader import getInput
+from empress import input_reader
 from empress.reconcile import recongraph_tools
 from empress.cluster import cluster_main
 from empress.histogram import histogram_main
@@ -17,10 +17,15 @@ def process_arg():
     """ Returns args parse object that contains all parameters needed to run a functionality
     :return args - the object that contains all necessary params for the desired functionality to run
     """
-    parser = argparse.ArgumentParser("")
+    parser = argparse.ArgumentParser()
+
     ### Path to newick file ###
-    parser.add_argument("-fn","--filename", metavar="<filename>", required=True,
-        help="The path to the file with the input trees and tip mapping.")
+    parser.add_argument("--host", metavar="<host_file>", required=True,
+                        help="The path to the file with the input host tree.")
+    parser.add_argument("--parasite", metavar="<parasite_file>", required=True,
+                        help="The path to the file with the input parasite tree.")
+    parser.add_argument("--mapping", metavar="<mapping_file>", required=True,
+                        help="The path to the file with the tip mapping.")
     
     # subparsers to encode for each functionality 
     subparsers = parser.add_subparsers(dest='functionality',help='Functions empress can run')
@@ -111,7 +116,7 @@ def process_arg():
         help="Time the diameter algorithm")
     args = parser.parse_args()
     if args.functionality == "histogram":
-        fname = Path(args.filename)
+        fname = Path(args.host)
         cost_suffix = ".{}-{}-{}".format(args.d, args.t, args.l)
         # If args is unset, use the original .newick file path but replace .newick with .pdf
         if args.histogram is None:
@@ -135,15 +140,15 @@ def process_arg():
 
 def main():
     args = process_arg()
-    newick_data = getInput(args.filename)
+    recon_input = input_reader.ReconInput.from_files(args.host, args.parasite, args.mapping)
     if args.functionality == "costscape":
-        costscape.solve(newick_data, args.dl, args.dh, args.tl, args.th, args)
+        costscape.solve(recon_input, args.dl, args.dh, args.tl, args.th, args)
     elif args.functionality == "reconcile":
-        recongraph_tools.reconcile_noninter(newick_data, args.d, args.t, args.l)
+        recongraph_tools.reconcile_noninter(recon_input, args.d, args.t, args.l)
     elif args.functionality == "histogram":
-        histogram_main.compute_pdv(args.filename, newick_data, args.d, args.t, args.l, args)
+        histogram_main.compute_pdv(args.host, recon_input, args.d, args.t, args.l, args)
     elif args.functionality == "clumpr":
-        cluster_main.perform_clustering(newick_data, args.d, args.t, args.l, args.k, args)
+        cluster_main.perform_clustering(recon_input, args.d, args.t, args.l, args.k, args)
 
 
 if __name__ == "__main__": main()

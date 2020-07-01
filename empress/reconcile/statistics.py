@@ -24,32 +24,32 @@ def _trials(recon_input: ReconInput, dup_cost: float, transfer_cost: float, loss
     """
    
     costs = list()  # List of costs of random trials
-    parasites = recon_input.phi.keys()
-    hosts = list(recon_input.phi.values())
+    parasites = recon_input.tip_mapping.keys()
+    hosts = list(recon_input.tip_mapping.values())
     for t in range(num_trials):
-        random_phi = _create_random_phi(recon_input.phi)
+        random_phi = _create_random_phi(recon_input.tip_mapping)
         for p in parasites:
             h = random.choice(hosts)
             random_phi[p] = h
-        new_input = ReconInput(recon_input.host_tree, None, recon_input.parasite_tree, None, random_phi)
+        new_input = ReconInput(recon_input.host_dict, None, recon_input.parasite_dict, None, random_phi)
         _, cost, _, _ = recongraph_tools.DP(new_input, dup_cost, transfer_cost, loss_cost)
         costs.append(cost)
     return costs
 
-def _create_random_phi(phi : dict) -> dict:
+def _create_random_phi(tip_mapping : dict) -> dict:
     """
-    :param phi <dict> - dictionary representation of parasite tip to host tip mapping
+    :param tip_mapping <dict> - dictionary representation of parasite tip to host tip mapping
     :return: a dictionary of parasite tips to host tips that preserves the degree of
-        of the host tips in phi
+        of the host tips in tip_mapping
     """
     random_phi = {}
-    parasites = list(phi.keys())
-    hosts = list(phi.values())
+    parasites = list(tip_mapping.keys())
+    hosts = list(tip_mapping.values())
     unique_hosts = list(set(hosts))
-    parasite_count = {}   # keys are hosts, values are the number of parasites on that host wrt phi
+    parasite_count = {}   # keys are hosts, values are the number of parasites on that host wrt tip_mapping
     # computer parasite_count values
     for p in parasites:
-        h = phi[p]
+        h = tip_mapping[p]
         if h in parasite_count: parasite_count[h] += 1
         else: parasite_count[h] = 1
     for h in unique_hosts:
@@ -62,7 +62,7 @@ def _create_random_phi(phi : dict) -> dict:
 def draw_stats(ax: plt.Axes, mpr_cost: float, costs: list, pvalue: float = None):
     """
     :param ax <plt.Axes> - draw histogram on ax
-    :param mpr_cost <float> - cost of MPR for given host-parasite-phi and DTL costs
+    :param mpr_cost <float> - cost of MPR for given host-parasite-tip_mapping and DTL costs
     :param costs <list> -list of floating point costs of Monte Carlo samples
     """
     if pvalue is not None:

@@ -8,7 +8,9 @@ from draw import common
 
 common.create_output_folder()
 
-example_input_path = "./examples/test-size5-no924.newick"
+example_host = "./examples/test_size5_no924_host.nwk"
+example_parasite = "./examples/test_size5_no924_parasite.nwk"
+example_mapping = "./examples/test_size5_no924_mapping.mapping"
 
 # Wrapper draw examples and tests
 
@@ -20,19 +22,19 @@ example_strong_consistent_reconciliation = empress.ReconciliationWrapper(
                     ('n4', 'm4'): [('C', (None, None), (None, None))]},
     root=('n0', 'm4'),
     recon_input=empress.ReconInput(
-        host_tree={'hTop': ('Top', 'm0', ('m0', 'm1'), ('m0', 'm2')),
+        host_dict={'hTop': ('Top', 'm0', ('m0', 'm1'), ('m0', 'm2')),
                    ('m0', 'm1'): ('m0', 'm1', None, None),
                    ('m0', 'm2'): ('m0', 'm2', ('m2', 'm3'), ('m2', 'm4')),
                    ('m2', 'm3'): ('m2', 'm3', None, None),
                    ('m2', 'm4'): ('m2', 'm4', None, None)},
         host_distances=None,
-        parasite_tree={'pTop': ('Top', 'n0', ('n0', 'n1'), ('n0', 'n2')),
+        parasite_dict={'pTop': ('Top', 'n0', ('n0', 'n1'), ('n0', 'n2')),
                        ('n0', 'n1'): ('n0', 'n1', None, None),
                        ('n0', 'n2'): ('n0', 'n2', ('n2', 'n3'), ('n2', 'n4')),
                        ('n2', 'n3'): ('n2', 'n3', None, None),
                        ('n2', 'n4'): ('n2', 'n4', None, None)},
         parasite_distances=None,
-        phi=None,
+        tip_mapping=None,
     ),
     dup_cost=None,
     trans_cost=None,
@@ -50,13 +52,13 @@ example_inconsistent_reconciliation = empress.ReconciliationWrapper(
                     ('n6', 'm4'): [('C', (None, None), (None, None))]},
     root=('n0', 'm4'),
     recon_input=empress.ReconInput(
-        host_tree={'hTop': ('Top', 'm0', ('m0', 'm1'), ('m0', 'm2')),
+        host_dict={'hTop': ('Top', 'm0', ('m0', 'm1'), ('m0', 'm2')),
                    ('m0', 'm1'): ('m0', 'm1', ('m1', 'm3'), ('m1', 'm4')),
                    ('m1', 'm3'): ('m1', 'm3', None, None),
                    ('m1', 'm4'): ('m1', 'm4', None, None),
                    ('m0', 'm2'): ('m0', 'm2', None, None)},
         host_distances=None,
-        parasite_tree={'pTop': ('Top', 'n0', ('n0', 'n4'), ('n0', 'n2')),
+        parasite_dict={'pTop': ('Top', 'n0', ('n0', 'n4'), ('n0', 'n2')),
                        ('n0', 'n4'): ('n0', 'n4', None, None),
                        ('n0', 'n2'): ('n0', 'n2', ('n2', 'n5'), ('n2', 'n3')),
                        ('n2', 'n5'): ('n2', 'n5', None, None),
@@ -64,7 +66,7 @@ example_inconsistent_reconciliation = empress.ReconciliationWrapper(
                        ('n3', 'n1'): ('n3', 'n1', None, None),
                        ('n3', 'n6'): ('n3', 'n6', None, None)},
         parasite_distances=None,
-        phi=None,
+        tip_mapping=None,
     ),
     dup_cost=None,
     trans_cost=None,
@@ -73,7 +75,7 @@ example_inconsistent_reconciliation = empress.ReconciliationWrapper(
 )
 
 def test_recongraph_draw():
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     fig = recongraph.draw()
     fig.savefig(Path(common.output_path).joinpath("test_recongraph_draw.png"))
@@ -82,7 +84,7 @@ test_recongraph_draw()
 
 def test_recongraph_draw_graph():
     # Draw reconciliation graph to file
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     recongraph.draw_graph_to_file(Path(common.output_path).joinpath("test_recongraph_draw_graph.png"))
 
@@ -102,7 +104,7 @@ test_inconsistent_reconciliation_draw()
 
 
 def test_cluster_reconciliation_draw():
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     clusters = recongraph.cluster(3)
     fig, axs = plt.subplots(1, len(clusters))
@@ -115,7 +117,7 @@ def test_cluster_reconciliation_draw():
 test_cluster_reconciliation_draw()
 
 def test_cluster_pdv_histogram_draw():
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     clusters = recongraph.cluster(3)
     fig, axs = plt.subplots(3, 3)
@@ -136,7 +138,7 @@ def test_cluster_pdv_histogram_draw():
 test_cluster_pdv_histogram_draw()
 
 def test_stats_1():
-    recon_input = empress.read_input(example_input_path)
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recongraph = empress.reconcile(recon_input, 1, 1, 1)
     fig = recongraph.draw_stats()
     fig.savefig(Path(common.output_path).joinpath("test_stats_1.png"))
