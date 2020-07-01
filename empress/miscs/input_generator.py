@@ -40,7 +40,7 @@ def _generate_all_trees(n_leaves: int, top_name: str, prefix: str):
             right_start = 2 * left_n_leaves
             right_name = prefix + str(right_start)
             bot_name = prefix + '0'
-            tree_dict[top_name] = ('Top', bot_name, left_name, right_name)
+            tree_dict[top_name] = ('Top', bot_name, (bot_name, left_name), (bot_name, right_name))
             for left_tree_dict in _generate_all_trees_helper(left_n_leaves, bot_name, prefix, left_start):
                 for right_tree_dict in _generate_all_trees_helper(right_n_leaves, bot_name, prefix, right_start):
                     new_tree_dict = tree_dict.copy()
@@ -62,7 +62,7 @@ def _generate_all_trees_helper(n_leaves: int, parent: str, prefix: str, start: i
             right_n_leaves = n_leaves - left_n_leaves
             right_start = start + 1 + (2 * left_n_leaves - 1)
             right_name = prefix + str(right_start)
-            tree_dict[(parent, this_name)] = (parent, this_name, left_name, right_name)
+            tree_dict[(parent, this_name)] = (parent, this_name, (this_name, left_name), (this_name, right_name))
             for left_tree_dict in _generate_all_trees_helper(left_n_leaves, this_name, prefix, left_start):
                 for right_tree_dict in _generate_all_trees_helper(right_n_leaves, this_name, prefix, right_start):
                     new_tree_dict = tree_dict.copy()
@@ -97,7 +97,7 @@ def _generate_random_trees(n_leaves: int, top_name: str, prefix: str):
         right_start = 2 * left_n_leaves
         right_name = prefix + str(right_start)
         bot_name = prefix + '0'
-        tree_dict[top_name] = ('Top', bot_name, left_name, right_name)
+        tree_dict[top_name] = ('Top', bot_name, (bot_name, left_name), (bot_name, right_name))
         left_tree_dict = _generate_random_trees_helper(left_n_leaves, bot_name, prefix, left_start)
         right_tree_dict = _generate_random_trees_helper(right_n_leaves, bot_name, prefix, right_start)
         tree_dict.update(left_tree_dict)
@@ -118,7 +118,7 @@ def _generate_random_trees_helper(n_leaves: int, parent: str, prefix: str, start
         right_n_leaves = n_leaves - left_n_leaves
         right_start = start + 1 + (2 * left_n_leaves - 1)
         right_name = prefix + str(right_start)
-        tree_dict[(parent, this_name)] = (parent, this_name, left_name, right_name)
+        tree_dict[(parent, this_name)] = (parent, this_name, (this_name, left_name), (this_name, right_name))
         left_tree_dict = _generate_random_trees_helper(left_n_leaves, this_name, prefix, left_start)
         right_tree_dict = _generate_random_trees_helper(right_n_leaves, this_name, prefix, right_start)
         tree_dict.update(left_tree_dict)
