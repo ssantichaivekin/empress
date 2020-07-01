@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import MouseEvent, key_press_handler
 import empress
-import ReconInput
+from empress import input_reader
 from empress.recon_vis.utils import dict_to_tree
 from empress.recon_vis import tree
 
@@ -167,7 +167,7 @@ class App(tk.Frame):
         self.num_cluster = None
 
         self.recon_info_displayed = False
-        self.recon_input = ReconInput.ReconInput()
+        self.recon_input = input_reader.ReconInput()
         App.recon_graph = None
         App.clusters_list = []
         App.medians = None
@@ -186,7 +186,7 @@ class App(tk.Frame):
         App.clusters_list = []
         App.medians = None
         # Reset self.recon_input so self.view_cost_space_btn can be disabled
-        self.recon_input = ReconInput.ReconInput()
+        self.recon_input = input_reader.ReconInput()
         self.view_cost_space_btn.configure(state=tk.DISABLED)
         self.view_tanglegram_btn.configure(state=tk.DISABLED)
 
@@ -283,7 +283,7 @@ class App(tk.Frame):
                 # Try to read in host tree file
                 self.recon_input.read_host(input_file)
                 self.host_file_path = None
-                if self.recon_input.host_tree is not None:
+                if self.recon_input.host_dict is not None:
                     self.host_file_path = input_file
                     # Force a sequence of loading host tree file first, and then parasite tree file, and then mapping file
                     self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state = "disabled")
@@ -308,7 +308,7 @@ class App(tk.Frame):
                 # Try to read in parasite tree file
                 self.recon_input.read_parasite(input_file)
                 self.parasite_file_path = None
-                if self.recon_input.parasite_tree is not None:
+                if self.recon_input.parasite_dict is not None:
                     self.parasite_file_path = input_file
                     # Reset every time user successfully loads in a new parasite tree file
                     self.reset("Load parasite tree file")
@@ -330,7 +330,7 @@ class App(tk.Frame):
                 # Try to read in mapping file
                 self.recon_input.read_mapping(input_file)
                 self.mapping_file_path = None
-                if self.recon_input.phi is not None:
+                if self.recon_input.tip_mapping is not None:
                     self.mapping_file_path = input_file
                     # Reset every time user successfully loads in a new mapping file
                     self.reset("Load mapping file")
@@ -338,7 +338,7 @@ class App(tk.Frame):
                     self.mapping_info.grid(row=2, column=0, sticky="w")
 
                     # Enables the next step, setting DTL costs
-                    if self.recon_input.complete(): 
+                    if self.recon_input.is_complete(): 
                         self.view_tanglegram_btn.configure(state=tk.NORMAL)
                         self.view_cost_space_btn.configure(state=tk.NORMAL)
                         self.compute_reconciliations_btn.configure(state=tk.NORMAL)
@@ -353,10 +353,10 @@ class App(tk.Frame):
     def compute_tree_tips(self, tree_type):
         """Compute the number of tips for the host tree and parasite tree inputs."""
         if tree_type == "host tree":
-            host_tree_object = dict_to_tree(self.recon_input.host_tree, tree.TreeType.HOST)
+            host_tree_object = dict_to_tree(self.recon_input.host_dict, tree.TreeType.HOST)
             return len(host_tree_object.leaf_list())
         elif tree_type == "parasite tree":
-            parasite_tree_object = dict_to_tree(self.recon_input.parasite_tree, tree.TreeType.PARASITE)
+            parasite_tree_object = dict_to_tree(self.recon_input.parasite_dict, tree.TreeType.PARASITE)
             return len(parasite_tree_object.leaf_list())
 
     def plot_cost_regions(self):
