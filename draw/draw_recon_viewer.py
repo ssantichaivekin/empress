@@ -57,13 +57,14 @@ def test_render_with_frequency_1():
     """
     render a reconciliation and displays the frequency of events in the reconciliation
     """
-    example_input_path = "./examples/test-size5-no924.newick"
-    recon_input = empress.read_input(example_input_path)
+    example_host = "./examples/test_size5_no924_host.nwk"
+    example_parasite = "./examples/test_size5_no924_parasite.nwk"
+    example_mapping = "./examples/test_size5_no924_mapping.mapping"
+    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
     recon_wrapper = empress.reconcile(recon_input, 1, 1, 1)
-    event_scores = recon_wrapper.compute_event_frequencies()
     median_reconciliation = recon_wrapper.median()
-    fig = recon_viewer.render(recon_input.host_tree, recon_input.parasite_tree,
-            median_reconciliation._reconciliation, event_scores, show_internal_labels=True, show_freq=True)
+    fig = recon_viewer.render(recon_input.host_dict, recon_input.parasite_dict,
+            median_reconciliation._reconciliation, median_reconciliation.event_scores, show_internal_labels=True, show_freq=True)
     filepath = Path(common.output_path).joinpath("test_render_with_frequency_1.png")
     fig.save(filepath)
 

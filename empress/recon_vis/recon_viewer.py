@@ -2,7 +2,7 @@
 recon_viewer.py
 View a single reconciliation using matplotlib
 """
-from typing import Union
+from typing import Union, Dict
 from matplotlib import pyplot as plt
 
 from empress.recon_vis.recon import EventType

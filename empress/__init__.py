@@ -1,6 +1,7 @@
 """
 Wraps empress functionalities
 """
+from typing import Dict
 import matplotlib
 # the tkagg backend is for pop-up windows, and will not work in environments
 # without graphics such as a remote server. Refer to issue #49
@@ -80,7 +81,7 @@ class ReconciliationWrapper(Drawable):
     # TODO: Replace dict with Reconciliation type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, reconciliation: dict, root: tuple, recon_input: ReconInput, dup_cost, trans_cost, loss_cost,
-                 total_cost: float):
+                 total_cost: float, event_scores: Dict[tuple, float] = None):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -88,6 +89,7 @@ class ReconciliationWrapper(Drawable):
         self.total_cost = total_cost
         self._reconciliation = reconciliation
         self.root = root
+        self.event_scores = event_scores
 
     def draw_on(self, axes: plt.Axes):
         recon_viewer.render(self.recon_input.host_dict, self.recon_input.parasite_dict, self._reconciliation,
@@ -106,6 +108,7 @@ class ReconGraphWrapper(Drawable):
         self.total_cost = total_cost
         self.n_recon = n_recon
         self.roots = roots
+        self.event_scores = self.__compute_event_frequencies()
 
     def draw_on(self, axes: plt.Axes):
         """
@@ -139,19 +142,6 @@ class ReconGraphWrapper(Drawable):
         self.draw_stats_on(ax)
         return figure
 
-    def compute_event_frequencies(self) -> dict:
-        """
-        Return a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
-        indicated by the recongraph
-        """
-        postorder_parasite_tree, parasite_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_tree, "pTop")
-        postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_tree, "hTop")
-        postorder_mapping_node_list = median.mapping_node_sort(postorder_parasite_tree, postorder_host_tree,
-                                                    list(self.recongraph.keys()))
-        event_scores = median.generate_scores(postorder_mapping_node_list[::-1], self.recongraph, parasite_tree_root)[0]
-        return event_scores
-
-
     def median(self) -> ReconciliationWrapper:
         """
         Return one of the best ReconciliationWrapper that best represents the
@@ -169,7 +159,7 @@ class ReconGraphWrapper(Drawable):
         random_median = median.choose_random_median_wrapper(median_reconciliation, roots_for_median, med_counts_dict)
         median_root = _find_roots(random_median)[0]
         return ReconciliationWrapper(random_median, median_root, self.recon_input, self.dup_cost, self.trans_cost,
-                                     self.loss_cost, self.total_cost)
+                                     self.loss_cost, self.total_cost, self.event_scores)
 
     def cluster(self, n) -> List['ReconGraphWrapper']:
         """
@@ -192,6 +182,19 @@ class ReconGraphWrapper(Drawable):
                 ReconGraphWrapper(graph, roots, n, self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost,
                                   self.total_cost))
         return new_graphs
+
+    def __compute_event_frequencies(self) -> dict:
+        """
+        Helper function for __init__.
+        Return a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
+        indicated by the recongraph
+        """
+        postorder_parasite_tree, parasite_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
+        postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_dict, "hTop")
+        postorder_mapping_node_list = median.mapping_node_sort(postorder_parasite_tree, postorder_host_tree,
+                                                    list(self.recongraph.keys()))
+        event_scores = median.generate_scores(postorder_mapping_node_list[::-1], self.recongraph, parasite_tree_root)[0]
+        return event_scores
 
 class CostRegionsWrapper(Drawable):
     def __init__(self, cost_vectors, transfer_min, transfer_max, dup_min, dup_max):

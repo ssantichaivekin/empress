@@ -87,7 +87,7 @@ def _find_roots(old_recon_graph) -> List[MappingNode]:
             roots.append(mapping)
     return roots
 
-def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_scores = None):
+def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_scores: Dict[tuple, float] = None):
     """
     Convert the old reconciliation graph format to Reconciliation.
 
