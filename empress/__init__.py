@@ -183,7 +183,7 @@ class ReconGraphWrapper(Drawable):
                                   self.total_cost, self.event_scores))
         return new_graphs
 
-    def set_event_frequencies(self) -> dict:
+    def set_event_frequencies(self):
         """
         Set self.event_scores,
         event_scores is a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
