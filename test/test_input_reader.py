@@ -1,4 +1,5 @@
 import unittest
+import os
 
 from empress import input_reader
 
@@ -67,6 +68,28 @@ class TestInputReader(unittest.TestCase):
     def test_from_files_file_not_found_error(self):
         self.assertRaises(input_reader.ReconInputError, input_reader.ReconInput.from_files,
                           self.example_host_file, self.example_parasite_file, "./this-file-does-not-exist")
+
+    def test_write_to_file(self):
+        recon_input = input_reader.ReconInput(self.example_host, None, self.example_parasite, None,
+                                              self.example_valid_mapping)
+        host_save_path = "./temp_host.tree"
+        parasite_save_path = "./temp_parasite.tree"
+        tip_mapping_save_path = "./temp_mapping.mapping"
+
+        recon_input.save_to_files(host_save_path, parasite_save_path, tip_mapping_save_path)
+
+        os.path.exists(host_save_path)
+        os.path.exists(parasite_save_path)
+        os.path.exists(tip_mapping_save_path)
+
+        result_input = input_reader.ReconInput.from_files(host_save_path, parasite_save_path, tip_mapping_save_path)
+        self.assertEqual(self.example_host, result_input.host_dict)
+        self.assertEqual(self.example_parasite, result_input.parasite_dict)
+        self.assertEqual(self.example_valid_mapping, result_input.tip_mapping)
+
+        os.remove(host_save_path)
+        os.remove(parasite_save_path)
+        os.remove(tip_mapping_save_path)
 
 
 if __name__ == '__main__':
