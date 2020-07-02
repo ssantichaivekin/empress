@@ -1,7 +1,7 @@
 """
 tanglegram.py
 Visualizes tanglegrams using matplotlib
-Berto Garcia, Sonia Sehra
+Berto Garcia, Sonia Sehra; refactored by Ran L-H
 """
 
 from empress.recon_vis import utils, plot_tools, tree
@@ -9,10 +9,9 @@ from empress.recon_vis import utils, plot_tools, tree
 VERTICAL_OFFSET = 20
 HORIZONTAL_SPACING = 10
 LEAF_SPACING = 5
-HOST_COUNTER = 0
-PARASITE_COUNTER = 0
+# Global variables host_leaf_counter and parasite_leaf_counter defined and initialized in render.
 
-def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels: bool) -> None:
+def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels: bool) -> FigureWrapper:
     """
     Render tanglegram
     :param host_dict - host tree (dictionary representation)
@@ -22,11 +21,15 @@ def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels
         be displayed
     :return FigureWrapper object 
     """
+    global host_leaf_counter, parasite_leaf_counter  # counters for number of leaves rendered so far
+
+    host_leaf_counter = 0
+    parasite_leaf_counter = 0
     fig = plot_tools.FigureWrapper("Host | Parasite")
     host_tree = utils.dict_to_tree(host_dict, tree.TreeType.HOST)
     parasite_tree = utils.dict_to_tree(parasite_dict, tree.TreeType.PARASITE)
-    render_helper_host(fig, host_tree.root_node, show_internal_labels)
-    render_helper_parasite(fig, parasite_tree.root_node, show_internal_labels)
+    _render_helper_host(fig, host_tree.root_node, show_internal_labels)
+    _render_helper_parasite(fig, parasite_tree.root_node, show_internal_labels)
 
     host_dict = {}
     for host in host_tree.leaf_list():
@@ -40,19 +43,19 @@ def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels
                  col=plot_tools.GRAY, style='--')
     return fig
 
-def render_helper_host(fig, node, show_internal_labels):
+def _render_helper_host(fig, node, show_internal_labels):
     """
     Render helper for host tree
     """
-    global HOST_COUNTER
+    global host_leaf_counter
     if node.is_leaf:
 
         # set up layout for node (will be used later for drawing lines between nodes)
         leaf_layout = tree.NodeLayout()
         leaf_layout.col = -VERTICAL_OFFSET
-        leaf_layout.row = HOST_COUNTER
+        leaf_layout.row = host_leaf_counter
 
-        HOST_COUNTER += LEAF_SPACING
+        host_leaf_counter += LEAF_SPACING
         node.layout = leaf_layout
 
         # plot node using leaf_layout
@@ -61,8 +64,8 @@ def render_helper_host(fig, node, show_internal_labels):
 
     else:
         # recursively call helper funciton on child nodes
-        render_helper_host(fig, node.left_node, show_internal_labels)
-        render_helper_host(fig, node.right_node, show_internal_labels)
+        _render_helper_host(fig, node.left_node, show_internal_labels)
+        _render_helper_host(fig, node.right_node, show_internal_labels)
 
         # get layouts for child nodes to determine position of current node
         right_layout = node.right_node.layout
@@ -71,7 +74,7 @@ def render_helper_host(fig, node, show_internal_labels):
         # create layout for current node
         node.layout = tree.NodeLayout()
         node.layout.col = min(right_layout.col, left_layout.col) - HORIZONTAL_SPACING
-        y_avg = (float(right_layout.row)+float(left_layout.row))/2.0
+        y_avg = (float(right_layout.row)+float(left_layout.row))/2
         node.layout.row = y_avg
 
         # plot node using node_layout
@@ -90,19 +93,18 @@ def render_helper_host(fig, node, show_internal_labels):
         fig.line((node.layout.col, right_layout.row), right_loc, col=plot_tools.BLACK)
 
 
-def render_helper_parasite(fig, node, show_internal_labels):
+def _render_helper_parasite(fig, node, show_internal_labels):
     """
     Render helper for parasite tree
     """
-
-    global PARASITE_COUNTER
+    global parasite_leaf_counter
     if node.is_leaf:
         # set up layout for node (will be used later for drawing lines between nodes)
         leaf_layout = tree.NodeLayout()
         leaf_layout.col = VERTICAL_OFFSET
-        leaf_layout.row = PARASITE_COUNTER
+        leaf_layout.row = parasite_leaf_counter
 
-        PARASITE_COUNTER += LEAF_SPACING
+        parasite_leaf_counter += LEAF_SPACING
         node.layout = leaf_layout
 
         # plot node using leaf_layout
@@ -111,8 +113,8 @@ def render_helper_parasite(fig, node, show_internal_labels):
 
     else:
         # recursively call helper funciton on child nodes
-        render_helper_parasite(fig, node.left_node, show_internal_labels)
-        render_helper_parasite(fig, node.right_node, show_internal_labels)
+        _render_helper_parasite(fig, node.left_node, show_internal_labels)
+        _render_helper_parasite(fig, node.right_node, show_internal_labels)
 
         # get layouts for child nodes to determine position of current node
         right_layout = node.right_node.layout
@@ -121,7 +123,7 @@ def render_helper_parasite(fig, node, show_internal_labels):
         # create layout for current node
         node.layout = tree.NodeLayout()
         node.layout.col = max(left_layout.col, right_layout.col) + HORIZONTAL_SPACING
-        y_avg = (float(right_layout.row)+float(left_layout.row))/2.0
+        y_avg = (float(right_layout.row)+float(left_layout.row))/2
         node.layout.row = y_avg
 
         # plot node using node_layout
