@@ -11,7 +11,7 @@ except ImportError:
     print("Using Agg backend: will not be able to create pop-up windows.")
     matplotlib.use("Agg")
 from matplotlib import pyplot as plt
-from typing import List
+from typing import List, Tuple
 from abc import ABC, abstractmethod
 
 from empress.xscape.CostVector import CostVector
@@ -94,6 +94,25 @@ class ReconciliationWrapper(Drawable):
     def draw_on(self, axes: plt.Axes):
         recon_viewer.render(self.recon_input.host_dict, self.recon_input.parasite_dict, self._reconciliation,
                             axes=axes)
+
+    def count_events(self) -> Tuple[int, int, int]:
+        """
+        Return duplication event count, transfer event count, loss event count.
+        """
+        dup_count = 0
+        trans_count = 0
+        loss_count = 0
+        for key in self._reconciliation:
+            event_list = self._reconciliation[key]
+            event_type = event_list[0][0]
+            if event_type == 'D':
+                dup_count += 1
+            elif event_type == 'T':
+                trans_count += 1
+            elif event_type == 'L':
+                loss_count += 1
+        return dup_count, trans_count, loss_count
+
 
 class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type

@@ -51,6 +51,23 @@ class TestEmpressWrappers(unittest.TestCase):
         # n_recon ~ number of reconciliation graphs
         self.assertEqual(total_recon, recongraph.n_recon)
 
+    def test_reconciliation_count_events(self):
+        recon_dict = {
+            ('n0', 'm1'): [('T', ('n1', 'm1'), ('n5', 'm5'))],
+            ('n1', 'm1'): [('L', ('n1', 'm2'), (None, None))],
+            ('n1', 'm2'): [('T', ('n2', 'm2'), ('n3', 'm4'))],
+            ('n2', 'm2'): [('C', (None, None), (None, None))],
+            ('n4', 'm5'): [('C', (None, None), (None, None))],
+            ('n5', 'm5'): [('C', (None, None), (None, None))],
+            ('n6', 'm6'): [('C', (None, None), (None, None))],
+            ('n3', 'm4'): [('S', ('n4', 'm5'), ('n6', 'm6'))]
+        }
+        reconciliation = empress.ReconciliationWrapper(recon_dict, None, None, None, None, None, None, None)
+        dup_count, trans_count, loss_count = reconciliation.count_events()
+        self.assertEqual(dup_count, 0)
+        self.assertEqual(trans_count, 2)
+        self.assertEqual(loss_count, 1)
+
 
 if __name__ == '__main__':
     unittest.main()
