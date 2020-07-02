@@ -68,14 +68,14 @@ def mapping_node_sort(ordered_gene_node_list, ordered_species_node_list, mapping
     return sorted_list
 
 
-def generate_scores(preorder_mapping_node_list, dtl_recon_graph, gene_root, normalize=True):
+def generate_frequencies_dict(preorder_mapping_node_list, dtl_recon_graph, gene_root, normalize=True):
     """
     Computes frequencies for every event
     :param preorder_mapping_node_list: A list of all mapping nodes in DTLReconGraph in double preorder
     :param dtl_recon_graph: The DTL reconciliation graph that we are scoring
     :param gene_root: The root of the gene tree
     :return: 0. A file structured like the DTLReconGraph, but with the lists of events replaced
-                with dicts, where the keys are the events and the values are the scores of those events, and
+                with dicts, where the keys are the events and the values are the frequencies of those events, and
              1. The number of MPRs in DTLReconGraph.
     """
 
@@ -93,36 +93,36 @@ def generate_scores(preorder_mapping_node_list, dtl_recon_graph, gene_root, norm
             # This will also populate the counts dictionary with the number of MPRs each event and mapping node is in
             count += count_mprs(mapping_node, dtl_recon_graph, counts)
 
-    # Initialize the scores dict. This dict contains the frequency score of each mapping node
-    scores = dict()
+    # This dict contains the frequency score of each mapping node
+    node_frequencies = dict()
     for mapping_node in preorder_mapping_node_list:
-        scores[mapping_node] = 0.0
+        node_frequencies[mapping_node] = 0.0
 
     # This entry is going to be thrown away, but it seems neater to just let calculateScoresOfChildren
     # add scores to an unused entry than to check to see if they are (None, None) in the first place.
-    scores[(None, None)] = 0.0
+    node_frequencies[(None, None)] = 0.0
 
     # The scored graph is like the DTLReconGraph, except instead of individual events being in a list, they are the
-    # keys of a dictionary where the values are the frequency scores of those events. So, event_scores takes event
+    # keys of a dictionary where the values are the frequency scores of those events. So, event_frequencies takes event
     # nodes as keys and (after being filled below) has the frequencies of those events in MPRs as the values
-    event_scores = {}
+    event_frequencies = {}
 
     for mapping_node in preorder_mapping_node_list:
-
         # If we are at the root of the gene tree, then we need to initialize the score entry
         if mapping_node[0] == gene_root:
-            scores[mapping_node] = counts[mapping_node]
+            node_frequencies[mapping_node] = counts[mapping_node]
         # This fills up the event scores dictionary
-        calculate_scores_for_children(mapping_node, dtl_recon_graph, event_scores, scores, counts)
+        calculate_event_frequencies_for_children(mapping_node, dtl_recon_graph, event_frequencies, node_frequencies,
+                                                 counts)
 
     if normalize:
         # Normalize all of the event_scores by the number of MPRs
         # so that each score is a percentage
         for mapping_node in preorder_mapping_node_list:
             for event in dtl_recon_graph[mapping_node]:
-                    event_scores[event] = event_scores[event] / float(count)
+                event_frequencies[event] = event_frequencies[event] / float(count)
 
-    return event_scores, count
+    return event_frequencies, count
 
 
 def count_mprs(mapping_node, dtl_recon_graph, counts):
@@ -168,42 +168,42 @@ def count_mprs(mapping_node, dtl_recon_graph, counts):
     return count
 
 
-def calculate_scores_for_children(mapping_node, dtl_recon_graph, event_scores, mapping_scores, counts):
+def calculate_event_frequencies_for_children(mapping_node, dtl_recon_graph, event_frequencies, node_frequencies, counts):
     """
-    This function calculates the frequency score for every mapping node that is a child of an event node that is a
-    child of the given mapping node, and stores them in scoredGraph.
-    :param mapping_node: The mapping node that is the parent of the two scores we will compute
+    This function calculates the frequency for every mapping node that is a child of an event node that is a
+    child of the given mapping node, and stores them in dtl_recon_graph.
+    :param mapping_node: The mapping node that is the parent of the two frequencies we will compute
     :param dtl_recon_graph: The DTL reconciliation graph (see data structure quick reference at top of file)
-    :param event_scores: The scored DTL reconciliation graph (see data structure quick reference at top of file)
-    :param mapping_scores: The score for each mapping node (which will ultimately be thrown away) that this function
-    helps build up
+    :param event_frequencies: The frequency for each event
+    :param node_frequencies: The frequency for each mapping node (which will ultimately be thrown away) that this
+    function helps build up
     :param counts: The counts generated in countMPRs (from the bottom-up). Note that the counts are filled during a
-    bottom-up traversal, and the scores are filled in during a top-down traversal after the counts
-    :return: Nothing, but scoredGraph is built up.
+    bottom-up traversal, and the frequencies are filled in during a top-down traversal after the counts
+    :return: Nothing, but frequencies are built up.
     """
 
-    assert mapping_scores[mapping_node] != 0, "Sorting error! Ensure that parents are calculated before children"
+    assert node_frequencies[mapping_node] != 0, "Sorting error! Ensure that parents are calculated before children"
 
     # This multiplier results in  counts[event_node] / counts[mapping_node] for each event node, which is the % of
-    # this mapping node's scores (scores[mapping_node]) that it gives to each event node.
-    multiplier = float(mapping_scores[mapping_node]) / counts[mapping_node]
+    # this mapping node's frequencies (node_frequencies[mapping_node]) that it gives to each event node.
+    multiplier = float(node_frequencies[mapping_node]) / counts[mapping_node]
 
     # Iterate over every event
     for event_node in dtl_recon_graph[mapping_node]:
 
-        event_scores[event_node] = multiplier * counts[event_node]
+        event_frequencies[event_node] = multiplier * counts[event_node]
 
         # Save the children produced by the current event
         mapping_child1 = event_node[1]
         mapping_child2 = event_node[2]
-        mapping_scores[mapping_child1] += event_scores[event_node]
-        mapping_scores[mapping_child2] += event_scores[event_node]
+        node_frequencies[mapping_child1] += event_frequencies[event_node]
+        node_frequencies[mapping_child2] += event_frequencies[event_node]
 
 
-def compute_median(dtl_recon_graph, event_scores, postorder_mapping_nodes, mpr_roots):
+def compute_median(dtl_recon_graph, event_frequencies, postorder_mapping_nodes, mpr_roots):
     """
     :param dtl_recon_graph: A dictionary representing a DTL Recon Graph.
-    :param event_scores: A dictionary with event nodes as keys and values corresponding to the frequency of
+    :param event_frequencies: A dictionary with event nodes as keys and values corresponding to the frequency of
     that events in MPR space for the recon graph
     :param postorder_mapping_nodes: A list of the mapping nodes in a possible MPR, except sorted first in
     postorder by species node and postorder by gene node
@@ -219,7 +219,7 @@ def compute_median(dtl_recon_graph, event_scores, postorder_mapping_nodes, mpr_r
 
     # Initialize a dict that will store the running total frequency sum incurred up to the given mapping node,
     # and the event node that directly gave it that frequency sum. Keys are mapping nodes, values are tuples
-    # consisting of a list of event nodes that maximize the frequency - 0.5 sum score for the lower level,
+    # consisting of a list of event nodes that maximize the frequency - 0.5 sum frequencies for the lower level,
     # and the corresponding running total frequency - 0.5 sum up to that mapping node
     sum_freqs = dict()
 
@@ -238,9 +238,9 @@ def compute_median(dtl_recon_graph, event_scores, postorder_mapping_nodes, mpr_r
             # Note that 'event' is of the form: ('event ID', 'Child 1', 'Child 2'), so the 0th element is the event
             # ID and the 1st and 2nd elements are the children produced by the event
             if event[0] == 'L':  # Losses produce only one child, so we only need to look to one lower mapping node
-                events.append((event, sum_freqs[event[1]][1] + event_scores[event] - 0.5))
+                events.append((event, sum_freqs[event[1]][1] + event_frequencies[event] - 0.5))
             else:  # Only other options are T, S, and D, which produce two children
-                events.append((event, sum_freqs[event[1]][1] + sum_freqs[event[2]][1] + event_scores[event] - 0.5))
+                events.append((event, sum_freqs[event[1]][1] + sum_freqs[event[2]][1] + event_frequencies[event] - 0.5))
 
         # Find and save the max (frequency - 0.5) sum
         max_sum = max(events, key=itemgetter(1))[1]
@@ -259,7 +259,7 @@ def compute_median(dtl_recon_graph, event_scores, postorder_mapping_nodes, mpr_r
         # Save the result for this mapping node so it can be used in higher mapping nodes in the graph
         sum_freqs[map_node] = (best_events[:], max_sum)
 
-    # Get all possible roots of the graph and their running frequency scores, in a list, for later use
+    # Get all possible roots of the graph and their running frequencies, in a list, for later use
     possible_root_combos = [(root, sum_freqs[root][1]) for root in mpr_roots]
 
     # Find the best frequency - 0.5 sum for all of the potential roots for the median
@@ -391,12 +391,12 @@ def get_median_graph(recon_graph, postorder_gene_tree, postorder_species_tree, g
     # Get a list of the mapping nodes in preorder
     postorder_mapping_node_list = mapping_node_sort(postorder_gene_tree, postorder_species_tree,
                                                     list(recon_graph.keys()))
-    # Find the dictionary for frequency scores for the given mapping nodes and graph, and the given gene root
-    scores_dict = generate_scores(postorder_mapping_node_list[::-1], recon_graph, gene_tree_root)
+    # Find the dictionary for frequencies for the given mapping nodes and graph, and the given gene root
+    event_frequencies, _ = generate_frequencies_dict(postorder_mapping_node_list[::-1], recon_graph, gene_tree_root)
 
     # Now find the median and related info
-    median_graph, n_meds, roots_for_median = compute_median(recon_graph, scores_dict[0],
-                                                                     postorder_mapping_node_list, best_roots)
+    median_graph, n_meds, roots_for_median = compute_median(recon_graph, event_frequencies,
+                                                            postorder_mapping_node_list, best_roots)
     return median_graph, n_meds, roots_for_median
 
 def get_med_counts(median_reconciliation, roots_for_median):

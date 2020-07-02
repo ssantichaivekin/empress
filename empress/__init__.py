@@ -81,7 +81,7 @@ class ReconciliationWrapper(Drawable):
     # TODO: Replace dict with Reconciliation type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, reconciliation: dict, root: tuple, recon_input: ReconInput, dup_cost, trans_cost, loss_cost,
-                 total_cost: float, event_scores: Dict[tuple, float] = None):
+                 total_cost: float, event_frequencies: Dict[tuple, float] = None):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -89,7 +89,7 @@ class ReconciliationWrapper(Drawable):
         self.total_cost = total_cost
         self._reconciliation = reconciliation
         self.root = root
-        self.event_scores = event_scores
+        self.event_frequencies = event_frequencies
 
     def draw_on(self, axes: plt.Axes):
         recon_viewer.render(self.recon_input.host_dict, self.recon_input.parasite_dict, self._reconciliation,
@@ -99,7 +99,7 @@ class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, recongraph: dict, roots: list, n_recon: int, recon_input: ReconInput, dup_cost, trans_cost,
-                 loss_cost, total_cost: float, event_scores: Dict[tuple, float] = None):
+                 loss_cost, total_cost: float, event_frequencies: Dict[tuple, float] = None):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -108,7 +108,7 @@ class ReconGraphWrapper(Drawable):
         self.total_cost = total_cost
         self.n_recon = n_recon
         self.roots = roots
-        self.event_scores = event_scores
+        self.event_frequencies = event_frequencies
 
     def draw_on(self, axes: plt.Axes):
         """
@@ -159,7 +159,7 @@ class ReconGraphWrapper(Drawable):
         random_median = median.choose_random_median_wrapper(median_reconciliation, roots_for_median, med_counts_dict)
         median_root = _find_roots(random_median)[0]
         return ReconciliationWrapper(random_median, median_root, self.recon_input, self.dup_cost, self.trans_cost,
-                                     self.loss_cost, self.total_cost, self.event_scores)
+                                     self.loss_cost, self.total_cost, self.event_frequencies)
 
     def cluster(self, n) -> List['ReconGraphWrapper']:
         """
@@ -180,21 +180,21 @@ class ReconGraphWrapper(Drawable):
             n = recongraph_tools.count_mprs_wrapper(roots, graph)
             new_graphs.append(
                 ReconGraphWrapper(graph, roots, n, self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost,
-                                  self.total_cost, self.event_scores))
+                                  self.total_cost, self.event_frequencies))
         return new_graphs
 
     def set_event_frequencies(self):
         """
-        Set self.event_scores,
-        event_scores is a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
+        Set self.event_frequencies,
+        event_frequencies is a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
         indicated by the recongraph
         """
         postorder_parasite_tree, parasite_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
         postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_dict, "hTop")
         postorder_mapping_node_list = median.mapping_node_sort(postorder_parasite_tree, postorder_host_tree,
                                                     list(self.recongraph.keys()))
-        event_scores = median.generate_scores(postorder_mapping_node_list[::-1], self.recongraph, parasite_tree_root)[0]
-        self.event_scores = event_scores
+        event_frequencies = median.generate_frequencies_dict(postorder_mapping_node_list[::-1], self.recongraph, parasite_tree_root)[0]
+        self.event_frequencies = event_frequencies
 
 class CostRegionsWrapper(Drawable):
     def __init__(self, cost_vectors, transfer_min, transfer_max, dup_min, dup_max):
