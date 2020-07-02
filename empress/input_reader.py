@@ -4,7 +4,7 @@ from io import StringIO
 # BioPython libraries
 from Bio import Phylo
 
-from empress.recon_vis import utils as tree_utils
+from pathlib import Path
 
 class ReconInputError(Exception):
     pass
@@ -72,6 +72,42 @@ class ReconInput:
                 self.tip_mapping = tip_mapping
         except Exception as e:
             raise ReconInputError(e)
+
+    def save_to_files(self, host_fname: str, parasite_fname: str, tip_mapping_fname: str):
+        ReconInput._save_newick_tree_to_file(self.host_dict, host_fname)
+        ReconInput._save_newick_tree_to_file(self.parasite_dict, parasite_fname)
+        ReconInput._save_tip_mapping_to_file(self.tip_mapping, tip_mapping_fname)
+
+    @staticmethod
+    def _save_newick_tree_to_file(tree_dict, fname):
+        if Path(fname).suffix not in [".tree", ".nwk", ".newick"]:
+            raise ReconInputError("Newick file name %s does not end with .tree, .nwk, or .newick" % fname)
+
+        root_name = 'hTop' if 'hTop' in tree_dict else 'pTop'
+        tree_dict_str = ReconInput._tree_dict_to_str(tree_dict, root_name)
+        with open(fname, 'w') as f:
+            print(tree_dict_str, file=f)
+
+    @staticmethod
+    def _tree_dict_to_str(tree_dict, root):
+        parent, child, left_edge, right_edge = tree_dict[root]
+        if left_edge is None: # tip
+            return child
+        else:
+            return "({},{}){}".format(
+                ReconInput._tree_dict_to_str(tree_dict, left_edge),
+                ReconInput._tree_dict_to_str(tree_dict, right_edge),
+                child
+            )
+
+    @staticmethod
+    def _save_tip_mapping_to_file(tip_mapping: dict, fname: str):
+        if Path(fname).suffix != ".mapping":
+            raise ReconInputError("Mapping file name %s does not end with .mapping" % fname)
+
+        with open(fname, 'w') as f:
+            for parasite_node, host_node in tip_mapping.items():
+                print("%s:%s" % (parasite_node, host_node), file=f)
 
     @staticmethod
     def _read_newick_tree(file_name: str, tree_type: str):
@@ -193,11 +229,11 @@ class ReconInput:
 
     @staticmethod
     def _leaves_from_tree_dict(tree_dict):
-        leaves = set()
+        leaves = []
         for key in tree_dict:
             parent, child, left_edge, right_edge = tree_dict[key]
             if left_edge is None and right_edge is None:
-                leaves.add(child)
+                leaves.append(child)
         return leaves
 
     @staticmethod

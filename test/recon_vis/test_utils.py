@@ -3,10 +3,10 @@ import os
 import itertools
 import shutil
 from empress import input_reader
+from empress.miscs import input_generator
 from empress.recon_vis import utils
 from empress.reconcile import recongraph_tools
 from empress.histogram import histogram_brute_force
-from empress.reconcile.generate_newick_trees import generateNewickTestsMultipleSizes
 
 class TestUtils(unittest.TestCase):
     """
@@ -18,14 +18,7 @@ class TestUtils(unittest.TestCase):
     """
 
     size_range = [5] # range of sizes of the tree examples we want to generate
-    generated_dir_path = "./temp_newick_samples" # directory for generated examples
-    num_examples_to_test = 5 # number of examples to run in the last test
-
-    def setUp(self):
-        """
-        Generate newick tests of certain sizes
-        """
-        generateNewickTestsMultipleSizes(self.size_range, self.generated_dir_path)
+    num_examples_to_test = 10 # number of examples to run in the last test
 
     def check_topological_order(self, temporal_graph, ordering_dict):
         """
@@ -221,7 +214,7 @@ class TestUtils(unittest.TestCase):
         ('n6', 'm4'): [('C', (None, None), (None, None))]}
 
         self.check_temporally_inconsistent(host_dict, parasite_dict, reconciliation)
-    
+
     def test_deterministic_temporal_order(self):
         """
         Test topological_order gives the same deterministic ordering for the same input
@@ -262,7 +255,7 @@ class TestUtils(unittest.TestCase):
         ('n8', 'G. actuosi'): ('n8', 'G. actuosi', None, None),
         ('n8', 'G. ewingi'): ('n8', 'G. ewingi', None, None)}
 
-        reconciliation = { 
+        reconciliation = {
         ('n0', 'm0'): [('D', ('n1', 'm0'), ('n2', 'm0'))],
         ('n1', 'm0'): [('S', ('n4', 'm1'), ('n3', 'm2'))],
         ('n2', 'm0'): [('L', ('n2', 'm2'), (None, None))],
@@ -289,15 +282,12 @@ class TestUtils(unittest.TestCase):
         temporal_graph = utils.build_temporal_graph(host_dict, parasite_dict, reconciliation)
         ordering_dict = utils.topological_order(temporal_graph)
         # try generating the ordering dict numRepeat times and check they are equal
-        numRepeat = 100
-        for i in range(numRepeat):
+        n_repeat = 100
+        for i in range(n_repeat):
             current_temporal_graph = utils.build_temporal_graph(host_dict, parasite_dict, reconciliation)
             current_ordering_dict = utils.topological_order(current_temporal_graph)
             self.assertEqual(ordering_dict, current_ordering_dict)
 
-    # TODO: fix this along with the newick tree generation script
-    # https://github.com/ssantichaivekin/eMPRess/issues/100
-    @unittest.skip("TODO: Modify this and newick file generation script to use three files")
     def test_topological_order(self):
         """
         Test topological_order by generating host and parasite trees of different sizes and going through
@@ -306,14 +296,11 @@ class TestUtils(unittest.TestCase):
         """
         count = 0
         for tree_size in self.size_range:
-            tree_size_Folder = '%s/size%d' % (self.generated_dir_path, tree_size)
-            for newick in os.listdir(tree_size_Folder):
-                if count >= self.num_examples_to_test: break
-                if newick.startswith('.'): continue
-                recon_input = input_reader.getInput(os.path.join(tree_size_Folder, newick))
+            for _ in range(self.num_examples_to_test):
+                recon_input = input_generator.generate_random_recon_input(tree_size)
                 host_dict = recon_input.host_dict
                 parasite_dict = recon_input.parasite_dict
-                for d, t, l in itertools.product(range(1, 5), repeat=3):
+                for d, t, l in itertools.product(range(1, 3), repeat=3):
                     recon_graph, _, _, best_roots = recongraph_tools.DP(recon_input, d, t, l)
                     for reconciliation, _ in histogram_brute_force.BF_enumerate_MPRs(recon_graph, best_roots):
                         temporal_graph = utils.build_temporal_graph(host_dict, parasite_dict, reconciliation)
@@ -329,12 +316,6 @@ class TestUtils(unittest.TestCase):
                             if ordering_dict is not None:
                                 self.check_topological_order(temporal_graph, ordering_dict)
                 count += 1
-
-    def tearDown(self):
-        """
-        Clean up the generated tests
-        """
-        shutil.rmtree(self.generated_dir_path)
 
 if __name__ == '__main__':
     unittest.main()
