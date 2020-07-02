@@ -4,7 +4,10 @@ Visualizes tanglegrams using matplotlib
 Berto Garcia, Sonia Sehra
 """
 
+from matplotlib import pyplot as plt
+
 from empress.recon_vis import utils, plot_tools, tree
+
 
 VERTICAL_OFFSET = 20
 HORIZONTAL_SPACING = 10
@@ -12,7 +15,8 @@ LEAF_SPACING = 5
 HOST_COUNTER = 0
 PARASITE_COUNTER = 0
 
-def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels: bool) -> None:
+def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels: bool, ax: plt.Axes = None) \
+        -> plot_tools.FigureWrapper:
     """
     Render tanglegram
     :param host_dict - host tree (dictionary representation)
@@ -20,9 +24,10 @@ def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels
     :param phi - tip mapping dictionary
     :param show_internal_labels - boolean indicator of whether internal node names should
         be displayed
+    :param ax - draw on Axes instead if available
     :return FigureWrapper object 
     """
-    fig = plot_tools.FigureWrapper("Host | Parasite")
+    fig = plot_tools.FigureWrapper("Host | Parasite", ax)
     host_tree = utils.dict_to_tree(host_dict, tree.TreeType.HOST)
     parasite_tree = utils.dict_to_tree(parasite_dict, tree.TreeType.PARASITE)
     render_helper_host(fig, host_tree.root_node, show_internal_labels)

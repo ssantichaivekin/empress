@@ -28,6 +28,7 @@ from empress.histogram import histogram_display
 from empress.histogram import histogram_alg
 from empress.cluster import cluster_util
 from empress.recon_vis import recon_viewer
+from empress.recon_vis import tanglegram
 
 def _find_roots(old_recon_graph) -> list:
     not_roots = set()
@@ -198,24 +199,27 @@ class CostRegionsWrapper(Drawable):
         xscape_plot_costs_on_axis(axes, self._cost_vectors, self._transfer_min, self._transfer_max,
                                   self._dup_min, self._dup_max, log=False)
 
+class ReconInputWrapper(ReconInput, Drawable):
+    def draw_on(self, ax: plt.Axes):
+        tanglegram.render(self.host_tree, self.parasite_tree, self.phi, True, ax)
 
-def compute_cost_regions(recon_input: ReconInput, transfer_min: float, transfer_max: float,
-                         dup_min: float, dup_max: float) -> CostRegionsWrapper:
-    """
-    Compute the cost polygon of recon_input. The cost polygon can be used
-    to create a figure that separate costs into different regions.
-    """
-    parasite_tree = recon_input.parasite_tree
-    host_tree = recon_input.host_tree
-    tip_mapping = recon_input.phi
-    cost_vectors = xscape_reconcile(parasite_tree, host_tree, tip_mapping, transfer_min, transfer_max, dup_min, dup_max)
-    return CostRegionsWrapper(cost_vectors, transfer_min, transfer_max, dup_min, dup_max)
+    def compute_cost_regions(self, transfer_min: float, transfer_max: float,
+                             dup_min: float, dup_max: float) -> CostRegionsWrapper:
+        """
+        Compute the cost polygon of recon_input. The cost polygon can be used
+        to create a figure that separate costs into different regions.
+        """
+        parasite_tree = self.parasite_tree
+        host_tree = self.host_tree
+        tip_mapping = self.phi
+        cost_vectors = xscape_reconcile(parasite_tree, host_tree, tip_mapping, transfer_min, transfer_max, dup_min,
+                                        dup_max)
+        return CostRegionsWrapper(cost_vectors, transfer_min, transfer_max, dup_min, dup_max)
 
-
-def reconcile(recon_input: ReconInput, dup_cost: int, trans_cost: int, loss_cost: int) -> ReconGraphWrapper:
-    """
-    Given recon_input (which has parasite tree, host tree, and tip mapping info)
-    and the cost of the three events, computes and returns a reconciliation graph.
-    """
-    graph, total_cost, n_recon, roots = recongraph_tools.DP(recon_input, dup_cost, trans_cost, loss_cost)
-    return ReconGraphWrapper(graph, roots, n_recon, recon_input, dup_cost, trans_cost, loss_cost, total_cost)
+    def reconcile(self, dup_cost: int, trans_cost: int, loss_cost: int) -> ReconGraphWrapper:
+        """
+        Given recon_input (which has parasite tree, host tree, and tip mapping info)
+        and the cost of the three events, computes and returns a reconciliation graph.
+        """
+        graph, total_cost, n_recon, roots = recongraph_tools.DP(self, dup_cost, trans_cost, loss_cost)
+        return ReconGraphWrapper(graph, roots, n_recon, self, dup_cost, trans_cost, loss_cost, total_cost)
