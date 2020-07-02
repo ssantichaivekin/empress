@@ -4,21 +4,21 @@ import os
 
 
 class TestEmpressWrappers(unittest.TestCase):
-    example_input_path = "./examples/test-size5-no924.newick"
+    example_host = "./examples/test_size5_no924_host.nwk"
+    example_parasite = "./examples/test_size5_no924_parasite.nwk"
+    example_mapping = "./examples/test_size5_no924_mapping.mapping"
 
     def test_read_input(self):
-        recon_input = empress.read_input(self.example_input_path)
+        recon_input = empress.ReconInput.from_files(self.example_host, self.example_parasite, self.example_mapping)
         self.assertTrue(isinstance(recon_input, empress.input_reader.ReconInput))
 
     def test_compute_cost_regions(self):
-        recon_input = empress.read_input(self.example_input_path)
+        recon_input = empress.ReconInput.from_files(self.example_host, self.example_parasite, self.example_mapping)
         cost_regions = empress.compute_cost_regions(recon_input, 0.5, 10, 0.5, 10)
         self.assertTrue(isinstance(cost_regions, empress.CostRegionsWrapper))
 
     def test_draw_cost_regions(self):
-        # TODO: move to visualization test
-        # https://github.com/ssantichaivekin/eMPRess/issues/83
-        recon_input = empress.read_input(self.example_input_path)
+        recon_input = empress.ReconInput.from_files(self.example_host, self.example_parasite, self.example_mapping)
         cost_regions = empress.compute_cost_regions(recon_input, 0.5, 10, 0.5, 10)
         fig = cost_regions.draw()
         filename = "./test_draw_cost_regions.png"
@@ -26,7 +26,7 @@ class TestEmpressWrappers(unittest.TestCase):
         os.path.exists(filename)
 
     def test_reconcile(self):
-        recon_input = empress.read_input(self.example_input_path)
+        recon_input = empress.ReconInput.from_files(self.example_host, self.example_parasite, self.example_mapping)
         recongraph = empress.reconcile(recon_input, 1, 1, 1)
         self.assertTrue(isinstance(recongraph, empress.ReconGraphWrapper))
         self.assertTrue(isinstance(recongraph.n_recon, int))
@@ -34,13 +34,13 @@ class TestEmpressWrappers(unittest.TestCase):
         self.assertGreater(recongraph.n_recon, 1)
 
     def test_median(self):
-        recon_input = empress.read_input(self.example_input_path)
+        recon_input = empress.ReconInput.from_files(self.example_host, self.example_parasite, self.example_mapping)
         recongraph = empress.reconcile(recon_input, 1, 1, 1)
         median_reconciliation = recongraph.median()
         self.assertTrue(isinstance(median_reconciliation, empress.ReconciliationWrapper))
 
     def test_clusters(self):
-        recon_input = empress.read_input(self.example_input_path)
+        recon_input = empress.ReconInput.from_files(self.example_host, self.example_parasite, self.example_mapping)
         recongraph = empress.reconcile(recon_input, 1, 1, 1)
         clusters = recongraph.cluster(3)
         self.assertTrue(isinstance(clusters, list))

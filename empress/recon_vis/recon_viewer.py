@@ -2,18 +2,19 @@
 recon_viewer.py
 View a single reconciliation using matplotlib
 """
-from typing import Union
+from typing import Union, Dict
 from matplotlib import pyplot as plt
 
 from empress.recon_vis.recon import EventType
+from empress.recon_vis import tree
 from empress.recon_vis import utils, plot_tools
 from empress.recon_vis.render_settings import LEAF_NODE_COLOR, COSPECIATION_NODE_COLOR, \
     DUPLICATION_NODE_COLOR, TRANSFER_NODE_COLOR, HOST_NODE_COLOR, HOST_EDGE_COLOR, \
     PARASITE_EDGE_COLOR, VERTICAL_OFFSET, COSPECIATION_OFFSET
 
 
-def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False,
-           show_freq=False, axes: Union[plt.Axes, None] = None):
+def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_scores: Dict[tuple, float] = None,
+           show_internal_labels = False, show_freq = False, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
     :param parasite_dict:  Parasite tree represented in dictionary format
@@ -22,7 +23,7 @@ def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False,
     """
     # convert host and parasite dicts to objects and populate nodes with their temporal order
     host_tree, parasite_tree, consistency_type = utils.build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
-    recon = utils.dict_to_reconciliation(recon_dict)
+    recon = utils.dict_to_reconciliation(recon_dict, event_scores)
 
     fig = plot_tools.FigureWrapper(consistency_type, axes)
     if consistency_type != utils.ConsistencyType.NO_CONSISTENCY:
@@ -32,7 +33,7 @@ def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False,
     return fig
 
 
-def render_host(fig, host_tree, show_internal_labels):
+def render_host(fig, host_tree: tree.Tree, show_internal_labels):
     """ Renders the host tree """
     set_host_node_layout(host_tree)
     root = host_tree.root_node
@@ -123,7 +124,7 @@ def render_parasite_node(fig, node, event, show_internal_labels=False, show_freq
     if show_internal_labels:
         fig.text(node_xy, node.name, render_color)
     if show_freq:
-        fig.text(node_xy, event.freq, render_color)
+        fig.text(node_xy, round(event.freq, 3), render_color)
 
 
 def render_parasite_branches(fig, node):
@@ -148,7 +149,7 @@ def event_color(event):
     return plot_tools.BLACK
 
 
-def set_host_node_layout(host_tree):
+def set_host_node_layout(host_tree: tree.Tree):
     """
     Sets the logicalRow and logicalCol values of each Node in host_tree.
     Assumes that each host Node has its order set already and this function
@@ -167,7 +168,7 @@ def set_host_node_layout(host_tree):
     set_internal_host_nodes(host_tree.root_node)
 
 
-def set_internal_host_nodes(node):
+def set_internal_host_nodes(node: tree.Node):
     """ Helper function for set_host_node_layout. """
     if node.is_leaf():
         return
