@@ -15,7 +15,7 @@ from typing import List
 from abc import ABC, abstractmethod
 
 from empress.xscape.CostVector import CostVector
-from empress.input_reader import ReconInput
+from empress.input_reader import _ReconInput
 from empress.xscape.reconcile import reconcile as xscape_reconcile
 from empress.xscape.plotcosts_analytic import plot_costs_on_axis as xscape_plot_costs_on_axis
 from empress.reconcile import recongraph_tools
@@ -81,7 +81,7 @@ class Drawable(ABC):
 class ReconciliationWrapper(Drawable):
     # TODO: Replace dict with Reconciliation type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
-    def __init__(self, reconciliation: dict, root: tuple, recon_input: ReconInput, dup_cost, trans_cost, loss_cost,
+    def __init__(self, reconciliation: dict, root: tuple, recon_input: _ReconInput, dup_cost, trans_cost, loss_cost,
                  total_cost: float, event_scores: Dict[tuple, float] = None):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
@@ -99,7 +99,7 @@ class ReconciliationWrapper(Drawable):
 class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
-    def __init__(self, recongraph: dict, roots: list, n_recon: int, recon_input: ReconInput, dup_cost, trans_cost,
+    def __init__(self, recongraph: dict, roots: list, n_recon: int, recon_input: _ReconInput, dup_cost, trans_cost,
                  loss_cost, total_cost: float, event_scores: Dict[tuple, float] = None):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
@@ -212,9 +212,9 @@ class CostRegionsWrapper(Drawable):
         xscape_plot_costs_on_axis(axes, self._cost_vectors, self._transfer_min, self._transfer_max,
                                   self._dup_min, self._dup_max, log=False)
 
-class ReconInputWrapper(ReconInput, Drawable):
+class ReconInputWrapper(_ReconInput, Drawable):
     def __init__(self, *args, **kwargs):
-        ReconInput.__init__(self, *args, **kwargs)
+        _ReconInput.__init__(self, *args, **kwargs)
 
     def draw_on(self, ax: plt.Axes):
         """

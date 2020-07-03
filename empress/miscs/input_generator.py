@@ -148,8 +148,8 @@ def _generate_all_tip_mapping(host_dict, parasite_dict):
     Each tuple is of the form (parasiteLeaf, hostLeaf).
     The list contains |parasiteLeaf| == |hostLeaf| elements.
     """
-    host_leaves = input_reader.ReconInput._leaves_from_tree_dict(host_dict)
-    parasite_leaves = input_reader.ReconInput._leaves_from_tree_dict(parasite_dict)
+    host_leaves = input_reader._ReconInput._leaves_from_tree_dict(host_dict)
+    parasite_leaves = input_reader._ReconInput._leaves_from_tree_dict(parasite_dict)
     for host_leaves_permuted in itertools.product(host_leaves, repeat=len(parasite_leaves)):
         mapping = {}
         for i, key in enumerate(sorted(parasite_leaves)):
@@ -157,8 +157,8 @@ def _generate_all_tip_mapping(host_dict, parasite_dict):
         yield mapping
 
 def _generate_random_tip_mapping(host_dict, parasite_dict):
-    host_leaves = input_reader.ReconInput._leaves_from_tree_dict(host_dict)
-    parasite_leaves = input_reader.ReconInput._leaves_from_tree_dict(parasite_dict)
+    host_leaves = input_reader._ReconInput._leaves_from_tree_dict(host_dict)
+    parasite_leaves = input_reader._ReconInput._leaves_from_tree_dict(parasite_dict)
     mapping = {}
     for key in parasite_leaves:
         mapping[key] = random.choice(host_leaves)

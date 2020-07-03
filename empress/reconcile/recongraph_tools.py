@@ -30,7 +30,7 @@ from numpy import mean
 from numpy import median as md
 
 from empress.reconcile import reconcile_main_input
-from empress.input_reader import ReconInput
+from empress.input_reader import _ReconInput
 
 Infinity = float('inf')
 
@@ -91,9 +91,9 @@ def contemporaneous(host_1, host_1_parent, host_2, host_2_parent, distances):
     return True
 
 
-def DP(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:
+def DP(tree_data: _ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[dict, float, int, list]:
     """
-    :param tree_data <ReconInput> object - See newickFormatReader (data comes from getInput)
+    :param tree_data <_ReconInput> object - See newickFormatReader (data comes from getInput)
     :param dup_cost <float> - cost of a duplication event
     :param transfer_cost <float> - cost of a transfer event
     :param loss_cost <float> - cost of a loss event
@@ -521,10 +521,10 @@ def build_dtl_recon_graph(best_roots: list, event_dict: dict, unique_dict: dict)
     return unique_dict
 
 
-def reconcile(tree_data: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[
+def reconcile(tree_data: _ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float) -> Tuple[
     dict, dict, dict, int, list]:
     """
-    :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
+    :param tree_data <_ReconInput>: Output of newickFormatReader.getInput()
     :param dup_cost: the cost associated with a duplication event
     :param transfer_cost: the cost associated with a transfer event
     :param loss_cost: the cost associated with a loss event
@@ -551,9 +551,9 @@ def usage():
 
 
 # This should be called in empress_cli.py when the user wants to run reconcile
-def reconcile_inter(tree_data: ReconInput):
+def reconcile_inter(tree_data: _ReconInput):
     """ 
-    :param tree_data <ReconInput>: Output of newickFormatReader.getInput()
+    :param tree_data <_ReconInput>: Output of newickFormatReader.getInput()
     """
     duplication, transfer, loss = reconcile_main_input.get_inputs()
     result = reconcile(tree_data, duplication, transfer, loss)
@@ -562,9 +562,9 @@ def reconcile_inter(tree_data: ReconInput):
 
 
 # This should be called in empress_cli.py when the user already supplied the DTL values
-def reconcile_noninter(tree_data: ReconInput, duplication: float, transfer: float, loss: float):
+def reconcile_noninter(tree_data: _ReconInput, duplication: float, transfer: float, loss: float):
     """ 
-    :param tree_data <ReconInput> : Output of newickFormatReader.getInput()
+    :param tree_data <_ReconInput> : Output of newickFormatReader.getInput()
     """
     result = reconcile(tree_data, duplication, transfer, loss)
     for i in range(len(result)):
