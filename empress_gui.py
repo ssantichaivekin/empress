@@ -412,7 +412,7 @@ class App(tk.Frame):
         self.dup_entry_box.set_border_color("green")
         self.dup_entry_box.validate(validate="key", validatecommand=dup_vcmd)
         self.dup_entry_box.grid(row=0, column=1, sticky="w")
-        self.validate_dup_input(str(1.00))
+        self.validate_dup_input(str(self.dup_entry_box.get()))  # validate for the initialization of self.dup_input to be 1.00
 
         self.trans_label = tk.Label(self.costs_frame, text="Transfer cost:")
         self.trans_label.grid(row=1, column=0, sticky="w")
@@ -424,7 +424,7 @@ class App(tk.Frame):
         self.trans_entry_box.set_border_color("green")
         self.trans_entry_box.validate(validate="all", validatecommand=trans_vcmd)
         self.trans_entry_box.grid(row=1, column=1, sticky="w")
-        self.validate_trans_input(str(1.00))
+        self.validate_trans_input(str(self.trans_entry_box.get()))  # validate for the initialization of self.trans_input to be 1.0
 
         self.loss_label = tk.Label(self.costs_frame, text="Loss cost:")
         self.loss_label.grid(row=2, column=0, sticky="w")
@@ -436,7 +436,7 @@ class App(tk.Frame):
         self.loss_entry_box.set_border_color("green")
         self.loss_entry_box.validate(validate="all", validatecommand=loss_vcmd)
         self.loss_entry_box.grid(row=2, column=1, sticky="w")
-        self.validate_loss_input(str(1.00))
+        self.validate_loss_input(str(self.loss_entry_box.get()))  # validate for the initialization of self.loss_input to be 1.00
     
     def validate_dup_input(self, input_after_change: str):
         """Duplication cost is only allowed to be a float that is >= 0."""
