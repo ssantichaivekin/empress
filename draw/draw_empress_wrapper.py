@@ -145,10 +145,16 @@ def test_stats_1():
 
 test_stats_1()
 
-
 def test_recon_input_draw_tanglegram():
     recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)
     fig = recon_input.draw()
     fig.savefig(Path(common.output_path).joinpath("test_recon_input_draw_tanglegram.png"))
 
 test_recon_input_draw_tanglegram()
+
+def test_recon_input_draw_tanglegram_2():
+    recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)
+    fig = recon_input.draw()
+    fig.savefig(Path(common.output_path).joinpath("test_recon_input_draw_tanglegram_2.png"))
+
+test_recon_input_draw_tanglegram_2()
