@@ -3,26 +3,30 @@ import os
 import random
 
 from empress import input_reader
+
+from typing import Iterable
+
+import empress
 random.seed(1)
 
-def generate_all_recon_input(n_leaves: int) -> input_reader.ReconInput:
+def generate_all_recon_input(n_leaves: int) -> Iterable[empress.ReconInputWrapper]:
     """
-    Create an iterable of all possible ReconInput object with specified number of host/parasite leaves.
+    Create an iterable of all possible ReconInputWrapper object with specified number of host/parasite leaves.
     """
     for host_dict in _generate_all_host_dict(n_leaves):
         for parasite_dict in _generate_all_parasite_dict(n_leaves):
             for mapping in _generate_all_tip_mapping(host_dict, parasite_dict):
-                yield input_reader.ReconInput(host_dict, None, parasite_dict, None, mapping)
+                yield empress.ReconInputWrapper(host_dict, None, parasite_dict, None, mapping)
 
-def generate_random_recon_input(n_leaves: int) -> input_reader.ReconInput:
+def generate_random_recon_input(n_leaves: int) -> empress.ReconInputWrapper:
     """
-    Randomly create one ReconInput object with specified number of host/parasite leaves.
+    Randomly create one ReconInputWrapper object with specified number of host/parasite leaves.
     The randomization is not guaranteed to be uniform.
     """
     host_dict = _generate_random_host_dict(n_leaves)
     parasite_dict = _generate_random_parasite_dict(n_leaves)
     mapping = _generate_random_tip_mapping(host_dict, parasite_dict)
-    return input_reader.ReconInput(host_dict, None, parasite_dict, None, mapping)
+    return empress.ReconInputWrapper(host_dict, None, parasite_dict, None, mapping)
 
 
 def _generate_all_host_dict(n_leaves):
@@ -144,8 +148,8 @@ def _generate_all_tip_mapping(host_dict, parasite_dict):
     Each tuple is of the form (parasiteLeaf, hostLeaf).
     The list contains |parasiteLeaf| == |hostLeaf| elements.
     """
-    host_leaves = input_reader.ReconInput._leaves_from_tree_dict(host_dict)
-    parasite_leaves = input_reader.ReconInput._leaves_from_tree_dict(parasite_dict)
+    host_leaves = input_reader._ReconInput._leaves_from_tree_dict(host_dict)
+    parasite_leaves = input_reader._ReconInput._leaves_from_tree_dict(parasite_dict)
     for host_leaves_permuted in itertools.product(host_leaves, repeat=len(parasite_leaves)):
         mapping = {}
         for i, key in enumerate(sorted(parasite_leaves)):
@@ -153,8 +157,8 @@ def _generate_all_tip_mapping(host_dict, parasite_dict):
         yield mapping
 
 def _generate_random_tip_mapping(host_dict, parasite_dict):
-    host_leaves = input_reader.ReconInput._leaves_from_tree_dict(host_dict)
-    parasite_leaves = input_reader.ReconInput._leaves_from_tree_dict(parasite_dict)
+    host_leaves = input_reader._ReconInput._leaves_from_tree_dict(host_dict)
+    parasite_leaves = input_reader._ReconInput._leaves_from_tree_dict(parasite_dict)
     mapping = {}
     for key in parasite_leaves:
         mapping[key] = random.choice(host_leaves)
