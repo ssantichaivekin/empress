@@ -15,13 +15,13 @@ LEAF_SPACING = 5
 HOST_COUNTER = 0
 PARASITE_COUNTER = 0
 
-def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels: bool, ax: plt.Axes = None) \
+def render(host_dict: dict, parasite_dict: dict, tip_mapping: dict, show_internal_labels: bool, ax: plt.Axes = None) \
         -> plot_tools.FigureWrapper:
     """
     Render tanglegram
     :param host_dict - host tree (dictionary representation)
     :param parasite_dict - parasite tree (dictionary representation)
-    :param phi - tip mapping dictionary
+    :param tip_mapping - tip mapping dictionary
     :param show_internal_labels - boolean indicator of whether internal node names should
         be displayed
     :param ax - draw on Axes instead if available
@@ -40,7 +40,7 @@ def render(host_dict: dict, parasite_dict: dict, phi: dict, show_internal_labels
     # connect hosts leaves to parasite leaves
     for leaf in parasite_tree.leaf_list():
         parasite = leaf
-        host = host_dict[phi[leaf.name]]
+        host = host_dict[tip_mapping[leaf.name]]
         fig.line((host.layout.col, host.layout.row), (parasite.layout.col, parasite.layout.row),
                  col=plot_tools.GRAY, style='--')
     return fig
@@ -50,7 +50,7 @@ def render_helper_host(fig, node, show_internal_labels):
     Render helper for host tree
     """
     global HOST_COUNTER
-    if node.is_leaf:
+    if node.is_leaf():
 
         # set up layout for node (will be used later for drawing lines between nodes)
         leaf_layout = tree.NodeLayout()
@@ -101,7 +101,7 @@ def render_helper_parasite(fig, node, show_internal_labels):
     """
 
     global PARASITE_COUNTER
-    if node.is_leaf:
+    if node.is_leaf():
         # set up layout for node (will be used later for drawing lines between nodes)
         leaf_layout = tree.NodeLayout()
         leaf_layout.col = VERTICAL_OFFSET

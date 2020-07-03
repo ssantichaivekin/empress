@@ -213,8 +213,14 @@ class CostRegionsWrapper(Drawable):
                                   self._dup_min, self._dup_max, log=False)
 
 class ReconInputWrapper(ReconInput, Drawable):
+    def __init__(self, *args, **kwargs):
+        ReconInput.__init__(self, *args, **kwargs)
+
     def draw_on(self, ax: plt.Axes):
-        tanglegram.render(self.host_tree, self.parasite_tree, self.phi, True, ax)
+        """
+        This draws the tanglegram.
+        """
+        tanglegram.render(self.host_dict, self.parasite_dict, self.tip_mapping, True, ax)
 
     def compute_cost_regions(self, transfer_min: float, transfer_max: float,
                          dup_min: float, dup_max: float) -> CostRegionsWrapper:
