@@ -88,7 +88,7 @@ def _find_roots(old_recon_graph) -> List[MappingNode]:
             roots.append(mapping)
     return roots
 
-def dict_to_reconciliation(old_recon: Dict[Tuple, List]):
+def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_scores: Dict[tuple, float] = None):
     """
     Convert the old reconciliation graph format to Reconciliation.
 
@@ -106,11 +106,13 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List]):
         raise ValueError("old_recon has many roots")
     root = roots[0]
     recon = Reconciliation(root)
+    event = None
     for mapping in old_recon:
         host, parasite = mapping
         if len(old_recon[mapping]) != 1:
             raise ValueError('old_recon mapping node has no or multiple events')
-        etype, left, right = old_recon[mapping][0]
+        event_tuple = old_recon[mapping][0]
+        etype, left, right = event_tuple
         mapping_node = MappingNode(host, parasite)
         if etype in 'SDT':
             left_parasite, left_host = left
@@ -118,19 +120,22 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List]):
             left_mapping = MappingNode(left_parasite, left_host)
             right_mapping = MappingNode(right_parasite, right_host)
             if etype == 'S':
-                recon.set_event(mapping_node, Cospeciation(left_mapping, right_mapping))
+                event = Cospeciation(left_mapping, right_mapping)
             if etype == 'D':
-                recon.set_event(mapping_node, Duplication(left_mapping, right_mapping))
+                event = Duplication(left_mapping, right_mapping)
             if etype == 'T':
-                recon.set_event(mapping_node, Transfer(left_mapping, right_mapping))
+                event = Transfer(left_mapping, right_mapping)
         elif etype == 'L':
             child_parasite, child_host = left
             child_mapping = MappingNode(child_parasite, child_host)
-            recon.set_event(mapping_node, Loss(child_mapping))
+            event = Loss(child_mapping)
         elif etype == 'C':
-            recon.set_event(mapping_node, TipTip())
+            event = TipTip()
         else:
             raise ValueError('%s not in "SDTLC"' % etype)
+        if event_scores is not None:
+            event._freq = event_scores[event_tuple]
+        recon.set_event(mapping_node, event)
     return recon
 
 # Temporal ordering utilities

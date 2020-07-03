@@ -251,25 +251,25 @@ class App(tk.Frame):
 
         self.recon_info_displayed = False
         
-        if self.cost_space_window is not None and self.cost_space_window.winfo_exists() == 1:
+        if self.cost_space_window is not None and self.cost_space_window.winfo_exists():
             self.cost_space_window.destroy()
 
-        if self.entire_space_window is not None and self.entire_space_window.winfo_exists() == 1:
+        if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
             self.entire_space_window.destroy()
         
-        if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists() == 1:
+        if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
             self.set_num_cluster_window.destroy()
 
-        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists() == 1:
+        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
             self.view_solution_space_window.destroy()
 
-        if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists() == 1:
+        if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists():
             self.one_MPR_window.destroy()
 
-        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists() == 1:
+        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
             self.view_reconciliations_window.destroy()
 
-        if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists() == 1:
+        if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
 
     def load_input_files(self, event):
@@ -498,22 +498,22 @@ class App(tk.Frame):
             self.view_reconciliations_dropdown.configure(state=tk.DISABLED)
             self.view_pvalue_histogram_btn.configure(state=tk.DISABLED)
             
-            if self.entire_space_window is not None and self.entire_space_window.winfo_exists() == 1:
+            if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
                 self.entire_space_window.destroy()
             
-            if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists() == 1:
+            if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
                 self.set_num_cluster_window.destroy()
 
-            if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists() == 1:
+            if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
                 self.view_solution_space_window.destroy()
 
-            if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists() == 1:
+            if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists():
                 self.one_MPR_window.destroy()
 
-            if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists() == 1:
+            if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
                 self.view_reconciliations_window.destroy()
             
-            if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists() == 1:
+            if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
                 self.view_pvalue_histogram_window.destroy()
         else:
             self.compute_reconciliations_btn.configure(state=tk.DISABLED)
@@ -523,7 +523,7 @@ class App(tk.Frame):
         # Compute App.recon_graph
         App.recon_graph = empress.reconcile(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
         self.num_MPRs = App.recon_graph.n_recon
-        if self.recon_info_displayed == False:
+        if not self.recon_info_displayed:
             # Display numeric reconciliation results
             self.recon_MPRs_label = tk.Label(self.recon_nums_frame, text="Number of MPRs: ")
             self.recon_MPRs_label.grid(row=0, column=0, sticky="w")
@@ -543,22 +543,22 @@ class App(tk.Frame):
             self.num_MPRs_label = tk.Label(self.recon_nums_frame, text=self.num_MPRs)
             self.num_MPRs_label.grid(row=0, column=1, sticky="w")
 
-        if self.entire_space_window is not None and self.entire_space_window.winfo_exists() == 1:
+        if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
             self.entire_space_window.destroy()
         
-        if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists() == 1:
+        if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
             self.set_num_cluster_window.destroy()
 
-        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists() == 1:
+        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
             self.view_solution_space_window.destroy()
 
-        if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists() == 1:
+        if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists():
             self.one_MPR_window.destroy()
 
-        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists() == 1:
+        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
             self.view_reconciliations_window.destroy()
 
-        if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists() == 1:
+        if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
         
         self.view_solution_space_dropdown.configure(state=tk.NORMAL)
@@ -666,13 +666,13 @@ class App(tk.Frame):
             for i in range(len(clusters)):
                 App.medians.append(clusters[i].median())
         
-        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists() == 1:
+        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
             self.view_solution_space_window.destroy()
 
-        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists() == 1:
+        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
             self.view_reconciliations_window.destroy()
         
-        if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists() == 1:
+        if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
 
     def select_from_view_reconciliations_dropdown(self, event):
