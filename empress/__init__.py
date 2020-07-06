@@ -3,12 +3,13 @@ Wraps empress functionalities
 """
 from typing import Dict
 import matplotlib
+import sys
 # the tkagg backend is for pop-up windows, and will not work in environments
 # without graphics such as a remote server. Refer to issue #49
 try:
     matplotlib.use("tkagg")
 except ImportError:
-    print("Using Agg backend: will not be able to create pop-up windows.")
+    print("Using Agg backend: will not be able to create pop-up windows.", file=sys.stderr)
     matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from typing import List, Tuple
@@ -56,26 +57,19 @@ class Drawable(ABC):
     """
 
     @abstractmethod
-    def draw_on(self, axes: plt.Axes):
+    def draw_on(self, axes: plt.Axes, **kwargs):
         """
         Draw self on matplotlib Axes
         """
         pass
 
-    def draw(self) -> plt.Figure:
+    def draw(self, **kwargs) -> plt.Figure:
         """
         Draw self as matplotlib Figure.
         """
         figure, ax = plt.subplots(1, 1)
-        self.draw_on(ax)
+        self.draw_on(ax, **kwargs)
         return figure
-
-    def draw_to_file(self, fname):
-        """
-        Draw self and save it as image at path fname.
-        """
-        figure = self.draw()
-        figure.savefig(fname)
 
 
 class ReconciliationWrapper(Drawable):
