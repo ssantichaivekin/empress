@@ -68,11 +68,11 @@ def mapping_node_sort(ordered_gene_node_list, ordered_species_node_list, mapping
     return sorted_list
 
 
-def generate_frequencies_dict(preorder_mapping_node_list, dtl_recon_graph, gene_root, normalize=True):
+def generate_frequencies_dict(preorder_mapping_node_list, recon_graph, gene_root, normalize=True):
     """
     Computes frequencies for every event
     :param preorder_mapping_node_list: A list of all mapping nodes in DTLReconGraph in double preorder
-    :param dtl_recon_graph: The DTL reconciliation graph that we are scoring
+    :param recon_graph: The reconciliation graph whose events we want to compute the corresponding frequencies
     :param gene_root: The root of the gene tree
     :return: 0. A file structured like the DTLReconGraph, but with the lists of events replaced
                 with dicts, where the keys are the events and the values are the frequencies of those events, and
@@ -83,7 +83,7 @@ def generate_frequencies_dict(preorder_mapping_node_list, dtl_recon_graph, gene_
     # dictionary)
     counts = dict()
 
-    # Initialize the very start count, for the first call of countMPRs
+    # Initialize the very start count, for the first call of count_mprs
     count = 0
 
     # Loop over all given minimum cost reconciliation roots
@@ -91,46 +91,46 @@ def generate_frequencies_dict(preorder_mapping_node_list, dtl_recon_graph, gene_
         if mapping_node[0] == gene_root:
 
             # This will also populate the counts dictionary with the number of MPRs each event and mapping node is in
-            count += count_mprs(mapping_node, dtl_recon_graph, counts)
+            count += count_mprs(mapping_node, recon_graph, counts)
 
-    # This dict contains the frequency score of each mapping node
+    # This dict contains the frequency of each mapping node
     node_frequencies = dict()
     for mapping_node in preorder_mapping_node_list:
         node_frequencies[mapping_node] = 0.0
 
-    # This entry is going to be thrown away, but it seems neater to just let calculateScoresOfChildren
-    # add scores to an unused entry than to check to see if they are (None, None) in the first place.
+    # This entry is going to be thrown away, but it seems neater to just let calculate_event_frequencies_for_children
+    # add frequencies to an unused entry than to check to see if they are (None, None) in the first place.
     node_frequencies[(None, None)] = 0.0
 
-    # The scored graph is like the DTLReconGraph, except instead of individual events being in a list, they are the
-    # keys of a dictionary where the values are the frequency scores of those events. So, event_frequencies takes event
+    # The event_frequencies is like the recon_graph, except instead of individual events being in a list, they are the
+    # keys of a dictionary where the values are the frequencies of those events. So, event_frequencies takes event
     # nodes as keys and (after being filled below) has the frequencies of those events in MPRs as the values
     event_frequencies = {}
 
     for mapping_node in preorder_mapping_node_list:
-        # If we are at the root of the gene tree, then we need to initialize the score entry
+        # If we are at the root of the gene tree, then we need to initialize the frequency entry
         if mapping_node[0] == gene_root:
             node_frequencies[mapping_node] = counts[mapping_node]
-        # This fills up the event scores dictionary
-        calculate_event_frequencies_for_children(mapping_node, dtl_recon_graph, event_frequencies, node_frequencies,
+        # This fills up the event frequency dictionary
+        calculate_event_frequencies_for_children(mapping_node, recon_graph, event_frequencies, node_frequencies,
                                                  counts)
 
     if normalize:
-        # Normalize all of the event_scores by the number of MPRs
-        # so that each score is a percentage
+        # Normalize all of the event_frequencies by the number of MPRs
+        # so that each frequency is out of 1
         for mapping_node in preorder_mapping_node_list:
-            for event in dtl_recon_graph[mapping_node]:
+            for event in recon_graph[mapping_node]:
                 event_frequencies[event] = event_frequencies[event] / float(count)
 
     return event_frequencies, count
 
 
-def count_mprs(mapping_node, dtl_recon_graph, counts):
+def count_mprs(mapping_node, recon_graph, counts):
     """
     :param mapping_node: an individual mapping node that maps a node
     for the parasite tree onto a node of the host tree, in the format
     (p, h), where p is the parasite node and h is the host node
-    :param dtl_recon_graph: A DTL reconciliation graph (see data structure quick reference at top of file)
+    :param recon_graph: The reconciliation graph whose events we want to compute the corresponding frequencies
     :param counts: a dictionary representing the running memo that is passed
     down recursive calls of this function. At first it is just an empty
     dictionary (see above function), but as it gets passed down calls, it collects
@@ -151,15 +151,15 @@ def count_mprs(mapping_node, dtl_recon_graph, counts):
     count = 0
 
     # Loop over all event nodes corresponding to the current mapping node
-    for eventNode in dtl_recon_graph[mapping_node]:
+    for eventNode in recon_graph[mapping_node]:
 
         # Save the children produced by the current event
         mapping_child1 = eventNode[1]
         mapping_child2 = eventNode[2]
 
         # Add the product of the counts of both children (over all children) for this event to get the parent's count
-        counts[eventNode] = count_mprs(mapping_child1, dtl_recon_graph, counts) * count_mprs(mapping_child2,
-                                                                                             dtl_recon_graph, counts)
+        counts[eventNode] = count_mprs(mapping_child1, recon_graph, counts) * count_mprs(mapping_child2,
+                                                                                         recon_graph, counts)
         count += counts[eventNode]
 
     # Save the result in the counts
@@ -172,7 +172,7 @@ def calculate_event_frequencies_for_children(mapping_node, dtl_recon_graph, even
     """
     This function calculates the frequency for every mapping node that is a child of an event node that is a
     child of the given mapping node, and stores them in dtl_recon_graph.
-    :param mapping_node: The mapping node that is the parent of the two frequencies we will compute
+    :param mapping_node: The mapping node that is the parent of the two mapping nodes whose frequencies we will compute
     :param dtl_recon_graph: The DTL reconciliation graph (see data structure quick reference at top of file)
     :param event_frequencies: The frequency for each event
     :param node_frequencies: The frequency for each mapping node (which will ultimately be thrown away) that this
