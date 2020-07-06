@@ -8,14 +8,14 @@
 
 import random
 import matplotlib
-from empress.input_reader import ReconInput
+from empress.input_reader import _ReconInput
 import matplotlib.pyplot as plt
 
 from empress.reconcile import recongraph_tools
 
-def _trials(recon_input: ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float, num_trials: int) -> list:
+def _trials(recon_input: _ReconInput, dup_cost: float, transfer_cost: float, loss_cost: float, num_trials: int) -> list:
     """
-    :param recon_input <ReconInput> - class containing host tree, parasite tree, tip mapping
+    :param recon_input <_ReconInput> - class containing host tree, parasite tree, tip mapping
     :param dup_cost <float> - duplication cost
     :param transfer_cost <float> - transfer cost
     :param loss_cost <float> -loss cost
@@ -31,7 +31,7 @@ def _trials(recon_input: ReconInput, dup_cost: float, transfer_cost: float, loss
         for p in parasites:
             h = random.choice(hosts)
             random_phi[p] = h
-        new_input = ReconInput(recon_input.host_dict, None, recon_input.parasite_dict, None, random_phi)
+        new_input = _ReconInput(recon_input.host_dict, None, recon_input.parasite_dict, None, random_phi)
         _, cost, _, _ = recongraph_tools.DP(new_input, dup_cost, transfer_cost, loss_cost)
         costs.append(cost)
     return costs
@@ -72,10 +72,10 @@ def draw_stats(ax: plt.Axes, mpr_cost: float, costs: list, pvalue: float = None)
     ax.set_xlabel("total cost")
     ax.set_ylabel("count")
 
-def stats(recon_input: ReconInput, dup_cost: float, transfer_cost: float,
+def stats(recon_input: _ReconInput, dup_cost: float, transfer_cost: float,
           loss_cost: float, num_trials: int) -> (float, list, float):
     """
-    :param recon_input <ReconInput> - class containing host tree, parasite tree, tip mapping
+    :param recon_input <_ReconInput> - class containing host tree, parasite tree, tip mapping
     :param dup_cost <float> - duplication cost
     :param transfer_cost <float> - float transfer cost
     :param loss_cost <float> -loss cost
