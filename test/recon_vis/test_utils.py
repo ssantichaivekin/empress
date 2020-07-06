@@ -297,7 +297,7 @@ class TestUtils(unittest.TestCase):
         count = 0
         for tree_size in self.size_range:
             for _ in range(self.num_examples_to_test):
-                recon_input = input_generator.generate_random_recon_input(tree_size)
+                recon_input = input_generator.generate_random_recon_input(tree_size, tree_size)
                 host_dict = recon_input.host_dict
                 parasite_dict = recon_input.parasite_dict
                 for d, t, l in itertools.product(range(1, 3), repeat=3):
