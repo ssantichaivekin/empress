@@ -1,30 +1,29 @@
 import itertools
-import os
 import random
 
+import empress
 from empress import input_reader
 
 from typing import Iterable
 
-import empress
 random.seed(1)
 
-def generate_all_recon_input(n_leaves: int) -> Iterable[empress.ReconInputWrapper]:
+def generate_all_recon_input(n_host_leaves: int, n_parasite_leaves: int) -> Iterable[empress.ReconInputWrapper]:
     """
     Create an iterable of all possible ReconInputWrapper object with specified number of host/parasite leaves.
     """
-    for host_dict in _generate_all_host_dict(n_leaves):
-        for parasite_dict in _generate_all_parasite_dict(n_leaves):
+    for host_dict in _generate_all_host_dict(n_host_leaves):
+        for parasite_dict in _generate_all_parasite_dict(n_parasite_leaves):
             for mapping in _generate_all_tip_mapping(host_dict, parasite_dict):
                 yield empress.ReconInputWrapper(host_dict, None, parasite_dict, None, mapping)
 
-def generate_random_recon_input(n_leaves: int) -> empress.ReconInputWrapper:
+def generate_random_recon_input(n_host_leaves: int, n_parasite_leaves: int) -> empress.ReconInputWrapper:
     """
     Randomly create one ReconInputWrapper object with specified number of host/parasite leaves.
     The randomization is not guaranteed to be uniform.
     """
-    host_dict = _generate_random_host_dict(n_leaves)
-    parasite_dict = _generate_random_parasite_dict(n_leaves)
+    host_dict = _generate_random_host_dict(n_host_leaves)
+    parasite_dict = _generate_random_parasite_dict(n_parasite_leaves)
     mapping = _generate_random_tip_mapping(host_dict, parasite_dict)
     return empress.ReconInputWrapper(host_dict, None, parasite_dict, None, mapping)
 
