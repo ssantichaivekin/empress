@@ -1,6 +1,7 @@
 """
 plot_tools.py
 Plotting tools using matplotlib
+Modified June 26, 2020
 """
 
 # If matplotlib doesn't pop up a window, force it to use tkinter backend
@@ -39,13 +40,13 @@ class FigureWrapper:
         self.axis.axis("off")
         self.axis.set_title(title)
 
-    def line(self, point_1, point_2, col=BLACK):
+    def line(self, point_1, point_2, col=BLACK, style = '-'):
         """
         Draw line from point p1 to p2
         """
         x_1, y_1 = point_1
         x_2, y_2 = point_2
-        self.axis.plot([x_1, x_2], [y_1, y_2], color=col, linewidth=LINEWIDTH)
+        self.axis.plot([x_1, x_2], [y_1, y_2], color=col, linewidth=LINEWIDTH, linestyle = style)
     
     def dot(self, point, col=BLACK):
         """
@@ -54,12 +55,9 @@ class FigureWrapper:
         x, y = point
         self.axis.plot(x, y, 'o', color=col)
     
-    def text(self, point, text, col=BLACK):
-        """
-        Plot text at s at point p
-        """
+    def text(self, point, string, col=RED, h_a='right'):
         x, y = point
-        self.axis.text(x, y, text, color=col, fontsize=FONTSIZE)
+        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment='top')
 
     def show(self):
         """ 

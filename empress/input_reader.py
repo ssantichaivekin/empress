@@ -9,7 +9,7 @@ from pathlib import Path
 class ReconInputError(Exception):
     pass
 
-class ReconInput:
+class _ReconInput:
     """
     Storage class for the newick data (trees, tip mapping, and optional distance parameters)
     Distances encode branch lengths in the newick file, if given
@@ -18,7 +18,7 @@ class ReconInput:
     def __init__(self, host_dict=None, host_distances=None, parasite_dict=None,
                  parasite_distances=None, tip_mapping=None):
         if tip_mapping is not None:
-            ReconInput._verify_tip_mapping(host_dict, parasite_dict, tip_mapping)
+            _ReconInput._verify_tip_mapping(host_dict, parasite_dict, tip_mapping)
         self.host_dict = host_dict
         self.host_distances = host_distances
         self.parasite_dict = parasite_dict
@@ -41,14 +41,14 @@ class ReconInput:
         Takes a host filename as input and sets self.host_dict and self.host_distances
         :param file_name <str>    - filename of host file to parse
         """
-        self.host_dict, self.host_distances = ReconInput._read_newick_tree(file_name, "host")
+        self.host_dict, self.host_distances = _ReconInput._read_newick_tree(file_name, "host")
   
     def read_parasite(self, file_name: str):
         """
         Takes a parasite filename as input and sets self.parasite_dict and self_host_distances
         :param file_name <str>   - filename of parasite file to parse
         """
-        self.parasite_dict, self.parasite_distances = ReconInput._read_newick_tree(file_name, "parasite")
+        self.parasite_dict, self.parasite_distances = _ReconInput._read_newick_tree(file_name, "parasite")
 
     def read_mapping(self, file_name: str):
         """
@@ -67,16 +67,16 @@ class ReconInput:
         try:
             with open(file_name) as map_file:
                 map_list = map_file.read().split()
-                tip_mapping = ReconInput._parse_tip_mapping(map_list)
-                ReconInput._verify_tip_mapping(self.host_dict, self.parasite_dict, tip_mapping)
+                tip_mapping = _ReconInput._parse_tip_mapping(map_list)
+                _ReconInput._verify_tip_mapping(self.host_dict, self.parasite_dict, tip_mapping)
                 self.tip_mapping = tip_mapping
         except Exception as e:
             raise ReconInputError(e)
 
     def save_to_files(self, host_fname: str, parasite_fname: str, tip_mapping_fname: str):
-        ReconInput._save_newick_tree_to_file(self.host_dict, host_fname)
-        ReconInput._save_newick_tree_to_file(self.parasite_dict, parasite_fname)
-        ReconInput._save_tip_mapping_to_file(self.tip_mapping, tip_mapping_fname)
+        _ReconInput._save_newick_tree_to_file(self.host_dict, host_fname)
+        _ReconInput._save_newick_tree_to_file(self.parasite_dict, parasite_fname)
+        _ReconInput._save_tip_mapping_to_file(self.tip_mapping, tip_mapping_fname)
 
     @staticmethod
     def _save_newick_tree_to_file(tree_dict, fname):
@@ -84,7 +84,7 @@ class ReconInput:
             raise ReconInputError("Newick file name %s does not end with .tree, .nwk, or .newick" % fname)
 
         root_name = 'hTop' if 'hTop' in tree_dict else 'pTop'
-        tree_dict_str = ReconInput._tree_dict_to_str(tree_dict, root_name)
+        tree_dict_str = _ReconInput._tree_dict_to_str(tree_dict, root_name)
         with open(fname, 'w') as f:
             print(tree_dict_str, file=f)
 
@@ -95,8 +95,8 @@ class ReconInput:
             return child
         else:
             return "({},{}){}".format(
-                ReconInput._tree_dict_to_str(tree_dict, left_edge),
-                ReconInput._tree_dict_to_str(tree_dict, right_edge),
+                _ReconInput._tree_dict_to_str(tree_dict, left_edge),
+                _ReconInput._tree_dict_to_str(tree_dict, right_edge),
                 child
             )
 
@@ -117,7 +117,7 @@ class ReconInput:
         try:
             with open(file_name) as host_file:
                 tree_string = host_file.read().strip()
-                return ReconInput._parse_newick(tree_string, tree_type)
+                return _ReconInput._parse_newick(tree_string, tree_type)
         except Exception as e:
             raise ReconInputError(e)
 
@@ -140,7 +140,7 @@ class ReconInput:
             D[name] = dist
         dfs_list = [(node.name, float(D[node.name])) for node in tree.find_clades()]
         tree_dict = {}
-        ReconInput._build_tree_dictionary(ReconInput._build_tree(dfs_list), "Top", tree_dict, tree_type)
+        _ReconInput._build_tree_dictionary(_ReconInput._build_tree(dfs_list), "Top", tree_dict, tree_type)
         real_distances = tree.depths()
         real_distance_dict = {}
         for clade in real_distances:
@@ -172,8 +172,8 @@ class ReconInput:
                     break
             left_list = dfs_list[1:split_point]
             right_list = dfs_list[split_point:]
-            left_tree = ReconInput._build_tree(left_list)
-            right_tree = ReconInput._build_tree(right_list)
+            left_tree = _ReconInput._build_tree(left_list)
+            right_tree = _ReconInput._build_tree(right_list)
             return root_name, left_tree, right_tree
 
     @staticmethod
@@ -210,8 +210,8 @@ class ReconInput:
                 tree_dict[edge_name] = ("Top", root, left_edge_name, right_edge_name)
             else:
                 tree_dict[edge_name] = edge_name + (left_edge_name, right_edge_name)
-            ReconInput._build_tree_dictionary(left_tree, root, tree_dict, tree_type)
-            ReconInput._build_tree_dictionary(right_tree, root, tree_dict, tree_type)
+            _ReconInput._build_tree_dictionary(left_tree, root, tree_dict, tree_type)
+            _ReconInput._build_tree_dictionary(right_tree, root, tree_dict, tree_type)
 
     @staticmethod
     def _parse_tip_mapping(pairs):
@@ -241,8 +241,8 @@ class ReconInput:
         """
         Throws exception if tip_mapping_dict is not valid
         """
-        host_leaves = ReconInput._leaves_from_tree_dict(host_dict)
-        parasite_leaves = ReconInput._leaves_from_tree_dict(parasite_dict)
+        host_leaves = _ReconInput._leaves_from_tree_dict(host_dict)
+        parasite_leaves = _ReconInput._leaves_from_tree_dict(parasite_dict)
         for parasite in tip_mapping_dict:
             host = tip_mapping_dict[parasite]
             if host not in host_leaves:

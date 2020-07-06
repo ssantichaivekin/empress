@@ -8,7 +8,7 @@ from empress.reconcile import recongraph_tools, diameter
 def calc_histogram(tree_data, d, t, l, time_it, normalize=False, zero_loss=False):
     """
     Compute the PDV from a .newick file
-    :param tree_data <ReconInput> - Output of newickFormatReader.getInput()
+    :param tree_data <_ReconInput> - Output of newickFormatReader.getInput()
     :param d <float> - the cost of a duplication
     :param t <float> - ^^ transfer
     :param l <float> - ^^ loss
@@ -88,7 +88,7 @@ def compute_pdv(filename, tree_data, d, t, l, args):
     """
     Compute the PDV and other information and save them / output them
     :param filename - the path to a .newick file with the input trees and tip mapping
-    :param tree_data <ReconInput> - Output of newickFormatReader.getInput()
+    :param tree_data <_ReconInput> - Output of newickFormatReader.getInput()
     :param d <float> - the cost of a duplication
     :param t <float> - ^^ transfer
     :param l <float> - ^^ loss
