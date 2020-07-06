@@ -7,7 +7,7 @@
 import argparse
 from pathlib import Path
 
-from empress import input_reader
+import empress
 from empress.reconcile import recongraph_tools
 from empress.cluster import cluster_main
 from empress.histogram import histogram_main
@@ -140,7 +140,7 @@ def process_arg():
 
 def main():
     args = process_arg()
-    recon_input = input_reader.ReconInput.from_files(args.host, args.parasite, args.mapping)
+    recon_input = empress.ReconInputWrapper.from_files(args.host, args.parasite, args.mapping)
     if args.functionality == "costscape":
         costscape.solve(recon_input, args.dl, args.dh, args.tl, args.th, args)
     elif args.functionality == "reconcile":

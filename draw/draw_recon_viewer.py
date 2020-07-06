@@ -60,8 +60,8 @@ def test_render_with_frequency_1():
     example_host = "./examples/test_size5_no924_host.nwk"
     example_parasite = "./examples/test_size5_no924_parasite.nwk"
     example_mapping = "./examples/test_size5_no924_mapping.mapping"
-    recon_input = empress.ReconInput.from_files(example_host, example_parasite, example_mapping)
-    recon_wrapper = empress.reconcile(recon_input, 1, 1, 1)
+    recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)
+    recon_wrapper = recon_input.reconcile(1, 1, 1)
     median_reconciliation = recon_wrapper.median()
     fig = recon_viewer.render(recon_input.host_dict, recon_input.parasite_dict,
                               median_reconciliation._reconciliation, median_reconciliation.event_frequencies,

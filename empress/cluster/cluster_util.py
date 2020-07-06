@@ -657,7 +657,7 @@ def calc_improvement_pdv(big_k, little_k):
 def get_tree_info(newick, d,t,l):
     """
     Reconcile the trees and return all the relevant info.
-    :param newick <ReconInput>: Output of newickFormatReader.getInput()
+    :param newick <_ReconInput>: Output of newickFormatReader.getInput()
     :params d,t,l <float> - the relative DTL costs
     :return gene_tree <tree>
     :return species_tree <tree>
