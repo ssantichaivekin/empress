@@ -11,6 +11,7 @@ import empress
 from empress import input_reader
 from empress.recon_vis.utils import dict_to_tree
 from empress.recon_vis import tree
+from empress.reconcile import recongraph_tools
 
 class App(tk.Frame):
 
@@ -68,7 +69,7 @@ class App(tk.Frame):
         self.load_files_dropdown['menu'].entryconfigure("Load mapping file", state = "disabled")
 
         # "View tanglegram" button
-        self.view_tanglegram_btn = tk.Button(self.input_frame, text="View tanglegram", state=tk.DISABLED, width=18)
+        self.view_tanglegram_btn = tk.Button(self.input_frame, text="View tanglegram", command=self.display_tanglegram, state=tk.DISABLED, width=18)
         self.view_tanglegram_btn.grid(row=1, column=0)
 
         # "View cost space" button 
@@ -180,7 +181,7 @@ class App(tk.Frame):
         self.view_reconciliations_window = None
         self.view_pvalue_histogram_window = None
 
-    def reset(self, event):
+    def refresh_when_new_input_files_loaded(self, event):
         """Reset when user loads in a new input file (can be either of the three options)."""
         App.recon_graph = None 
         App.clusters_list = []
@@ -192,21 +193,17 @@ class App(tk.Frame):
 
         if event == "Load host tree file":
             self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state = "normal")
-
             # Read in host tree file after reseting everything
             self.recon_input.read_host(self.host_file_path)
-
             self.host_tree_info.destroy() 
             self.parasite_tree_info.destroy()
             self.mapping_info.destroy()
 
         elif event == "Load parasite tree file":
             self.load_files_dropdown['menu'].entryconfigure("Load mapping file", state = "normal")
-
             # Read in host and parasite tree files after reseting everything
             self.recon_input.read_host(self.host_file_path)
             self.recon_input.read_parasite(self.parasite_file_path)
-
             self.parasite_tree_info.destroy()
             self.mapping_info.destroy()
 
@@ -215,7 +212,6 @@ class App(tk.Frame):
             self.recon_input.read_host(self.host_file_path)
             self.recon_input.read_parasite(self.parasite_file_path) 
             self.recon_input.read_mapping(self.mapping_file_path)
-
             self.mapping_info.destroy()
 
         # Reset dtl costs so self.compute_reconciliations_btn can be disabled
@@ -226,9 +222,7 @@ class App(tk.Frame):
         self.trans_input.set(1.00)
         self.loss_input.set(1.00)
         self.compute_reconciliations_btn.configure(state=tk.DISABLED)
-        self.view_solution_space_dropdown.configure(state=tk.DISABLED)
-        self.view_reconciliations_dropdown.configure(state=tk.DISABLED)
-        self.view_pvalue_histogram_btn.configure(state=tk.DISABLED)
+        self.disable_unaccessable_widgets()
 
         # Reset the rest
         self.dup_label.destroy()
@@ -253,7 +247,9 @@ class App(tk.Frame):
         
         if self.cost_space_window is not None and self.cost_space_window.winfo_exists():
             self.cost_space_window.destroy()
+        self.close_unnecessary_windows_if_opened()
 
+    def close_unnecessary_windows_if_opened(self):
         if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
             self.entire_space_window.destroy()
         
@@ -272,68 +268,67 @@ class App(tk.Frame):
         if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
 
+    def disable_unaccessable_widgets(self):
+        self.view_solution_space_dropdown.configure(state=tk.DISABLED)
+        self.view_reconciliations_dropdown.configure(state=tk.DISABLED)
+        self.view_pvalue_histogram_btn.configure(state=tk.DISABLED)
+
     def load_input_files(self, event):
         """Load in two .nwk files for the host tree and parasite tree, and one .mapping file. Display the number of tips for 
         the trees and a message to indicate the successful reading of the tips mapping.""" 
         # Clicking on "Load host tree file" 
         if self.load_files_var.get() == "Load host tree file":
+            self.load_files_var.set("Load files")
             # initialdir is set to be the current working directory
             input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file")
-            try:
-                self.recon_input.read_host(input_file)
+            if input_file != "":
+                try:
+                    self.recon_input.read_host(input_file)
+                except Exception as e:
+                    messagebox.showinfo("Warning", "Error: " + str(e))              
                 self.host_file_path = input_file
                 # Force a sequence of loading host tree file first, and then parasite tree file, and then mapping file
                 self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state = "disabled")
                 self.load_files_dropdown['menu'].entryconfigure("Load mapping file", state = "disabled")
-                # Reset everything every time user successfully loads in a new host tree file
-                self.reset("Load host tree file")      
-                host_tree_tips_number = self.compute_tree_tips("host tree")
-                self.host_tree_info = tk.Label(self.input_info_frame, text="Host: "+os.path.basename(self.host_file_path)+": "+str(host_tree_tips_number)+" tips")
-                self.host_tree_info.grid(row=0, column=0, sticky="w") 
-            except Exception as e:
-                messagebox.showinfo("Warning", "Error: " + str(e))
-            
-            self.load_files_var.set("Load files")
+                self.refresh_when_new_input_files_loaded("Load host tree file")    
+                self.update_input_files_info("host")  
 
         # Clicking on "Load parasite tree file" 
         elif self.load_files_var.get() == "Load parasite tree file":
+            self.load_files_var.set("Load files")
             # initialdir is set to be the current working directory
             input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a parasite file")
-            try:
-                self.recon_input.read_parasite(input_file)
+            if input_file != "":
+                try:
+                    self.recon_input.read_parasite(input_file)
+                except Exception as e:
+                    messagebox.showinfo("Warning", "Error: " + str(e))      
                 self.parasite_file_path = input_file
-                # Reset every time user successfully loads in a new parasite tree file
-                self.reset("Load parasite tree file")
-                parasite_tree_tips_number = self.compute_tree_tips("parasite tree")
-                self.parasite_tree_info = tk.Label(self.input_info_frame, text="Parasite/symbiont: "+os.path.basename(self.parasite_file_path)+": "+str(parasite_tree_tips_number)+" tips")
-                self.parasite_tree_info.grid(row=1, column=0, sticky="w")
-            except Exception as e:
-                messagebox.showinfo("Warning", "Error: " + str(e))
-            
-            self.load_files_var.set("Load files")
+                self.refresh_when_new_input_files_loaded("Load parasite tree file")
+                self.update_input_files_info("parasite")
 
         # Clicking on "Load mapping file" 
         elif self.load_files_var.get() == "Load mapping file":
+            self.load_files_var.set("Load files")
             # initialdir is set to be the current working directory
             input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a mapping file")
-            try:
-                self.recon_input.read_mapping(input_file)
+            if input_file != "":
+                try:
+                    self.recon_input.read_mapping(input_file)
+                except Exception as e:
+                    messagebox.showinfo("Warning", "Error: " + str(e))       
                 self.mapping_file_path = input_file
-                # Reset every time user successfully loads in a new mapping file
-                self.reset("Load mapping file")
-                self.mapping_info = tk.Label(self.input_info_frame, text="Mapping: "+os.path.basename(self.mapping_file_path))
-                self.mapping_info.grid(row=2, column=0, sticky="w")
-
-                # Enables the next step, setting DTL costs
+                self.refresh_when_new_input_files_loaded("Load mapping file")
+                self.update_input_files_info("mapping")
                 if self.recon_input.is_complete(): 
-                    self.view_tanglegram_btn.configure(state=tk.NORMAL)
-                    self.view_cost_space_btn.configure(state=tk.NORMAL)
-                    self.compute_reconciliations_btn.configure(state=tk.NORMAL)
-                    self.dtl_cost()
-            except Exception as e:
-                messagebox.showinfo("Warning", "Error: " + str(e))
-            
-            self.load_files_var.set("Load files")
+                    self.when_recon_input_is_complete()            
+    
+    def when_recon_input_is_complete(self):
+        self.view_tanglegram_btn.configure(state=tk.NORMAL)
+        self.view_cost_space_btn.configure(state=tk.NORMAL)
+        self.compute_reconciliations_btn.configure(state=tk.NORMAL)
+        self.dtl_cost()
+        self.recon_input_wrapper = empress.ReconInputWrapper.from_files(self.host_file_path, self.parasite_file_path, self.mapping_file_path)
 
     def compute_tree_tips(self, tree_type):
         """Compute the number of tips for the host tree and parasite tree inputs."""
@@ -344,11 +339,41 @@ class App(tk.Frame):
             parasite_tree_object = dict_to_tree(self.recon_input.parasite_dict, tree.TreeType.PARASITE)
             return len(parasite_tree_object.leaf_list())
 
+    def update_input_files_info(self, fileType):
+        if fileType == "host":
+            host_tree_tips_number = self.compute_tree_tips("host tree")
+            self.host_tree_info = tk.Label(self.input_info_frame, text="Host: "+os.path.basename(self.host_file_path)+": "+str(host_tree_tips_number)+" tips")
+            self.host_tree_info.grid(row=0, column=0, sticky="w")
+        elif fileType == "parasite":
+            parasite_tree_tips_number = self.compute_tree_tips("parasite tree")
+            self.parasite_tree_info = tk.Label(self.input_info_frame, text="Parasite/symbiont: "+os.path.basename(self.parasite_file_path)+": "+str(parasite_tree_tips_number)+" tips")
+            self.parasite_tree_info.grid(row=1, column=0, sticky="w")
+        elif fileType == "mapping":
+            self.mapping_info = tk.Label(self.input_info_frame, text="Mapping: "+os.path.basename(self.mapping_file_path))
+            self.mapping_info.grid(row=2, column=0, sticky="w")
+
+    def display_tanglegram(self):
+        """Display a tanglegram in a new tkinter window."""
+        # Creates a new tkinter window 
+        self.tanglegra_window = tk.Toplevel(self.master)
+        self.tanglegra_window.geometry("600x600")
+        self.tanglegra_window.title("Tanglegram")
+        # Creates a new frame
+        tanglegram_frame = tk.Frame(self.tanglegra_window)
+        tanglegram_frame.pack(fill=tk.BOTH, expand=1)
+        tanglegram_frame.pack_propagate(False)
+        fig = self.recon_input_wrapper.draw()
+        canvas = FigureCanvasTkAgg(fig, tanglegram_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # The toolbar allows the user to zoom in/out, drag the graph and save the graph
+        toolbar = NavigationToolbar2Tk(canvas, tanglegram_frame)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side=tk.TOP)
+
     def plot_cost_regions(self):
         """Plot the cost regions using matplotlib and embed the graph in a tkinter window."""
-        self.view_solution_space_dropdown.configure(state=tk.DISABLED)
-        self.view_reconciliations_dropdown.configure(state=tk.DISABLED)
-        self.view_pvalue_histogram_btn.configure(state=tk.DISABLED)
+        self.disable_unaccessable_widgets()
 
         # Creates a new tkinter window 
         self.cost_space_window = tk.Toplevel(self.master)
@@ -358,7 +383,8 @@ class App(tk.Frame):
         plt_frame = tk.Frame(self.cost_space_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
         plt_frame.pack_propagate(False)
-        cost_regions = empress.compute_cost_regions(self.recon_input, 0.5, 10, 0.5, 10)  
+        #cost_regions = empress.compute_cost_regions(self.recon_input, 0.5, 10, 0.5, 10) 
+        cost_regions = self.recon_input_wrapper.compute_cost_regions(0.5, 10, 0.5, 10) 
         fig = cost_regions.draw()  # creates matplotlib figure
         canvas = FigureCanvasTkAgg(fig, plt_frame)
         canvas.draw()
@@ -393,7 +419,7 @@ class App(tk.Frame):
         # see https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
         dup_vcmd = (self.register(self.validate_dup_input), '%P')
         # self.dup_input is tk.DoubleVar(), initialized to be 1.00
-        self.dup_entry_box = CustomEntry(self.costs_frame, width=3, textvariable=self.dup_input)
+        self.dup_entry_box = CustomEntry(self.costs_frame, width=4, textvariable=self.dup_input)
         self.dup_entry_box.set_border_color("green")
         self.dup_entry_box.validate(validate="key", validatecommand=dup_vcmd)
         self.dup_entry_box.grid(row=0, column=1, sticky="w")
@@ -405,7 +431,7 @@ class App(tk.Frame):
         # see https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
         trans_vcmd = (self.register(self.validate_trans_input), '%P')
         # self.trans_input is tk.DoubleVar(), initialized to be 1.00
-        self.trans_entry_box = CustomEntry(self.costs_frame, width=3, textvariable=self.trans_input)
+        self.trans_entry_box = CustomEntry(self.costs_frame, width=4, textvariable=self.trans_input)
         self.trans_entry_box.set_border_color("green")
         self.trans_entry_box.validate(validate="all", validatecommand=trans_vcmd)
         self.trans_entry_box.grid(row=1, column=1, sticky="w")
@@ -417,7 +443,7 @@ class App(tk.Frame):
         # see https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
         loss_vcmd = (self.register(self.validate_loss_input), '%P')
         # self.loss_input is tk.DoubleVar(), initialized to be 1.00
-        self.loss_entry_box = CustomEntry(self.costs_frame, width=3, textvariable=self.loss_input)
+        self.loss_entry_box = CustomEntry(self.costs_frame, width=4, textvariable=self.loss_input)
         self.loss_entry_box.set_border_color("green")
         self.loss_entry_box.validate(validate="all", validatecommand=loss_vcmd)
         self.loss_entry_box.grid(row=2, column=1, sticky="w")
@@ -479,34 +505,16 @@ class App(tk.Frame):
         if self.dup_cost is not None and self.trans_cost is not None and self.loss_cost is not None:
             # Enable the next button
             self.compute_reconciliations_btn.configure(state=tk.NORMAL)
-            self.view_solution_space_dropdown.configure(state=tk.DISABLED)
-            self.view_reconciliations_dropdown.configure(state=tk.DISABLED)
-            self.view_pvalue_histogram_btn.configure(state=tk.DISABLED)
-            
-            if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
-                self.entire_space_window.destroy()
-            
-            if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
-                self.set_num_cluster_window.destroy()
-
-            if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
-                self.view_solution_space_window.destroy()
-
-            if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists():
-                self.one_MPR_window.destroy()
-
-            if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
-                self.view_reconciliations_window.destroy()
-            
-            if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
-                self.view_pvalue_histogram_window.destroy()
+            self.disable_unaccessable_widgets()         
+            self.close_unnecessary_windows_if_opened()
         else:
             self.compute_reconciliations_btn.configure(state=tk.DISABLED)
 
     def display_recon_information(self):
         """Display numeric reconciliation results and close unnecessary windows."""
         # Compute App.recon_graph
-        App.recon_graph = empress.reconcile(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
+        #App.recon_graph = recongraph_tools.reconcile(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
+        App.recon_graph = self.recon_input_wrapper.reconcile(1, 1, 1)
         self.num_MPRs = App.recon_graph.n_recon
         if not self.recon_info_displayed:
             # Display numeric reconciliation results
@@ -528,24 +536,7 @@ class App(tk.Frame):
             self.num_MPRs_label = tk.Label(self.recon_nums_frame, text=self.num_MPRs)
             self.num_MPRs_label.grid(row=0, column=1, sticky="w")
 
-        if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
-            self.entire_space_window.destroy()
-        
-        if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
-            self.set_num_cluster_window.destroy()
-
-        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
-            self.view_solution_space_window.destroy()
-
-        if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists():
-            self.one_MPR_window.destroy()
-
-        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
-            self.view_reconciliations_window.destroy()
-
-        if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
-            self.view_pvalue_histogram_window.destroy()
-        
+        self.close_unnecessary_windows_if_opened()      
         self.view_solution_space_dropdown.configure(state=tk.NORMAL)
         self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
 
@@ -653,10 +644,8 @@ class App(tk.Frame):
         
         if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
             self.view_solution_space_window.destroy()
-
         if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
-            self.view_reconciliations_window.destroy()
-        
+            self.view_reconciliations_window.destroy()       
         if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
 
@@ -667,24 +656,11 @@ class App(tk.Frame):
             self.one_MPR_window = tk.Toplevel(self.master)
             self.one_MPR_window.geometry("600x600")
             self.one_MPR_window.title("One MPR")
-            # Creates a new frame
-            plt_frame = tk.Frame(self.one_MPR_window)
-            plt_frame.pack(fill=tk.BOTH, expand=1)
-            plt_frame.pack_propagate(False)
-            fig = App.recon_graph.median().draw()
-            canvas = FigureCanvasTkAgg(fig, plt_frame)
-            canvas.draw()
-            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-            # The toolbar allows the user to zoom in/out, drag the graph and save the graph
-            toolbar = NavigationToolbar2Tk(canvas, plt_frame)
-            toolbar.update()
-            canvas.get_tk_widget().pack(side=tk.TOP)
-
+            ReconciliationsOneMPRWindow(self.one_MPR_window)
             self.view_reconciliations_var.set("View reconciliations")
         
         elif self.view_reconciliations_var.get() == "One per cluster":
             self.open_window_reconciliations()
-
             self.view_reconciliations_var.set("View reconciliations")
 
     def open_window_solution_space(self):
@@ -701,7 +677,7 @@ class App(tk.Frame):
             self.view_reconciliations_window = tk.Toplevel(self.master)
             self.view_reconciliations_window.geometry("900x900")
             self.view_reconciliations_window.title("View reconciliations")
-            ReconciliationsWindow(self.view_reconciliations_window)
+            ReconciliationsOnePerClusterWindow(self.view_reconciliations_window)
     
     def open_window_pvalue_histogram(self):
         """Pop up a new tkinter window to display the p-value histogram."""
@@ -711,7 +687,7 @@ class App(tk.Frame):
         self.view_pvalue_histogram_window.title("p-value Histogram")
         PValueHistogramWindow(self.view_pvalue_histogram_window)
 
-# View reconciliation space 
+# View reconciliation space - Clusters
 class SolutionSpaceWindow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -738,8 +714,44 @@ class SolutionSpaceWindow(tk.Frame):
         toolbar.update()
         canvas.get_tk_widget().pack(side=tk.TOP)
 
-# View reconciliations 
-class ReconciliationsWindow(tk.Frame):
+# View reconciliations - One MPR
+class ReconciliationsOneMPRWindow(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master  
+        self.master.grid_rowconfigure(0, weight=5)
+        self.master.grid_rowconfigure(1, weight=1)
+        self.master.grid_columnconfigure(0, weight=1)
+        self.frame = tk.Frame(self.master)
+        self.frame.grid(row=0, column=0, sticky="nsew")
+        self.frame.grid_propagate(False)
+        self.checkboxes_frame = tk.Frame(self.master)
+        self.checkboxes_frame.grid(row=1, column=0)
+        self.checkboxes_frame.grid_propagate(False)
+        self.draw_one_MPR()
+        self.create_checkboxes()
+    
+    def draw_one_MPR(self):
+        fig = App.recon_graph.median().draw()
+        canvas = FigureCanvasTkAgg(fig, self.frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # The toolbar allows the user to zoom in/out, drag the graph and save the graph
+        toolbar = NavigationToolbar2Tk(canvas, self.frame)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side=tk.TOP)
+    
+    def create_checkboxes(self):
+        show_internal_node_names = tk.BooleanVar()
+        show_internal_node_names_checkbutton = tk.Checkbutton(self.checkboxes_frame, text="Display internal node names", variable=show_internal_node_names)
+        show_internal_node_names_checkbutton.pack(side=tk.LEFT)
+
+        show_event_frequencies = tk.BooleanVar()
+        show_event_frequencies_checkbutton = tk.Checkbutton(self.checkboxes_frame, text="Display frequencies", variable=show_event_frequencies)
+        show_event_frequencies_checkbutton.pack(side=tk.LEFT)
+
+# View reconciliations - One per cluster
+class ReconciliationsOnePerClusterWindow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.master = master        
@@ -803,7 +815,7 @@ def on_closing():
     root.destroy()
 
 root = tk.Tk()
-root.geometry("600x600")
+root.geometry("700x600")
 root.title("eMPRess GUI Version 1")
 App(root)
 root.protocol("WM_DELETE_WINDOW", on_closing)
