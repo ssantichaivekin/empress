@@ -374,7 +374,6 @@ class App(tk.Frame):
     def plot_cost_regions(self):
         """Plot the cost regions using matplotlib and embed the graph in a tkinter window."""
         self.disable_unaccessable_widgets()
-
         # Creates a new tkinter window 
         self.cost_space_window = tk.Toplevel(self.master)
         self.cost_space_window.geometry("550x550")
@@ -383,7 +382,6 @@ class App(tk.Frame):
         plt_frame = tk.Frame(self.cost_space_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
         plt_frame.pack_propagate(False)
-        #cost_regions = empress.compute_cost_regions(self.recon_input, 0.5, 10, 0.5, 10) 
         cost_regions = self.recon_input_wrapper.compute_cost_regions(0.5, 10, 0.5, 10) 
         fig = cost_regions.draw()  # creates matplotlib figure
         canvas = FigureCanvasTkAgg(fig, plt_frame)
@@ -512,9 +510,7 @@ class App(tk.Frame):
 
     def display_recon_information(self):
         """Display numeric reconciliation results and close unnecessary windows."""
-        # Compute App.recon_graph
-        #App.recon_graph = recongraph_tools.reconcile(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
-        App.recon_graph = self.recon_input_wrapper.reconcile(1, 1, 1)
+        App.recon_graph = self.recon_input_wrapper.reconcile(self.dup_cost, self.trans_cost, self.loss_cost)
         self.num_MPRs = App.recon_graph.n_recon
         if not self.recon_info_displayed:
             # Display numeric reconciliation results
