@@ -88,7 +88,7 @@ def _find_roots(old_recon_graph) -> List[MappingNode]:
             roots.append(mapping)
     return roots
 
-def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_scores: Dict[tuple, float] = None):
+def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_frequencies: Dict[tuple, float] = None):
     """
     Convert the old reconciliation graph format to Reconciliation.
 
@@ -133,8 +133,8 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_scores: Dict[tupl
             event = TipTip()
         else:
             raise ValueError('%s not in "SDTLC"' % etype)
-        if event_scores is not None:
-            event._freq = event_scores[event_tuple]
+        if event_frequencies is not None:
+            event._freq = event_frequencies[event_tuple]
         recon.set_event(mapping_node, event)
     return recon
 
