@@ -4,48 +4,15 @@
 # Ran Libeskind-Hadas, Jessica Yi-Chieh Wu, Mukul Bansal, November 2013
 
 # python libraries
-import time
 import csv
 from collections import *
 from operator import itemgetter
-
+import numpy
 
 # xscape libraries
 from empress import xscape
-from empress.xscape import getInput
 from empress.xscape import reconcile
 
-def main():
-    global CandidateCVlist
-    
-    print("Eventscape %s" % xscape.PROGRAM_VERSION_TEXT)
-    hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, outfile = \
-        getInput.getInput(outputExtension ="csv")
-
-    while True:
-        merge_type = input("[U]nion or [I]ntersection? ")
-        if merge_type == "U" or merge_type == "I":
-            break
-        print("Invalid input.  Please try again.")
-    CONFIG.intersection = merge_type == "I"
-        
-    print("Reconciling trees...")
-    startTime = time.time()
-    
-    print("  Preprocessing...")
-    preCVlist = reconcile.reconcile(parasiteTree, hostTree, phi, \
-                                    switchLo, switchHi, lossLo, lossHi)
-    CandidateCVlist.extend(restrict(preCVlist, \
-                                    switchLo, switchHi, lossLo, lossHi))
-    print("  Solving...")
-    CVlist = reconcileEvents(parasiteTree, hostTree, phi, \
-                             switchLo, switchHi, lossLo, lossHi)
-    endTime = time.time()
-    elapsedTime = endTime- startTime
-    print("Elapsed time %.2f seconds" % elapsedTime)
-    output(outfile, CVlist, hostTree, switchLo, switchHi, lossLo, lossHi,
-           root=parasiteTree["pTop"][1])
-    print("Output written to file ", outfile)
 
 def restrict(CVlist, switchLo, switchHi, lossLo, lossHi, regions=None):
     restrictedList = []
@@ -126,6 +93,6 @@ def displayVersion(event, root="Root", sep=" "):
     if eventType.startswith("switch"):
         eventType = "switch" + sep + eval(eventType[10:].split()[1].strip(")"))
     return parasiteNode + sep + hostNode + sep + eventType 
-           
-if __name__ == '__main__': main()
+
+
     

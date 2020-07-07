@@ -10,14 +10,13 @@ import time
 # xscape libraries
 from empress import xscape
 from empress.xscape import reconcile
-from empress.xscape import plotcostsAnalytic as plotcosts
+from empress.xscape import plotcosts_analytic as plotcosts
 
-def solve(newick_data, transferMin, transferMax, dupMin, dupMax,
-          outfile=None, log=False):
+def solve(newick_data, transferMin, transferMax, dupMin, dupMax, outfile=None, log=False):
     print("Costscape %s" % xscape.PROGRAM_VERSION_TEXT)
-    hostTree = newick_data.host_tree
-    parasiteTree = newick_data.parasite_tree
-    phi = newick_data.phi
+    hostTree = newick_data.host_dict
+    parasiteTree = newick_data.parasite_dict
+    tip_mapping = newick_data.tip_mapping
     if outfile is None:
         display = True
     else:
@@ -26,17 +25,11 @@ def solve(newick_data, transferMin, transferMax, dupMin, dupMax,
 
     print("Reconciling trees...")
     startTime = time.time()
-    CVlist = reconcile.reconcile(parasiteTree, hostTree, phi,
+    CVlist = reconcile.reconcile(parasiteTree, hostTree, tip_mapping,
                                  transferMin, transferMax, dupMin, dupMax)
     endTime = time.time()
     elapsedTime = endTime- startTime
-
     print("Elapsed time %.2f seconds" % elapsedTime)
-    plotcosts.plotcosts(CVlist, transferMin, transferMax, dupMin, dupMax,
-                        outfile=outfile,
-                        log=log, display=display)
-    if outfile:
+    plotcosts.plotcosts(CVlist, transferMin, transferMax, dupMin, dupMax, outfile, log, display)
+    if outfile != "":
         print("Output written to file: ", outfile)
-    
-#if __name__ == '__main__':
-#    main()

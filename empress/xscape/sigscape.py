@@ -5,58 +5,18 @@
 
 # python libraries
 import random
+import sys
 import time
 from multiprocessing import Process, Queue  # For multiprocessing random trials
 
 # xscape libraries
 from empress import xscape
-from empress.xscape import getInput
 from empress.xscape import reconcile
 from empress.xscape import plotsig
 
 
 DOTS = 100  # DOTS data points per dimension;
             # Increase this value for higher resolution plottin
-
-def main():
-    print("Sigscape %s" % xscape.PROGRAM_VERSION_TEXT)
-    hostTree, parasiteTree, phi, switchLo, switchHi, lossLo, lossHi, \
-        outfile = getInput.getInput(outputExtension ="pdf", allowEmptyOutfile = True)
-    log = getInput.boolInput("Display in log coordinates? ")
-    if outfile == "":
-        display = True
-    else:
-        display = getInput.boolInput("Display to screen? ")
-
-    numTrials = getInput.intInput("Enter the number of randomization trials: ", 1)
-    numProcs = getInput.intInput("Enter the number of cores for parallelization: ", 1)
-    seed = getSeed("Enter random seed (leave blank if none): ")
-    if seed:
-        random.seed(seed)
-
-    print("Reconciling trees...")
-    CVlist = reconcile.reconcile(parasiteTree, hostTree, phi, \
-                                 switchLo, switchHi, lossLo, lossHi)  
-    startTime = time.time()
-    if numProcs == 1:
-        randomTrialsCVlist = seqTrials(parasiteTree, hostTree, phi, \
-                                       numTrials,
-                                       switchLo, switchHi, \
-                                       lossLo, lossHi)
-    else:
-        randomTrialsCVlist = parallelTrials(parasiteTree, hostTree, phi, \
-                                            numTrials, numProcs, \
-                                            switchLo, switchHi, \
-                                            lossLo, lossHi)
-    endTime = time.time()
-    elapsedTime = endTime- startTime
-    print("\nElapsed time %.2f seconds" % elapsedTime)   
-
-    print("Plotting...")
-    plotsig.plotsig(CVlist, randomTrialsCVlist, switchLo, switchHi, \
-                    lossLo, lossHi, DOTS, outfile, \
-                    log, display)
-    if outfile != "": print("Output written in file ", outfile)
 
 def getSeed(prompt):
     while True:
@@ -70,14 +30,14 @@ def getSeed(prompt):
         except ValueError:
             print("Non-numeric input.  Please try again.")
 
-def seqTrials(parasiteTree, hostTree, phi, numTrials, 
+def seqTrials(parasiteTree, hostTree, tip_mapping, numTrials,
               switchLo, switchHi, lossLo, lossHi,
               verbose=True):
     ''' Perform numTrials randomization trials sequentially.  Although
         parTrials could be used to do this too, this function doesn't
         require the multiprocessing package and thus may be preferable
         to some users in some situation.'''
-    parasiteTips, hostTips = getTipLists(parasiteTree, hostTree, phi)
+    parasiteTips, hostTips = getTipLists(parasiteTree, hostTree, tip_mapping)
     output = []
     for t in range(numTrials):
         if verbose:
@@ -91,11 +51,11 @@ def seqTrials(parasiteTree, hostTree, phi, numTrials,
         print()               # Newline
     return output
 
-def parTrials(parasiteTree, hostTree, phi, numTrials,  \
+def parTrials(parasiteTree, hostTree, tip_mapping, numTrials,  \
               switchLo, switchHi, lossLo, lossHi, result,
               verbose=True):
     ''' Perform numTrials randomization trials in one process. '''
-    parasiteTips, hostTips = getTipLists(parasiteTree, hostTree, phi)
+    parasiteTips, hostTips = getTipLists(parasiteTree, hostTree, tip_mapping)
     output = []
     for t in range(numTrials):
         if verbose:
@@ -106,7 +66,7 @@ def parTrials(parasiteTree, hostTree, phi, numTrials,  \
                                           switchLo, switchHi, lossLo, lossHi))
     result.put(output)
 
-def parallelTrials(parasiteTree, hostTree, phi, numTrials, numProcs, \
+def parallelTrials(parasiteTree, hostTree, tip_mapping, numTrials, numProcs, \
                    switchLo, switchHi, lossLo, lossHi):
     ''' This form of dumb parallelism is required to avoid overflowing
         buffers due to a Python bug. See the stackoverflow.com
@@ -119,7 +79,7 @@ def parallelTrials(parasiteTree, hostTree, phi, numTrials, numProcs, \
         procs = []
         for p in range(numProcs):
             proc = Process(target=parTrials, \
-                       args = (parasiteTree, hostTree, phi, 1,\
+                       args = (parasiteTree, hostTree, tip_mapping, 1,\
                                switchLo, switchHi, lossLo, lossHi, result))
             procs.append(proc)
             proc.start()
@@ -129,12 +89,12 @@ def parallelTrials(parasiteTree, hostTree, phi, numTrials, numProcs, \
             output.extend(result.get())
     return output
     
-def getTipLists(parasiteTree, hostTree, phi):
+def getTipLists(parasiteTree, hostTree, tip_mapping):
     ''' Return the lists of tips in the given parasite and host trees.'''
-    parasiteTips = list(phi.keys())
+    parasiteTips = list(tip_mapping.keys())
     hostTips = []
     for p in parasiteTips:
-        h = phi[p]
+        h = tip_mapping[p]
         if not h in hostTips: hostTips.append(h)
     return parasiteTips, hostTips
 
@@ -156,6 +116,3 @@ def randomizeTips(parasiteTips, hostTips):
     for j in range(numHtips, numPtips):
         randomPhi[parasiteTips[j]] = random.choice(hostTips)
     return randomPhi
-
-if __name__ == '__main__': main()
-    

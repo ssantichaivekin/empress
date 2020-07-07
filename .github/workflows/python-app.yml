@@ -1,0 +1,60 @@
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Install dependencies and run empress
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install pipenv
+      uses: dschep/install-pipenv-action@v1
+    - name: Install dependencies
+      run: |
+        pipenv install --dev
+    - name: Lint with flake8
+      run: |
+        pipenv install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    - name: Run unittests
+      run: |
+        pipenv run python -m unittest
+    - name: Run empress_cli help
+      run: |
+        pipenv run python empress_cli.py --help
+    - name: Run cost region example in Readme.md
+      run: |
+        pipenv run python empress_cli.py --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk --mapping examples/heliconius_mapping.mapping costscape -tl 0.5 -th 10 -dl 0.5 -dh 10 --outfile costscape-example-img.pdf --log
+    - name: Run reconcile example in Readme.md
+      run: |
+        pipenv run python empress_cli.py --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk --mapping examples/heliconius_mapping.mapping reconcile -d 4 -t 2 -l 0
+    - name: Run distance pair histogram example in Readme.md
+      run: |
+        pipenv run python empress_cli.py --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk --mapping examples/heliconius_mapping.mapping histogram --csv foo.csv --histogram bar.pdf --ynorm
+    - name: Run cluster example in Readme.md
+      run: |
+        pipenv run python empress_cli.py --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk --mapping examples/heliconius_mapping.mapping clumpr -k 3 --median --nsplits 4 --support
+    - name: Run draw examples for empress wrapper
+      run: |
+        pipenv run python -m draw.draw_empress_wrapper
+    - name: Run draw examples for recon viewer
+      run: |
+        pipenv run python -m draw.draw_recon_viewer
+    - name: Upload draw examples
+      uses: actions/upload-artifact@v2
+      with:
+        name: draw_examples_output
+        path: ./draw_examples_output

@@ -1,1 +1,0 @@
-../../bin/eventscape_analytic
