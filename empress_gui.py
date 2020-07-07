@@ -543,6 +543,7 @@ class App(tk.Frame):
     def select_from_view_solution_space_dropdown(self, event):
         """When "View solution space" dropdown is clicked."""
         if self.view_solution_space_var.get() == "Entire space":
+            self.view_solution_space_var.set("View solution space")
             # Creates a new tkinter window 
             self.entire_space_window = tk.Toplevel(self.master)
             self.entire_space_window.geometry("600x600")
@@ -560,12 +561,9 @@ class App(tk.Frame):
             toolbar.update()
             canvas.get_tk_widget().pack(side=tk.TOP)
 
-            self.view_solution_space_var.set("View solution space")
-
         elif self.view_solution_space_var.get() == "Clusters":
-            self.set_num_clusters()
-
             self.view_solution_space_var.set("View solution space")
+            self.set_num_clusters()
 
     def set_num_clusters(self):
         """Pop up a new tkinter window for setting the number of clusters."""
@@ -652,16 +650,16 @@ class App(tk.Frame):
     def select_from_view_reconciliations_dropdown(self, event):
         """When "View reconciliations" dropdown is clicked."""
         if self.view_reconciliations_var.get() == "One MPR":
+            self.view_reconciliations_var.set("View reconciliations")
             # Creates a new tkinter window 
             self.one_MPR_window = tk.Toplevel(self.master)
             self.one_MPR_window.geometry("600x600")
             self.one_MPR_window.title("One MPR")
             ReconciliationsOneMPRWindow(self.one_MPR_window)
-            self.view_reconciliations_var.set("View reconciliations")
         
         elif self.view_reconciliations_var.get() == "One per cluster":
-            self.open_window_reconciliations()
             self.view_reconciliations_var.set("View reconciliations")
+            self.open_window_reconciliations()
 
     def open_window_solution_space(self):
         """Pop up a new tkinter window to display the solution space."""
