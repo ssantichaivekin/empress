@@ -40,11 +40,11 @@ example_strong_consistent_reconciliation = empress.ReconciliationWrapper(
     trans_cost=None,
     loss_cost=None,
     total_cost=None,
-    event_scores={
-        ('D', ('n1', 'm4'), ('n2', 'm4')): 0.5,
-        ('D', ('n3', 'm4'), ('n4', 'm4')): 0.5,
-        ('C', (None, None), (None, None)): 0.5,
-    },
+    # event_scores={
+    #     ('D', ('n1', 'm4'), ('n2', 'm4')): 0.5,
+    #     ('D', ('n3', 'm4'), ('n4', 'm4')): 0.5,
+    #     ('C', (None, None), (None, None)): 0.5,
+    # },
 )
 
 example_inconsistent_reconciliation = empress.ReconciliationWrapper(
