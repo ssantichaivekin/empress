@@ -57,18 +57,18 @@ class Drawable(ABC):
     """
 
     @abstractmethod
-    def draw_on(self, axes: plt.Axes, **kwargs):
+    def draw_on(self, axes: plt.Axes):
         """
         Draw self on matplotlib Axes
         """
         pass
 
-    def draw(self, **kwargs) -> plt.Figure:
+    def draw(self) -> plt.Figure:
         """
         Draw self as matplotlib Figure.
         """
         figure, ax = plt.subplots(1, 1)
-        self.draw_on(ax, **kwargs)
+        self.draw_on(ax)
         return figure
 
 
@@ -76,7 +76,7 @@ class ReconciliationWrapper(Drawable):
     # TODO: Replace dict with Reconciliation type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, reconciliation: dict, root: tuple, recon_input: _ReconInput, dup_cost, trans_cost, loss_cost,
-                 total_cost: float, event_frequencies: Dict[tuple, float] = None):
+                 total_cost: float, event_frequencies: Dict[tuple, float]):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -86,8 +86,14 @@ class ReconciliationWrapper(Drawable):
         self.root = root
         self.event_frequencies = event_frequencies
 
-    def draw_on(self, axes: plt.Axes):
+    def draw(self, show_internal_labels: bool = False, show_freq: bool = True):
+        figure, ax = plt.subplots(1, 1)
+        self.draw_on(ax, show_internal_labels=show_internal_labels, show_freq=show_freq)
+        return figure
+
+    def draw_on(self, axes: plt.Axes, show_internal_labels: bool = False, show_freq: bool = True):
         recon_viewer.render(self.recon_input.host_dict, self.recon_input.parasite_dict, self._reconciliation,
+                            self.event_frequencies, show_internal_labels=show_internal_labels, show_freq=show_freq,
                             axes=axes)
 
     def count_events(self) -> Tuple[int, int, int, int]:
