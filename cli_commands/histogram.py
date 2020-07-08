@@ -23,23 +23,25 @@ def add_histogram_to_parser(histogram_parser: argparse.ArgumentParser):
                                   default=1, help="Loss cost")
 
     histogram_parser.add_argument("--histogram", metavar="<filename>", default="unset",
-                                  nargs="?", help="Output the histogram at the path provided. \
-            If no filename is provided, outputs to a filename based on the input .newick file.")
+                                  nargs="?", help="Output the histogram at the path provided. If no filename is "
+                                                  "provided, outputs to a filename based on the input host file.")
     histogram_parser.add_argument("--xnorm", action="store_true",
                                   help="Normalize the x-axis so that the distances range between 0 and 1.")
     histogram_parser.add_argument("--ynorm", action="store_true",
                                   help="Normalize the y-axis so that the histogram is a probability distribution.")
     histogram_parser.add_argument("--omit_zeros", action="store_true",
-                                  help="Omit the zero column of the histogram, which will always be the total number of reconciliations.")
+                                  help="Omit the zero column of the histogram, which will always be the total number "
+                                       "of reconciliations.")
     histogram_parser.add_argument("--cumulative", action="store_true",
                                   help="Make the histogram cumulative.")
     histogram_parser.add_argument("--csv", metavar="<filename>", default="unset", nargs="?",
-                                  help="Output the histogram as a .csv file at the path provided. \
-            If no filename is provided, outputs to a filename based on the input .newick file.")
+                                  help="Output the histogram as a .csv file at the path provided. If no filename is "
+                                       "provided, outputs to a filename based on the input host file.")
 
     # Statistics to print
     histogram_parser.add_argument("--stats", action="store_true",
-                                  help="Output statistics including the total number of MPRs, the diameter of MPR-space, and the average distance between MPRs.")
+                                  help="Output statistics including the total number of MPRs, the diameter of "
+                                       "MPR-space, and the average distance between MPRs.")
 
     # Time it
     histogram_parser.add_argument("--time", action="store_true",
