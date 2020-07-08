@@ -36,15 +36,15 @@ example_strong_consistent_reconciliation = empress.ReconciliationWrapper(
         parasite_distances=None,
         tip_mapping=None,
     ),
+    dup_cost=None,
+    trans_cost=None,
+    loss_cost=None,
+    total_cost=None,
     event_scores={
         ('D', ('n1', 'm4'), ('n2', 'm4')): 0.5,
         ('D', ('n3', 'm4'), ('n4', 'm4')): 0.5,
         ('C', (None, None), (None, None)): 0.5,
     },
-    dup_cost=None,
-    trans_cost=None,
-    loss_cost=None,
-    total_cost=None,
 )
 
 example_inconsistent_reconciliation = empress.ReconciliationWrapper(
@@ -73,16 +73,16 @@ example_inconsistent_reconciliation = empress.ReconciliationWrapper(
         parasite_distances=None,
         tip_mapping=None,
     ),
+    dup_cost=None,
+    trans_cost=None,
+    loss_cost=None,
+    total_cost=None,
     event_scores={
         ('T', ('n4', 'm4'), ('n2', 'm2')): 0.5,
         ('T', ('n5', 'm2'), ('n3', 'm1')): 0.5,
         ('S', ('n1', 'm3'), ('n6', 'm4')): 0.5,
         ('C', (None, None), (None, None)): 0.5,
     },
-    dup_cost=None,
-    trans_cost=None,
-    loss_cost=None,
-    total_cost=None,
 )
 
 def test_recongraph_draw():
