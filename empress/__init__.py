@@ -93,7 +93,7 @@ class ReconciliationWrapper(Drawable):
 
     def draw_on(self, axes: plt.Axes, show_internal_labels: bool = False, show_freq: bool = True):
         recon_viewer.render(self.recon_input.host_dict, self.recon_input.parasite_dict, self._reconciliation,
-                            self.event_scores, show_internal_labels=show_internal_labels, show_freq=show_freq,
+                            self.event_frequencies, show_internal_labels=show_internal_labels, show_freq=show_freq,
                             axes=axes)
 
     def count_events(self) -> Tuple[int, int, int, int]:
