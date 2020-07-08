@@ -4,105 +4,197 @@ import tkinter as tk
 from tkinter import messagebox
 from pathlib import Path
 import os
-import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.backend_bases import MouseEvent, key_press_handler
+
 import empress
+from empress import input_reader
+from empress.recon_vis.utils import dict_to_tree
+from empress.recon_vis import tree
 
 class App(tk.Frame):
 
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.master = master
-        # Configures the master frame 
-        master.grid_rowconfigure(0, weight=1)
-        master.grid_rowconfigure(1, weight=2)
-        master.grid_columnconfigure(0, weight=1)
-        master.grid_columnconfigure(1, weight=1)
+        # Configure the self.master frame
+        self.master.grid_rowconfigure(0, weight=2)
+        self.master.grid_rowconfigure(1, weight=1)
+        self.master.grid_rowconfigure(2, weight=1)
+        self.master.grid_rowconfigure(3, weight=1)
+        self.master.grid_rowconfigure(4, weight=1)
+        self.master.grid_columnconfigure(0, weight=1)
+        self.master.grid_columnconfigure(1, weight=1)
+        # To display the dividing lines among different frames by adding paddings
+        self.master.configure(background="grey")
 
-        # Creates a logo frame on top of the master frame 
-        self.logo_frame = tk.Frame(master)
-        # sticky="nsew" means that self.logo_frame expands in all four directions (north, south, east and west) 
-        # to fully occupy the allocated space in the grid system (row 0 column 0&1)
+        # Create a logo frame on top of the self.master frame
+        self.logo_frame = tk.Frame(self.master)
+        # sticky="nsew" means that self.logo_frame expands in all four directions (north, south, east and west)
+        # to fully occupy the allocated space in the grid system (row 0 column 0-1)
         self.logo_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
         self.logo_frame.grid_propagate(False)
 
-        # Adds background image
+        # Add logo image in self.logo_frame
         photo = tk.PhotoImage(file="./assets/jane_logo_thin.gif")
         label = tk.Label(self.logo_frame, image=photo)
         label.place(x=0, y=0)
         label.image = photo
 
-        # Creates an input frame on the left side of the master frame 
-        self.func_frame = tk.Frame(master)
-        self.func_frame.grid(row=1, column=0, sticky="nsew")
-        self.func_frame.grid_rowconfigure(0, weight=1)
-        self.func_frame.grid_rowconfigure(1, weight=1)
-        self.func_frame.grid_rowconfigure(2, weight=1)
-        self.func_frame.grid_rowconfigure(3, weight=1)
-        self.func_frame.grid_columnconfigure(0, weight=1)
-        self.func_frame.grid_propagate(False)
+        # Create an input frame on the left side of the self.master frame
+        self.input_frame = tk.Frame(self.master)
+        self.input_frame.grid(row=1, column=0, rowspan=4, sticky="nsew", padx=(0, 1), pady=(1, 0))
+        self.input_frame.grid_rowconfigure(0, weight=1)
+        self.input_frame.grid_rowconfigure(1, weight=1)
+        self.input_frame.grid_rowconfigure(2, weight=1)
+        self.input_frame.grid_rowconfigure(3, weight=1)
+        self.input_frame.grid_rowconfigure(4, weight=1)
+        self.input_frame.grid_rowconfigure(5, weight=1)
+        self.input_frame.grid_rowconfigure(6, weight=1)
+        self.input_frame.grid_columnconfigure(0, weight=1)
+        self.input_frame.grid_propagate(False)
 
-        # Creates an output frame on the right side of the master frame
-        self.output_frame = tk.Frame(master)
-        self.output_frame.grid(row=1, column=1, sticky="nsew")
-        self.output_frame.grid_rowconfigure(0, weight=1)
-        self.output_frame.grid_rowconfigure(1, weight=1)
-        self.output_frame.grid_rowconfigure(2, weight=1)
-        self.output_frame.grid_columnconfigure(0, weight=1)
-        self.output_frame.grid_propagate(False)
+        # "Load files" dropdown
+        # Load in three input files (two .nwk and one .mapping)
+        # and display the number of leaves in each tree and the entry boxes for setting DTL costs
+        self.load_files_var = tk.StringVar(self.input_frame)
+        self.load_files_var.set("Load files")
+        self.load_files_options = ["Load host tree file", "Load parasite tree file", "Load mapping file"]
+        self.load_files_dropdown = tk.OptionMenu(self.input_frame, self.load_files_var, *self.load_files_options,
+                                                 command=self.load_input_files)
+        self.load_files_dropdown.configure(width=15)
+        self.load_files_dropdown.grid(row=0, column=0)
+        # Force a sequence of loading host tree file first, and then parasite tree file, and then mapping file
+        self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state="disabled")
+        self.load_files_dropdown['menu'].entryconfigure("Load mapping file", state="disabled")
 
-        # "Load File" button 
-        # Loads in an input .newick file
-        # and displays the number of leaves in each tree (DEMO for now) and entry boxes for DTL costs
-        load_file_btn = tk.Button(self.func_frame, text="Load File", command=self.load_file)
-        load_file_btn.grid(row=0, column=0)
-        # Creates a Label to overwrite the old file path 
-        self.file_path_label = tk.Label(self.output_frame)
+        # recon_input variables
+        self.recon_info_displayed = False
+        self.recon_input = input_reader._ReconInput()
+        App.recon_graph = None
+        App.clusters_list = []
+        App.medians = None
 
-        # "View Event Cost Regions" button 
-        # Pops up a matplotlib graph for the cost regions
-        self.view_cost_btn = tk.Button(self.func_frame, text="View Event Cost Regions", command=self.plot_cost_regions, state=tk.DISABLED)
-        self.view_cost_btn.grid(row=1, column=0)
+        # Create an input information frame
+        # to display the numbers of tips for host and parasite trees
+        self.input_info_frame = tk.Frame(self.master)
+        self.input_info_frame.grid(row=1, column=1, sticky="nsew", pady=(1, 1))
+        self.input_info_frame.grid_rowconfigure(0, weight=1)
+        self.input_info_frame.grid_rowconfigure(1, weight=1)
+        self.input_info_frame.grid_rowconfigure(2, weight=1)
+        self.input_info_frame.grid_columnconfigure(0, weight=1)
+        self.input_info_frame.grid_propagate(False)
 
-        # "Compute Reconciliations" button 
-        # Displays reconciliation results(numbers) and three options(checkboxes) for viewing graphical analysis
-        self.compute_recon_button = tk.Button(self.func_frame, text="Compute Reconciliations", command=self.recon_analysis, state=tk.DISABLED)
-        self.compute_recon_button.grid(row=2, column=0)
+        # To overwrite everything when user loads in new input files
+        # (always starting from the host tree file)
+        self.host_tree_info = tk.Label(self.input_info_frame)
+        self.parasite_tree_info = tk.Label(self.input_info_frame)
+        self.mapping_info = tk.Label(self.input_info_frame)
 
-    def load_file(self):
-        """Loads in an input file and displays the number of leaves in each tree when "Load File" button is clicked."""
-        # Creates a frame to display the number of leaves and the file path
-        input_info_frame = tk.Frame(self.output_frame)
-        input_info_frame.grid(row=0, column=0, sticky="nsew")
-        input_info_frame.grid_columnconfigure(0, weight=1)
-        input_info_frame.grid_rowconfigure(0, weight=1)
-        input_info_frame.grid_rowconfigure(1, weight=1)
-        input_info_frame.grid_rowconfigure(2, weight=1)
-        input_info_frame.grid_propagate(False)
+    def refresh_when_new_input_files_loaded(self, event):
+        """Reset when user loads in a new input file (can be either of the three options)."""
+        App.recon_graph = None
+        App.clusters_list = []
+        App.medians = None
+        # Reset self.recon_input so self.view_cost_space_btn can be disabled
+        self.recon_input = input_reader._ReconInput()
 
-        # Allows loading a .newick file
-        self.file_path = None
-        # initialdir is set to be the current working directory
-        input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a file")
-        if Path(input_file).suffix == '.newick': 
-            self.file_path = input_file
-            self.file_path_label.destroy()  # Overwrites the old file path in the grid system
-            self.file_path_label = tk.Label(input_info_frame, text=input_file)
-            self.file_path_label.grid(row=0, column=0, sticky="w")
-            # This is only DEMO for now
-            host_tree_info = tk.Label(input_info_frame, text="Host:  83 tips (DEMO)")
-            host_tree_info.grid(row=1, column=0, sticky="w")
-            parasite_info = tk.Label(input_info_frame, text="Parasite/symbiont:  78 tips (DEMO)")
-            parasite_info.grid(row=2, column=0, sticky="w")           
-        else:
-            messagebox.showinfo("Warning", "Please load a '.newick' file.")
+        if event == "Load host tree file":
+            self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state="normal")
+            # Read in host tree file after reseting everything
+            self.recon_input.read_host(self.host_file_path)
+            self.host_tree_info.destroy()
+            self.parasite_tree_info.destroy()
+            self.mapping_info.destroy()
 
-        # Enables the next step, setting DTL costs
-        if self.file_path is not None: 
-            self.view_cost_btn.configure(state=tk.NORMAL)
-            self.dtl_cost()
+        elif event == "Load parasite tree file":
+            self.load_files_dropdown['menu'].entryconfigure("Load mapping file", state="normal")
+            # Read in host and parasite tree files after reseting everything
+            self.recon_input.read_host(self.host_file_path)
+            self.recon_input.read_parasite(self.parasite_file_path)
+            self.parasite_tree_info.destroy()
+            self.mapping_info.destroy()
+
+        elif event == "Load mapping file":
+            # Read in host and parasite trees and mapping files after reseting everything
+            self.recon_input.read_host(self.host_file_path)
+            self.recon_input.read_parasite(self.parasite_file_path)
+            self.recon_input.read_mapping(self.mapping_file_path)
+            self.mapping_info.destroy()
+
+    def load_input_files(self, event):
+        """Load in two .nwk files for the host tree and parasite tree, and one .mapping file. Display the number of tips for
+        the trees and a message to indicate the successful reading of the tips mapping."""
+        # Clicking on "Load host tree file"
+        if self.load_files_var.get() == "Load host tree file":
+            self.load_files_var.set("Load files")
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file")
+            if input_file != "":
+                try:
+                    self.recon_input.read_host(input_file)
+                except Exception as e:
+                    messagebox.showinfo("Warning", "Error: " + str(e))
+                self.host_file_path = input_file
+                # Force a sequence of loading host tree file first, and then parasite tree file, and then mapping file
+                self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state="disabled")
+                self.load_files_dropdown['menu'].entryconfigure("Load mapping file", state="disabled")
+                self.refresh_when_new_input_files_loaded("Load host tree file")
+                self.update_input_files_info("host")
+
+                # Clicking on "Load parasite tree file"
+        elif self.load_files_var.get() == "Load parasite tree file":
+            self.load_files_var.set("Load files")
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a parasite file")
+            if input_file != "":
+                try:
+                    self.recon_input.read_parasite(input_file)
+                except Exception as e:
+                    messagebox.showinfo("Warning", "Error: " + str(e))
+                self.parasite_file_path = input_file
+                self.refresh_when_new_input_files_loaded("Load parasite tree file")
+                self.update_input_files_info("parasite")
+
+        # Clicking on "Load mapping file"
+        elif self.load_files_var.get() == "Load mapping file":
+            self.load_files_var.set("Load files")
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a mapping file")
+            if input_file != "":
+                try:
+                    self.recon_input.read_mapping(input_file)
+                except Exception as e:
+                    messagebox.showinfo("Warning", "Error: " + str(e))
+                self.mapping_file_path = input_file
+                self.refresh_when_new_input_files_loaded("Load mapping file")
+                self.update_input_files_info("mapping")
+
+    def compute_tree_tips(self, tree_type):
+        """Compute the number of tips for the host tree and parasite tree inputs."""
+        if tree_type == "host tree":
+            host_tree_object = dict_to_tree(self.recon_input.host_dict, tree.TreeType.HOST)
+            return len(host_tree_object.leaf_list())
+        elif tree_type == "parasite tree":
+            parasite_tree_object = dict_to_tree(self.recon_input.parasite_dict, tree.TreeType.PARASITE)
+            return len(parasite_tree_object.leaf_list())
+
+    def update_input_files_info(self, fileType):
+        if fileType == "host":
+            host_tree_tips_number = self.compute_tree_tips("host tree")
+            self.host_tree_info = tk.Label(self.input_info_frame,
+                                           text="Host: " + os.path.basename(self.host_file_path) + ": " + str(
+                                               host_tree_tips_number) + " tips")
+            self.host_tree_info.grid(row=0, column=0, sticky="w")
+        elif fileType == "parasite":
+            parasite_tree_tips_number = self.compute_tree_tips("parasite tree")
+            self.parasite_tree_info = tk.Label(self.input_info_frame, text="Parasite/symbiont: " + os.path.basename(
+                self.parasite_file_path) + ": " + str(parasite_tree_tips_number) + " tips")
+            self.parasite_tree_info.grid(row=1, column=0, sticky="w")
+        elif fileType == "mapping":
+            self.mapping_info = tk.Label(self.input_info_frame,
+                                         text="Mapping: " + os.path.basename(self.mapping_file_path))
+            self.mapping_info.grid(row=2, column=0, sticky="w")
 
     def dtl_cost(self):
         """Sets DTL costs by clicking on the matplotlib graph or by entering manually."""
