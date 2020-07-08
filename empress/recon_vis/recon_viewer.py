@@ -120,7 +120,6 @@ def render_parasite_node(fig, node, event, show_internal_labels=False, show_freq
     node_xy = (node.layout.x, node.layout.y)
     render_color = event_color(event)
     fig.dot(node_xy, render_color)
-    fig.text(node_xy, node.name, render_color)
     if show_internal_labels:
         fig.text(node_xy, node.name, render_color)
     if show_freq:

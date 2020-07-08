@@ -36,6 +36,11 @@ example_strong_consistent_reconciliation = empress.ReconciliationWrapper(
         parasite_distances=None,
         tip_mapping=None,
     ),
+    event_scores={
+        ('D', ('n1', 'm4'), ('n2', 'm4')): 0.5,
+        ('D', ('n3', 'm4'), ('n4', 'm4')): 0.5,
+        ('C', (None, None), (None, None)): 0.5,
+    },
     dup_cost=None,
     trans_cost=None,
     loss_cost=None,
@@ -68,6 +73,12 @@ example_inconsistent_reconciliation = empress.ReconciliationWrapper(
         parasite_distances=None,
         tip_mapping=None,
     ),
+    event_scores={
+        ('T', ('n4', 'm4'), ('n2', 'm2')): 0.5,
+        ('T', ('n5', 'm2'), ('n3', 'm1')): 0.5,
+        ('S', ('n1', 'm3'), ('n6', 'm4')): 0.5,
+        ('C', (None, None), (None, None)): 0.5,
+    },
     dup_cost=None,
     trans_cost=None,
     loss_cost=None,
@@ -90,11 +101,23 @@ def test_recongraph_draw_graph():
 
 test_recongraph_draw_graph()
 
-def test_strong_consistency_reconciliation_draw():
+def test_strong_consistency_reconciliation_draw_default():
     fig = example_strong_consistent_reconciliation.draw()
-    fig.savefig(Path(common.output_path).joinpath("test_strong_consistency_reconciliation_draw.png"))
+    fig.savefig(Path(common.output_path).joinpath("test_strong_consistency_reconciliation_draw_default.png"))
 
-test_strong_consistency_reconciliation_draw()
+test_strong_consistency_reconciliation_draw_default()
+
+def test_strong_consistency_reconciliation_draw_show_label_and_freq():
+    fig = example_strong_consistent_reconciliation.draw(show_internal_labels=True, show_freq=True)
+    fig.savefig(Path(common.output_path).joinpath("test_strong_consistency_reconciliation_draw_show_label_and_freq.png"))
+
+test_strong_consistency_reconciliation_draw_show_label_and_freq()
+
+def test_strong_consistency_reconciliation_draw_hide_label_and_freq():
+    fig = example_strong_consistent_reconciliation.draw(show_internal_labels=False, show_freq=False)
+    fig.savefig(Path(common.output_path).joinpath("test_strong_consistency_reconciliation_draw_hide_label_and_freq.png"))
+
+test_strong_consistency_reconciliation_draw_hide_label_and_freq()
 
 def test_inconsistent_reconciliation_draw():
     fig = example_inconsistent_reconciliation.draw()
@@ -102,6 +125,19 @@ def test_inconsistent_reconciliation_draw():
 
 test_inconsistent_reconciliation_draw()
 
+
+def test_cluster_reconciliation_draw():
+    recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)
+    recongraph = recon_input.reconcile(1, 1, 1)
+    clusters = recongraph.cluster(3)
+    fig, axs = plt.subplots(1, len(clusters))
+    for i in range(len(clusters)):
+        median_recon = clusters[i].median()
+        median_recon.draw_on(axs[i])
+
+    fig.savefig(Path(common.output_path).joinpath("test_cluster_reconciliation_draw.png"))
+
+test_cluster_reconciliation_draw()
 
 def test_cluster_reconciliation_draw():
     recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)
@@ -145,12 +181,12 @@ def test_stats_1():
 
 test_stats_1()
 
-def test_recon_input_draw_tanglegram():
+def test_recon_input_draw_tanglegram_1():
     recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)
     fig = recon_input.draw()
-    fig.savefig(Path(common.output_path).joinpath("test_recon_input_draw_tanglegram.png"))
+    fig.savefig(Path(common.output_path).joinpath("test_recon_input_draw_tanglegram_1.png"))
 
-test_recon_input_draw_tanglegram()
+test_recon_input_draw_tanglegram_1()
 
 def test_recon_input_draw_tanglegram_2():
     recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)
