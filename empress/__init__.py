@@ -76,7 +76,7 @@ class ReconciliationWrapper(Drawable):
     # TODO: Replace dict with Reconciliation type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, reconciliation: dict, root: tuple, recon_input: _ReconInput, dup_cost, trans_cost, loss_cost,
-                 total_cost: float, event_scores: Dict[tuple, float] = None):
+                 total_cost: float, event_scores: Dict[tuple, float]):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
