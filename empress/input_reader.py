@@ -62,7 +62,7 @@ class _ReconInput:
         :param file_name <str>   - filename of the map file to parse
         """
         if not isinstance(file_name, str):
-            raise ReconInputError("file_name %s is not a string" % file_name)
+            raise ReconInputError("mapping file_name %s is not a string" % file_name)
 
         if self.host_dict is None:
             raise ReconInputError("attempt to read tip mapping before reading host tree")
@@ -77,7 +77,7 @@ class _ReconInput:
                 _ReconInput._verify_tip_mapping(self.host_dict, self.parasite_dict, tip_mapping)
                 self.tip_mapping = tip_mapping
         except Exception as e:
-            raise ReconInputError(e)
+            raise ReconInputError("cannot read mapping file %s:" % file_name + str(e))
 
     def save_to_files(self, host_fname: str, parasite_fname: str, tip_mapping_fname: str):
         _ReconInput._save_newick_tree_to_file(self.host_dict, host_fname)
