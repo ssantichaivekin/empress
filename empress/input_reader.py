@@ -41,14 +41,20 @@ class _ReconInput:
         Takes a host filename as input and sets self.host_dict and self.host_distances
         :param file_name <str>    - filename of host file to parse
         """
-        self.host_dict, self.host_distances = _ReconInput._read_newick_tree(file_name, "host")
+        try:
+            self.host_dict, self.host_distances = _ReconInput._read_newick_tree(file_name, "host")
+        except Exception as e:
+            raise ReconInputError("cannot read host file %s: %s" % (file_name, str(e)))
   
     def read_parasite(self, file_name: str):
         """
         Takes a parasite filename as input and sets self.parasite_dict and self_host_distances
         :param file_name <str>   - filename of parasite file to parse
         """
-        self.parasite_dict, self.parasite_distances = _ReconInput._read_newick_tree(file_name, "parasite")
+        try:
+            self.parasite_dict, self.parasite_distances = _ReconInput._read_newick_tree(file_name, "parasite")
+        except Exception as e:
+            raise ReconInputError("cannot read parasite file %s: %s" % (file_name, str(e)))
 
     def read_mapping(self, file_name: str):
         """
