@@ -20,10 +20,14 @@ Every time you restart the terminal, make sure you run `pipenv shell` before run
 ## Running eMPRess
 
 On the command line, the structure of the inputs are:    
-* `python empress_cli.py -fn <path to tree data file> <functionality>`
+```bash
+python empress_cli.py --host hostfile --parasite parasitefile --mapping mappingfile <functionality>
+```
 
 For example, to run Costscape with default parameters, you run:
-* `python empress_cli.py -fn examples/heliconius.newick costscape`
+```bash
+python empress_cli.py --host hostfile --parasite parasitefile --mapping mappingfile costscape
+```
 
 For specific parameters of each functionality, consult the list below:
 
