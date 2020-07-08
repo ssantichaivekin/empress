@@ -39,7 +39,7 @@ recon_dict2 = {('n0', 'm1'): [('T', ('n1', 'm1'), ('n4', 'm4'))],
 
 def test_render_1():
     fig = recon_viewer.render(host_dict1, parasite_dict1, recon_dict1,
-                              event_scores = None, show_internal_labels=True, show_freq=False)
+                              event_frequencies=None, show_internal_labels=True, show_freq=False)
     filepath = Path(common.output_path).joinpath("test_render_1.png")
     fig.save(filepath)
 
@@ -47,7 +47,7 @@ test_render_1()
 
 def test_render_2():
     fig = recon_viewer.render(host_dict1, parasite_dict1, recon_dict2,
-                              event_scores = None, show_internal_labels=True, show_freq=False)
+                              event_frequencies=None, show_internal_labels=True, show_freq=False)
     filepath = Path(common.output_path).joinpath("test_render_2.png")
     fig.save(filepath)
 
@@ -64,7 +64,8 @@ def test_render_with_frequency_1():
     recon_wrapper = recon_input.reconcile(1, 1, 1)
     median_reconciliation = recon_wrapper.median()
     fig = recon_viewer.render(recon_input.host_dict, recon_input.parasite_dict,
-            median_reconciliation._reconciliation, median_reconciliation.event_scores, show_internal_labels=True, show_freq=True)
+                              median_reconciliation._reconciliation, median_reconciliation.event_frequencies,
+                              show_internal_labels=True, show_freq=True)
     filepath = Path(common.output_path).joinpath("test_render_with_frequency_1.png")
     fig.save(filepath)
 

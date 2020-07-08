@@ -3,15 +3,16 @@ Wraps empress functionalities
 """
 from typing import Dict
 import matplotlib
+import sys
 # the tkagg backend is for pop-up windows, and will not work in environments
 # without graphics such as a remote server. Refer to issue #49
 try:
     matplotlib.use("tkagg")
 except ImportError:
-    print("Using Agg backend: will not be able to create pop-up windows.")
+    print("Using Agg backend: will not be able to create pop-up windows.", file=sys.stderr)
     matplotlib.use("Agg")
 from matplotlib import pyplot as plt
-from typing import List
+from typing import List, Tuple
 from abc import ABC, abstractmethod
 
 from empress.xscape.CostVector import CostVector
@@ -70,19 +71,12 @@ class Drawable(ABC):
         self.draw_on(ax)
         return figure
 
-    def draw_to_file(self, fname):
-        """
-        Draw self and save it as image at path fname.
-        """
-        figure = self.draw()
-        figure.savefig(fname)
-
 
 class ReconciliationWrapper(Drawable):
     # TODO: Replace dict with Reconciliation type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, reconciliation: dict, root: tuple, recon_input: _ReconInput, dup_cost, trans_cost, loss_cost,
-                 total_cost: float, event_scores: Dict[tuple, float] = None):
+                 total_cost: float, event_frequencies: Dict[tuple, float]):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -90,17 +84,45 @@ class ReconciliationWrapper(Drawable):
         self.total_cost = total_cost
         self._reconciliation = reconciliation
         self.root = root
-        self.event_scores = event_scores
+        self.event_frequencies = event_frequencies
 
-    def draw_on(self, axes: plt.Axes):
+    def draw(self, show_internal_labels: bool = False, show_freq: bool = True):
+        figure, ax = plt.subplots(1, 1)
+        self.draw_on(ax, show_internal_labels=show_internal_labels, show_freq=show_freq)
+        return figure
+
+    def draw_on(self, axes: plt.Axes, show_internal_labels: bool = False, show_freq: bool = True):
         recon_viewer.render(self.recon_input.host_dict, self.recon_input.parasite_dict, self._reconciliation,
+                            self.event_frequencies, show_internal_labels=show_internal_labels, show_freq=show_freq,
                             axes=axes)
+
+    def count_events(self) -> Tuple[int, int, int, int]:
+        """
+        Return duplication event count, transfer event count, loss event count.
+        """
+        cospec_count = 0
+        dup_count = 0
+        trans_count = 0
+        loss_count = 0
+        for key in self._reconciliation:
+            event_list = self._reconciliation[key]
+            event_type = event_list[0][0]
+            if event_type == 'S':
+                cospec_count += 1
+            if event_type == 'D':
+                dup_count += 1
+            elif event_type == 'T':
+                trans_count += 1
+            elif event_type == 'L':
+                loss_count += 1
+        return cospec_count, dup_count, trans_count, loss_count
+
 
 class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type
     # https://github.com/ssantichaivekin/eMPRess/issues/30
     def __init__(self, recongraph: dict, roots: list, n_recon: int, recon_input: _ReconInput, dup_cost, trans_cost,
-                 loss_cost, total_cost: float, event_scores: Dict[tuple, float] = None):
+                 loss_cost, total_cost: float, event_frequencies: Dict[tuple, float] = None):
         self.recon_input = recon_input
         self.dup_cost = dup_cost
         self.trans_cost = trans_cost
@@ -109,7 +131,7 @@ class ReconGraphWrapper(Drawable):
         self.total_cost = total_cost
         self.n_recon = n_recon
         self.roots = roots
-        self.event_scores = event_scores
+        self.event_frequencies = event_frequencies
 
     def draw_on(self, axes: plt.Axes):
         """
@@ -160,7 +182,7 @@ class ReconGraphWrapper(Drawable):
         random_median = median.choose_random_median_wrapper(median_reconciliation, roots_for_median, med_counts_dict)
         median_root = _find_roots(random_median)[0]
         return ReconciliationWrapper(random_median, median_root, self.recon_input, self.dup_cost, self.trans_cost,
-                                     self.loss_cost, self.total_cost, self.event_scores)
+                                     self.loss_cost, self.total_cost, self.event_frequencies)
 
     def cluster(self, n) -> List['ReconGraphWrapper']:
         """
@@ -181,21 +203,21 @@ class ReconGraphWrapper(Drawable):
             n = recongraph_tools.count_mprs_wrapper(roots, graph)
             new_graphs.append(
                 ReconGraphWrapper(graph, roots, n, self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost,
-                                  self.total_cost, self.event_scores))
+                                  self.total_cost, self.event_frequencies))
         return new_graphs
 
     def set_event_frequencies(self):
         """
-        Set self.event_scores,
-        event_scores is a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
+        Set self.event_frequencies,
+        event_frequencies is a dictionary that maps events nodes to their frequencies in all the optimal reconciliations
         indicated by the recongraph
         """
         postorder_parasite_tree, parasite_tree_root, _ = diameter.reformat_tree(self.recon_input.parasite_dict, "pTop")
         postorder_host_tree, _, _ = diameter.reformat_tree(self.recon_input.host_dict, "hTop")
         postorder_mapping_node_list = median.mapping_node_sort(postorder_parasite_tree, postorder_host_tree,
                                                     list(self.recongraph.keys()))
-        event_scores = median.generate_scores(postorder_mapping_node_list[::-1], self.recongraph, parasite_tree_root)[0]
-        self.event_scores = event_scores
+        event_frequencies = median.generate_frequencies_dict(postorder_mapping_node_list[::-1], self.recongraph, parasite_tree_root)[0]
+        self.event_frequencies = event_frequencies
 
 class CostRegionsWrapper(Drawable):
     def __init__(self, cost_vectors, transfer_min, transfer_max, dup_min, dup_max):
@@ -223,7 +245,7 @@ class ReconInputWrapper(_ReconInput, Drawable):
         tanglegram.render(self.host_dict, self.parasite_dict, self.tip_mapping, True, ax)
 
     def compute_cost_regions(self, transfer_min: float, transfer_max: float,
-                         dup_min: float, dup_max: float) -> CostRegionsWrapper:
+                             dup_min: float, dup_max: float) -> CostRegionsWrapper:
         """
         Compute the cost polygon of self. The cost polygon can be used
         to create a figure that separate costs into different regions.
