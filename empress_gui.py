@@ -2,20 +2,24 @@
 
 import tkinter as tk
 from tkinter import messagebox
-from pathlib import Path
 import os
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.backend_bases import MouseEvent, key_press_handler
+
 import empress
 from empress import input_reader
 from empress.recon_vis.utils import dict_to_tree
 from empress.recon_vis import tree
-from empress.reconcile import recongraph_tools
 
 class App(tk.Frame):
 
     def __init__(self, master):
+        # TODO: Break init up to different functions:
+        #       init_frames
+        #       init_load_files
+        #       init_tanglegram
+        #       etc...
+        # https://github.com/ssantichaivekin/eMPRess/issues/119
         tk.Frame.__init__(self, master)
         self.master = master
         # Configure the self.master frame 
@@ -44,7 +48,7 @@ class App(tk.Frame):
 
         # Create an input frame on the left side of the self.master frame 
         self.input_frame = tk.Frame(self.master) 
-        self.input_frame.grid(row=1, column=0, rowspan=4, sticky="nsew", padx=(0,1), pady=(1,0))
+        self.input_frame.grid(row=1, column=0, rowspan=4, sticky="nsew", padx=(0, 1), pady=(1, 0))
         self.input_frame.grid_rowconfigure(0, weight=1)
         self.input_frame.grid_rowconfigure(1, weight=1)
         self.input_frame.grid_rowconfigure(2, weight=1)
@@ -168,7 +172,7 @@ class App(tk.Frame):
         self.num_cluster = None
 
         self.recon_info_displayed = False
-        self.recon_input = input_reader._ReconInput()
+        self.recon_input = empress.ReconInputWrapper()
         App.recon_graph = None
         App.clusters_list = []
         App.medians = None
@@ -183,11 +187,16 @@ class App(tk.Frame):
 
     def refresh_when_new_input_files_loaded(self, event):
         """Reset when user loads in a new input file (can be either of the three options)."""
+        # TODO: Break init up to different functions:
+        #       refresh_when_reload_host
+        #       refresh_when_reload_parasite
+        #       refresh_when_reload_mapping
+        # https://github.com/ssantichaivekin/eMPRess/issues/119
         App.recon_graph = None 
         App.clusters_list = []
         App.medians = None
-        # Reset self.recon_input so self.view_cost_space_btn can be disabled
-        self.recon_input = input_reader._ReconInput()
+
+        self.recon_input = empress.ReconInputWrapper()
         self.view_cost_space_btn.configure(state=tk.DISABLED)
         self.view_tanglegram_btn.configure(state=tk.DISABLED)
 
@@ -320,15 +329,11 @@ class App(tk.Frame):
                 self.mapping_file_path = input_file
                 self.refresh_when_new_input_files_loaded("Load mapping file")
                 self.update_input_files_info("mapping")
-                if self.recon_input.is_complete(): 
-                    self.when_recon_input_is_complete()            
-    
-    def when_recon_input_is_complete(self):
-        self.view_tanglegram_btn.configure(state=tk.NORMAL)
-        self.view_cost_space_btn.configure(state=tk.NORMAL)
-        self.compute_reconciliations_btn.configure(state=tk.NORMAL)
-        self.dtl_cost()
-        self.recon_input_wrapper = empress.ReconInputWrapper.from_files(self.host_file_path, self.parasite_file_path, self.mapping_file_path)
+                if self.recon_input.is_complete():
+                    self.view_tanglegram_btn.configure(state=tk.NORMAL)
+                    self.view_cost_space_btn.configure(state=tk.NORMAL)
+                    self.compute_reconciliations_btn.configure(state=tk.NORMAL)
+                    self.create_dtl_costs_boxes()
 
     def compute_tree_tips(self, tree_type):
         """Compute the number of tips for the host tree and parasite tree inputs."""
@@ -340,6 +345,12 @@ class App(tk.Frame):
             return len(parasite_tree_object.leaf_list())
 
     def update_input_files_info(self, fileType):
+        # TODO: Break init up to different functions:
+        #       update_host_info
+        #       update_parasite_info
+        #       update_mapping_info
+        # And remove this function
+        # https://github.com/ssantichaivekin/eMPRess/issues/119
         if fileType == "host":
             host_tree_tips_number = self.compute_tree_tips("host tree")
             self.host_tree_info = tk.Label(self.input_info_frame, text="Host: "+os.path.basename(self.host_file_path)+": "+str(host_tree_tips_number)+" tips")
@@ -362,7 +373,7 @@ class App(tk.Frame):
         tanglegram_frame = tk.Frame(self.tanglegra_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
         tanglegram_frame.pack_propagate(False)
-        fig = self.recon_input_wrapper.draw()
+        fig = self.recon_input.draw()
         canvas = FigureCanvasTkAgg(fig, tanglegram_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -382,7 +393,7 @@ class App(tk.Frame):
         plt_frame = tk.Frame(self.cost_space_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
         plt_frame.pack_propagate(False)
-        cost_regions = self.recon_input_wrapper.compute_cost_regions(0.5, 10, 0.5, 10) 
+        cost_regions = self.recon_input.compute_cost_regions(0.5, 10, 0.5, 10)
         fig = cost_regions.draw()  # creates matplotlib figure
         canvas = FigureCanvasTkAgg(fig, plt_frame)
         canvas.draw()
@@ -409,7 +420,7 @@ class App(tk.Frame):
         else:
             messagebox.showinfo("Warning", "Please click inside the axes bounds.")
 
-    def dtl_cost(self):
+    def create_dtl_costs_boxes(self):
         """Set DTL costs by clicking on the matplotlib graph or by entering manually."""  
         self.dup_label = tk.Label(self.costs_frame, text="Duplication cost:")
         self.dup_label.grid(row=0, column=0, sticky="w")
@@ -462,7 +473,7 @@ class App(tk.Frame):
             self.dup_entry_box.set_border_color("red")
         
         self.update_compute_reconciliations_btn()
-        return True # return True means allowing the change to happen
+        return True  # return True means allowing the change to happen
 
     def validate_trans_input(self, input_after_change: str):
         """Transfer cost is only allowed to be a float that is >= 0."""
@@ -479,7 +490,7 @@ class App(tk.Frame):
             self.trans_entry_box.set_border_color("red")
         
         self.update_compute_reconciliations_btn()
-        return True # return True means allowing the change to happen
+        return True  # return True means allowing the change to happen
     
     def validate_loss_input(self, input_after_change: str):
         """Loss cost is only allowed to be a float that is >= 0."""
@@ -496,7 +507,7 @@ class App(tk.Frame):
             self.loss_entry_box.set_border_color("red") 
 
         self.update_compute_reconciliations_btn()
-        return True # return True means allowing the change to happen
+        return True  # return True means allowing the change to happen
 
     def update_compute_reconciliations_btn(self):
         """When the dtl costs inputs are all valid, enable the next button and close unnecessary windows."""
@@ -510,7 +521,7 @@ class App(tk.Frame):
 
     def display_recon_information(self):
         """Display numeric reconciliation results and close unnecessary windows."""
-        App.recon_graph = self.recon_input_wrapper.reconcile(self.dup_cost, self.trans_cost, self.loss_cost)
+        App.recon_graph = self.recon_input.reconcile(self.dup_cost, self.trans_cost, self.loss_cost)
         self.num_MPRs = App.recon_graph.n_recon
         if not self.recon_info_displayed:
             # Display numeric reconciliation results
