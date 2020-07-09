@@ -6,9 +6,9 @@ import cli_commands._shared_utils
 
 def add_cluster_to_parser(cluster_parser: argparse.ArgumentParser):
     cli_commands._shared_utils.add_recon_input_args_to_parser(cluster_parser)
-    cluster_parser.add_argument("n_clusters", type=int, metavar="<number_of_clusters>", help="Number of clusters")
-
     cli_commands._shared_utils.add_dtl_costs_to_parser(cluster_parser)
+
+    cluster_parser.add_argument("n_clusters", type=int, metavar="<number_of_clusters>", help="Number of clusters")
 
     cluster_parser.add_argument("--medians", action="store_true", required=False,
                                 help="whether or not to print out medians for each cluster")
