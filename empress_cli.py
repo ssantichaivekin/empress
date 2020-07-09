@@ -25,7 +25,7 @@ def main():
         'cost_regions',
         description="Find cost regions that give same maximum parsimony reconciliations.",
         help="find cost regions that give same maximum parsimony reconciliations",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,  # print default value
     )
     cli_commands.cost_regions.add_cost_regions_to_parser(cost_regions_parser)
 
@@ -33,7 +33,7 @@ def main():
         'reconcile',
         description="Find maximum parsimony reconciliations given duplication, transfer, and loss costs.",
         help="find maximum parsimony reconciliations given duplication, transfer, and loss costs",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,  # prints default values
     )
     cli_commands.reconcile.add_reconcile_to_parser(reconcile_parser)
 
@@ -41,7 +41,7 @@ def main():
         'histogram',
         description="Find pairwise distance histogram of all reconciliations given duplication, transfer, and loss costs.",
         help="find pairwise distance histogram of all reconciliations given duplication, transfer, and loss costs",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,  # prints default values
     )
     cli_commands.histogram.add_histogram_to_parser(histogram_parser)
 
@@ -49,7 +49,7 @@ def main():
         'cluster',
         description="Find cluster of reconciliations with similar properties given duplication, transfer, and loss costs.",
         help="find cluster of reconciliations with similar properties given duplication, transfer, and loss costs",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,  # prints default values
     )
     cli_commands.cluster.add_cluster_to_parser(cluster_parser)
 
