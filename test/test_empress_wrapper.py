@@ -17,14 +17,6 @@ class TestEmpressWrappers(unittest.TestCase):
         cost_regions = recon_input.compute_cost_regions(0.5, 10, 0.5, 10)
         self.assertTrue(isinstance(cost_regions, empress.CostRegionsWrapper))
 
-    def test_draw_cost_regions(self):
-        recon_input = empress.ReconInputWrapper.from_files(self.example_host, self.example_parasite, self.example_mapping)
-        cost_regions = recon_input.compute_cost_regions(0.5, 10, 0.5, 10)
-        fig = cost_regions.draw()
-        filename = "./test_draw_cost_regions.png"
-        fig.savefig(filename)
-        os.path.exists(filename)
-
     def test_reconcile(self):
         recon_input = empress.ReconInputWrapper.from_files(self.example_host, self.example_parasite, self.example_mapping)
         recongraph = recon_input.reconcile(1, 1, 1)

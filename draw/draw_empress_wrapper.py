@@ -93,6 +93,14 @@ def test_recongraph_draw():
 
 test_recongraph_draw()
 
+def test_draw_cost_regions():
+    recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)
+    cost_regions = recon_input.compute_cost_regions(0.5, 10, 0.5, 10)
+    fig = cost_regions.draw()
+    fig.savefig(Path(common.output_path).joinpath("test_draw_cost_regions.png"))
+
+test_draw_cost_regions()
+
 def test_recongraph_draw_graph():
     # Draw reconciliation graph to file
     recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)
@@ -124,7 +132,6 @@ def test_inconsistent_reconciliation_draw():
     fig.savefig(Path(common.output_path).joinpath("test_inconsistent_reconciliation_draw.png"))
 
 test_inconsistent_reconciliation_draw()
-
 
 def test_cluster_reconciliation_draw():
     recon_input = empress.ReconInputWrapper.from_files(example_host, example_parasite, example_mapping)

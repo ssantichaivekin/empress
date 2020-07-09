@@ -113,7 +113,8 @@ def compute_pdv(filename, tree_data, d, t, l, args):
     hist_new, width = transform_hist(hist, args.omit_zeros, args.xnorm, args.ynorm, args.cumulative)
     # Make the histogram image
     if args.histogram is not None:
-        histogram_display.plot_histogram(args.histogram, hist, width, Path(args.host).stem, args.d, args.t, args.l)
+        histogram_display.plot_histogram(args.histogram, hist, width, Path(args.host).stem,
+                                         args.dup_cost, args.trans_cost, args.loss_cost)
     if args.csv is not None:
         histogram_display.csv_histogram(args.csv, hist)
 
