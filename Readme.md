@@ -26,12 +26,12 @@ python empress_cli.py --help
 
 On the command line, the structure of the inputs are:    
 ```bash
-python empress_cli.py <command> --host hostfile --parasite parasitefile --mapping mappingfile 
+python empress_cli.py <command> hostfile parasitefile mappingfile 
 ```
 
 For example, to run Costscape with default parameters, you run:
 ```bash
-python empress_cli.py cost_regions --host hostfile --parasite parasitefile --mapping mappingfile 
+python empress_cli.py cost_regions hostfile parasitefile mappingfile 
 ```
 
 For specific parameters of each functionality, consult the list below:
@@ -51,8 +51,8 @@ Note: value in parenthesis denotes default value, asterisk denotes boolean flags
 For example, the following example runs Costscape with duplication low value of 0.5, duplication high value of 10, transfer low value of 0.5, 
 and transfer high value of 10, that saves to a file called `foo.pdf` display it in log scale.
 ```bash
-$ python empress_cli.py cost_regions --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk \
-                                     --mapping examples/heliconius_mapping.mapping -tl 0.5 -th 10 -dl 0.5 -dh 10 \
+$ python empress_cli.py cost_regions examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+                                     examples/heliconius_mapping.mapping -tl 0.5 -th 10 -dl 0.5 -dh 10 \
                                      --outfile costscape-example-img.pdf --log
 ```
 
@@ -63,8 +63,8 @@ $ python empress_cli.py cost_regions --host examples/heliconius_host.nwk --paras
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 0, you run
 ```bash
-$ python empress_cli.py reconcile --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk \
-                                  --mapping examples/heliconius_mapping.mapping -d 4 -t 2 -l 0
+$ python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+                                  examples/heliconius_mapping.mapping -d 4 -t 2 -l 0
 ```
 
 ### Pair distance Histogram
@@ -82,8 +82,8 @@ $ python empress_cli.py reconcile --host examples/heliconius_host.nwk --parasite
 
 For example, to run Pair-distance Histogram that outputs a csv file at `foo.csv`, outputs a histogram to `bar.pdf` and normalizes the y-axis, you run
 ```bash
-$ python empress_cli.py histogram --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk \
-                                  --mapping examples/heliconius_mapping.mapping -csv foo.csv --histogram bar.pdf --ynorm
+$ python empress_cli.py histogram examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+                                  examples/heliconius_mapping.mapping -csv foo.csv --histogram bar.pdf --ynorm
 ```
 
 ### Cluster MPR
@@ -101,6 +101,6 @@ $ python empress_cli.py histogram --host examples/heliconius_host.nwk --parasite
 
 For example, to find at least 8 distinct parts of reconciliation-space before merging them into clusters, use `--nsplits 8`. To merge those splits into three clusters, use `-k 3`. The clusters are merged based on a cluster-distance that is calculated either using the average event support or the pairwise distance. To use the event support use `--support`. Finally, to get the median reconciliation of each of the three clusters, use `--median`. Putting it all together, the full command is
 ```bash
-$ python empress_cli.py cluster --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk \
-                                --mapping examples/heliconius_mapping.mapping clumpr -n 3 --median --n-splits 8 --support
+$ python empress_cli.py cluster examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+                                examples/heliconius_mapping.mapping clumpr -n 3 --median --n-splits 8 --support
 ```
