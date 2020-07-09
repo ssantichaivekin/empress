@@ -12,3 +12,4 @@ numpy = '*'
 [dev-packages]
 coverage = '*'
 flake8 = "*"
+pyinstaller = "*"
