@@ -21,34 +21,32 @@ def main():
     # Create subparsers and setup the subparsers
     subparsers = parser.add_subparsers(dest='command', help='Commands empress can run')
 
+    cost_regions_description = "Find cost regions that give same maximum parsimony reconciliations."
     cost_regions_parser = subparsers.add_parser(
-        'cost_regions',
-        description="Find cost regions that give same maximum parsimony reconciliations.",
-        help="find cost regions that give same maximum parsimony reconciliations",
+        'cost_regions', description=cost_regions_description, help=cost_regions_description.lower().rstrip('.'),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,  # print default value
     )
     cli_commands.cost_regions.add_cost_regions_to_parser(cost_regions_parser)
 
+    reconcile_description = "Find maximum parsimony reconciliations given duplication, transfer, and loss costs."
     reconcile_parser = subparsers.add_parser(
-        'reconcile',
-        description="Find maximum parsimony reconciliations given duplication, transfer, and loss costs.",
-        help="find maximum parsimony reconciliations given duplication, transfer, and loss costs",
+        'reconcile', description=reconcile_description, help=reconcile_description.lower().rstrip('.'),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,  # prints default values
     )
     cli_commands.reconcile.add_reconcile_to_parser(reconcile_parser)
 
+    histogram_description = "Find pairwise distance histogram of all reconciliations given duplication, transfer, " \
+                            "and loss costs."
     histogram_parser = subparsers.add_parser(
-        'histogram',
-        description="Find pairwise distance histogram of all reconciliations given duplication, transfer, and loss costs.",
-        help="find pairwise distance histogram of all reconciliations given duplication, transfer, and loss costs",
+        'histogram', description=histogram_description, help=histogram_description.lower().rstrip('.'),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,  # prints default values
     )
     cli_commands.histogram.add_histogram_to_parser(histogram_parser)
 
+    cluster_description = "Find cluster of reconciliations with similar properties given duplication, transfer, " \
+                          "and loss costs. "
     cluster_parser = subparsers.add_parser(
-        'cluster',
-        description="Find cluster of reconciliations with similar properties given duplication, transfer, and loss costs.",
-        help="find cluster of reconciliations with similar properties given duplication, transfer, and loss costs",
+        'cluster', description=cluster_description, help=cluster_description.lower().rstrip('.'),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,  # prints default values
     )
     cli_commands.cluster.add_cluster_to_parser(cluster_parser)
