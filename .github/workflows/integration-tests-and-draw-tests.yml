@@ -49,7 +49,7 @@ jobs:
         pipenv run python empress_cli.py histogram --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk --mapping examples/heliconius_mapping.mapping --csv foo.csv --histogram bar.pdf --ynorm
     - name: Run cluster example in Readme.md
       run: |
-        pipenv run python empress_cli.py cluster --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk --mapping examples/heliconius_mapping.mapping -k 3 --median --nsplits 4 --support
+        pipenv run python empress_cli.py cluster --host examples/heliconius_host.nwk --parasite examples/heliconius_parasite.nwk --mapping examples/heliconius_mapping.mapping -n 3 --median --n-splits 4 --support
     - name: Run draw examples for empress wrapper
       run: |
         pipenv run python -m draw.draw_empress_wrapper

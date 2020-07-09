@@ -36,10 +36,10 @@ def add_histogram_to_parser(histogram_parser: argparse.ArgumentParser):
                                   help="time the diameter algorithm")
 
 
-def run_cost_regions(args):
+def run_histogram(args):
     recon_input = empress.ReconInputWrapper.from_files(args.host, args.parasite, args.mapping)
     fname = Path(args.host)
-    cost_suffix = ".{}-{}-{}".format(args.d, args.t, args.l)
+    cost_suffix = ".{}-{}-{}".format(args.dup_cost, args.trans_cost, args.loss_cost)
     # If args is unset, use the original .newick file path but replace .newick with .pdf
     if args.histogram is None:
         args.histogram = str(fname.with_suffix(cost_suffix + ".pdf"))
@@ -57,4 +57,4 @@ def run_cost_regions(args):
         c = Path(args.csv)
         assert c.suffix == ".csv"
 
-    histogram_main.compute_pdv(args.host, recon_input, args.d, args.t, args.l, args)
+    histogram_main.compute_pdv(args.host, recon_input, args.dup_cost, args.trans_cost, args.loss_cost, args)

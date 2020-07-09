@@ -8,7 +8,7 @@ def add_cluster_to_parser(cluster_parser: argparse.ArgumentParser):
     cli_commands._shared_utils.add_recon_input_args_to_parser(cluster_parser)
     cli_commands._shared_utils.add_dtl_costs_to_parser(cluster_parser)
 
-    cluster_parser.add_argument("-k", type=int, metavar="<number_of_clusters>", help="Number of clusters")
+    cluster_parser.add_argument("-n", "--n-clusters", type=int, metavar="<number_of_clusters>", help="Number of clusters")
 
     cluster_parser.add_argument("--medians", action="store_true", required=False,
                                 help="whether or not to print out medians for each cluster")
@@ -17,7 +17,7 @@ def add_cluster_to_parser(cluster_parser: argparse.ArgumentParser):
     depth_or_n = cluster_parser.add_mutually_exclusive_group(required=True)
     depth_or_n.add_argument("--depth", type=int, metavar="<tree_depth>",
                             help="how far down to split the graph before clustering")
-    depth_or_n.add_argument("--nsplits", type=int, metavar="<tree_depth>",
+    depth_or_n.add_argument("--n-splits", type=int, metavar="<tree_depth>",
                             help="find at least n splits before combining the splits into clusters")
 
     # What visualizations to produce
@@ -35,6 +35,6 @@ def add_cluster_to_parser(cluster_parser: argparse.ArgumentParser):
                        help="use the weighted average event support to evaluate clusters")
 
 
-def run_cost_regions(args):
+def run_cluster(args):
     recon_input = empress.ReconInputWrapper.from_files(args.host, args.parasite, args.mapping)
-    cluster_main.perform_clustering(recon_input, args.d, args.t, args.l, args.k, args)
+    cluster_main.perform_clustering(recon_input, args.dup_cost, args.trans_cost, args.loss_cost, args.n_clusters, args)

@@ -59,11 +59,11 @@ def main():
     if args.command == "cost_regions":  # argparse automatically converts "-" to "_"
         cli_commands.cost_regions.run_cost_regions(args)
     elif args.command == "reconcile":
-        cli_commands.reconcile.run_cost_regions(args)
+        cli_commands.reconcile.run_reconcile(args)
     elif args.command == "histogram":
-        cli_commands.histogram.run_cost_regions(args)
+        cli_commands.histogram.run_histogram(args)
     elif args.command == "cluster":
-        cli_commands.cluster.run_cost_regions(args)
+        cli_commands.cluster.run_cluster(args)
 
 
 if __name__ == "__main__":

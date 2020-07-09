@@ -52,17 +52,17 @@ def vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hi
     :param tree_data <str>: file location
     """
     get_hist = mk_get_hist(species_tree, gene_tree, gene_root)
-    cost_suffix = ".{}-{}-{}".format(args.d, args.t, args.l)
+    cost_suffix = ".{}-{}-{}".format(args.dup_cost, args.trans_cost, args.loss_cost)
     p = Path(tree_data)
     orig_p = str(p.with_suffix(cost_suffix + ".pdf"))
     orig_h = get_hist(recon_g)
     max_x, max_y = get_max(orig_h)
-    plot_f(orig_p, orig_h, 1, Path(tree_data).stem, args.d, args.t, args.l, max_x, max_y, False)
+    plot_f(orig_p, orig_h, 1, Path(tree_data).stem, args.dup_cost, args.trans_cost, args.loss_cost, max_x, max_y, False)
     for i, g in enumerate(cluster_gs):
-        g_i = "-{}cluster{}".format(args.k, i)
+        g_i = "-{}cluster{}".format(args.n_clusters, i)
         g_p = str(p.with_suffix("." + g_i + cost_suffix + ".pdf"))
         g_h = get_hist(g)
-        plot_f(g_p, g_h, 1, Path(tree_data).stem + g_i, args.d, args.t, args.l, max_x, max_y, False)
+        plot_f(g_p, g_h, 1, Path(tree_data).stem + g_i, args.dup_cost, args.trans_cost, args.loss_cost, max_x, max_y, False)
 
 def support_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, tree_data):
     """
