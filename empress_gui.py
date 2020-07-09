@@ -115,6 +115,8 @@ class App(tk.Frame):
         self.parasite_tree_info = tk.Label(self.input_info_frame)
         self.mapping_info = tk.Label(self.input_info_frame)
         self.recon_input = empress.ReconInputWrapper()
+        self.first_time_loading_files = True
+        self.need_to_reset = True
 
     def init_view_tanglegram(self):
         # "View tanglegram" button
@@ -138,6 +140,9 @@ class App(tk.Frame):
         self.trans_input.set(1.00)
         self.loss_input = tk.DoubleVar()
         self.loss_input.set(1.00)
+        self.dup_cost = None
+        self.trans_cost = None
+        self.loss_cost = None
 
     def init_compute_reconciliations(self):
         # "Compute reconciliations" button
@@ -192,43 +197,68 @@ class App(tk.Frame):
         self.view_solution_space_window = None
         self.view_reconciliations_window = None
         self.view_pvalue_histogram_window = None
+    
+    def refresh_when_reload_host(self):
+        if self.first_time_loading_files == True:
+            self.recon_input.read_host(self.host_file_path)
+            self.host_tree_info.destroy()
+        else:
+            if self.need_to_reset == True:
+                self.reset()
+                self.recon_input.read_host(self.host_file_path)
+                self.host_tree_info.destroy()
+                self.parasite_tree_info.destroy()
+                self.mapping_info.destroy()
+            else:
+                self.recon_input.read_host(self.host_file_path)
+                self.host_tree_info.destroy()
+                self.parasite_tree_info.destroy()
+                self.mapping_info.destroy()
+    
+    def refresh_when_reload_parasite(self):
+        if self.first_time_loading_files == True:
+            self.recon_input.read_parasite(self.parasite_file_path)
+            self.parasite_tree_info.destroy()
+        else:
+            if self.need_to_reset == True:
+                self.reset()
+                self.recon_input.read_host(self.host_file_path)
+                self.recon_input.read_parasite(self.parasite_file_path)
+                self.parasite_tree_info.destroy()
+                self.mapping_info.destroy()
+            else:
+                self.recon_input.read_host(self.host_file_path)
+                self.recon_input.read_parasite(self.parasite_file_path)
+                self.parasite_tree_info.destroy()
+                self.mapping_info.destroy()
+    
+    def refresh_when_reload_mapping(self):
+        if self.first_time_loading_files == True:
+            self.recon_input.read_mapping(self.mapping_file_path)
+            self.mapping_info.destroy()
+            self.first_time_loading_files = False
+        else:
+            if self.need_to_reset == True:
+                self.reset()
+                self.recon_input.read_host(self.host_file_path)
+                self.recon_input.read_parasite(self.parasite_file_path)
+                self.recon_input.read_mapping(self.mapping_file_path)
+                self.mapping_info.destroy()
+                self.need_to_reset = True
+            else:
+                self.recon_input.read_host(self.host_file_path)
+                self.recon_input.read_parasite(self.parasite_file_path)
+                self.recon_input.read_mapping(self.mapping_file_path)
+                self.mapping_info.destroy()  
+                self.need_to_reset = True  
 
-    def refresh_when_new_input_files_loaded(self, event):
-        """Reset when user loads in a new input file (can be either of the three options)."""
-        # TODO: Break init up to different functions:
-        #       refresh_when_reload_host
-        #       refresh_when_reload_parasite
-        #       refresh_when_reload_mapping
-        # https://github.com/ssantichaivekin/eMPRess/issues/119
+    def reset(self):
         App.recon_graph = None
         App.clusters_list = []
         App.medians = None
         self.recon_input = empress.ReconInputWrapper()
         self.view_cost_space_btn.configure(state=tk.DISABLED)
         self.view_tanglegram_btn.configure(state=tk.DISABLED)
-
-        if event == "Load host tree file":
-            self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state = "normal")
-            # Read in host tree file after reseting everything
-            self.recon_input.read_host(self.host_file_path)
-            self.host_tree_info.destroy()
-            self.parasite_tree_info.destroy()
-            self.mapping_info.destroy()
-
-        elif event == "Load parasite tree file":
-            self.load_files_dropdown['menu'].entryconfigure("Load mapping file", state = "normal")
-            # Read in host and parasite tree files after reseting everything
-            self.recon_input.read_host(self.host_file_path)
-            self.recon_input.read_parasite(self.parasite_file_path)
-            self.parasite_tree_info.destroy()
-            self.mapping_info.destroy()
-
-        elif event == "Load mapping file":
-            # Read in host and parasite trees and mapping files after reseting everything
-            self.recon_input.read_host(self.host_file_path)
-            self.recon_input.read_parasite(self.parasite_file_path)
-            self.recon_input.read_mapping(self.mapping_file_path)
-            self.mapping_info.destroy()
 
         # Reset dtl costs so self.compute_reconciliations_btn can be disabled
         self.dup_cost = None
@@ -263,6 +293,8 @@ class App(tk.Frame):
         if self.cost_space_window is not None and self.cost_space_window.winfo_exists():
             self.cost_space_window.destroy()
         self.close_unnecessary_windows_if_opened()
+
+        self.need_to_reset = False
 
     def close_unnecessary_windows_if_opened(self):
         if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
@@ -305,8 +337,9 @@ class App(tk.Frame):
                 # Force a sequence of loading host tree file first, and then parasite tree file, and then mapping file
                 self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state = "disabled")
                 self.load_files_dropdown['menu'].entryconfigure("Load mapping file", state = "disabled")
-                self.refresh_when_new_input_files_loaded("Load host tree file")
-                self.update_input_files_info("host")
+                self.refresh_when_reload_host()
+                self.update_host_info()
+                self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state = "normal")
 
         # Clicking on "Load parasite tree file"
         elif self.load_files_var.get() == "Load parasite tree file":
@@ -320,8 +353,9 @@ class App(tk.Frame):
                 except Exception as e:
                     messagebox.showinfo("Warning", "Error: " + str(e))
                 self.parasite_file_path = input_file
-                self.refresh_when_new_input_files_loaded("Load parasite tree file")
-                self.update_input_files_info("parasite")
+                self.refresh_when_reload_parasite()
+                self.update_parasite_info()
+                self.load_files_dropdown['menu'].entryconfigure("Load mapping file", state = "normal")
 
         # Clicking on "Load mapping file"
         elif self.load_files_var.get() == "Load mapping file":
@@ -335,13 +369,14 @@ class App(tk.Frame):
                 except Exception as e:
                     messagebox.showinfo("Warning", "Error: " + str(e))
                 self.mapping_file_path = input_file
-                self.refresh_when_new_input_files_loaded("Load mapping file")
-                self.update_input_files_info("mapping")
+                self.refresh_when_reload_mapping()
+                self.update_mapping_info()
                 if self.recon_input.is_complete():
                     self.view_tanglegram_btn.configure(state=tk.NORMAL)
                     self.view_cost_space_btn.configure(state=tk.NORMAL)
                     self.compute_reconciliations_btn.configure(state=tk.NORMAL)
                     self.create_dtl_costs_boxes()
+                    self.first_time_loading_files = False
 
     def compute_tree_tips(self, tree_type):
         """Compute the number of tips for the host tree and parasite tree inputs."""
@@ -352,24 +387,19 @@ class App(tk.Frame):
             parasite_tree_object = dict_to_tree(self.recon_input.parasite_dict, tree.TreeType.PARASITE)
             return len(parasite_tree_object.leaf_list())
 
-    def update_input_files_info(self, fileType):
-        # TODO: Break init up to different functions:
-        #       update_host_info
-        #       update_parasite_info
-        #       update_mapping_info
-        # And remove this function
-        # https://github.com/ssantichaivekin/eMPRess/issues/119
-        if fileType == "host":
-            host_tree_tips_number = self.compute_tree_tips("host tree")
-            self.host_tree_info = tk.Label(self.input_info_frame, text="Host: "+os.path.basename(self.host_file_path)+": "+str(host_tree_tips_number)+" tips")
-            self.host_tree_info.grid(row=0, column=0, sticky="w")
-        elif fileType == "parasite":
-            parasite_tree_tips_number = self.compute_tree_tips("parasite tree")
-            self.parasite_tree_info = tk.Label(self.input_info_frame, text="Parasite/symbiont: "+os.path.basename(self.parasite_file_path)+": "+str(parasite_tree_tips_number)+" tips")
-            self.parasite_tree_info.grid(row=1, column=0, sticky="w")
-        elif fileType == "mapping":
-            self.mapping_info = tk.Label(self.input_info_frame, text="Mapping: "+os.path.basename(self.mapping_file_path))
-            self.mapping_info.grid(row=2, column=0, sticky="w")
+    def update_host_info(self):
+        host_tree_tips_number = self.compute_tree_tips("host tree")
+        self.host_tree_info = tk.Label(self.input_info_frame, text="Host: "+os.path.basename(self.host_file_path)+": "+str(host_tree_tips_number)+" tips")
+        self.host_tree_info.grid(row=0, column=0, sticky="w")
+
+    def update_parasite_info(self):
+        parasite_tree_tips_number = self.compute_tree_tips("parasite tree")
+        self.parasite_tree_info = tk.Label(self.input_info_frame, text="Parasite/symbiont: "+os.path.basename(self.parasite_file_path)+": "+str(parasite_tree_tips_number)+" tips")
+        self.parasite_tree_info.grid(row=1, column=0, sticky="w")
+
+    def update_mapping_info(self):
+        self.mapping_info = tk.Label(self.input_info_frame, text="Mapping: "+os.path.basename(self.mapping_file_path))
+        self.mapping_info.grid(row=2, column=0, sticky="w")
 
     def display_tanglegram(self):
         """Display a tanglegram in a new tkinter window."""
