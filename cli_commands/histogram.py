@@ -17,7 +17,7 @@ def add_histogram_to_parser(histogram_parser: argparse.ArgumentParser):
                                   help="normalize the x-axis so that the distances range between 0 and 1")
     histogram_parser.add_argument("--ynorm", action="store_true",
                                   help="normalize the y-axis so that the histogram is a probability distribution")
-    histogram_parser.add_argument("--omit_zeros", action="store_true",
+    histogram_parser.add_argument("--omit-zeros", action="store_true",
                                   help="omit the zero column of the histogram, which will always be the total number "
                                        "of reconciliations")
     histogram_parser.add_argument("--cumulative", action="store_true",
