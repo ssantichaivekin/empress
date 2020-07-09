@@ -19,9 +19,14 @@ Every time you restart the terminal, make sure you run `pipenv shell` before run
 
 ## Running eMPRess
 
+To see help, run:
+```bash
+python empress_cli.py --help
+```
+
 On the command line, the structure of the inputs are:    
 ```bash
-python empress_cli.py <functionality> --host hostfile --parasite parasitefile --mapping mappingfile 
+python empress_cli.py <command> --host hostfile --parasite parasitefile --mapping mappingfile 
 ```
 
 For example, to run Costscape with default parameters, you run:
