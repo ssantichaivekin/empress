@@ -19,7 +19,7 @@ def main():
     )
 
     # Create subparsers and setup the subparsers
-    subparsers = parser.add_subparsers(dest='command', help='Commands empress can run')
+    subparsers = parser.add_subparsers(dest='command', help='Commands empress can run', required=True)
 
     cost_regions_description = "Find cost regions that give same maximum parsimony reconciliations."
     cost_regions_parser = subparsers.add_parser(
