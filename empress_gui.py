@@ -195,6 +195,7 @@ class App(tk.Frame):
         self.view_pvalue_histogram_btn.grid(row=6, column=0)
 
     def init_windows(self):
+        self.tanglegram_window = None
         self.cost_space_window = None
         self.entire_space_window = None
         self.set_num_cluster_window = None
@@ -283,15 +284,18 @@ class App(tk.Frame):
         self.num_cluster = None
 
         self.recon_info_displayed = False
+        if self.tanglegram_window is not None and self.tanglegram_window.winfo_exists():
+            self.tanglegram_window.destroy()
         if self.cost_space_window is not None and self.cost_space_window.winfo_exists():
             self.cost_space_window.destroy()
         self.close_unnecessary_windows_if_opened()
-
+        self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state = "disabled")
         self.need_to_reset = False
 
     def close_unnecessary_windows_if_opened(self):
         if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
             self.entire_space_window.destroy()
+
         if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
             self.set_num_cluster_window.destroy()
 
@@ -397,11 +401,11 @@ class App(tk.Frame):
     def display_tanglegram(self):
         """Display a tanglegram in a new tkinter window."""
         # Creates a new tkinter window
-        self.tanglegra_window = tk.Toplevel(self.master)
-        self.tanglegra_window.geometry("600x600")
-        self.tanglegra_window.title("Tanglegram")
+        self.tanglegram_window = tk.Toplevel(self.master)
+        self.tanglegram_window.geometry("600x600")
+        self.tanglegram_window.title("Tanglegram")
         # Creates a new frame
-        tanglegram_frame = tk.Frame(self.tanglegra_window)
+        tanglegram_frame = tk.Frame(self.tanglegram_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
         tanglegram_frame.pack_propagate(False)
         fig = self.recon_input.draw()
@@ -776,20 +780,15 @@ class ReconciliationsOneMPRWindow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
-        self.master.grid_rowconfigure(0, weight=5)
-        self.master.grid_rowconfigure(1, weight=1)
+        self.master.grid_rowconfigure(0, weight=1)
         self.master.grid_columnconfigure(0, weight=1)
         self.frame = tk.Frame(self.master)
         self.frame.grid(row=0, column=0, sticky="nsew")
         self.frame.grid_propagate(False)
-        self.checkboxes_frame = tk.Frame(self.master)
-        self.checkboxes_frame.grid(row=1, column=0)
-        self.checkboxes_frame.grid_propagate(False)
-        self.create_checkboxes()
         self.draw_one_MPR()
 
     def draw_one_MPR(self):
-        self.fig = App.recon_graph.median().draw(show_internal_labels=self.show_internal_node_names_boolean, show_freq=self.show_event_frequencies_boolean)
+        self.fig = App.recon_graph.median().draw(show_internal_labels=tk.TRUE, show_freq=tk.TRUE)
         self.canvas = FigureCanvasTkAgg(self.fig, self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -797,27 +796,6 @@ class ReconciliationsOneMPRWindow(tk.Frame):
         toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
         toolbar.update()
         self.canvas.get_tk_widget().pack(side=tk.TOP)
-
-    def create_checkboxes(self):
-        self.show_internal_node_names_boolean = tk.BooleanVar()
-        self.show_internal_node_names_boolean.set(tk.TRUE)
-        show_internal_node_names_checkbutton = tk.Checkbutton(self.checkboxes_frame, text="Display internal node names", variable=self.show_internal_node_names_boolean, command=self.update_one_MPR)
-        show_internal_node_names_checkbutton.pack(side=tk.LEFT)
-
-        self.show_event_frequencies_boolean = tk.BooleanVar()
-        self.show_event_frequencies_boolean.set(tk.TRUE)
-        show_event_frequencies_checkbutton = tk.Checkbutton(self.checkboxes_frame, text="Display frequencies", variable=self.show_event_frequencies_boolean, command=self.update_one_MPR)
-        show_event_frequencies_checkbutton.pack(side=tk.LEFT)
-
-    def update_one_MPR(self):
-        self.canvas.get_tk_widget().destroy()
-        #self.canvas.destroy()
-        #self.fig.clear()
-        self.fig = App.recon_graph.median().draw(show_internal_labels=self.show_internal_node_names_boolean, show_freq=self.show_event_frequencies_boolean)
-        # self.fig.canvas.draw()
-        self.canvas = FigureCanvasTkAgg(self.fig, self.frame)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # View reconciliations - One per cluster
 class ReconciliationsOnePerClusterWindow(tk.Frame):
