@@ -195,6 +195,7 @@ class App(tk.Frame):
         self.view_pvalue_histogram_btn.grid(row=6, column=0)
 
     def init_windows(self):
+        self.tanglegram_window = None
         self.cost_space_window = None
         self.entire_space_window = None
         self.set_num_cluster_window = None
@@ -283,15 +284,18 @@ class App(tk.Frame):
         self.num_cluster = None
 
         self.recon_info_displayed = False
+        if self.tanglegram_window is not None and self.tanglegram_window.winfo_exists():
+            self.tanglegram_window.destroy()
         if self.cost_space_window is not None and self.cost_space_window.winfo_exists():
             self.cost_space_window.destroy()
         self.close_unnecessary_windows_if_opened()
-
+        self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state = "disabled")
         self.need_to_reset = False
 
     def close_unnecessary_windows_if_opened(self):
         if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
             self.entire_space_window.destroy()
+
         if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
             self.set_num_cluster_window.destroy()
 
@@ -397,11 +401,11 @@ class App(tk.Frame):
     def display_tanglegram(self):
         """Display a tanglegram in a new tkinter window."""
         # Creates a new tkinter window
-        self.tanglegra_window = tk.Toplevel(self.master)
-        self.tanglegra_window.geometry("600x600")
-        self.tanglegra_window.title("Tanglegram")
+        self.tanglegram_window = tk.Toplevel(self.master)
+        self.tanglegram_window.geometry("600x600")
+        self.tanglegram_window.title("Tanglegram")
         # Creates a new frame
-        tanglegram_frame = tk.Frame(self.tanglegra_window)
+        tanglegram_frame = tk.Frame(self.tanglegram_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
         tanglegram_frame.pack_propagate(False)
         fig = self.recon_input.draw()
