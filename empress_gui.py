@@ -150,7 +150,7 @@ class App(tk.Frame):
         self.compute_reconciliations_btn.grid(row=3, column=0)
 
         self.recon_MPRs_label = tk.Label(self.recon_nums_frame)
-        self.MPRs_count_label = tk.Label(self.recon_nums_frame)
+        self.mprs_count_label = tk.Label(self.recon_nums_frame)
         self.recon_cospeci_label = tk.Label(self.recon_nums_frame)
         self.cospec_count_label = tk.Label(self.recon_nums_frame)
         self.recon_dup_label = tk.Label(self.recon_nums_frame)
@@ -269,7 +269,7 @@ class App(tk.Frame):
         self.loss_entry_box.destroy()
 
         self.recon_MPRs_label.destroy()
-        self.MPRs_count_label.destroy()
+        self.mprs_count_label.destroy()
         self.recon_cospeci_label.destroy()
         self.cospec_count_label.destroy()
         self.recon_dup_label.destroy()
@@ -557,14 +557,14 @@ class App(tk.Frame):
     def display_recon_information(self):
         """Display numeric reconciliation results and close unnecessary windows."""
         App.recon_graph = self.recon_input.reconcile(self.dup_cost, self.trans_cost, self.loss_cost)
-        self.MPRs_count = App.recon_graph.n_recon
+        self.mprs_count = App.recon_graph.n_recon
         self.cospec_count, self.dup_count, self.trans_count, self.loss_count = App.recon_graph.median().count_events()
         if not self.recon_info_displayed:
             # Display numeric reconciliation results
             self.recon_MPRs_label = tk.Label(self.recon_nums_frame, text="Number of MPRs: ")
             self.recon_MPRs_label.grid(row=0, column=0, sticky="w")
-            self.MPRs_count_label = tk.Label(self.recon_nums_frame, text=self.MPRs_count)
-            self.MPRs_count_label.grid(row=0, column=1, sticky="w")
+            self.mprs_count_label = tk.Label(self.recon_nums_frame, text=self.mprs_count)
+            self.mprs_count_label.grid(row=0, column=1, sticky="w")
             self.recon_cospeci_label = tk.Label(self.recon_nums_frame, text="# Cospeciations:")
             self.recon_cospeci_label.grid(row=1, column=0, sticky="w")
             self.cospec_count_label = tk.Label(self.recon_nums_frame, text=self.cospec_count)
@@ -583,9 +583,9 @@ class App(tk.Frame):
             self.loss_count_label.grid(row=4, column=1, sticky="w")
             self.recon_info_displayed = True
         else:
-            self.MPRs_count_label.destroy()
-            self.MPRs_count_label = tk.Label(self.recon_nums_frame, text=self.MPRs_count)
-            self.MPRs_count_label.grid(row=0, column=1, sticky="w")
+            self.mprs_count_label.destroy()
+            self.mprs_count_label = tk.Label(self.recon_nums_frame, text=self.mprs_count)
+            self.mprs_count_label.grid(row=0, column=1, sticky="w")
             self.cospec_count_label.destroy()
             self.cospec_count_label = tk.Label(self.recon_nums_frame, text=self.cospec_count)
             self.cospec_count_label.grid(row=1, column=1, sticky="w")
@@ -658,7 +658,7 @@ class App(tk.Frame):
         """The number of clusters is only allowed to be an integer that >= 1 and <= the number of MPRs."""
         try:
             val = int(input_after_change)
-            if val >= 1 and val <= self.MPRs_count:
+            if val >= 1 and val <= self.mprs_count:
                 self.num_cluster = val
                 self.num_cluster_entry_box.set_border_color("green")
                 self.enter_num_clusters_btn.configure(state=tk.NORMAL)
