@@ -23,7 +23,7 @@ def main():
 
     cost_regions_description = "Find cost regions that give same maximum parsimony reconciliations."
     cost_regions_parser = subparsers.add_parser(
-        'cost_regions', description=cost_regions_description, help=cost_regions_description.lower().rstrip('.'),
+        'cost-regions', description=cost_regions_description, help=cost_regions_description.lower().rstrip('.'),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,  # print default value
     )
     cli_commands.cost_regions.add_cost_regions_to_parser(cost_regions_parser)
@@ -54,7 +54,7 @@ def main():
     # Determine which command we should run and run it
     args = parser.parse_args()
 
-    if args.command == "cost_regions":  # argparse automatically converts "-" to "_"
+    if args.command == "cost-regions":
         cli_commands.cost_regions.run_cost_regions(args)
     elif args.command == "reconcile":
         cli_commands.reconcile.run_reconcile(args)
