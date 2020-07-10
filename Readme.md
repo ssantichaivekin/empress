@@ -31,7 +31,7 @@ python empress_cli.py <command> hostfile parasitefile mappingfile
 
 For example, to run Costscape with default parameters, you run:
 ```bash
-python empress_cli.py cost_regions hostfile parasitefile mappingfile 
+python empress_cli.py cost-regions hostfile parasitefile mappingfile 
 ```
 
 For specific parameters of each functionality, consult the list below:
@@ -51,7 +51,7 @@ Note: value in parenthesis denotes default value, asterisk denotes boolean flags
 For example, the following example runs Costscape with duplication low value of 0.5, duplication high value of 10, transfer low value of 0.5, 
 and transfer high value of 10, that saves to a file called `foo.pdf` display it in log scale.
 ```bash
-$ python empress_cli.py cost_regions examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+$ python empress_cli.py cost-regions examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
                                      examples/heliconius_mapping.mapping -tl 0.5 -th 10 -dl 0.5 -dh 10 \
                                      --outfile costscape-example-img.pdf --log
 ```
