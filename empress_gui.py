@@ -199,58 +199,42 @@ class App(tk.Frame):
         self.view_pvalue_histogram_window = None
     
     def refresh_when_reload_host(self):
-        if self.first_time_loading_files == True:
+        if self.first_time_loading_files:
             self.recon_input.read_host(self.host_file_path)
             self.host_tree_info.destroy()
         else:
-            if self.need_to_reset == True:
+            if self.need_to_reset:
                 self.reset()
-                self.recon_input.read_host(self.host_file_path)
-                self.host_tree_info.destroy()
-                self.parasite_tree_info.destroy()
-                self.mapping_info.destroy()
-            else:
-                self.recon_input.read_host(self.host_file_path)
-                self.host_tree_info.destroy()
-                self.parasite_tree_info.destroy()
-                self.mapping_info.destroy()
+            self.recon_input.read_host(self.host_file_path)
+            self.host_tree_info.destroy()
+            self.parasite_tree_info.destroy()
+            self.mapping_info.destroy()
     
     def refresh_when_reload_parasite(self):
-        if self.first_time_loading_files == True:
+        if self.first_time_loading_files:
             self.recon_input.read_parasite(self.parasite_file_path)
             self.parasite_tree_info.destroy()
         else:
-            if self.need_to_reset == True:
+            if self.need_to_reset:
                 self.reset()
-                self.recon_input.read_host(self.host_file_path)
-                self.recon_input.read_parasite(self.parasite_file_path)
-                self.parasite_tree_info.destroy()
-                self.mapping_info.destroy()
-            else:
-                self.recon_input.read_host(self.host_file_path)
-                self.recon_input.read_parasite(self.parasite_file_path)
-                self.parasite_tree_info.destroy()
-                self.mapping_info.destroy()
+            self.recon_input.read_host(self.host_file_path)
+            self.recon_input.read_parasite(self.parasite_file_path)
+            self.parasite_tree_info.destroy()
+            self.mapping_info.destroy()
     
     def refresh_when_reload_mapping(self):
-        if self.first_time_loading_files == True:
+        if self.first_time_loading_files:
             self.recon_input.read_mapping(self.mapping_file_path)
             self.mapping_info.destroy()
             self.first_time_loading_files = False
         else:
-            if self.need_to_reset == True:
+            if self.need_to_reset:
                 self.reset()
-                self.recon_input.read_host(self.host_file_path)
-                self.recon_input.read_parasite(self.parasite_file_path)
-                self.recon_input.read_mapping(self.mapping_file_path)
-                self.mapping_info.destroy()
-                self.need_to_reset = True
-            else:
-                self.recon_input.read_host(self.host_file_path)
-                self.recon_input.read_parasite(self.parasite_file_path)
-                self.recon_input.read_mapping(self.mapping_file_path)
-                self.mapping_info.destroy()  
-                self.need_to_reset = True  
+            self.recon_input.read_host(self.host_file_path)
+            self.recon_input.read_parasite(self.parasite_file_path)
+            self.recon_input.read_mapping(self.mapping_file_path)
+            self.mapping_info.destroy()  
+            self.need_to_reset = True  
 
     def reset(self):
         App.recon_graph = None
