@@ -150,11 +150,15 @@ class App(tk.Frame):
         self.compute_reconciliations_btn.grid(row=3, column=0)
 
         self.recon_MPRs_label = tk.Label(self.recon_nums_frame)
-        self.num_MPRs_label = tk.Label(self.recon_nums_frame)
+        self.mprs_count_label = tk.Label(self.recon_nums_frame)
         self.recon_cospeci_label = tk.Label(self.recon_nums_frame)
+        self.cospec_count_label = tk.Label(self.recon_nums_frame)
         self.recon_dup_label = tk.Label(self.recon_nums_frame)
+        self.dup_count_label = tk.Label(self.recon_nums_frame)
         self.recon_trans_label = tk.Label(self.recon_nums_frame)
+        self.trans_count_label = tk.Label(self.recon_nums_frame)
         self.recon_loss_label = tk.Label(self.recon_nums_frame)
+        self.loss_count_label = tk.Label(self.recon_nums_frame)
         self.recon_info_displayed = False
         App.recon_graph = None
 
@@ -169,6 +173,7 @@ class App(tk.Frame):
         self.view_solution_space_dropdown.grid(row=4, column=0)
 
         self.num_cluster_input = tk.IntVar()
+        self.num_cluster_input.set(1)
         self.num_cluster = None
         App.clusters_list = []
         App.medians = None
@@ -190,6 +195,7 @@ class App(tk.Frame):
         self.view_pvalue_histogram_btn.grid(row=6, column=0)
 
     def init_windows(self):
+        self.tanglegram_window = None
         self.cost_space_window = None
         self.entire_space_window = None
         self.set_num_cluster_window = None
@@ -263,26 +269,33 @@ class App(tk.Frame):
         self.loss_entry_box.destroy()
 
         self.recon_MPRs_label.destroy()
-        self.num_MPRs_label.destroy()
+        self.mprs_count_label.destroy()
         self.recon_cospeci_label.destroy()
+        self.cospec_count_label.destroy()
         self.recon_dup_label.destroy()
+        self.dup_count_label.destroy()
         self.recon_trans_label.destroy()
+        self.trans_count_label.destroy()
         self.recon_loss_label.destroy()
+        self.loss_count_label.destroy()
 
         self.num_cluster_input = tk.IntVar()
         self.num_cluster_input.set(1)
         self.num_cluster = None
 
         self.recon_info_displayed = False
+        if self.tanglegram_window is not None and self.tanglegram_window.winfo_exists():
+            self.tanglegram_window.destroy()
         if self.cost_space_window is not None and self.cost_space_window.winfo_exists():
             self.cost_space_window.destroy()
         self.close_unnecessary_windows_if_opened()
-
+        self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state = "disabled")
         self.need_to_reset = False
 
     def close_unnecessary_windows_if_opened(self):
         if self.entire_space_window is not None and self.entire_space_window.winfo_exists():
             self.entire_space_window.destroy()
+
         if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
             self.set_num_cluster_window.destroy()
 
@@ -388,11 +401,11 @@ class App(tk.Frame):
     def display_tanglegram(self):
         """Display a tanglegram in a new tkinter window."""
         # Creates a new tkinter window
-        self.tanglegra_window = tk.Toplevel(self.master)
-        self.tanglegra_window.geometry("600x600")
-        self.tanglegra_window.title("Tanglegram")
+        self.tanglegram_window = tk.Toplevel(self.master)
+        self.tanglegram_window.geometry("600x600")
+        self.tanglegram_window.title("Tanglegram")
         # Creates a new frame
-        tanglegram_frame = tk.Frame(self.tanglegra_window)
+        tanglegram_frame = tk.Frame(self.tanglegram_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
         tanglegram_frame.pack_propagate(False)
         fig = self.recon_input.draw()
@@ -544,27 +557,48 @@ class App(tk.Frame):
     def display_recon_information(self):
         """Display numeric reconciliation results and close unnecessary windows."""
         App.recon_graph = self.recon_input.reconcile(self.dup_cost, self.trans_cost, self.loss_cost)
-        self.num_MPRs = App.recon_graph.n_recon
+        self.mprs_count = App.recon_graph.n_recon
+        self.cospec_count, self.dup_count, self.trans_count, self.loss_count = App.recon_graph.median().count_events()
         if not self.recon_info_displayed:
             # Display numeric reconciliation results
             self.recon_MPRs_label = tk.Label(self.recon_nums_frame, text="Number of MPRs: ")
             self.recon_MPRs_label.grid(row=0, column=0, sticky="w")
-            self.num_MPRs_label = tk.Label(self.recon_nums_frame, text=self.num_MPRs)
-            self.num_MPRs_label.grid(row=0, column=1, sticky="w")
+            self.mprs_count_label = tk.Label(self.recon_nums_frame, text=self.mprs_count)
+            self.mprs_count_label.grid(row=0, column=1, sticky="w")
             self.recon_cospeci_label = tk.Label(self.recon_nums_frame, text="# Cospeciations:")
             self.recon_cospeci_label.grid(row=1, column=0, sticky="w")
+            self.cospec_count_label = tk.Label(self.recon_nums_frame, text=self.cospec_count)
+            self.cospec_count_label.grid(row=1, column=1, sticky="w")
             self.recon_dup_label = tk.Label(self.recon_nums_frame, text="# Duplications:")
             self.recon_dup_label.grid(row=2, column=0, sticky="w")
+            self.dup_count_label = tk.Label(self.recon_nums_frame, text=self.dup_count)
+            self.dup_count_label.grid(row=2, column=1, sticky="w")
             self.recon_trans_label = tk.Label(self.recon_nums_frame, text="# Transfers:")
             self.recon_trans_label.grid(row=3, column=0, sticky="w")
+            self.trans_count_label = tk.Label(self.recon_nums_frame, text=self.trans_count)
+            self.trans_count_label.grid(row=3, column=1, sticky="w")
             self.recon_loss_label = tk.Label(self.recon_nums_frame, text="# Losses:")
             self.recon_loss_label.grid(row=4, column=0, sticky="w")
+            self.loss_count_label = tk.Label(self.recon_nums_frame, text=self.loss_count)
+            self.loss_count_label.grid(row=4, column=1, sticky="w")
             self.recon_info_displayed = True
         else:
-            self.num_MPRs_label.destroy()
-            self.num_MPRs_label = tk.Label(self.recon_nums_frame, text=self.num_MPRs)
-            self.num_MPRs_label.grid(row=0, column=1, sticky="w")
-
+            self.mprs_count_label.destroy()
+            self.mprs_count_label = tk.Label(self.recon_nums_frame, text=self.mprs_count)
+            self.mprs_count_label.grid(row=0, column=1, sticky="w")
+            self.cospec_count_label.destroy()
+            self.cospec_count_label = tk.Label(self.recon_nums_frame, text=self.cospec_count)
+            self.cospec_count_label.grid(row=1, column=1, sticky="w")
+            self.dup_count_label.destroy()
+            self.dup_count_label = tk.Label(self.recon_nums_frame, text=self.dup_count)
+            self.dup_count_label.grid(row=2, column=1, sticky="w")
+            self.trans_count_label.destroy()
+            self.trans_count_label = tk.Label(self.recon_nums_frame, text=self.trans_count)
+            self.trans_count_label.grid(row=3, column=1, sticky="w")
+            self.loss_count_label.destroy()
+            self.loss_count_label = tk.Label(self.recon_nums_frame, text=self.loss_count)
+            self.loss_count_label.grid(row=4, column=1, sticky="w")
+            
         self.close_unnecessary_windows_if_opened()
         self.view_solution_space_dropdown.configure(state=tk.NORMAL)
         self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
@@ -624,7 +658,7 @@ class App(tk.Frame):
         """The number of clusters is only allowed to be an integer that >= 1 and <= the number of MPRs."""
         try:
             val = int(input_after_change)
-            if val >= 1 and val <= self.num_MPRs:
+            if val >= 1 and val <= self.mprs_count:
                 self.num_cluster = val
                 self.num_cluster_entry_box.set_border_color("green")
                 self.enter_num_clusters_btn.configure(state=tk.NORMAL)
@@ -746,36 +780,22 @@ class ReconciliationsOneMPRWindow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
-        self.master.grid_rowconfigure(0, weight=5)
-        self.master.grid_rowconfigure(1, weight=1)
+        self.master.grid_rowconfigure(0, weight=1)
         self.master.grid_columnconfigure(0, weight=1)
         self.frame = tk.Frame(self.master)
         self.frame.grid(row=0, column=0, sticky="nsew")
         self.frame.grid_propagate(False)
-        self.checkboxes_frame = tk.Frame(self.master)
-        self.checkboxes_frame.grid(row=1, column=0)
-        self.checkboxes_frame.grid_propagate(False)
         self.draw_one_MPR()
-        self.create_checkboxes()
 
     def draw_one_MPR(self):
-        fig = App.recon_graph.median().draw()
-        canvas = FigureCanvasTkAgg(fig, self.frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.fig = App.recon_graph.median().draw(show_internal_labels=tk.TRUE, show_freq=tk.TRUE)
+        self.canvas = FigureCanvasTkAgg(self.fig, self.frame)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
-        toolbar = NavigationToolbar2Tk(canvas, self.frame)
+        toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
         toolbar.update()
-        canvas.get_tk_widget().pack(side=tk.TOP)
-
-    def create_checkboxes(self):
-        show_internal_node_names = tk.BooleanVar()
-        show_internal_node_names_checkbutton = tk.Checkbutton(self.checkboxes_frame, text="Display internal node names", variable=show_internal_node_names)
-        show_internal_node_names_checkbutton.pack(side=tk.LEFT)
-
-        show_event_frequencies = tk.BooleanVar()
-        show_event_frequencies_checkbutton = tk.Checkbutton(self.checkboxes_frame, text="Display frequencies", variable=show_event_frequencies)
-        show_event_frequencies_checkbutton.pack(side=tk.LEFT)
+        self.canvas.get_tk_widget().pack(side=tk.TOP)
 
 # View reconciliations - One per cluster
 class ReconciliationsOnePerClusterWindow(tk.Frame):
