@@ -1,12 +1,14 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+# Build empress as a directory with debugging on
+
 block_cipher = None
 
 
-a = Analysis(['empress_cli.py'],
-             pathex=['/Users/santisantichaivekin/Desktop/code/eMPRess'],
+a = Analysis(['../empress_gui.py'],
+             pathex=['pyinstaller_spec'],
              binaries=[],
-             datas=[],
+             datas=[("../assets", "./assets")],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -21,8 +23,8 @@ exe = EXE(pyz,
           a.scripts,
           [],
           exclude_binaries=True,
-          name='empress_cli',
-          debug=False,
+          name='empress',
+          debug=True,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
@@ -34,4 +36,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='empress_cli')
+               name='empress_gui_debug')
