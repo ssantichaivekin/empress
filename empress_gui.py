@@ -13,6 +13,8 @@ from empress.recon_vis.utils import dict_to_tree
 from empress.recon_vis import tree
 
 def resource_path(relative_path):
+    # The path can be different under pyinstaller
+    # see https://stackoverflow.com/questions/57132421/relative-path-setting-fail-via-pyinstaller
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath("."), relative_path)
