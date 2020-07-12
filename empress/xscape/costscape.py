@@ -8,21 +8,15 @@
 import time
 
 # xscape libraries
-try:
-    from empress import xscape
-except ImportError:
-    import sys
-    print(sys.path)
-    sys.path.append("..")
-    import empress.xscape
+from empress import xscape
 from empress.xscape import reconcile
-from empress.xscape import plotcostsAnalytic as plotcosts
+from empress.xscape import plotcosts_analytic as plotcosts
 
 def solve(newick_data, transferMin, transferMax, dupMin, dupMax, optional):
     print("Costscape %s" % xscape.PROGRAM_VERSION_TEXT)
-    hostTree = newick_data.host_tree
-    parasiteTree = newick_data.parasite_tree
-    phi = newick_data.phi
+    hostTree = newick_data.host_dict
+    parasiteTree = newick_data.parasite_dict
+    tip_mapping = newick_data.tip_mapping
     if optional.outfile == "":
         display = True
     else:
@@ -30,7 +24,7 @@ def solve(newick_data, transferMin, transferMax, dupMin, dupMax, optional):
 
     print("Reconciling trees...")
     startTime = time.time()
-    CVlist = reconcile.reconcile(parasiteTree, hostTree, phi, \
+    CVlist = reconcile.reconcile(parasiteTree, hostTree, tip_mapping, \
                                  transferMin, transferMax, dupMin, dupMax)
     endTime = time.time()
     elapsedTime = endTime- startTime
@@ -40,5 +34,3 @@ def solve(newick_data, transferMin, transferMax, dupMin, dupMax, optional):
                         optional.log, display)
     if optional.outfile != "":
         print("Output written to file: ", optional.outfile)
-    
-if __name__ == '__main__': main()
