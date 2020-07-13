@@ -823,10 +823,10 @@ class ReconciliationsOneMPRWindow(tk.Frame):
 
     def update_one_mpr(self):
         self.canvas.get_tk_widget().destroy()
-        #self.canvas.destroy()
-        #self.fig.clear()
-        self.fig = App.recon_graph.median().draw(show_internal_labels=self.show_internal_node_names_boolean, show_freq=self.show_event_frequencies_boolean)
-        # self.fig.canvas.draw()
+        self.fig = App.recon_graph.median().draw(
+            show_internal_labels=self.show_internal_node_names_boolean.get(),
+            show_freq=self.show_event_frequencies_boolean.get()
+        )
         self.canvas = FigureCanvasTkAgg(self.fig, self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
