@@ -11,7 +11,7 @@ from empress.recon_vis.render_settings import *
 from typing import Union
 import matplotlib.pyplot as plt
 
-def render(host_dict, parasite_dict, recon_dict, event_freqs = None, show_internal_labels=False, show_freq=False, axes: Union[plt.Axes, None] = None):
+def render(host_dict, parasite_dict, recon_dict, event_frequencies = None, show_internal_labels=False, show_freq=False, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
     :param parasite_dict:  Parasite tree represented in dictionary format
