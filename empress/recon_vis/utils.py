@@ -3,16 +3,74 @@ utils.py
 Utilities related to conversion between data types
 """
 
-from collections import OrderedDict 
 from typing import Dict, Tuple, List
-from empress.recon_vis.recon import MappingNode, Reconciliation
-from empress.recon_vis.recon import Cospeciation, Duplication, Transfer, Loss, TipTip
-from empress.recon_vis import tree
-from empress.recon_vis.tree import NodeLayout
-from empress.recon_vis.tree import TreeType
+from recon import MappingNode, ReconGraph, Reconciliation
+from recon import Cospeciation, Duplication, Transfer, Loss, TipTip
+import tree
+from tree import NodeLayout
+from tree import TreeType
+from collections import OrderedDict 
 from enum import Enum
 
 __all__ = ['dict_to_tree', 'dict_to_reconciliation', 'build_trees_with_temporal_order']
+
+# Master utility function coverts from dictionaries to objects
+
+def convert_to_objects(host_dict, parasite_dict, recon_dict):
+    """
+    :param host_dict - dictionary representation of host tree
+    :param parasite_dict - dictionary representation of parasite tree
+    :param recon_dict - dictionary representation of reconciliation
+    :return - corresondoing host_tree and parasite_tree Tree objects
+        and recon Reconciliation object
+    """
+    host_tree, parasite_tree, consistency_type = build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
+    recon = dict_to_reconciliation(recon_dict)
+    return host_tree, parasite_tree, recon, consistency_type
+
+# Tree utilities
+
+# Edge-based format is the primary format used by eMPRess algorithms.
+# This format comprises a dictionary in which each key is either the string
+# "hTop" ("pTop") for the edge corresponding to the handle of a host (parasite) tree
+# or an edge tuple of the form (v1, v2) where v1 and v2 are strings denoting the
+# name of the top and bottom vertices of that edge.  Values are 4-tuples of the form
+# (v1, v2, edge1, edge2) where edge1 and edge2 are the edge tuples for the
+# branches emanating from (v1, v2).  If the branch terminates at a leaf
+# then edge1 and edge2 are both None.
+# Here is an example of the host tree for the heliconius.newick file:
+
+host = {'hTop': ('Top', 'm1', ('m1', 'm2'), ('m1', 'm8')),
+        ('m1', 'm2'): ('m1', 'm2', ('m2', 'm3'), ('m2', 'm6')),
+        ('m2', 'm3'): ('m2', 'm3', ('m3', 'm4'), ('m3', 'm5')),
+        ('m3', 'm4'): ('m3', 'm4', ('m4', 'aglaope_EastPE'), ('m4', 'amaryllis_EastPE')),
+        ('m4', 'aglaope_EastPE'): ('m4', 'aglaope_EastPE', None, None),
+        ('m4', 'amaryllis_EastPE'): ('m4', 'amaryllis_EastPE', None, None),
+        ('m3', 'm5'): ('m3', 'm5', ('m5', 'ecuadoriensis_EastE'), ('m5', 'malleti_EastE')), 
+        ('m5', 'ecuadoriensis_EastE'): ('m5', 'ecuadoriensis_EastE', None, None),
+        ('m5', 'malleti_EastE'): ('m5', 'malleti_EastE', None, None),
+        ('m2', 'm6'): ('m2', 'm6', ('m6', 'm7'), ('m6', 'melpomene_EastT')),
+        ('m6', 'm7'): ('m6', 'm7', ('m7', 'thelxiopeia_EastFG'), ('m7', 'melpomene_EastFG')), 
+        ('m7', 'thelxiopeia_EastFG'): ('m7', 'thelxiopeia_EastFG', None, None),
+        ('m7', 'melpomene_EastFG'): ('m7', 'melpomene_EastFG', None, None),
+        ('m6', 'melpomene_EastT'): ('m6', 'melpomene_EastT', None, None),
+        ('m1', 'm8'): ('m1', 'm8', ('m8', 'm9'), ('m8', 'm11')),
+        ('m8', 'm9'): ('m8', 'm9', ('m9', 'm10'), ('m9', 'rosina_WestPA')),
+        ('m9', 'm10'): ('m9', 'm10', ('m10', 'melpomene_WestPA'),
+        ('m10', 'rosina_WestCR')), ('m10', 'melpomene_WestPA'): ('m10', 'melpomene_WestPA', None, None),
+        ('m10', 'rosina_WestCR'): ('m10', 'rosina_WestCR', None, None),
+        ('m9', 'rosina_WestPA'): ('m9', 'rosina_WestPA', None, None),
+        ('m8', 'm11'): ('m8', 'm11', ('m11', 'melpomene_EastC'), ('m11', 'cythera_WestE')),
+        ('m11', 'melpomene_EastC'): ('m11', 'melpomene_EastC', None, None),
+        ('m11', 'cythera_WestE'): ('m11', 'cythera_WestE', None, None)}
+
+
+def tester():
+    """ Tester for dict_to_tree """
+    host_converted = dict_to_tree(host, tree.TreeType.HOST)
+    print("Leaves: ", host_converted.leaf_list)
+    print()
+    print("All nodes in postorder: ", host_converted.postorder_list)
 
 class ConsistencyType(Enum):
     """ Defines type of the temporal consistency of a reconciliation """
@@ -62,6 +120,7 @@ def _dict_to_tree_helper(tree_dict, root_edge):
         new_node.left_node = new_left_node
         new_left_node.parent_node = new_node
         new_node.right_node = new_right_node
+        new_left_node.parent_node = new_node
         new_right_node.parent_node = new_node
         return new_node
 
@@ -88,10 +147,9 @@ def _find_roots(old_recon_graph) -> List[MappingNode]:
             roots.append(mapping)
     return roots
 
-def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_frequencies: Dict[tuple, float] = None):
+def dict_to_reconciliation(old_recon: Dict[Tuple, List]):
     """
     Convert the old reconciliation graph format to Reconciliation.
-
     Example of old format:
     old_recon = {
         ('n0', 'm2'): [('S', ('n2', 'm3'), ('n1', 'm4'))],
@@ -106,13 +164,11 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_frequencies: Dict
         raise ValueError("old_recon has many roots")
     root = roots[0]
     recon = Reconciliation(root)
-    event = None
     for mapping in old_recon:
         host, parasite = mapping
         if len(old_recon[mapping]) != 1:
             raise ValueError('old_recon mapping node has no or multiple events')
-        event_tuple = old_recon[mapping][0]
-        etype, left, right = event_tuple
+        etype, left, right = old_recon[mapping][0]
         mapping_node = MappingNode(host, parasite)
         if etype in 'SDT':
             left_parasite, left_host = left
@@ -120,22 +176,19 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_frequencies: Dict
             left_mapping = MappingNode(left_parasite, left_host)
             right_mapping = MappingNode(right_parasite, right_host)
             if etype == 'S':
-                event = Cospeciation(left_mapping, right_mapping)
+                recon.set_event(mapping_node, Cospeciation(left_mapping, right_mapping))
             if etype == 'D':
-                event = Duplication(left_mapping, right_mapping)
+                recon.set_event(mapping_node, Duplication(left_mapping, right_mapping))
             if etype == 'T':
-                event = Transfer(left_mapping, right_mapping)
+                recon.set_event(mapping_node, Transfer(left_mapping, right_mapping))
         elif etype == 'L':
             child_parasite, child_host = left
             child_mapping = MappingNode(child_parasite, child_host)
-            event = Loss(child_mapping)
+            recon.set_event(mapping_node, Loss(child_mapping))
         elif etype == 'C':
-            event = TipTip()
+            recon.set_event(mapping_node, TipTip())
         else:
             raise ValueError('%s not in "SDTLC"' % etype)
-        if event_frequencies is not None:
-            event._freq = event_frequencies[event_tuple]
-        recon.set_event(mapping_node, event)
     return recon
 
 # Temporal ordering utilities
@@ -378,7 +431,7 @@ def populate_nodes_with_order(tree_node, tree_type, ordering_dict, leaf_order):
     :param leaf_order: the temporal order we should assign to the leaves of the tree
     """
     layout = NodeLayout()
-    if tree_node.is_leaf():
+    if tree_node.is_leaf:
         layout.col = leaf_order
         tree_node.layout = layout
     else:
