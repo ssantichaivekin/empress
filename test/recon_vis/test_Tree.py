@@ -44,7 +44,7 @@ class TestTree(unittest.TestCase):
 
     def test_leaf_list(self):
         host_converted = dict_to_tree(self.host, tree.TreeType.HOST)
-        leaves = host_converted.leaf_list()
+        leaves = host_converted.leaf_list
         for leaf in leaves:
             self.assertTrue(isinstance(leaf, tree.Node))
             self.assertTrue(leaf.is_leaf())
@@ -52,7 +52,7 @@ class TestTree(unittest.TestCase):
 
     def test_postorder_list(self):
         host_converted = dict_to_tree(self.host, tree.TreeType.HOST)
-        nodes = host_converted.postorder_list()
+        nodes = host_converted.postorder_list
         for node in nodes:
             self.assertTrue(isinstance(node, tree.Node))
         self.assertEqual(len(nodes), len(self.host))
