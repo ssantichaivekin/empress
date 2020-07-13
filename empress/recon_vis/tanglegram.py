@@ -5,7 +5,7 @@ Berto Garcia, Sonia Sehra
 """
 
 from matplotlib import pyplot as plt
-import render_settings
+import empress.recon_vis.render_settings
 from empress.recon_vis import utils, plot_tools, tree
 
 

@@ -1,12 +1,12 @@
 #import empress
-import recon_viewer
-#from empress.miscs import input_generator
-from ..miscs import input_generator
+import empress.recon_vis.recon_viewer
+from empress.miscs import input_generator
+#from ..miscs import input_generator
 
-from recon_viewer import render
+from empress.recon_vis.recon_viewer import render
 
 
-recon_input = input_generator.generate_random_recon_input(40)
+recon_input = input_generator.generate_random_recon_input(20,20)
 recongraph = recon_input.reconcile(1, 1, .0001)
 reconciliation = recongraph.median()
 

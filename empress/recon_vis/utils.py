@@ -4,11 +4,11 @@ Utilities related to conversion between data types
 """
 
 from typing import Dict, Tuple, List
-from recon import MappingNode, ReconGraph, Reconciliation
-from recon import Cospeciation, Duplication, Transfer, Loss, TipTip
-import tree
-from tree import NodeLayout
-from tree import TreeType
+from empress.recon_vis.recon import MappingNode, ReconGraph, Reconciliation
+from empress.recon_vis.recon import Cospeciation, Duplication, Transfer, Loss, TipTip
+import empress.recon_vis.tree as tree
+from empress.recon_vis.tree import NodeLayout
+from empress.recon_vis.tree import TreeType
 from collections import OrderedDict 
 from enum import Enum
 

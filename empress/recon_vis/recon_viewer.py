@@ -2,13 +2,11 @@
 recon_viewer.py
 View a single reconciliation using matplotlib
 """
-
-from recon import EventType
-from tree import Track
-from math import exp, ceil
-import utils
-import plot_tools
-from render_settings import *
+from empress.recon_vis.recon import EventType
+from empress.recon_vis.tree import Track
+import empress.recon_vis.utils as utils
+import empress.recon_vis.plot_tools as plot_tools
+from empress.recon_vis.render_settings import *
 
 def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False, show_freq=False):
     """ Renders a reconciliation using matplotlib
