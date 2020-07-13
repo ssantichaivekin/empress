@@ -1,7 +1,5 @@
-#import empress
 import empress.recon_vis.recon_viewer
 from empress.miscs import input_generator
-#from ..miscs import input_generator
 
 from empress.recon_vis.recon_viewer import render
 

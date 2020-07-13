@@ -1,6 +1,7 @@
 """
 recon_viewer.py
 View a single reconciliation using matplotlib
+Justin Jiang, Trenton Wesley
 """
 from empress.recon_vis.recon import EventType
 from empress.recon_vis.tree import Track
