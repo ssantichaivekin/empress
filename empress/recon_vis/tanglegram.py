@@ -68,7 +68,7 @@ def _render_helper_host(fig, node, show_internal_labels):
 
         # plot node using leaf_layout
         plot_loc = (leaf_layout.col, leaf_layout.row)
-        fig.text(plot_loc, node.name, col=render_settings.BLUE, h_a='left')
+        fig.tanglegram_text(plot_loc, node.name, col=render_settings.BLUE, h_a='left')
 
     else:
         # recursively call helper funciton on child nodes
@@ -88,7 +88,7 @@ def _render_helper_host(fig, node, show_internal_labels):
         # plot node using node_layout
         current_loc = (node.layout.col, node.layout.row)
         if show_internal_labels:
-            fig.text(current_loc, node.name, col=render_settings.BLUE, h_a='left')
+            fig.tanglegram_text(current_loc, node.name, col=render_settings.BLUE, h_a='left')
 
         # draw line from current node to left node
         left_loc = (left_layout.col, left_layout.row)
@@ -117,7 +117,7 @@ def _render_helper_parasite(fig, node, show_internal_labels):
 
         # plot node using leaf_layout
         plot_loc = (leaf_layout.col, leaf_layout.row)
-        fig.text(plot_loc, node.name, col=render_settings.BLUE, h_a='right')
+        fig.tanglegram_text(plot_loc, node.name, col=render_settings.BLUE, h_a='right')
 
     else:
         # recursively call helper funciton on child nodes
@@ -137,7 +137,7 @@ def _render_helper_parasite(fig, node, show_internal_labels):
         # plot node using node_layout
         current_loc = (node.layout.col, node.layout.row)
         if show_internal_labels:
-            fig.text(current_loc, node.name, col=render_settings.BLUE, h_a='right')
+            fig.tanglegram_text(current_loc, node.name, col=render_settings.BLUE, h_a='right')
 
         # draw line from current node to left node
         left_loc = (left_layout.col, left_layout.row)

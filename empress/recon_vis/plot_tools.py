@@ -79,7 +79,7 @@ class FigureWrapper:
         x, y = point
         self.axis.plot(x, y, marker, color=col, zorder=DOT_Z_ORDER)
     
-    def text(self, point, text, col=BLACK, size=SIZE, vertical_alignment=DEFAULT_ALIGNMENT, border_col=None, h_a = None):
+    def text(self, point, text, col=BLACK, size=SIZE, vertical_alignment=DEFAULT_ALIGNMENT, border_col=None):
         """
         Plot text at s at point p
         """
@@ -92,6 +92,11 @@ class FigureWrapper:
             if border_col:
                 path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
             self.fig.gca().add_patch(path_patch)
+
+    def tanglegram_text(self, point, string, col=RED, h_a='right'):
+        x, y = point
+        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment='top')
+
 
 
     def show(self):
