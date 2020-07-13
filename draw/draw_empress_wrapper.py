@@ -116,13 +116,13 @@ def test_strong_consistency_reconciliation_draw_default():
 test_strong_consistency_reconciliation_draw_default()
 
 def test_strong_consistency_reconciliation_draw_show_label_and_freq():
-    fig = example_strong_consistent_reconciliation.draw(show_internal_labels=True, show_freq=True)
+    fig = example_strong_consistent_reconciliation.draw()
     fig.savefig(Path(common.output_path).joinpath("test_strong_consistency_reconciliation_draw_show_label_and_freq.png"))
 
 test_strong_consistency_reconciliation_draw_show_label_and_freq()
 
 def test_strong_consistency_reconciliation_draw_hide_label_and_freq():
-    fig = example_strong_consistent_reconciliation.draw(show_internal_labels=False, show_freq=False)
+    fig = example_strong_consistent_reconciliation.draw()
     fig.savefig(Path(common.output_path).joinpath("test_strong_consistency_reconciliation_draw_hide_label_and_freq.png"))
 
 test_strong_consistency_reconciliation_draw_hide_label_and_freq()
