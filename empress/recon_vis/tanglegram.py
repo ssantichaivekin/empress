@@ -5,8 +5,7 @@ Berto Garcia, Sonia Sehra
 """
 
 from matplotlib import pyplot as plt
-import empress.recon_vis.render_settings
-from empress.recon_vis import utils, plot_tools, tree
+from empress.recon_vis import utils, plot_tools, tree, render_settings
 
 
 VERTICAL_OFFSET = 20
