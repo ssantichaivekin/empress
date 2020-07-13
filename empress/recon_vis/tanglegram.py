@@ -5,7 +5,7 @@ Berto Garcia, Sonia Sehra
 """
 
 from matplotlib import pyplot as plt
-
+import render_settings
 from empress.recon_vis import utils, plot_tools, tree
 
 
@@ -34,22 +34,22 @@ def render(host_dict: dict, parasite_dict: dict, tip_mapping: dict, show_interna
     _g_host_counter = 0
     _g_parasite_counter = 0
 
-    fig = plot_tools.FigureWrapper("Host | Parasite", ax)
+    fig = plot_tools.FigureWrapper("Host | Parasite", axes=ax)
     host_tree = utils.dict_to_tree(host_dict, tree.TreeType.HOST)
     parasite_tree = utils.dict_to_tree(parasite_dict, tree.TreeType.PARASITE)
     _render_helper_host(fig, host_tree.root_node, show_internal_labels)
     _render_helper_parasite(fig, parasite_tree.root_node, show_internal_labels)
 
     host_dict = {}
-    for host in host_tree.leaf_list():
+    for host in host_tree.leaf_list:
         host_dict[host.name] = host
 
     # connect hosts leaves to parasite leaves
-    for leaf in parasite_tree.leaf_list():
+    for leaf in parasite_tree.leaf_list:
         parasite = leaf
         host = host_dict[tip_mapping[leaf.name]]
         fig.line((host.layout.col, host.layout.row), (parasite.layout.col, parasite.layout.row),
-                 col=plot_tools.GRAY, style='--')
+                 col=render_settings.GRAY, linestyle='--')
     return fig
 
 def _render_helper_host(fig, node, show_internal_labels):
@@ -69,7 +69,7 @@ def _render_helper_host(fig, node, show_internal_labels):
 
         # plot node using leaf_layout
         plot_loc = (leaf_layout.col, leaf_layout.row)
-        fig.text(plot_loc, node.name, col=plot_tools.BLUE, h_a='left')
+        fig.text(plot_loc, node.name, col=render_settings.BLUE, h_a='left')
 
     else:
         # recursively call helper funciton on child nodes
@@ -89,17 +89,17 @@ def _render_helper_host(fig, node, show_internal_labels):
         # plot node using node_layout
         current_loc = (node.layout.col, node.layout.row)
         if show_internal_labels:
-            fig.text(current_loc, node.name, col=plot_tools.BLUE, h_a='left')
+            fig.text(current_loc, node.name, col=render_settings.BLUE, h_a='left')
 
         # draw line from current node to left node
         left_loc = (left_layout.col, left_layout.row)
-        fig.line(current_loc, (node.layout.col, left_layout.row), col=plot_tools.BLACK)
-        fig.line((node.layout.col, left_layout.row), left_loc, col=plot_tools.BLACK)
+        fig.line(current_loc, (node.layout.col, left_layout.row), col=render_settings.BLACK)
+        fig.line((node.layout.col, left_layout.row), left_loc, col=render_settings.BLACK)
 
         # draw line from current node to right node
         right_loc = (right_layout.col, right_layout.row)
-        fig.line(current_loc, (node.layout.col, right_layout.row), col=plot_tools.BLACK)
-        fig.line((node.layout.col, right_layout.row), right_loc, col=plot_tools.BLACK)
+        fig.line(current_loc, (node.layout.col, right_layout.row), col=render_settings.BLACK)
+        fig.line((node.layout.col, right_layout.row), right_loc, col=render_settings.BLACK)
 
 
 def _render_helper_parasite(fig, node, show_internal_labels):
@@ -118,7 +118,7 @@ def _render_helper_parasite(fig, node, show_internal_labels):
 
         # plot node using leaf_layout
         plot_loc = (leaf_layout.col, leaf_layout.row)
-        fig.text(plot_loc, node.name, col=plot_tools.BLUE, h_a='right')
+        fig.text(plot_loc, node.name, col=render_settings.BLUE, h_a='right')
 
     else:
         # recursively call helper funciton on child nodes
@@ -138,15 +138,15 @@ def _render_helper_parasite(fig, node, show_internal_labels):
         # plot node using node_layout
         current_loc = (node.layout.col, node.layout.row)
         if show_internal_labels:
-            fig.text(current_loc, node.name, col=plot_tools.BLUE, h_a='right')
+            fig.text(current_loc, node.name, col=render_settings.BLUE, h_a='right')
 
         # draw line from current node to left node
         left_loc = (left_layout.col, left_layout.row)
-        fig.line(current_loc, (node.layout.col, left_layout.row), col=plot_tools.BLACK)
-        fig.line((node.layout.col, left_layout.row), left_loc, col=plot_tools.BLACK)
+        fig.line(current_loc, (node.layout.col, left_layout.row), col=render_settings.BLACK)
+        fig.line((node.layout.col, left_layout.row), left_loc, col=render_settings.BLACK)
 
         # draw line from current node to right node
         right_loc = (right_layout.col, right_layout.row)
-        fig.line(current_loc, (node.layout.col, right_layout.row), col=plot_tools.BLACK)
-        fig.line((node.layout.col, right_layout.row), right_loc, col=plot_tools.BLACK)
+        fig.line(current_loc, (node.layout.col, right_layout.row), col=render_settings.BLACK)
+        fig.line((node.layout.col, right_layout.row), right_loc, col=render_settings.BLACK)
 
