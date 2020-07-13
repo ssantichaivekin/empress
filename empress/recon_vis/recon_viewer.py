@@ -46,7 +46,8 @@ def render(host_dict, parasite_dict, recon_dict, event_frequencies = None, show_
     render_parasite(fig, parasite_tree, recon, host_lookup, parasite_lookup, show_internal_labels, show_freq, tip_font_size, internal_font_size)
 
     #Show Visualization
-    fig.show()
+    #fig.show()
+    return fig 
 
 def set_offsets(tree):
     """
