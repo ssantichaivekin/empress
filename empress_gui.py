@@ -3,6 +3,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import os
+import sys
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
@@ -10,6 +11,13 @@ import empress
 from empress import input_reader
 from empress.recon_vis.utils import dict_to_tree
 from empress.recon_vis import tree
+
+def resource_path(relative_path):
+    # The path can be different under pyinstaller
+    # see https://stackoverflow.com/questions/57132421/relative-path-setting-fail-via-pyinstaller
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 class App(tk.Frame):
 
@@ -44,7 +52,7 @@ class App(tk.Frame):
         self.logo_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
         self.logo_frame.grid_propagate(False)
         # Add logo image in self.logo_frame
-        photo = tk.PhotoImage(file="./assets/jane_logo_thin.gif")
+        photo = tk.PhotoImage(file=resource_path("assets/jane_logo_thin.gif"))
         label = tk.Label(self.logo_frame, image=photo)
         label.place(x=0, y=0)
         label.image = photo
