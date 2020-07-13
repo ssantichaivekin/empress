@@ -10,6 +10,8 @@ import empress.recon_vis.plot_tools as plot_tools
 from empress.recon_vis.render_settings import *
 from typing import Union
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.collections import LineCollection
 
 def render(host_dict, parasite_dict, recon_dict, event_frequencies = None, show_internal_labels=False, show_freq=False, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
@@ -21,8 +23,21 @@ def render(host_dict, parasite_dict, recon_dict, event_frequencies = None, show_
     if host_tree is None or parasite_tree is None or recon is None:
         return 
 
-    fig = plot_tools.FigureWrapper(TREE_TITLE, consistency_type, axes)
+    
+        
+    fig = plot_tools.FigureWrapper(TREE_TITLE, axes)
+    legend_elements = [
+                          Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation', \
+                          markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
+                          Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication', \
+                          markerfacecolor=DUPLICATION_NODE_COLOR, markersize=NODESIZE),
+                          Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer', \
+                          markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),\
+                          LineCollection( [[(0, 0)]], linestyles = ['dashed'], \
+                              colors = [LOSS_EDGE_COLOR], label='Loss')
+                          ] 
     #print(event_freqs)
+    fig.set_legend(legend_elements, title = consistency_type)
 
     #Calculates font sizes
     num_tips = len(host_tree.leaf_list) + len(parasite_tree.leaf_list)

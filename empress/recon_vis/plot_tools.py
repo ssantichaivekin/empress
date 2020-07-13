@@ -26,7 +26,7 @@ TEXT_Z_ORDER = 2
 
 SIZE = 6
 TRANSFERSIZE = 10
-NODESIZE = 8
+
 NODEFONTSIZE = 0.12
 FONTSIZE = 12
 
@@ -34,7 +34,7 @@ DEFAULT_ALIGNMENT = 'bottom'
 
 class FigureWrapper:
     """ Class definining plotting methods """
-    def __init__(self, title, legend_title=None, axes: Union[plt.Axes, None] = None):
+    def __init__(self, title, axes: Union[plt.Axes, None] = None):
         """
         If axes is specified, draw on axes instead.
         """
@@ -50,18 +50,13 @@ class FigureWrapper:
         self.axis.set_title(title)
 
 
-        legend_elements = [
-                          Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation', \
-                          markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
-                          Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication', \
-                          markerfacecolor=DUPLICATION_NODE_COLOR, markersize=NODESIZE),
-                          Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer', \
-                          markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),\
-                          LineCollection( [[(0, 0)]], linestyles = ['dashed'], \
-                              colors = [LOSS_EDGE_COLOR], label='Loss')
-                          ] 
-        
-        self.axis.legend(handles=legend_elements, loc='best', fontsize = FONTSIZE, title=legend_title)
+    
+    def set_legend(self, legend_elements, loc = 'best', fontsize = FONTSIZE, title = None):
+        """
+        create legend
+        """
+
+        self.axis.legend(handles=legend_elements, loc= loc, fontsize = fontsize, title=title)
         
 
     def line(self, point_1, point_2, col=BLACK, linestyle='-', marker=None):
