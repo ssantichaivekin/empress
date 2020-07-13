@@ -47,7 +47,7 @@ class TestTree(unittest.TestCase):
         leaves = host_converted.leaf_list
         for leaf in leaves:
             self.assertTrue(isinstance(leaf, tree.Node))
-            self.assertTrue(leaf.is_leaf())
+            self.assertTrue(leaf.is_leaf)
         self.assertEqual(len(leaves), 12)
 
     def test_postorder_list(self):
