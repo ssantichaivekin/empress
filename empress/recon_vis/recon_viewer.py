@@ -18,6 +18,8 @@ def render(host_dict, parasite_dict, recon_dict, event_freqs = None, show_intern
     :recon_dict: Reconciliation represented in dictionary format
     """
     host_tree, parasite_tree, recon, consistency_type = utils.convert_to_objects(host_dict, parasite_dict, recon_dict)
+    if host_tree is None or parasite_tree is None or recon is None:
+        return 
 
     fig = plot_tools.FigureWrapper(TREE_TITLE, consistency_type, axes)
     #print(event_freqs)
