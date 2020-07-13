@@ -9,6 +9,7 @@ import empress.recon_vis.utils as utils
 import empress.recon_vis.plot_tools as plot_tools
 from empress.recon_vis.render_settings import *
 from typing import Union
+import matplotlib.pyplot as plt
 
 def render(host_dict, parasite_dict, recon_dict, show_internal_labels=False, show_freq=False, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
