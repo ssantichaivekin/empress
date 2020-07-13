@@ -83,16 +83,16 @@ class FigureWrapper:
         """
         Plot text at s at point p
         """
-        if vertical_alignment == 'center':
-            point = (point[0], point[1] - size * CENTER_CONSTANT)
+        if text is not None:
+            if vertical_alignment == 'center':
+                point = (point[0], point[1] - size * CENTER_CONSTANT)
 
-        tp = TextPath(point, text, size= size)
-        path_patch = PathPatch(tp, color=col, linewidth = TEXTWIDTH, zorder=TEXT_Z_ORDER)
-        if border_col:
-            path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
-        self.fig.gca().add_patch(path_patch)
+            tp = TextPath(point, text, size= size)
+            path_patch = PathPatch(tp, color=col, linewidth = TEXTWIDTH, zorder=TEXT_Z_ORDER)
+            if border_col:
+                path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
+            self.fig.gca().add_patch(path_patch)
 
-        #self.axis.text(x, y, text, color=col, fontsize=font_size, verticalalignment=vertical_alignment)
 
     def show(self):
         """ 
