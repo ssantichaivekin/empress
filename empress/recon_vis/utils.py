@@ -120,7 +120,6 @@ def _dict_to_tree_helper(tree_dict, root_edge):
         new_node.left_node = new_left_node
         new_left_node.parent_node = new_node
         new_node.right_node = new_right_node
-        new_left_node.parent_node = new_node
         new_right_node.parent_node = new_node
         return new_node
 

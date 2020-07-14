@@ -49,14 +49,14 @@ class FigureWrapper:
         self.axis.axis("off")
         self.axis.set_title(title)
 
-    def set_legend(self, legend_elements, loc = 'best', fontsize = FONTSIZE, title = None):
+    def set_legend(self, legend_elements, loc='best', fontsize=FONTSIZE, title=None):
         """
         create legend
         """
 
-        self.axis.legend(handles=legend_elements, loc= loc, fontsize = fontsize, title=title)
+        self.axis.legend(handles=legend_elements, loc=loc, fontsize=fontsize, title=title)
         
-    def line(self, point_1, point_2, col=BLACK, linestyle='-', marker=None):
+    def line(self, point_1, point_2, col=BLACK, linestyle='-'):
         """
         Draw line from point p1 to p2
         """
@@ -64,7 +64,7 @@ class FigureWrapper:
         x_2, y_2 = point_2
         self.axis.plot([x_1, x_2], [y_1, y_2], color=col, linewidth=LINEWIDTH, linestyle=linestyle, zorder=LINE_Z_ORDER)
 
-    def dot(self, point, marker = 'o', col=BLACK):
+    def dot(self, point, marker='o', col=BLACK):
         """
         Plot dot at point p
         """
@@ -110,16 +110,16 @@ class FigureWrapper:
         x_2, y_2 = point_2
         self.axis.arrow(x_1, y_1, 0, abs(y_2-y_1)/2, head_width=0.15, head_length=0.15, color=col, linewidth=LINEWIDTH/2, shape='full', length_includes_head=True, zorder=LINE_Z_ORDER)
 
-    def up_triangle(self, point, col = BLACK, markersize=TRANSFERSIZE):
+    def up_triangle(self, point, col=BLACK, markersize=TRANSFERSIZE):
         """
         Draw an upwards triangle on point
         """
         x, y = point
-        self.axis.plot(x, y, '^', color=col, zorder= LINE_Z_ORDER, markersize=TRANSFERSIZE)
+        self.axis.plot(x, y, '^', color=col, zorder=LINE_Z_ORDER, markersize=TRANSFERSIZE)
 
-    def down_triangle(self, point, col = BLACK, markersize=TRANSFERSIZE):
+    def down_triangle(self, point, col=BLACK, markersize=TRANSFERSIZE):
         """
         Draw an downwards triangle on point
         """
         x, y = point
-        self.axis.plot(x, y, 'v', color=col, zorder= LINE_Z_ORDER, markersize=TRANSFERSIZE)
+        self.axis.plot(x, y, 'v', color=col, zorder=LINE_Z_ORDER, markersize=TRANSFERSIZE)
