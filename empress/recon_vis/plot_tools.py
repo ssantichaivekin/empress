@@ -49,8 +49,6 @@ class FigureWrapper:
         self.axis.axis("off")
         self.axis.set_title(title)
 
-
-    
     def set_legend(self, legend_elements, loc = 'best', fontsize = FONTSIZE, title = None):
         """
         create legend
@@ -58,7 +56,6 @@ class FigureWrapper:
 
         self.axis.legend(handles=legend_elements, loc= loc, fontsize = fontsize, title=title)
         
-
     def line(self, point_1, point_2, col=BLACK, linestyle='-', marker=None):
         """
         Draw line from point p1 to p2
@@ -74,7 +71,11 @@ class FigureWrapper:
         x, y = point
         self.axis.plot(x, y, marker, color=col, zorder=DOT_Z_ORDER)
     
-    def text(self, point, text, col=BLACK, size=SIZE, vertical_alignment=DEFAULT_ALIGNMENT, border_col=None):
+    def text(self, point, string, col=RED, h_a='right'):
+        x, y = point
+        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment='top')
+
+    def text_v2(self, point, text, col=BLACK, size=SIZE, vertical_alignment=DEFAULT_ALIGNMENT, border_col=None):
         """
         Plot text at s at point p
         """
@@ -87,12 +88,6 @@ class FigureWrapper:
             if border_col:
                 path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
             self.fig.gca().add_patch(path_patch)
-
-    def tanglegram_text(self, point, string, col=RED, h_a='right'):
-        x, y = point
-        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment='top')
-
-
 
     def show(self):
         """ 

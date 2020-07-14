@@ -120,15 +120,15 @@ def render_host_helper(fig, node, show_internal_labels, tip_font_size, internal_
         text_offset = (node_x + TIP_TEXT_OFFSET[0], node_y + TIP_TEXT_OFFSET[1])
         fig.dot(node_xy, col = HOST_NODE_COLOR)
         if node.layout.node_count == 0:
-            fig.text(text_offset, node.name, HOST_NODE_COLOR, size = tip_font_size, vertical_alignment=TIP_ALIGNMENT)
+            fig.text_v2(text_offset, node.name, HOST_NODE_COLOR, size = tip_font_size, vertical_alignment=TIP_ALIGNMENT)
         else:
-            fig.text(text_offset, node.name, HOST_NODE_COLOR, size = tip_font_size/node.layout.node_count, vertical_alignment=TIP_ALIGNMENT)    
+            fig.text_v2(text_offset, node.name, HOST_NODE_COLOR, size = tip_font_size/node.layout.node_count, vertical_alignment=TIP_ALIGNMENT)    
     else:
         fig.dot(node_xy, col = HOST_NODE_COLOR)  # Render host node
         if show_internal_labels:
             color = HOST_NODE_COLOR[0:3] + (INTERNAL_NODE_ALPHA,)
             text_xy = (node_x + INTERNAL_TEXT_OFFSET[0], node_y + INTERNAL_TEXT_OFFSET[1])
-            fig.text(text_xy, node.name, color, size = internal_font_size, border_col=HOST_NODE_BORDER_COLOR)
+            fig.text_v2(text_xy, node.name, color, size = internal_font_size, border_col=HOST_NODE_BORDER_COLOR)
         left_x, left_y = node.left_node.layout.x, node.left_node.layout.y
         right_x, right_y = node.right_node.layout.x, node.right_node.layout.y
         fig.line(node_xy, (node_x, left_y), HOST_EDGE_COLOR)
@@ -265,21 +265,37 @@ def render_parasite_node(fig, node, event, font_size, show_internal_labels=False
     
     fig.dot(node_xy, col = render_color, marker = render_shape)
     if node.is_leaf:
-        fig.text((node.layout.x + TIP_TEXT_OFFSET[0], node.layout.y + TIP_TEXT_OFFSET[1]), node.name, render_color, size = font_size, vertical_alignment=TIP_ALIGNMENT)
+        fig.text_v2((node.layout.x + TIP_TEXT_OFFSET[0], node.layout.y + TIP_TEXT_OFFSET[1]), node.name, render_color, size = font_size, vertical_alignment=TIP_ALIGNMENT)
         return
 
     text = ''
     if show_internal_labels and show_freq:
-        text = node.name + ', ' + str(event.freq)[0:5]
+        text = node.name + ', ' + get_frequency_text(event.freq)
     elif show_internal_labels:
         text = node.name
     elif show_freq:
         if event.freq:
-            text = str(event.freq)[0:5]
+            text = get_frequency_text(event.freq)
         else:
-            text = '0'
+            text = '0%'
     if text:
-        fig.text(node_xy, text, render_color, size = font_size, border_col=PARASITE_NODE_BORDER_COLOR)
+        fig.text_v2(node_xy, text, render_color, size = font_size, border_col=PARASITE_NODE_BORDER_COLOR)
+
+def get_frequency_text(frequency):
+    """
+    Give the frequency as a string in percentage form
+    :param frequency: The frequency of an event
+    :return a string that has the frequency as a percentage
+    """
+    output = ''
+    for letter in str(frequency * 10**2):
+        if letter != '.':
+            output += letter
+        else:
+            output += '%'
+            return output
+    output += '%'
+    return output
 
 def calculate_font_size(num_tips, num_nodes):
     """
