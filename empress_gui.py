@@ -423,8 +423,9 @@ class App(tk.Frame):
         tanglegram_frame = tk.Frame(self.tanglegram_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
         tanglegram_frame.pack_propagate(False)
-        fig = self.recon_input.draw()
-        canvas = FigureCanvasTkAgg(fig, tanglegram_frame)
+        self.fig_tanglegram = self.recon_input.draw()
+        self.tanglegram_window.protocol("WM_DELETE_WINDOW", self.tanglegram_figure_on_closing)
+        canvas = FigureCanvasTkAgg(self.fig_tanglegram, tanglegram_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
@@ -764,6 +765,12 @@ class App(tk.Frame):
         self.view_pvalue_histogram_window.geometry("700x700")
         self.view_pvalue_histogram_window.title("p-value Histogram")
         PValueHistogramWindow(self.view_pvalue_histogram_window)
+
+    def tanglegram_figure_on_closing(self):
+        """Close and remove matplotlib figures when the tkinter window is destroyed."""
+        self.fig_tanglegram.clear()
+        plt.close(self.fig_tanglegram)
+        self.tanglegram_window.destroy()
 
 # View reconciliation space - Clusters
 class SolutionSpaceWindow(tk.Frame):
