@@ -112,7 +112,8 @@ class App(tk.Frame):
         self.load_files_var = tk.StringVar(self.input_frame)
         self.load_files_var.set("Load files")
         self.load_files_options = ["Load host tree file", "Load parasite tree file", "Load mapping file"]
-        self.load_files_dropdown = tk.OptionMenu(self.input_frame, self.load_files_var, *self.load_files_options, command=self.load_input_files)
+        self.load_files_dropdown = tk.OptionMenu(self.input_frame, self.load_files_var, *self.load_files_options, 
+            command=self.load_input_files)
         self.load_files_dropdown.configure(width=15)
         self.load_files_dropdown.grid(row=0, column=0)
         # Force a sequence of loading host tree file first, and then parasite tree file, and then mapping file
@@ -128,12 +129,14 @@ class App(tk.Frame):
 
     def init_view_tanglegram(self):
         # "View tanglegram" button
-        self.view_tanglegram_btn = tk.Button(self.input_frame, text="View tanglegram", command=self.display_tanglegram, state=tk.DISABLED, width=18)
+        self.view_tanglegram_btn = tk.Button(self.input_frame, text="View tanglegram", command=self.display_tanglegram, 
+            state=tk.DISABLED, width=18)
         self.view_tanglegram_btn.grid(row=1, column=0)
 
     def init_view_cost_space(self):
         # "View cost space" button
-        self.view_cost_space_btn = tk.Button(self.input_frame, text="View cost space", command=self.plot_cost_regions, state=tk.DISABLED, width=18)
+        self.view_cost_space_btn = tk.Button(self.input_frame, text="View cost space", command=self.plot_cost_regions, 
+            state=tk.DISABLED, width=18)
         self.view_cost_space_btn.grid(row=2, column=0)
 
         self.dup_label = tk.Label(self.costs_frame)
@@ -154,7 +157,8 @@ class App(tk.Frame):
 
     def init_compute_reconciliations(self):
         # "Compute reconciliations" button
-        self.compute_reconciliations_btn = tk.Button(self.input_frame, text="Compute reconciliations", command=self.display_recon_information, state=tk.DISABLED, width=18)
+        self.compute_reconciliations_btn = tk.Button(self.input_frame, text="Compute reconciliations", 
+            command=self.display_recon_information, state=tk.DISABLED, width=18)
         self.compute_reconciliations_btn.grid(row=3, column=0)
 
         self.recon_MPRs_label = tk.Label(self.recon_nums_frame)
@@ -175,7 +179,8 @@ class App(tk.Frame):
         self.view_solution_space_var = tk.StringVar(self.input_frame)
         self.view_solution_space_var.set("View solution space")
         self.view_solution_space_options = ["Entire space", "Clusters"]
-        self.view_solution_space_dropdown = tk.OptionMenu(self.input_frame, self.view_solution_space_var, *self.view_solution_space_options, command=self.select_from_view_solution_space_dropdown)
+        self.view_solution_space_dropdown = tk.OptionMenu(self.input_frame, self.view_solution_space_var, 
+            *self.view_solution_space_options, command=self.select_from_view_solution_space_dropdown)
         self.view_solution_space_dropdown.configure(width=15)
         self.view_solution_space_dropdown.configure(state=tk.DISABLED)
         self.view_solution_space_dropdown.grid(row=4, column=0)
@@ -191,7 +196,8 @@ class App(tk.Frame):
         self.view_reconciliations_var = tk.StringVar(self.input_frame)
         self.view_reconciliations_var.set("View reconciliations")
         self.view_reconciliations_options = ["One MPR", "One per cluster"]
-        self.view_reconciliations_dropdown = tk.OptionMenu(self.input_frame, self.view_reconciliations_var, *self.view_reconciliations_options, command=self.select_from_view_reconciliations_dropdown)
+        self.view_reconciliations_dropdown = tk.OptionMenu(self.input_frame, self.view_reconciliations_var, 
+            *self.view_reconciliations_options, command=self.select_from_view_reconciliations_dropdown)
         self.view_reconciliations_dropdown.configure(width=15)
         self.view_reconciliations_dropdown.configure(state=tk.DISABLED)
         self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state = "disabled")
@@ -199,7 +205,8 @@ class App(tk.Frame):
 
     def init_view_pvalue_histogram(self):
         # "View p-value histogram" button
-        self.view_pvalue_histogram_btn = tk.Button(self.input_frame, text="View p-value histogram", command=self.open_window_pvalue_histogram, state=tk.DISABLED, width=18)
+        self.view_pvalue_histogram_btn = tk.Button(self.input_frame, text="View p-value histogram", 
+            command=self.open_window_pvalue_histogram, state=tk.DISABLED, width=18)
         self.view_pvalue_histogram_btn.grid(row=6, column=0)
 
     def init_windows(self):
@@ -325,8 +332,8 @@ class App(tk.Frame):
         self.view_pvalue_histogram_btn.configure(state=tk.DISABLED)
 
     def load_input_files(self, event):
-        """Load in two .nwk files for the host tree and parasite tree, and one .mapping file. Display the number of tips for
-        the trees and a message to indicate the successful reading of the tips mapping."""
+        """Load in two .nwk files for the host tree and parasite tree, and one .mapping file. Display the 
+        number of tips for the trees and a message to indicate the successful reading of the tips mapping."""
         # Clicking on "Load host tree file"
         if self.load_files_var.get() == "Load host tree file":
             self.load_files_var.set("Load files")
@@ -394,12 +401,14 @@ class App(tk.Frame):
 
     def update_host_info(self):
         host_tree_tips_number = self.compute_tree_tips("host tree")
-        self.host_tree_info = tk.Label(self.input_info_frame, text="Host: "+os.path.basename(self.host_file_path)+": "+str(host_tree_tips_number)+" tips")
+        self.host_tree_info = tk.Label(self.input_info_frame, text="Host: "+os.path.basename(self.host_file_path)
+            +": "+str(host_tree_tips_number)+" tips")
         self.host_tree_info.grid(row=0, column=0, sticky="w")
 
     def update_parasite_info(self):
         parasite_tree_tips_number = self.compute_tree_tips("parasite tree")
-        self.parasite_tree_info = tk.Label(self.input_info_frame, text="Parasite/symbiont: "+os.path.basename(self.parasite_file_path)+": "+str(parasite_tree_tips_number)+" tips")
+        self.parasite_tree_info = tk.Label(self.input_info_frame, text="Parasite/symbiont: "
+            +os.path.basename(self.parasite_file_path)+": "+str(parasite_tree_tips_number)+" tips")
         self.parasite_tree_info.grid(row=1, column=0, sticky="w")
 
     def update_mapping_info(self):
@@ -450,7 +459,8 @@ class App(tk.Frame):
         fig.canvas.callbacks.connect('button_press_event', self.get_xy_coordinates)
 
     def get_xy_coordinates(self, event):
-        """Update the DTL costs when user clicks on the matplotlib graph, otherwise pop up a warning message window."""
+        """Update the DTL costs when user clicks on the matplotlib graph, otherwise pop up 
+        a warning message window."""
         if event.inaxes is not None:
             self.dup_input.set(round(event.xdata, 2))
             self.trans_input.set(round(event.ydata, 2))
@@ -648,7 +658,8 @@ class App(tk.Frame):
         self.set_num_cluster_frame.pack(fill=tk.BOTH, expand=tk.YES)
         self.set_num_cluster_frame.pack_propagate(False)
 
-        self.enter_num_clusters_btn = tk.Button(self.set_num_cluster_frame, text="Enter", command=self.click_on_enter_num_clusters_btn, state=tk.NORMAL)
+        self.enter_num_clusters_btn = tk.Button(self.set_num_cluster_frame, text="Enter", 
+            command=self.click_on_enter_num_clusters_btn, state=tk.NORMAL)
         self.enter_num_clusters_btn.grid(row=1, column=0)
 
         self.num_cluster_label = tk.Label(self.set_num_cluster_frame, text="Number of clusters:")
@@ -801,7 +812,9 @@ class ReconciliationsOneMPRWindow(tk.Frame):
         self.draw_one_MPR()
 
     def draw_one_MPR(self):
-        self.fig = App.recon_graph.median().draw(show_internal_labels=self.show_internal_node_names_boolean, show_freq=self.show_event_frequencies_boolean)
+        self.fig = App.recon_graph.median().draw(
+            show_internal_labels=self.show_internal_node_names_boolean, 
+            show_freq=self.show_event_frequencies_boolean)
         self.canvas = FigureCanvasTkAgg(self.fig, self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -813,12 +826,16 @@ class ReconciliationsOneMPRWindow(tk.Frame):
     def create_checkboxes(self):
         self.show_internal_node_names_boolean = tk.BooleanVar()
         self.show_internal_node_names_boolean.set(tk.TRUE)
-        show_internal_node_names_checkbutton = tk.Checkbutton(self.checkboxes_frame, text="Display internal node names", variable=self.show_internal_node_names_boolean, command=self.update_one_mpr)
+        show_internal_node_names_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
+            text="Display internal node names", variable=self.show_internal_node_names_boolean, 
+            command=self.update_one_mpr)
         show_internal_node_names_checkbutton.pack(side=tk.LEFT)
 
         self.show_event_frequencies_boolean = tk.BooleanVar()
         self.show_event_frequencies_boolean.set(tk.TRUE)
-        show_event_frequencies_checkbutton = tk.Checkbutton(self.checkboxes_frame, text="Display frequencies", variable=self.show_event_frequencies_boolean, command=self.update_one_mpr)
+        show_event_frequencies_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
+            text="Display frequencies", variable=self.show_event_frequencies_boolean, 
+            command=self.update_one_mpr)
         show_event_frequencies_checkbutton.pack(side=tk.LEFT)
 
     def update_one_mpr(self):
