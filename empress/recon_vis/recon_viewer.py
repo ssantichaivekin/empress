@@ -270,7 +270,7 @@ def render_parasite_node(fig, node, event, font_size, show_internal_labels=False
 
     text = ''
     if show_internal_labels and show_freq:
-        text = node.name + ', ' + str(event.freq)
+        text = node.name + ', ' + str(event.freq)[0:5]
     elif show_internal_labels:
         text = node.name
     elif show_freq:
