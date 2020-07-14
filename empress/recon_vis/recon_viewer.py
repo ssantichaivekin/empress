@@ -277,7 +277,7 @@ def render_parasite_node(fig, node, event, font_size, show_internal_labels=False
         if event.freq:
             text = get_frequency_text(event.freq)
         else:
-            text = '0%'
+            text = '0'
     if text:
         fig.text_v2(node_xy, text, render_color, size = font_size, border_col=PARASITE_NODE_BORDER_COLOR)
 
@@ -292,9 +292,7 @@ def get_frequency_text(frequency):
         if letter != '.':
             output += letter
         else:
-            output += '%'
             return output
-    output += '%'
     return output
 
 def calculate_font_size(num_tips, num_nodes):
