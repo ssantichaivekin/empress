@@ -20,7 +20,7 @@ def render(host_dict, parasite_dict, recon_dict, event_frequencies = None, show_
     :recon_dict: Reconciliation represented in dictionary format
     """
     host_tree, parasite_tree, recon, consistency_type = utils.convert_to_objects(host_dict, parasite_dict, recon_dict, event_frequencies)
-
+    print(event_frequencies)
     #Checks to see if the trees(or reconciliation) are empty
     if host_tree is None or parasite_tree is None or recon is None:
         return None
@@ -50,7 +50,8 @@ def render(host_dict, parasite_dict, recon_dict, event_frequencies = None, show_
     #Render Parasite Tree
     render_parasite(fig, parasite_tree, recon, host_lookup, parasite_lookup, show_internal_labels, show_freq, tip_font_size, internal_font_size)
 
-    return fig 
+    fig.show()
+    #return fig 
 
 def create_legend(fig, consistency_type):
     legend_elements = [

@@ -192,10 +192,7 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_frequencies: Dict
         else:
             raise ValueError('%s not in "SDTLC"' % etype)
         if event_frequencies is not None:
-            if mapping in event_frequencies:
-                event._freq = event_frequencies[mapping]
-            else:
-                event._freq = 0
+                event._freq = event_frequencies[event_tuple]
         recon.set_event(mapping_node, event)
     return recon
 
