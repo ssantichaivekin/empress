@@ -610,6 +610,7 @@ class App(tk.Frame):
         self.close_unnecessary_windows_if_opened()
         self.view_solution_space_dropdown.configure(state=tk.NORMAL)
         self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
+        self.view_pvalue_histogram_btn.configure(state=tk.NORMAL)
 
     def select_from_view_solution_space_dropdown(self, event):
         """When "View solution space" dropdown is clicked."""
@@ -684,7 +685,6 @@ class App(tk.Frame):
             self.enter_num_clusters_btn.configure(state=tk.NORMAL)
             self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
             self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state=tk.NORMAL)
-            self.view_pvalue_histogram_btn.configure(state=tk.NORMAL)
         return True # return True means allowing the change to happen
 
     def click_on_enter_num_clusters_btn(self):
