@@ -340,9 +340,6 @@ class App(tk.Frame):
             self.directory_selected = tk.filedialog.askdirectory(title="Select a folder")
             input_file = tk.filedialog.askopenfilename(initialdir=self.directory_selected, title="Select a host file",
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree")])
-            # # initialdir is set to be the current working directory
-            # input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file",
-            #                                            filetypes=[("Newick Trees", "*.nwk *.newick *.tree")])
             if input_file != "":
                 try:
                     self.recon_input.read_host(input_file)
@@ -359,7 +356,6 @@ class App(tk.Frame):
         # Clicking on "Load parasite tree file"
         elif self.load_files_var.get() == "Load parasite tree file":
             self.load_files_var.set("Load files")
-            # initialdir is set to be the current working directory
             input_file = tk.filedialog.askopenfilename(initialdir=self.directory_selected, title="Select a parasite file",
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree")])
             if input_file != "":
@@ -375,7 +371,6 @@ class App(tk.Frame):
         # Clicking on "Load mapping file"
         elif self.load_files_var.get() == "Load mapping file":
             self.load_files_var.set("Load files")
-            # initialdir is set to be the current working directory
             input_file = tk.filedialog.askopenfilename(initialdir=self.directory_selected, title="Select a mapping file",
                                                        filetypes=[("Tip mapping", "*.mapping")])
             if input_file != "":
