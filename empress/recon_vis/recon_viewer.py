@@ -14,11 +14,17 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
 
-def render(host_dict, parasite_dict, recon_dict, event_frequencies=None, show_internal_labels=False, show_freq=False, axes: Union[plt.Axes, None] = None):
+
+def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequencies: dict, show_internal_labels: bool = False, show_freq: bool = False, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
     :param parasite_dict:  Parasite tree represented in dictionary format
-    :recon_dict: Reconciliation represented in dictionary format
+    :param recon_dict: Reconciliation represented in dictionary format
+    :param event_frequencies: Dictionary that maps events to their frequencies
+    :param show_internal_labels: Boolean that determines wheter internal labels are shown or not
+    :param show_freq: Boolean that determines whether event frequencies are shown or not
+    :param axes: Gives the axes of the render is displayed on
+    :return Figure Object
     """
     host_tree, parasite_tree, recon, consistency_type = utils.convert_to_objects(host_dict, parasite_dict, recon_dict, event_frequencies)
     # Checks to see if the trees(or reconciliation) are empty
@@ -26,7 +32,7 @@ def render(host_dict, parasite_dict, recon_dict, event_frequencies=None, show_in
         return None
 
     fig = plot_tools.FigureWrapper(TREE_TITLE, axes)
-    create_legend(fig, consistency_type)    
+    create_legend(fig, consistency_type)
 
     # Calculates font sizes
     num_tips = len(host_tree.leaf_list) + len(parasite_tree.leaf_list)
@@ -36,54 +42,58 @@ def render(host_dict, parasite_dict, recon_dict, event_frequencies=None, show_in
     root = parasite_tree.root_node
     host_lookup = host_tree.name_to_node_dict()
     parasite_lookup = parasite_tree.name_to_node_dict()
-    
+
     # Populate Host Nodes with track count
     populate_host_tracks(root, recon, host_lookup)
-    
+
     # Render Host Tree
     render_host(fig, host_tree, show_internal_labels, tip_font_size, internal_font_size)
-    
+
     # Sets the offsets between tracks on each host node
     set_offsets(host_tree)
-    
+
     # Render Parasite Tree
     render_parasite(fig, parasite_tree, recon, host_lookup, parasite_lookup, show_internal_labels, show_freq, tip_font_size, internal_font_size)
 
-    return fig 
+    return fig
+
 
 def create_legend(fig, consistency_type):
     legend_elements = [
-                        Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation', \
+                        Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation',
                                markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
-                        Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication', \
+                        Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication',
                                markerfacecolor=DUPLICATION_NODE_COLOR, markersize=NODESIZE),
-                        Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer', \
-                               markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),\
-                        LineCollection( [[(0, 0)]], linestyles = ['dashed'], \
-                                       colors = [LOSS_EDGE_COLOR], label='Loss')
+                        Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer',
+                               markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),
+                        LineCollection([[(0, 0)]], linestyles=['dashed'],
+                                       colors=[LOSS_EDGE_COLOR], label='Loss')
                       ]
-    fig.set_legend(legend_elements, title = consistency_type)
+    fig.set_legend(legend_elements, title=consistency_type)
+
+
 def set_offsets(tree):
     """
     Populates the nodes of a Tree with an offset
     :param tree: Tree Object
     """
     pos_dict = tree.pos_dict
-    
+
     for node in tree.postorder_list:
         y_1 = None
         y_0 = node.layout.row
         for logical_pos in pos_dict:
             if node.is_leaf:
                 if y_0 < logical_pos[0] and node.layout.col <= logical_pos[1]:
-                    if y_1 == None or y_1 > logical_pos[0]:
+                    if y_1 is None or y_1 > logical_pos[0]:
                         y_1 = logical_pos[0]
             else:
                 y_1 = max(node.left_node.layout.row, node.right_node.layout.row)
-        if y_1 == None or node.layout.node_count == 0:
+        if y_1 is None or node.layout.node_count == 0:
             node.layout.offset = TRACK_OFFSET
         else:
             node.layout.offset = abs(y_0 - y_1) / (node.layout.node_count + 3)
+
 
 def render_host(fig, host_tree, show_internal_labels, tip_font_size, internal_font_size):
     """
@@ -98,12 +108,14 @@ def render_host(fig, host_tree, show_internal_labels, tip_font_size, internal_fo
     draw_host_handle(fig, root)
     render_host_helper(fig, root, show_internal_labels, tip_font_size, internal_font_size, host_tree)
 
+
 def draw_host_handle(fig, root):
     """
     Draw edge leading to root of host tree.
     :param root: The root node of a tree object
     """
     fig.line((0, root.layout.y), (root.layout.x, root.layout.y), HOST_EDGE_COLOR)
+
 
 def render_host_helper(fig, node, show_internal_labels, tip_font_size, internal_font_size, host_tree):
     """
@@ -115,32 +127,32 @@ def render_host_helper(fig, node, show_internal_labels, tip_font_size, internal_
     :param host_tree: Tree object representing a Host Tree
     """
     host_tree.pos_dict[(node.layout.row, node.layout.col)] = node
-    node_x, node_y = node.layout.x, node.layout.y
 
     Position = namedtuple('Position', ['x', 'y'])
-    node_pos = Position(node_x, node_y)
+    node_pos = Position(node.layout.x, node.layout.y)
 
     if node.is_leaf:
-        text_offset = (node_x + TIP_TEXT_OFFSET[0], node_y + TIP_TEXT_OFFSET[1])
-        fig.dot(node_pos, col = HOST_NODE_COLOR)
+        text_offset = (node_pos.x + TIP_TEXT_OFFSET[0], node_pos.y + TIP_TEXT_OFFSET[1])
+        fig.dot(node_pos, col=HOST_NODE_COLOR)
         if node.layout.node_count == 0:
-            fig.text_v2(text_offset, node.name, HOST_NODE_COLOR, size = tip_font_size, vertical_alignment=TIP_ALIGNMENT)
+            fig.text_v2(text_offset, node.name, HOST_NODE_COLOR, size=tip_font_size, vertical_alignment=TIP_ALIGNMENT)
         else:
-            fig.text_v2(text_offset, node.name, HOST_NODE_COLOR, size = tip_font_size/node.layout.node_count, vertical_alignment=TIP_ALIGNMENT)    
+            fig.text_v2(text_offset, node.name, HOST_NODE_COLOR, size=tip_font_size/node.layout.node_count, vertical_alignment=TIP_ALIGNMENT)    
     else:
-        fig.dot(node_pos, col = HOST_NODE_COLOR)  # Render host node
+        fig.dot(node_pos, col=HOST_NODE_COLOR)  # Render host node
         if show_internal_labels:
             color = HOST_NODE_COLOR[0:3] + (INTERNAL_NODE_ALPHA,)
-            text_xy = (node_x + INTERNAL_TEXT_OFFSET[0], node_y + INTERNAL_TEXT_OFFSET[1])
+            text_xy = (node_pos.x + INTERNAL_TEXT_OFFSET[0], node_pos.y + INTERNAL_TEXT_OFFSET[1])
             fig.text_v2(text_xy, node.name, color, size = internal_font_size, border_col=HOST_NODE_BORDER_COLOR)
         left_x, left_y = node.left_node.layout.x, node.left_node.layout.y
         right_x, right_y = node.right_node.layout.x, node.right_node.layout.y
-        fig.line(node_pos, (node_x, left_y), HOST_EDGE_COLOR)
-        fig.line(node_pos, (node_x, right_y), HOST_EDGE_COLOR)
-        fig.line((node_x, left_y), (left_x, left_y), HOST_EDGE_COLOR)
-        fig.line((node_x, right_y), (right_x, right_y), HOST_EDGE_COLOR)
+        fig.line(node_pos, (node_pos.x, left_y), HOST_EDGE_COLOR)
+        fig.line(node_pos, (node_pos.x, right_y), HOST_EDGE_COLOR)
+        fig.line((node_pos.x, left_y), (left_x, left_y), HOST_EDGE_COLOR)
+        fig.line((node_pos.x, right_y), (right_x, right_y), HOST_EDGE_COLOR)
         render_host_helper(fig, node.left_node, show_internal_labels, tip_font_size, internal_font_size, host_tree)
         render_host_helper(fig, node.right_node, show_internal_labels, tip_font_size, internal_font_size, host_tree)
+        
 
 def render_parasite(fig, parasite_tree, recon, host_lookup, parasite_lookup, show_internal_labels, show_freq, tip_font_size, internal_font_size):
     """
@@ -174,7 +186,7 @@ def populate_host_tracks(node, recon, host_lookup):
     else:
         if not(is_sharing_track(node, host_name, recon)):
             host_node.update_count()
-        
+
     if not(node.is_leaf):
         populate_host_tracks(node.left_node, recon, host_lookup)
         populate_host_tracks(node.right_node, recon, host_lookup)
@@ -240,11 +252,11 @@ def render_parasite_helper(fig, node, recon, host_lookup, parasite_lookup, show_
 
     left_node, right_node = get_children(node, recon, parasite_lookup)
 
-    render_parasite_helper(fig, left_node, recon, host_lookup, \
+    render_parasite_helper(fig, left_node, recon, host_lookup,
         parasite_lookup, show_internal_labels, show_freq, tip_font_size, internal_font_size)
-    render_parasite_helper(fig, right_node, recon, host_lookup, \
+    render_parasite_helper(fig, right_node, recon, host_lookup,
         parasite_lookup, show_internal_labels, show_freq, tip_font_size, internal_font_size)
-    
+
     # Checking to see if left node is mapped to the same host node as parent
     if node.layout.row == left_node.layout.row:
         node.set_layout(y=left_node.layout.y)
@@ -253,6 +265,7 @@ def render_parasite_helper(fig, node, recon, host_lookup, parasite_lookup, show_
 
     render_parasite_branches(fig, node, recon, host_lookup, parasite_lookup)
     render_parasite_node(fig, node, event, tip_font_size, show_internal_labels, show_freq)
+
 
 def render_parasite_node(fig, node, event, font_size, show_internal_labels=False, show_freq=False):
     """
@@ -376,7 +389,7 @@ def render_loss_branch(node_xy, next_xy, fig):
     :param fig: Figure object that visualizes trees using MatplotLib
     """
     # Create vertical line to next node
-    mid_xy = (node_xy[0],next_xy[1])
+    mid_xy = (node_xy[0], next_xy[1])
     fig.line(node_xy, mid_xy, LOSS_EDGE_COLOR, linestyle='--')
     fig.line(mid_xy, next_xy, PARASITE_EDGE_COLOR)
 
