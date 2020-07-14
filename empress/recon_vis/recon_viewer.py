@@ -19,25 +19,15 @@ def render(host_dict, parasite_dict, recon_dict, event_frequencies = None, show_
     :param parasite_dict:  Parasite tree represented in dictionary format
     :recon_dict: Reconciliation represented in dictionary format
     """
-    host_tree, parasite_tree, recon, consistency_type = utils.convert_to_objects(host_dict, parasite_dict, recon_dict)
+    host_tree, parasite_tree, recon, consistency_type = utils.convert_to_objects(host_dict, parasite_dict, recon_dict, event_frequencies)
+
+    #Checks to see if the trees(or reconciliation) are empty
     if host_tree is None or parasite_tree is None or recon is None:
-        return 
+        return None
 
     
-        
     fig = plot_tools.FigureWrapper(TREE_TITLE, axes)
-    legend_elements = [
-                          Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation', \
-                          markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
-                          Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication', \
-                          markerfacecolor=DUPLICATION_NODE_COLOR, markersize=NODESIZE),
-                          Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer', \
-                          markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),\
-                          LineCollection( [[(0, 0)]], linestyles = ['dashed'], \
-                              colors = [LOSS_EDGE_COLOR], label='Loss')
-                          ] 
-    #print(event_freqs)
-    fig.set_legend(legend_elements, title = consistency_type)
+    create_legend(fig, consistency_type)    
 
     #Calculates font sizes
     num_tips = len(host_tree.leaf_list) + len(parasite_tree.leaf_list)
@@ -60,10 +50,20 @@ def render(host_dict, parasite_dict, recon_dict, event_frequencies = None, show_
     #Render Parasite Tree
     render_parasite(fig, parasite_tree, recon, host_lookup, parasite_lookup, show_internal_labels, show_freq, tip_font_size, internal_font_size)
 
-    #Show Visualization
-    #fig.show()
     return fig 
 
+def create_legend(fig, consistency_type):
+    legend_elements = [
+                        Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation', \
+                               markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
+                        Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication', \
+                               markerfacecolor=DUPLICATION_NODE_COLOR, markersize=NODESIZE),
+                        Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer', \
+                               markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),\
+                        LineCollection( [[(0, 0)]], linestyles = ['dashed'], \
+                                       colors = [LOSS_EDGE_COLOR], label='Loss')
+                      ]
+    fig.set_legend(legend_elements, title = consistency_type)
 def set_offsets(tree):
     """
     Populates the nodes of a Tree with an offset
@@ -268,12 +268,20 @@ def render_parasite_node(fig, node, event, font_size, show_internal_labels=False
     fig.dot(node_xy, col = render_color, marker = render_shape)
     if node.is_leaf:
         fig.text((node.layout.x + TIP_TEXT_OFFSET[0], node.layout.y + TIP_TEXT_OFFSET[1]), node.name, render_color, size = font_size, vertical_alignment=TIP_ALIGNMENT)
+        return
+
+    text = ''
+    if show_internal_labels and show_freq:
+        text = node.name + ', ' + str(event.freq)
     elif show_internal_labels:
-        render_color = render_color[0:3] + (INTERNAL_NODE_ALPHA,)
-        text_xy = (node_xy[0] + INTERNAL_TEXT_OFFSET[0], node_xy[1] + INTERNAL_TEXT_OFFSET[1])
-        fig.text(text_xy, node.name, render_color, size = font_size, border_col=PARASITE_NODE_BORDER_COLOR)
-    if show_freq:
-        fig.text(node_xy, event.freq, render_color, size = font_size, border_col=PARASITE_NODE_BORDER_COLOR)
+        text = node.name
+    elif show_freq:
+        if event.freq:
+            text = str(event.freq)[0:5]
+        else:
+            text = '0'
+    if text:
+        fig.text(node_xy, text, render_color, size = font_size, border_col=PARASITE_NODE_BORDER_COLOR)
 
 def calculate_font_size(num_tips, num_nodes):
     """
