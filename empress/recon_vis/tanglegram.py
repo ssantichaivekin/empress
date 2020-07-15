@@ -148,4 +148,3 @@ def _render_helper_parasite(fig, node, show_internal_labels):
         right_loc = (right_layout.col, right_layout.row)
         fig.line(current_loc, (node.layout.col, right_layout.row), col=render_settings.BLACK)
         fig.line((node.layout.col, right_layout.row), right_loc, col=render_settings.BLACK)
-
