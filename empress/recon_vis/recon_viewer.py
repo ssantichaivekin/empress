@@ -9,7 +9,6 @@ import empress.recon_vis.utils as utils
 import empress.recon_vis.plot_tools as plot_tools
 from empress.recon_vis.render_settings import *
 from typing import Union
-from collections import namedtuple
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
@@ -137,7 +136,6 @@ def render_host_helper(fig, node, show_internal_labels, tip_font_size, internal_
     """
     host_tree.pos_dict[(node.layout.row, node.layout.col)] = node
 
-    Position = namedtuple('Position', ['x', 'y'])
     node_pos = Position(node.layout.x, node.layout.y)
 
     if node.is_leaf:
@@ -357,11 +355,11 @@ def render_parasite_branches(fig, node, recon, host_lookup, parasite_lookup):
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
     :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
     """
-    node_xy = (node.layout.x, node.layout.y)
+    node_pos = Position(node.layout.x, node.layout.y)
 
     left_node, right_node = get_children(node, recon, parasite_lookup)
 
-    right_xy = (right_node.layout.x, right_node.layout.y)
+    right_pos = Position(right_node.layout.x, right_node.layout.y)
 
     mapping_node = recon.mapping_of(node.name)
     event = recon.event_of(mapping_node)
@@ -371,7 +369,7 @@ def render_parasite_branches(fig, node, recon, host_lookup, parasite_lookup):
     elif event.event_type is EventType.DUPLICATION:
         connect_children(node, host_lookup, parasite_lookup, recon, fig)
     elif event.event_type is EventType.TRANSFER:
-        render_transfer_branch(node_xy, right_xy, fig, node, host_lookup, recon, right_node)
+        render_transfer_branch(node_pos, right_pos, fig, node, host_lookup, recon, right_node)
         connect_child_to_parent(node, left_node, host_lookup, recon, fig)
     else:
         raise ValueError('%s is not an known event type' % event.event_type)
@@ -390,17 +388,17 @@ def connect_children(node, host_lookup, parasite_lookup, recon, fig):
     connect_child_to_parent(node, left_node, host_lookup, recon, fig)
     connect_child_to_parent(node, right_node, host_lookup, recon, fig)
 
-def render_loss_branch(node_xy, next_xy, fig):
+def render_loss_branch(node_pos, next_pos, fig):
     """
     Renders a loss branch given a two positions
-    :param node_xy: x and y position of a node
-    :param next_xy: x and y position of another node
+    :param node_pos: x and y position of a node
+    :param next_pos: x and y position of another node
     :param fig: Figure object that visualizes trees using MatplotLib
     """
     # Create vertical line to next node
-    mid_xy = (node_xy[0], next_xy[1])
-    fig.line(node_xy, mid_xy, LOSS_EDGE_COLOR, linestyle='--')
-    fig.line(mid_xy, next_xy, PARASITE_EDGE_COLOR)
+    mid_pos = Position(node_pos.x, next_pos.y)
+    fig.line(node_pos, mid_pos, LOSS_EDGE_COLOR, linestyle='--')
+    fig.line(mid_pos, next_pos, PARASITE_EDGE_COLOR)
 
 def render_cospeciation_branch(node, host_lookup, parasite_lookup, recon, fig):
     """
@@ -413,9 +411,9 @@ def render_cospeciation_branch(node, host_lookup, parasite_lookup, recon, fig):
     """
     left_node, right_node = get_children(node, recon, parasite_lookup)
 
-    node_xy = (node.layout.x, node.layout.y)
-    left_xy = (left_node.layout.x, left_node.layout.y)
-    right_xy = (right_node.layout.x, right_node.layout.y)
+    node_pos = Position(node.layout.x, node.layout.y)
+    left_pos = Position(left_node.layout.x, left_node.layout.y)
+    right_pos = Position(right_node.layout.x, right_node.layout.y)
 
     mapping_node = recon.mapping_of(node.name)
     host_node = host_lookup[mapping_node.host]
@@ -431,16 +429,16 @@ def render_cospeciation_branch(node, host_lookup, parasite_lookup, recon, fig):
     # Draw left node
     offset = host_node.layout.offset
     if host_node.left_node.name == left_host_node.name:
-        render_curved_line_to(node_xy, left_xy, fig)
-        host_node.layout.lower_v_track += (host_node.layout.x - node_xy[0]) / offset
+        render_curved_line_to(node_pos, left_pos, fig)
+        host_node.layout.lower_v_track += (host_node.layout.x - node_pos.x) / offset
     else:
         stop_row = host_node.left_node.layout.row
         connect_child_to_parent(node, left_node, host_lookup, recon, fig, stop_row=stop_row)
 
     # Draw Right node
     if host_node.right_node.name == right_host_node.name:
-        render_curved_line_to(node_xy, right_xy, fig)
-        host_node.layout.upper_v_track += (host_node.layout.x - node_xy[0]) / offset
+        render_curved_line_to(node_pos, right_pos, fig)
+        host_node.layout.upper_v_track += (host_node.layout.x - node_pos.x) / offset
     else:
         stop_row = host_node.right_node.layout.row
         connect_child_to_parent(node, right_node, host_lookup, recon, fig, stop_row=stop_row)
@@ -466,22 +464,22 @@ def get_children(node, recon, parasite_lookup):
 
     return left_node, right_node
 
-def render_curved_line_to(node_xy, other_xy, fig):
+def render_curved_line_to(node_pos, other_pos, fig):
     """
     Renders a curved line from one point to another
-    :param node_xy: x and y position of a node
-    :param other_xy: x and y position of another node
+    :param node_pos: x and y position of a node
+    :param other_pos: x and y position of another node
     :param fig: Figure object that visualizes trees using MatplotLib
     """
-    mid_xy = (node_xy[0], other_xy[1])
-    fig.line(node_xy, mid_xy, PARASITE_EDGE_COLOR)
-    fig.line(mid_xy, other_xy, PARASITE_EDGE_COLOR)
+    mid_pos = Position(node_pos.x, other_pos.y)
+    fig.line(node_pos, mid_pos, PARASITE_EDGE_COLOR)
+    fig.line(mid_pos, other_pos, PARASITE_EDGE_COLOR)
 
-def render_transfer_branch(node_xy, right_xy, fig, node, host_lookup, recon, right_node):
+def render_transfer_branch(node_pos, right_pos, fig, node, host_lookup, recon, right_node):
     """
     Renders a transfer branch
     :param node_xy: x and y position of a node
-    :param right_xy: x and y position of the right child of a node
+    :param right_pos: x and y position of the right child of a node
     :param fig: Figure object that visualizes trees using MatplotLib
     :param node: Node object
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
@@ -497,22 +495,22 @@ def render_transfer_branch(node_xy, right_xy, fig, node, host_lookup, recon, rig
     # Check temporal consistency of transfer event
     if child_host_node.parent_node.layout.col < node.layout.col:
         # Draw right node, which is transfered
-        mid_xy = (node_xy[0], right_xy[1])          #xy coords of midpoint
-        y_midpoint = abs(mid_xy[1] + node_xy[1]) / 2   #value of midpoint between mid_xy and parent node
+        mid_pos = Position(node_pos.x, right_pos.y)          #xy coords of midpoint
+        y_midpoint = abs(mid_pos.y + node_pos.y) / 2         #value of midpoint between mid_xy and parent node
 
         # Determine if transfer is upwards or downwards, and draw triangle accordingly
-        is_upwards = True if y_midpoint < mid_xy[1] else False
+        is_upwards = True if y_midpoint < mid_pos.y else False
         if is_upwards:
-            fig.up_triangle((node_xy[0], y_midpoint), PARASITE_EDGE_COLOR)
+            fig.up_triangle((node_pos.x, y_midpoint), PARASITE_EDGE_COLOR)
         else:
-            fig.down_triangle((node_xy[0], y_midpoint), PARASITE_EDGE_COLOR)
+            fig.down_triangle((node_pos.x, y_midpoint), PARASITE_EDGE_COLOR)
 
         # Draw branch to midpoint, then draw branch to child
-        fig.line(node_xy, mid_xy, PARASITE_EDGE_COLOR)
-        fig.line(mid_xy, right_xy, PARASITE_EDGE_COLOR)
+        fig.line(node_pos, mid_pos, PARASITE_EDGE_COLOR)
+        fig.line(mid_pos, right_pos, PARASITE_EDGE_COLOR)
     else:
         transfer_edge_color = (PARASITE_EDGE_COLOR[0] , PARASITE_EDGE_COLOR[1] , PARASITE_EDGE_COLOR[2], TRANSFER_TRANSPARENCY)
-        fig.line(node_xy, right_xy, transfer_edge_color)
+        fig.line(node_pos, right_pos, transfer_edge_color)
 
 def connect_child_to_parent(node, child_node, host_lookup, recon, fig, stop_row=None):
     """
@@ -530,7 +528,7 @@ def connect_child_to_parent(node, child_node, host_lookup, recon, fig, stop_row=
     if stop_row == None:
         stop_row = node.layout.row
     
-    current_xy = (child_node.layout.x, child_node.layout.y)
+    current_pos = Position(child_node.layout.x, child_node.layout.y)
 
     while host_node.layout.row != stop_row and host_node.parent_node:
         parent_node = host_node.parent_node
@@ -543,19 +541,19 @@ def connect_child_to_parent(node, child_node, host_lookup, recon, fig, stop_row=
         h_track = parent_node.iter_track(Track.HORIZONTAL)
         offset = parent_node.layout.offset
 
-        sub_parent_xy = (parent_node.layout.x - (offset * v_track), \
+        sub_parent_pos = Position(parent_node.layout.x - (offset * v_track), \
             parent_node.layout.y + (offset * h_track))
 
-        render_loss_branch(sub_parent_xy, current_xy, fig)
+        render_loss_branch(sub_parent_pos, current_pos, fig)
 
         host_node = parent_node
-        current_xy = sub_parent_xy
+        current_pos = sub_parent_pos
     
-    node_xy = (node.layout.x, node.layout.y)
-    mid_xy = (node_xy[0], current_xy[1])
+    node_pos = Position(node.layout.x, node.layout.y)
+    mid_pos = Position(node_pos.x, current_pos.y)
 
-    fig.line(node_xy, mid_xy, PARASITE_EDGE_COLOR)
-    fig.line(mid_xy, current_xy, PARASITE_EDGE_COLOR)
+    fig.line(node_pos, mid_pos, PARASITE_EDGE_COLOR)
+    fig.line(mid_pos, current_pos, PARASITE_EDGE_COLOR)
 
 def event_color_shape(event):
     """

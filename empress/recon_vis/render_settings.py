@@ -1,6 +1,7 @@
 # render_settings.py
+from collections import namedtuple
 
-VERTICAL_OFFSET = 0.3    # Offset for drawing parasite nodes above host nodes
+VERTICAL_OFFSET = 0.3       # Offset for drawing parasite nodes above host nodes
 COSPECIATION_OFFSET = .3    # Offest for drawing parasite nodes closer to host 
                             # nodes for speciation events
 NODE_OFFSET = 0.3
@@ -42,7 +43,6 @@ LOSS_EDGE_COLOR = GRAY
 
 TRANSFER_TRANSPARENCY = 0.5
 
-NODESIZE = 8
 LEAF_NODE_SHAPE = "o"
 COSPECIATION_NODE_SHAPE = "o"
 DUPLICATION_NODE_SHAPE = "D"
@@ -52,6 +52,7 @@ TIP_ALIGNMENT = 'center'
 
 CENTER_CONSTANT = 3 / 8
 
+NODESIZE = 8
 FONT_SIZE = 20
 MIN_FONT_SIZE = 0
 MAX_FONT_SIZE = .3
@@ -62,3 +63,6 @@ HOST_NODE_BORDER_COLOR = WHITE
 PARASITE_NODE_BORDER_COLOR = BLACK
 
 TREE_TITLE = "Reconciliation"
+
+#Allows recon_viewer to create namedtuples
+Position = namedtuple('Position', ['x', 'y'])
