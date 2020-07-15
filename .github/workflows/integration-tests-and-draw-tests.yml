@@ -34,12 +34,12 @@ jobs:
     - name: Run empress_cli help
       run: |
         pipenv run python empress_cli.py --help
-    - name: Run cost_regions help
+    - name: Run cost-regions help
       run: |
-        pipenv run python empress_cli.py cost_regions --help
+        pipenv run python empress_cli.py cost-regions --help
     - name: Run cost region example in Readme.md
       run: |
-        pipenv run python empress_cli.py cost_regions examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping -tl 0.5 -th 10 -dl 0.5 -dh 10 --outfile costscape-example-img.pdf --log
+        pipenv run python empress_cli.py cost-regions examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping -tl 0.5 -th 10 -dl 0.5 -dh 10 --outfile costscape-example-img.pdf --log
     - name: Run reconcile example in Readme.md
       run: |
         pipenv run python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping -d 4 -t 2 -l 0
