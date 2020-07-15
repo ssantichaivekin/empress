@@ -35,7 +35,7 @@ def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequen
     create_legend(fig, consistency_type)
 
     # Calculates font sizes
-    num_tips = len(host_tree.leaf_list) + len(parasite_tree.leaf_list)
+    num_tips = len(host_tree.leaf_list()) + len(parasite_tree.leaf_list())
     num_nodes = len(host_tree.postorder_list) + len(parasite_tree.postorder_list)
     tip_font_size, internal_font_size = calculate_font_size(num_tips, num_nodes)
 
@@ -574,7 +574,7 @@ def set_host_node_layout(host_tree):
     """
     # Sets logical row values for leaves in the order they appear in the list of host tree leaves
     logical_row_counter = 0
-    for leaf in host_tree.leaf_list:
+    for leaf in host_tree.leaf_list():
         leaf.layout.row = logical_row_counter
         leaf.layout.x = leaf.layout.col           # This can be scaled if desired
         leaf.layout.y = leaf.layout.row           # This can be scaled if desired

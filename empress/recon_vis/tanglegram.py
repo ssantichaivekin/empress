@@ -40,11 +40,11 @@ def render(host_dict: dict, parasite_dict: dict, tip_mapping: dict, show_interna
     _render_helper_parasite(fig, parasite_tree.root_node, show_internal_labels)
 
     host_dict = {}
-    for host in host_tree.leaf_list:
+    for host in host_tree.leaf_list():
         host_dict[host.name] = host
 
     # connect hosts leaves to parasite leaves
-    for leaf in parasite_tree.leaf_list:
+    for leaf in parasite_tree.leaf_list():
         parasite = leaf
         host = host_dict[tip_mapping[leaf.name]]
         fig.line((host.layout.col, host.layout.row), (parasite.layout.col, parasite.layout.row),

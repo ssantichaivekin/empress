@@ -95,8 +95,6 @@ class Tree:
         self.tree_type = None       # TreeType: HOST or PARASITE
         self.pos_dict = {}
 
-    # The @property decorator allows this to be called as .leaf_list rather than .leaf_list()
-    @property
     def leaf_list(self):
         """ Returns list of leaf Nodes from left to right. """
         return self._leaf_list_helper(self.root_node)
