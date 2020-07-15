@@ -6,6 +6,7 @@ import os
 import sys
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+import pathlib
 
 import empress
 from empress import input_reader
@@ -337,8 +338,8 @@ class App(tk.Frame):
         # Clicking on "Load host tree file"
         if self.load_files_var.get() == "Load host tree file":
             self.load_files_var.set("Load files")
-            self.directory_selected = tk.filedialog.askdirectory(title="Select a folder")
-            input_file = tk.filedialog.askopenfilename(initialdir=self.directory_selected, title="Select a host file",
+            # initialdir is set to be the current working directory
+            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file",
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree")])
             if input_file != "":
                 try:
@@ -356,7 +357,8 @@ class App(tk.Frame):
         # Clicking on "Load parasite tree file"
         elif self.load_files_var.get() == "Load parasite tree file":
             self.load_files_var.set("Load files")
-            input_file = tk.filedialog.askopenfilename(initialdir=self.directory_selected, title="Select a parasite file",
+            # initialdir is set to be the same as that of the host file chosen by the user
+            input_file = tk.filedialog.askopenfilename(initialdir=pathlib.Path(self.host_file_path).parent, title="Select a parasite file",
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree")])
             if input_file != "":
                 try:
@@ -371,7 +373,8 @@ class App(tk.Frame):
         # Clicking on "Load mapping file"
         elif self.load_files_var.get() == "Load mapping file":
             self.load_files_var.set("Load files")
-            input_file = tk.filedialog.askopenfilename(initialdir=self.directory_selected, title="Select a mapping file",
+            # initialdir is set to be the same as that of the host file chosen by the user
+            input_file = tk.filedialog.askopenfilename(initialdir=pathlib.Path(self.host_file_path).parent, title="Select a mapping file",
                                                        filetypes=[("Tip mapping", "*.mapping")])
             if input_file != "":
                 try:
