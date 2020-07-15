@@ -9,6 +9,7 @@ import empress.recon_vis.utils as utils
 import empress.recon_vis.plot_tools as plot_tools
 from empress.recon_vis.render_settings import *
 from typing import Union
+from math import e
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
@@ -34,9 +35,8 @@ def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequen
     create_legend(fig, consistency_type)
 
     # Calculates font sizes
-    num_parasite_nodes = len(parasite_tree.postorder_list)
-    num_host_nodes = len(host_tree.postorder_list)
-    font_size = calculate_font_size(num_parasite_nodes, num_host_nodes)
+    num_tip_nodes = len(host_tree.leaf_list()) + len(parasite_tree.leaf_list())
+    font_size = calculate_font_size(num_tip_nodes)
     print(font_size)
 
     root = parasite_tree.root_node
@@ -316,29 +316,20 @@ def get_frequency_text(frequency):
             return output
     return output
 
-def calculate_font_size(num_parasite_nodes, num_host_nodes):
+def calculate_font_size(num_tip_nodes):
     """
     Calculates the font_size
-    :param num_nodes: Number of nodes in a tree
+    :param num_tip_nodes: Number of tip nodes in a tree
     :return the font size for the tips and internal nodes of a tree
     """
+    x = (START_SIZE - num_tip_nodes) / STEP_SIZE
+    return sigmoid(x)
 
-    return FONT_SIZE
-
-def cap_font_size(font_size):
+def sigmoid(x):
     """
-    Calculates a font size that does not exceed a max or min
-    :param font_size: an integer that represents the font size of text
-    :return a new font size
+    Sigmoid Function
     """
-
-    if font_size < MIN_FONT_SIZE:
-        return MIN_FONT_SIZE
-    elif font_size > MAX_FONT_SIZE:
-        return MAX_FONT_SIZE
-    else:
-        return font_size
-
+    return (1 / (1 + e**(-x)))
 
 def render_parasite_branches(fig, node, recon, host_lookup, parasite_lookup):
     """
