@@ -59,6 +59,11 @@ def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequen
 
 
 def create_legend(fig, consistency_type):
+    """
+    Creates a legend on the figure
+    :param fig: Figure object that visualizes trees using MatplotLib
+    :param consistency_type: String that gives the consistency of a tree
+    """
     legend_elements = [
                         Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation',
                                markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
@@ -69,6 +74,7 @@ def create_legend(fig, consistency_type):
                         LineCollection([[(0, 0)]], linestyles=['dashed'],
                                        colors=[LOSS_EDGE_COLOR], label='Loss')
                       ]
+
     fig.set_legend(legend_elements, title=consistency_type)
 
 
@@ -98,6 +104,7 @@ def set_offsets(tree):
 def render_host(fig, host_tree, show_internal_labels, tip_font_size, internal_font_size):
     """
     Renders the host tree
+    :param fig: Figure object that visualizes trees using MatplotLib
     :param host_tree: Host tree represented as a Tree object
     :param show_internal_labels: Boolean that determines whether or not the internal labels are shown
     :param tip_font_size: Font size for the text of the tips of the tree
@@ -112,6 +119,7 @@ def render_host(fig, host_tree, show_internal_labels, tip_font_size, internal_fo
 def draw_host_handle(fig, root):
     """
     Draw edge leading to root of host tree.
+    :param fig: Figure object that visualizes trees using MatplotLib
     :param root: The root node of a tree object
     """
     fig.line((0, root.layout.y), (root.layout.x, root.layout.y), HOST_EDGE_COLOR)
@@ -120,6 +128,7 @@ def draw_host_handle(fig, root):
 def render_host_helper(fig, node, show_internal_labels, tip_font_size, internal_font_size, host_tree):
     """
     Helper function for rendering the host tree.
+    :param fig: Figure object that visualizes trees using MatplotLib
     :param node: node object
     :param show_internal_labels: Boolean that determines whether or not the internal labels are shown
     :param tip_font_size: Font size for the text of the tips of the tree

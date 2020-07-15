@@ -123,3 +123,4 @@ class FigureWrapper:
         """
         x, y = point
         self.axis.plot(x, y, 'v', color=col, zorder=LINE_Z_ORDER, markersize=TRANSFERSIZE)
+        
