@@ -5,7 +5,7 @@ Plotting tools using matplotlib
 
 # If matplotlib doesn't pop up a window, force it to use tkinter backend
 # matplotlib.use("tkagg")
-from typing import Union, NamedTuple
+from typing import Union, NamedTuple, Tuple
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
@@ -31,6 +31,10 @@ NODEFONTSIZE = 0.12
 FONTSIZE = 12
 
 DEFAULT_ALIGNMENT = 'bottom'
+
+
+def transparent_color(col: Tuple[int, int, int, float], alpha: float):
+    return col[0:3] + (alpha,)
 
 class Position(NamedTuple):
     x: int
@@ -72,8 +76,7 @@ class FigureWrapper:
         """
         Plot dot at point p
         """
-        x, y = point
-        self.axis.plot(x, y, marker, color=col, zorder=DOT_Z_ORDER)
+        self.axis.plot(point.x, point.y, marker, color=col, zorder=DOT_Z_ORDER)
     
     def text(self, point: tuple, string: str, col: tuple = RED, h_a: str = 'right'):
         x, y = point
