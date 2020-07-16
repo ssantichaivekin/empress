@@ -196,7 +196,7 @@ class ReconGraphWrapper(Drawable):
 
         score = cluster_util.mk_pdv_score(host_tree, parasite_tree, parasite_root)
 
-        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, parasite_root, score, 4, n, 200)
+        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, parasite_root, score, 4, n)
         new_graphs = []
         for graph in graphs:
             roots = _find_roots(graph)
