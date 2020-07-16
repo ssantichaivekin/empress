@@ -5,7 +5,7 @@ Plotting tools using matplotlib
 
 # If matplotlib doesn't pop up a window, force it to use tkinter backend
 # matplotlib.use("tkagg")
-from typing import Union
+from typing import Union, NamedTuple
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
@@ -31,6 +31,10 @@ NODEFONTSIZE = 0.12
 FONTSIZE = 12
 
 DEFAULT_ALIGNMENT = 'bottom'
+
+class Position(NamedTuple):
+    x: int
+    y: int
 
 class FigureWrapper:
     """ Class definining plotting methods """

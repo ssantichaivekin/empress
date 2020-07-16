@@ -1,5 +1,7 @@
 # render_settings.py
 from collections import namedtuple
+from matplotlib.lines import Line2D
+from matplotlib.collections import LineCollection
 
 VERTICAL_OFFSET = 0.3       # Offset for drawing parasite nodes above host nodes
 COSPECIATION_OFFSET = .3    # Offest for drawing parasite nodes closer to host 
@@ -65,5 +67,14 @@ PARASITE_NODE_BORDER_COLOR = BLACK
 
 TREE_TITLE = "Reconciliation"
 
-#Allows recon_viewer to create namedtuples
-Position = namedtuple('Position', ['x', 'y'])
+LEGEND_ELEMENTS = [
+                        Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation',
+                               markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
+                        Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication',
+                               markerfacecolor=DUPLICATION_NODE_COLOR, markersize=NODESIZE),
+                        Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer',
+                               markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),
+                        LineCollection([[(0, 0)]], linestyles=['dashed'],
+                                       colors=[LOSS_EDGE_COLOR], label='Loss')
+                  ]
+

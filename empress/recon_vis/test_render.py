@@ -3,7 +3,7 @@ from empress.miscs import input_generator
 
 from empress.recon_vis.recon_viewer import render
 
-n = 20
+n = 25
 recon_input = input_generator.generate_random_recon_input(n,n)
 recongraph = recon_input.reconcile(1, 1, .0001)
 reconciliation = recongraph.median()

@@ -77,10 +77,10 @@ class NodeLayout:
 
         # The self.col can be generated from a topological ordering of the temporal constraint graph
         self.col = None         # float: logical position of this Node in rendering
-        self.x = None           # int: x-coordinate for rendering
-        self.y = None           # int: y-coordinate for rendering
-        self.upper_v_track = 1  # int: track number for upper vertical host edges
-        self.lower_v_track = 1  # int: track number for lower vertical host edges
+        self.x = None           # float: x-coordinate for rendering
+        self.y = None           # float: y-coordinate for rendering
+        self.upper_v_track = 1  # float: track number for upper vertical host edges
+        self.lower_v_track = 1  # float: track number for lower vertical host edges
         self.h_track = 1        # int: track number for horizontal host edges
         self.node_count = 0     # int: Number of nodes mapped to node
         self.offset = 0         # int: Offset between tracks of a node

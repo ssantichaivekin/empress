@@ -5,17 +5,20 @@ Justin Jiang, Trenton Wesley
 """
 from empress.recon_vis.recon import EventType
 from empress.recon_vis.tree import Track
+
+import empress.recon_vis.recon as recon
+import empress.recon_vis.tree as tree
 import empress.recon_vis.utils as utils
 import empress.recon_vis.plot_tools as plot_tools
+
 from empress.recon_vis.render_settings import *
+
 from typing import Union
 from math import e
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from matplotlib.collections import LineCollection
 
 
-def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequencies: dict, show_internal_labels: bool = False, show_freq: bool = False, axes: Union[plt.Axes, None] = None):
+def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequencies: dict, show_internal_labels: bool = False, show_freq: bool = False, show_legend: bool = True, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
     :param parasite_dict:  Parasite tree represented in dictionary format
@@ -32,12 +35,13 @@ def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequen
         return None
 
     fig = plot_tools.FigureWrapper(TREE_TITLE, axes)
-    create_legend(fig, consistency_type)
+
+    if show_legend:
+        create_legend(fig, consistency_type)
 
     # Calculates font sizes
     num_tip_nodes = len(host_tree.leaf_list()) + len(parasite_tree.leaf_list())
     font_size = calculate_font_size(num_tip_nodes)
-    print(font_size)
 
     root = parasite_tree.root_node
     host_lookup = host_tree.name_to_node_dict()
@@ -58,27 +62,16 @@ def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequen
     return fig
 
 
-def create_legend(fig, consistency_type):
+def create_legend(fig: plot_tools.FigureWrapper, consistency_type: str):
     """
     Creates a legend on the figure
     :param fig: Figure object that visualizes trees using MatplotLib
     :param consistency_type: String that gives the consistency of a tree
     """
-    legend_elements = [
-                        Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation',
-                               markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
-                        Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication',
-                               markerfacecolor=DUPLICATION_NODE_COLOR, markersize=NODESIZE),
-                        Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer',
-                               markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),
-                        LineCollection([[(0, 0)]], linestyles=['dashed'],
-                                       colors=[LOSS_EDGE_COLOR], label='Loss')
-                      ]
-
-    fig.set_legend(legend_elements, title=consistency_type)
+    fig.set_legend(LEGEND_ELEMENTS, title=consistency_type)
 
 
-def set_offsets(tree):
+def set_offsets(tree: tree.Tree):
     """
     Populates the nodes of a Tree with an offset
     :param tree: Tree Object
@@ -101,7 +94,7 @@ def set_offsets(tree):
             node.layout.offset = abs(y_0 - y_1) / (node.layout.node_count + 3)
 
 
-def render_host(fig, host_tree, show_internal_labels, font_size):
+def render_host(fig: plot_tools.FigureWrapper, host_tree: tree.Tree, show_internal_labels: bool, font_size: float):
     """
     Renders the host tree
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -115,7 +108,7 @@ def render_host(fig, host_tree, show_internal_labels, font_size):
     render_host_helper(fig, root, show_internal_labels, font_size, host_tree)
 
 
-def draw_host_handle(fig, root):
+def draw_host_handle(fig: plot_tools.FigureWrapper,  root: tree.Node):
     """
     Draw edge leading to root of host tree.
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -124,7 +117,7 @@ def draw_host_handle(fig, root):
     fig.line((0, root.layout.y), (root.layout.x, root.layout.y), HOST_EDGE_COLOR)
 
 
-def render_host_helper(fig, node, show_internal_labels, font_size, host_tree):
+def render_host_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, show_internal_labels: bool, font_size: float, host_tree: tree.Tree):
     """
     Helper function for rendering the host tree.
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -135,7 +128,7 @@ def render_host_helper(fig, node, show_internal_labels, font_size, host_tree):
     """
     host_tree.pos_dict[(node.layout.row, node.layout.col)] = node
 
-    node_pos = Position(node.layout.x, node.layout.y)
+    node_pos = plot_tools.Position(node.layout.x, node.layout.y)
 
     if node.is_leaf:
         text_offset = (node_pos.x + TIP_TEXT_OFFSET[0], node_pos.y + TIP_TEXT_OFFSET[1])
@@ -160,7 +153,7 @@ def render_host_helper(fig, node, show_internal_labels, font_size, host_tree):
         render_host_helper(fig, node.right_node, show_internal_labels, font_size, host_tree)
         
 
-def render_parasite(fig, parasite_tree, recon, host_lookup, parasite_lookup, show_internal_labels, show_freq, font_size):
+def render_parasite(fig: plot_tools.FigureWrapper,  parasite_tree: tree.Tree, recon: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, font_size: float):
     """
     Render the parasite tree.
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -175,7 +168,7 @@ def render_parasite(fig, parasite_tree, recon, host_lookup, parasite_lookup, sho
     root = parasite_tree.root_node
     render_parasite_helper(fig, root, recon, host_lookup, parasite_lookup, show_internal_labels, show_freq, font_size)
 
-def populate_host_tracks(node, recon, host_lookup):
+def populate_host_tracks(node: tree.Node, recon: recon.Reconciliation, host_lookup: dict):
     """
     :param node: Node object
     :param recon: Reconciliation object
@@ -197,10 +190,10 @@ def populate_host_tracks(node, recon, host_lookup):
         populate_host_tracks(node.right_node, recon, host_lookup)
 
 
-def is_sharing_track(node, host_name, recon):
+def is_sharing_track(node: tree.Node, host_name: str, recon: recon.Reconciliation):
     """
     Determines if a node is on its own track
-    :param node: Node object
+    :param node: Node object representing a parasite event
     :param host_name: Name of host node
     :param recon: Reconciliation Object
     """
@@ -209,11 +202,11 @@ def is_sharing_track(node, host_name, recon):
 
     return host_name == left_host_name or host_name == right_host_name
 
-def render_parasite_helper(fig, node, recon, host_lookup, parasite_lookup, show_internal_labels, show_freq, font_size):
+def render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, recon: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, font_size: float):
     """
     Helper function for rendering the parasite tree.
     :param fig: Figure object that visualizes trees using MatplotLib
-    :param node: Node object
+    :param node: Node object representing a parasite event
     :param recon: Reconciliation object
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
     :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
@@ -256,6 +249,9 @@ def render_parasite_helper(fig, node, recon, host_lookup, parasite_lookup, show_
 
     left_node, right_node = get_children(node, recon, parasite_lookup)
 
+    if event.event_type is EventType.TRANSFER:
+        fix_transfer(node, right_node, host_node, host_lookup, recon)
+
     render_parasite_helper(fig, left_node, recon, host_lookup,
         parasite_lookup, show_internal_labels, show_freq, font_size)
     render_parasite_helper(fig, right_node, recon, host_lookup,
@@ -270,8 +266,24 @@ def render_parasite_helper(fig, node, recon, host_lookup, parasite_lookup, show_
     render_parasite_branches(fig, node, recon, host_lookup, parasite_lookup)
     render_parasite_node(fig, node, event, font_size, show_internal_labels, show_freq)
 
+def fix_transfer(node: tree.Node, right_node: tree.Node, host_node: tree.Node, host_lookup: dict, recon: recon.Reconciliation):
+    """
+    Checks to see in tranfer node is inconsistent and the tries to fix node if so
+    :param node: Node object representing a parasite event
+    :param node: Right node of the node object
+    :param host_node: Node object represeting a host that the parasite node is mapped to
+    :param host_lookup: Dictionary with host node names as the key and host node objects as the values
+    :param recon: Reconciliation object
+    """
+    min_col = host_lookup[recon.mapping_of(right_node.name).host].parent_node.layout.col
+    max_col = host_node.layout.col
+    node_col = node.layout.col
+    #Checks to see if transfer is inconsistent and if the inconsistency can be fixed
+    if min_col >= node_col and min_col < max_col and not(is_sharing_track(node, host_node.name, recon)):
+        node.layout.col = min_col + 0.5
+        node.set_layout(col=min_col + 0.5, x=min_col + 0.5)
 
-def render_parasite_node(fig, node, event, font_size, show_internal_labels=False, show_freq=False):
+def render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event: recon.Event, font_size: float, show_internal_labels: bool = False, show_freq: bool = False):
     """
     Renders a single parasite node
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -302,7 +314,7 @@ def render_parasite_node(fig, node, event, font_size, show_internal_labels=False
     if text:
         fig.text_v2(node_xy, text, render_color, size=font_size, border_col=PARASITE_NODE_BORDER_COLOR)
 
-def get_frequency_text(frequency):
+def get_frequency_text(frequency: float):
     """
     Give the frequency as a string in percentage form
     :param frequency: The frequency of an event
@@ -316,7 +328,7 @@ def get_frequency_text(frequency):
             return output
     return output
 
-def calculate_font_size(num_tip_nodes):
+def calculate_font_size(num_tip_nodes: int):
     """
     Calculates the font_size
     :param num_tip_nodes: Number of tip nodes in a tree
@@ -325,13 +337,15 @@ def calculate_font_size(num_tip_nodes):
     x = (START_SIZE - num_tip_nodes) / STEP_SIZE
     return sigmoid(x)
 
-def sigmoid(x):
+def sigmoid(x: float):
     """
     Sigmoid Function
+    :param x: A number to be plugged into the function
+    :return a sigmoid value based on the input value, x 
     """
     return (1 / (1 + e**(-x)))
 
-def render_parasite_branches(fig, node, recon, host_lookup, parasite_lookup):
+def render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, recon: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict):
     """
     Very basic branch drawing
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -340,11 +354,11 @@ def render_parasite_branches(fig, node, recon, host_lookup, parasite_lookup):
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
     :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
     """
-    node_pos = Position(node.layout.x, node.layout.y)
+    node_pos = plot_tools.Position(node.layout.x, node.layout.y)
 
     left_node, right_node = get_children(node, recon, parasite_lookup)
 
-    right_pos = Position(right_node.layout.x, right_node.layout.y)
+    right_pos = plot_tools.Position(right_node.layout.x, right_node.layout.y)
 
     mapping_node = recon.mapping_of(node.name)
     event = recon.event_of(mapping_node)
@@ -361,7 +375,7 @@ def render_parasite_branches(fig, node, recon, host_lookup, parasite_lookup):
     # Losses are implicitly implied and are not mapped to any specific node
 
 
-def connect_children(node, host_lookup, parasite_lookup, recon, fig):
+def connect_children(node: tree.Node, host_lookup: dict, parasite_lookup: dict, recon: recon.Reconciliation, fig: plot_tools.FigureWrapper):
     """
     Connects the children of a node
     :param node: Node object
@@ -373,7 +387,7 @@ def connect_children(node, host_lookup, parasite_lookup, recon, fig):
     connect_child_to_parent(node, left_node, host_lookup, recon, fig)
     connect_child_to_parent(node, right_node, host_lookup, recon, fig)
 
-def render_loss_branch(node_pos, next_pos, fig):
+def render_loss_branch(node_pos: plot_tools.Position, next_pos: plot_tools.Position, fig: plot_tools.FigureWrapper):
     """
     Renders a loss branch given a two positions
     :param node_pos: x and y position of a node
@@ -381,11 +395,11 @@ def render_loss_branch(node_pos, next_pos, fig):
     :param fig: Figure object that visualizes trees using MatplotLib
     """
     # Create vertical line to next node
-    mid_pos = Position(node_pos.x, next_pos.y)
+    mid_pos = plot_tools.Position(node_pos.x, next_pos.y)
     fig.line(node_pos, mid_pos, LOSS_EDGE_COLOR, linestyle='--')
     fig.line(mid_pos, next_pos, PARASITE_EDGE_COLOR)
 
-def render_cospeciation_branch(node, host_lookup, parasite_lookup, recon, fig):
+def render_cospeciation_branch(node: tree.Node, host_lookup: dict, parasite_lookup: dict, recon: recon.Reconciliation, fig: plot_tools.FigureWrapper):
     """
     Renders the cospeciation branch.
     :param node: Node object
@@ -396,9 +410,9 @@ def render_cospeciation_branch(node, host_lookup, parasite_lookup, recon, fig):
     """
     left_node, right_node = get_children(node, recon, parasite_lookup)
 
-    node_pos = Position(node.layout.x, node.layout.y)
-    left_pos = Position(left_node.layout.x, left_node.layout.y)
-    right_pos = Position(right_node.layout.x, right_node.layout.y)
+    node_pos = plot_tools.Position(node.layout.x, node.layout.y)
+    left_pos = plot_tools.Position(left_node.layout.x, left_node.layout.y)
+    right_pos = plot_tools.Position(right_node.layout.x, right_node.layout.y)
 
     mapping_node = recon.mapping_of(node.name)
     host_node = host_lookup[mapping_node.host]
@@ -429,7 +443,7 @@ def render_cospeciation_branch(node, host_lookup, parasite_lookup, recon, fig):
         connect_child_to_parent(node, right_node, host_lookup, recon, fig, stop_row=stop_row)
 
 
-def get_children(node, recon, parasite_lookup):
+def get_children(node: tree.Node, recon: recon.Reconciliation, parasite_lookup: dict):
     """
     Gets the children of a node in the order they appear in the mapping node.
     :param node: Node object
@@ -449,18 +463,18 @@ def get_children(node, recon, parasite_lookup):
 
     return left_node, right_node
 
-def render_curved_line_to(node_pos, other_pos, fig):
+def render_curved_line_to(node_pos: plot_tools.Position, other_pos: plot_tools.Position, fig: plot_tools.FigureWrapper):
     """
     Renders a curved line from one point to another
     :param node_pos: x and y position of a node
     :param other_pos: x and y position of another node
     :param fig: Figure object that visualizes trees using MatplotLib
     """
-    mid_pos = Position(node_pos.x, other_pos.y)
+    mid_pos = plot_tools.Position(node_pos.x, other_pos.y)
     fig.line(node_pos, mid_pos, PARASITE_EDGE_COLOR)
     fig.line(mid_pos, other_pos, PARASITE_EDGE_COLOR)
 
-def render_transfer_branch(node_pos, right_pos, fig, node, host_lookup, recon, right_node):
+def render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools.Position, fig: plot_tools.FigureWrapper,  node: tree.Node, host_lookup: dict, recon: recon.Reconciliation, right_node: tree.Node):
     """
     Renders a transfer branch
     :param node_xy: x and y position of a node
@@ -480,7 +494,7 @@ def render_transfer_branch(node_pos, right_pos, fig, node, host_lookup, recon, r
     # Check temporal consistency of transfer event
     if child_host_node.parent_node.layout.col < node.layout.col:
         # Draw right node, which is transfered
-        mid_pos = Position(node_pos.x, right_pos.y)          #xy coords of midpoint
+        mid_pos = plot_tools.Position(node_pos.x, right_pos.y)          #xy coords of midpoint
         y_midpoint = abs(mid_pos.y + node_pos.y) / 2         #value of midpoint between mid_xy and parent node
 
         # Determine if transfer is upwards or downwards, and draw triangle accordingly
@@ -497,7 +511,7 @@ def render_transfer_branch(node_pos, right_pos, fig, node, host_lookup, recon, r
         transfer_edge_color = (PARASITE_EDGE_COLOR[0] , PARASITE_EDGE_COLOR[1] , PARASITE_EDGE_COLOR[2], TRANSFER_TRANSPARENCY)
         fig.line(node_pos, right_pos, transfer_edge_color)
 
-def connect_child_to_parent(node, child_node, host_lookup, recon, fig, stop_row=None):
+def connect_child_to_parent(node: tree.Node, child_node: tree.Node, host_lookup: dict, recon: recon.Reconciliation, fig: plot_tools.FigureWrapper,  stop_row: float = None):
     """
     Connects a child node to its parent node
     :param node: Node object
@@ -513,7 +527,7 @@ def connect_child_to_parent(node, child_node, host_lookup, recon, fig, stop_row=
     if stop_row == None:
         stop_row = node.layout.row
     
-    current_pos = Position(child_node.layout.x, child_node.layout.y)
+    current_pos = plot_tools.Position(child_node.layout.x, child_node.layout.y)
 
     while host_node.layout.row != stop_row and host_node.parent_node:
         parent_node = host_node.parent_node
@@ -526,7 +540,7 @@ def connect_child_to_parent(node, child_node, host_lookup, recon, fig, stop_row=
         h_track = parent_node.iter_track(Track.HORIZONTAL)
         offset = parent_node.layout.offset
 
-        sub_parent_pos = Position(parent_node.layout.x - (offset * v_track), \
+        sub_parent_pos = plot_tools.Position(parent_node.layout.x - (offset * v_track), \
             parent_node.layout.y + (offset * h_track))
 
         render_loss_branch(sub_parent_pos, current_pos, fig)
@@ -534,13 +548,13 @@ def connect_child_to_parent(node, child_node, host_lookup, recon, fig, stop_row=
         host_node = parent_node
         current_pos = sub_parent_pos
     
-    node_pos = Position(node.layout.x, node.layout.y)
-    mid_pos = Position(node_pos.x, current_pos.y)
+    node_pos = plot_tools.Position(node.layout.x, node.layout.y)
+    mid_pos = plot_tools.Position(node_pos.x, current_pos.y)
 
     fig.line(node_pos, mid_pos, PARASITE_EDGE_COLOR)
     fig.line(mid_pos, current_pos, PARASITE_EDGE_COLOR)
 
-def event_color_shape(event):
+def event_color_shape(event: recon.Event):
     """
     Gives the color and shape for drawing event, depending on event type
     :param event: Event object
@@ -556,7 +570,7 @@ def event_color_shape(event):
         return TRANSFER_NODE_COLOR, TRANSFER_NODE_SHAPE
     return plot_tools.BLACK
 
-def set_host_node_layout(host_tree):
+def set_host_node_layout(host_tree: tree.Tree):
     """
     Sets the logicalRow and logicalCol values of each Node in host_tree.
     Assumes that each host Node has its order set already and this function
@@ -574,7 +588,7 @@ def set_host_node_layout(host_tree):
     # Helper function to assign row values, postorder traversal
     set_internal_host_nodes(host_tree.root_node)
 
-def set_internal_host_nodes(node):
+def set_internal_host_nodes(node: tree.Node):
     """
     Helper function for set_host_node_layout
     :param node: Node object
