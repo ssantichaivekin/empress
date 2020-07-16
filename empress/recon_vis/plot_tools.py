@@ -13,7 +13,6 @@ from matplotlib.textpath import TextPath
 from matplotlib.patches import PathPatch
 import matplotlib.patheffects as PathEffects
 
-
 from empress.recon_vis.render_settings import *
 
 LINEWIDTH = 2
@@ -96,28 +95,12 @@ class FigureWrapper:
                 path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
             self.fig.gca().add_patch(path_patch)
     
-    def half_arrow(self, point_1: Position, point_2: Position, col: tuple = BLACK):
+    def triangle(self, point: Position, col: tuple = BLACK, markersize: int = TRANSFERSIZE, rotation: float = UP_ARROW_ROTATION):
         """
-        Draw arrow from point p1 to p2
+        Draws a triangle in the desired position
         """
-        x_1, y_1 = point_1
-        x_2, y_2 = point_2
-        self.axis.arrow(x_1, y_1, 0, abs(y_2-y_1)/2, head_width=0.15, head_length=0.15, color=col, linewidth=LINEWIDTH/2, shape='full', length_includes_head=True, zorder=LINE_Z_ORDER)
+        self.axis.plot(point.x, point.y, color=col, marker=(3, 0, rotation), markersize=TRANSFERSIZE, linestyle='None')
 
-    def up_triangle(self, point: Position, col: tuple = BLACK, markersize: int = TRANSFERSIZE):
-        """
-        Draw an upwards triangle on point
-        """
-        x, y = point
-        self.axis.plot(x, y, '^', color=col, zorder=LINE_Z_ORDER, markersize=TRANSFERSIZE)
-
-    def down_triangle(self, point: Position, col: tuple = BLACK, markersize: int = TRANSFERSIZE):
-        """
-        Draw an downwards triangle on point
-        """
-        x, y = point
-        self.axis.plot(x, y, 'v', color=col, zorder=LINE_Z_ORDER, markersize=TRANSFERSIZE)
-        
     def show(self):
         """ 
         Display figure

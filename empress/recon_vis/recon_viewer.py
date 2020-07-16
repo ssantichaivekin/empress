@@ -18,7 +18,7 @@ def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequen
     :param event_frequencies: Dictionary that maps event tuples to their frequencies
     :param show_internal_labels: Boolean that determines wheter internal labels are shown or not
     :param show_freq: Boolean that determines whether event frequencies are shown or not
-    :param axes: Gives the axes of the render is displayed on
+    :param axes: If specified, draw on the axes instead of creating a new figure
     :return Figure Object
     """
     host_tree, parasite_tree, consistency_type = utils.build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
@@ -506,15 +506,17 @@ def render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools.
 
         # Determine if transfer is upwards or downwards, and draw triangle accordingly
         is_upwards = True if y_midpoint < mid_pos.y else False
+        arrow_pos = plot_tools.Position(node_pos.x, y_midpoint)
         if is_upwards:
-            fig.up_triangle((node_pos.x, y_midpoint), render_settings.PARASITE_EDGE_COLOR)
+            fig.triangle(arrow_pos, render_settings.PARASITE_EDGE_COLOR)
         else:
-            fig.down_triangle((node_pos.x, y_midpoint), render_settings.PARASITE_EDGE_COLOR)
+            fig.triangle(arrow_pos, render_settings.PARASITE_EDGE_COLOR, rotation=render_settings.DOWN_ARROW_ROTATION)
 
         # Draw branch to midpoint, then draw branch to child
         fig.line(node_pos, mid_pos, render_settings.PARASITE_EDGE_COLOR)
         fig.line(mid_pos, right_pos, render_settings.PARASITE_EDGE_COLOR)
     else:
+        arrow_pos = plot_tools.Position((node_pos.x + right_pos.x) / 2, (node_pos.y + right_pos.y) / 2)
         transfer_edge_color = plot_tools.transparent_color(render_settings.PARASITE_EDGE_COLOR, render_settings.TRANSFER_TRANSPARENCY)
         fig.line(node_pos, right_pos, transfer_edge_color)
 
