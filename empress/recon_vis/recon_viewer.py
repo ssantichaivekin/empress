@@ -142,7 +142,7 @@ def render_host_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, show_int
         if show_internal_labels:
             color = HOST_NODE_COLOR[0:3] + (INTERNAL_NODE_ALPHA,)
             text_xy = (node_pos.x + INTERNAL_TEXT_OFFSET[0], node_pos.y + INTERNAL_TEXT_OFFSET[1])
-            fig.text_v2(text_xy, node.name, color, size = font_size, border_col=HOST_NODE_BORDER_COLOR)
+            fig.text_v2(text_xy, node.name, color, size=font_size, border_col=HOST_NODE_BORDER_COLOR)
         left_x, left_y = node.left_node.layout.x, node.left_node.layout.y
         right_x, right_y = node.right_node.layout.x, node.right_node.layout.y
         fig.line(node_pos, (node_pos.x, left_y), HOST_EDGE_COLOR)
@@ -151,7 +151,7 @@ def render_host_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, show_int
         fig.line((node_pos.x, right_y), (right_x, right_y), HOST_EDGE_COLOR)
         render_host_helper(fig, node.left_node, show_internal_labels, font_size, host_tree)
         render_host_helper(fig, node.right_node, show_internal_labels, font_size, host_tree)
-        
+ 
 
 def render_parasite(fig: plot_tools.FigureWrapper,  parasite_tree: tree.Tree, recon: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, font_size: float):
     """
@@ -167,6 +167,7 @@ def render_parasite(fig: plot_tools.FigureWrapper,  parasite_tree: tree.Tree, re
     """
     root = parasite_tree.root_node
     render_parasite_helper(fig, root, recon, host_lookup, parasite_lookup, show_internal_labels, show_freq, font_size)
+
 
 def populate_host_tracks(node: tree.Node, recon: recon.Reconciliation, host_lookup: dict):
     """
@@ -201,6 +202,7 @@ def is_sharing_track(node: tree.Node, host_name: str, recon: recon.Reconciliatio
     right_host_name = recon.mapping_of(node.right_node.name).host
 
     return host_name == left_host_name or host_name == right_host_name
+
 
 def render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, recon: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, font_size: float):
     """
@@ -266,6 +268,7 @@ def render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, reco
     render_parasite_branches(fig, node, recon, host_lookup, parasite_lookup)
     render_parasite_node(fig, node, event, font_size, show_internal_labels, show_freq)
 
+
 def fix_transfer(node: tree.Node, right_node: tree.Node, host_node: tree.Node, host_lookup: dict, recon: recon.Reconciliation):
     """
     Checks to see in tranfer node is inconsistent and the tries to fix node if so
@@ -283,6 +286,7 @@ def fix_transfer(node: tree.Node, right_node: tree.Node, host_node: tree.Node, h
         node.layout.col = min_col + 0.5
         node.set_layout(col=min_col + 0.5, x=min_col + 0.5)
 
+
 def render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event: recon.Event, font_size: float, show_internal_labels: bool = False, show_freq: bool = False):
     """
     Renders a single parasite node
@@ -295,7 +299,7 @@ def render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event:
     """
     node_xy = (node.layout.x, node.layout.y)
     render_color, render_shape = event_color_shape(event)
-    
+
     fig.dot(node_xy, col=render_color, marker=render_shape)
     if node.is_leaf:
         fig.text_v2((node.layout.x + TIP_TEXT_OFFSET[0], node.layout.y + TIP_TEXT_OFFSET[1]), node.name, render_color, size=font_size, vertical_alignment=TIP_ALIGNMENT)
@@ -314,6 +318,7 @@ def render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event:
     if text:
         fig.text_v2(node_xy, text, render_color, size=font_size, border_col=PARASITE_NODE_BORDER_COLOR)
 
+
 def get_frequency_text(frequency: float):
     """
     Give the frequency as a string in percentage form
@@ -328,6 +333,7 @@ def get_frequency_text(frequency: float):
             return output
     return output
 
+
 def calculate_font_size(num_tip_nodes: int):
     """
     Calculates the font_size
@@ -337,13 +343,15 @@ def calculate_font_size(num_tip_nodes: int):
     x = (START_SIZE - num_tip_nodes) / STEP_SIZE
     return sigmoid(x)
 
+
 def sigmoid(x: float):
     """
     Sigmoid Function
     :param x: A number to be plugged into the function
-    :return a sigmoid value based on the input value, x 
+    :return a sigmoid value based on the input value, x
     """
     return (1 / (1 + e**(-x)))
+
 
 def render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, recon: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict):
     """
@@ -387,6 +395,7 @@ def connect_children(node: tree.Node, host_lookup: dict, parasite_lookup: dict, 
     connect_child_to_parent(node, left_node, host_lookup, recon, fig)
     connect_child_to_parent(node, right_node, host_lookup, recon, fig)
 
+
 def render_loss_branch(node_pos: plot_tools.Position, next_pos: plot_tools.Position, fig: plot_tools.FigureWrapper):
     """
     Renders a loss branch given a two positions
@@ -398,6 +407,7 @@ def render_loss_branch(node_pos: plot_tools.Position, next_pos: plot_tools.Posit
     mid_pos = plot_tools.Position(node_pos.x, next_pos.y)
     fig.line(node_pos, mid_pos, LOSS_EDGE_COLOR, linestyle='--')
     fig.line(mid_pos, next_pos, PARASITE_EDGE_COLOR)
+
 
 def render_cospeciation_branch(node: tree.Node, host_lookup: dict, parasite_lookup: dict, recon: recon.Reconciliation, fig: plot_tools.FigureWrapper):
     """
@@ -463,6 +473,7 @@ def get_children(node: tree.Node, recon: recon.Reconciliation, parasite_lookup: 
 
     return left_node, right_node
 
+
 def render_curved_line_to(node_pos: plot_tools.Position, other_pos: plot_tools.Position, fig: plot_tools.FigureWrapper):
     """
     Renders a curved line from one point to another
@@ -473,6 +484,7 @@ def render_curved_line_to(node_pos: plot_tools.Position, other_pos: plot_tools.P
     mid_pos = plot_tools.Position(node_pos.x, other_pos.y)
     fig.line(node_pos, mid_pos, PARASITE_EDGE_COLOR)
     fig.line(mid_pos, other_pos, PARASITE_EDGE_COLOR)
+
 
 def render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools.Position, fig: plot_tools.FigureWrapper,  node: tree.Node, host_lookup: dict, recon: recon.Reconciliation, right_node: tree.Node):
     """
@@ -510,6 +522,7 @@ def render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools.
     else:
         transfer_edge_color = (PARASITE_EDGE_COLOR[0] , PARASITE_EDGE_COLOR[1] , PARASITE_EDGE_COLOR[2], TRANSFER_TRANSPARENCY)
         fig.line(node_pos, right_pos, transfer_edge_color)
+
 
 def connect_child_to_parent(node: tree.Node, child_node: tree.Node, host_lookup: dict, recon: recon.Reconciliation, fig: plot_tools.FigureWrapper,  stop_row: float = None):
     """
@@ -554,6 +567,7 @@ def connect_child_to_parent(node: tree.Node, child_node: tree.Node, host_lookup:
     fig.line(node_pos, mid_pos, PARASITE_EDGE_COLOR)
     fig.line(mid_pos, current_pos, PARASITE_EDGE_COLOR)
 
+
 def event_color_shape(event: recon.Event):
     """
     Gives the color and shape for drawing event, depending on event type
@@ -569,6 +583,7 @@ def event_color_shape(event: recon.Event):
     if event.event_type is EventType.TRANSFER:
         return TRANSFER_NODE_COLOR, TRANSFER_NODE_SHAPE
     return plot_tools.BLACK
+
 
 def set_host_node_layout(host_tree: tree.Tree):
     """
@@ -587,6 +602,7 @@ def set_host_node_layout(host_tree: tree.Tree):
         logical_row_counter += 1
     # Helper function to assign row values, postorder traversal
     set_internal_host_nodes(host_tree.root_node)
+
 
 def set_internal_host_nodes(node: tree.Node):
     """
