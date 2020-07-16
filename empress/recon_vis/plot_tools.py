@@ -95,19 +95,6 @@ class FigureWrapper:
             if border_col:
                 path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
             self.fig.gca().add_patch(path_patch)
-
-    def show(self):
-        """ 
-        Display figure
-        """
-        plt.figure(self.fig.number)
-        plt.show()
-
-    def save(self, filename: str):
-        """
-        Save figure to file
-        """
-        self.fig.savefig(filename)
     
     def half_arrow(self, point_1: Position, point_2: Position, col: tuple = BLACK):
         """
@@ -131,3 +118,15 @@ class FigureWrapper:
         x, y = point
         self.axis.plot(x, y, 'v', color=col, zorder=LINE_Z_ORDER, markersize=TRANSFERSIZE)
         
+    def show(self):
+        """ 
+        Display figure
+        """
+        plt.figure(self.fig.number)
+        plt.show()
+
+    def save(self, filename: str):
+        """
+        Save figure to file
+        """
+        self.fig.savefig(filename)

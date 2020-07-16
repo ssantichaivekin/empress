@@ -5,22 +5,25 @@ Justin Jiang, Trenton Wesley
 """
 from empress.recon_vis import recon, tree, utils, plot_tools, render_settings
 
-from typing import Union
+from typing import Union, Dict
 from math import e
 import matplotlib.pyplot as plt
 
-def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequencies: dict, show_internal_labels: bool = False, show_freq: bool = False, show_legend: bool = True, axes: Union[plt.Axes, None] = None):
+def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequencies: Dict[tuple, float] = None, show_internal_labels: bool = False, 
+           show_freq: bool = False, show_legend: bool = True, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
     :param parasite_dict:  Parasite tree represented in dictionary format
     :param recon_dict: Reconciliation represented in dictionary format
-    :param event_frequencies: Dictionary that maps events to their frequencies
+    :param event_frequencies: Dictionary that maps event tuples to their frequencies
     :param show_internal_labels: Boolean that determines wheter internal labels are shown or not
     :param show_freq: Boolean that determines whether event frequencies are shown or not
     :param axes: Gives the axes of the render is displayed on
     :return Figure Object
     """
-    host_tree, parasite_tree, recon_obj, consistency_type = utils.convert_to_objects(host_dict, parasite_dict, recon_dict, event_frequencies)
+    host_tree, parasite_tree, consistency_type = utils.build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
+    recon_obj = utils.dict_to_reconciliation(recon_dict, event_frequencies)
+
     # Checks to see if the trees(or reconciliation) are empty
     if host_tree is None or parasite_tree is None or recon_obj is None:
         return None
