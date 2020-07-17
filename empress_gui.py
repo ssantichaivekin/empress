@@ -624,6 +624,11 @@ class App(tk.Frame):
         self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
         self.view_pvalue_histogram_btn.configure(state=tk.NORMAL)
 
+    def OnFocusIn(self, event):
+        """To bring newly created tkinter window to the front."""
+        if type(event.widget).__name__ == 'Tk':
+            event.widget.attributes('-topmost', False)
+
     def select_from_view_solution_space_dropdown(self, event):
         """When "View solution space" dropdown is clicked."""
         if self.view_solution_space_var.get() == "Entire space":
@@ -632,6 +637,10 @@ class App(tk.Frame):
             self.entire_space_window = tk.Toplevel(self.master)
             self.entire_space_window.geometry("600x600")
             self.entire_space_window.title("Entire space")
+            # Bring the new tkinter window to the front
+            self.entire_space_window.attributes('-topmost', True)
+            self.entire_space_window.focus_force()
+            self.entire_space_window.bind('<FocusIn>', self.OnFocusIn)
             # Creates a new frame
             plt_frame = tk.Frame(self.entire_space_window)
             plt_frame.pack(fill=tk.BOTH, expand=1)
@@ -655,6 +664,10 @@ class App(tk.Frame):
         self.set_num_cluster_window = tk.Toplevel(self.master)
         self.set_num_cluster_window.geometry("300x200")
         self.set_num_cluster_window.title("Set the number of clusters")
+        # Bring the new tkinter window to the front
+        self.set_num_cluster_window.attributes('-topmost', True)
+        self.set_num_cluster_window.focus_force()
+        self.set_num_cluster_window.bind('<FocusIn>', self.OnFocusIn)
         # Creates a new frame
         self.set_num_cluster_frame = tk.Frame(self.set_num_cluster_window)
         self.set_num_cluster_frame.pack(fill=tk.BOTH, expand=tk.YES)
@@ -739,6 +752,10 @@ class App(tk.Frame):
             self.one_MPR_window = tk.Toplevel(self.master)
             self.one_MPR_window.geometry("600x600")
             self.one_MPR_window.title("One MPR")
+            # Bring the new tkinter window to the front
+            self.one_MPR_window.attributes('-topmost', True)
+            self.one_MPR_window.focus_force()
+            self.one_MPR_window.bind('<FocusIn>', self.OnFocusIn)
             ReconciliationsOneMPRWindow(self.one_MPR_window)
 
         elif self.view_reconciliations_var.get() == "One per cluster":
@@ -761,6 +778,10 @@ class App(tk.Frame):
                 solution_window = tk.Toplevel(self.master)
                 solution_window.geometry("800x800")
                 solution_window.title("View reconciliations " + str(solution_number))
+                # Bring the new tkinter window to the front
+                solution_window.attributes('-topmost', True)
+                solution_window.focus_force()
+                solution_window.bind('<FocusIn>', self.OnFocusIn)
                 ReconciliationsOnePerClusterWindow(solution_window, solution)
                 solution_number = solution_number + 1
 
