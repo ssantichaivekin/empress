@@ -422,6 +422,10 @@ class App(tk.Frame):
         self.tanglegram_window = tk.Toplevel(self.master)
         self.tanglegram_window.geometry("600x600")
         self.tanglegram_window.title("Tanglegram")
+        # Bring the new tkinter window to the front
+        self.tanglegram_window.attributes('-topmost', True)
+        self.tanglegram_window.focus_force()
+        self.tanglegram_window.bind('<FocusIn>', self.OnFocusIn)
         # Creates a new frame
         tanglegram_frame = tk.Frame(self.tanglegram_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
@@ -443,6 +447,10 @@ class App(tk.Frame):
         self.cost_space_window = tk.Toplevel(self.master)
         self.cost_space_window.geometry("550x550")
         self.cost_space_window.title("Matplotlib Graph - Cost regions")
+        # Bring the new tkinter window to the front
+        self.cost_space_window.attributes('-topmost', True)
+        self.cost_space_window.focus_force()
+        self.cost_space_window.bind('<FocusIn>', self.OnFocusIn)
         # Creates a new frame
         plt_frame = tk.Frame(self.cost_space_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
@@ -624,11 +632,6 @@ class App(tk.Frame):
         self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
         self.view_pvalue_histogram_btn.configure(state=tk.NORMAL)
 
-    def OnFocusIn(self, event):
-        """To bring newly created tkinter window to the front."""
-        if type(event.widget).__name__ == 'Tk':
-            event.widget.attributes('-topmost', False)
-
     def select_from_view_solution_space_dropdown(self, event):
         """When "View solution space" dropdown is clicked."""
         if self.view_solution_space_var.get() == "Entire space":
@@ -768,6 +771,10 @@ class App(tk.Frame):
             self.view_solution_space_window = tk.Toplevel(self.master)
             self.view_solution_space_window.geometry("900x900")
             self.view_solution_space_window.title("View reconciliation space")
+            # Bring the new tkinter window to the front
+            self.view_solution_space_window.attributes('-topmost', True)
+            self.view_solution_space_window.focus_force()
+            self.view_solution_space_window.bind('<FocusIn>', self.OnFocusIn)
             SolutionSpaceWindow(self.view_solution_space_window)
 
     def open_window_reconciliations(self):
@@ -791,7 +798,16 @@ class App(tk.Frame):
         self.view_pvalue_histogram_window = tk.Toplevel(self.master)
         self.view_pvalue_histogram_window.geometry("700x700")
         self.view_pvalue_histogram_window.title("p-value Histogram")
+        # Bring the new tkinter window to the front
+        self.view_pvalue_histogram_window.attributes('-topmost', True)
+        self.view_pvalue_histogram_window.focus_force()
+        self.view_pvalue_histogram_window.bind('<FocusIn>', self.OnFocusIn)
         PValueHistogramWindow(self.view_pvalue_histogram_window)
+
+    def OnFocusIn(self, event):
+        """To bring newly created tkinter window to the front."""
+        if type(event.widget).__name__ == 'Tk':
+            event.widget.attributes('-topmost', False)
 
     def tanglegram_figure_on_closing(self):
         """Close and remove matplotlib figures when the tkinter window is destroyed."""
