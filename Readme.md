@@ -28,9 +28,9 @@ Empress uses python version 3.7 and has not been set up to run on higher version
 ```bash
 python3.7 --version
 ```
-If the command gives you a python version (say, `3.7.8`) it means you have `python3.7` installed. If it says `command not found`, you have to follow the steps below to install `python3.7`.
+If the command gives you a python version (say, `3.7.8`) it means you have `python3.7` installed. If it says `command not found`, please follow the steps below to install `python3.7`.
 
-If you don't have `python3.7` installed in your computer, you can download the installer from [python.org website](https://www.python.org/downloads/release/python-378/). For macOS, choose the macOS 64-bit installer. For Windows, choose the Windows x86-64 executable installer.  There is currently no installer for linux on python.org. Alternatively, you could download python3.7 from [Anaconda website](https://www.anaconda.com/products/individual#Downloads) or from your favorite package manager tool such as `apt-get`.
+If you don't have `python3.7` installed in your computer, you can download the installer from [python.org website](https://www.python.org/downloads/release/python-378/). For macOS, choose the macOS 64-bit installer. For Windows, choose the Windows x86-64 executable installer.  There is currently no python 3.7 installer for linux on python.org. Alternatively, you can download python3.7 from [Anaconda website](https://www.anaconda.com/products/individual#Downloads) or from your favorite package manager tool such as `apt-get`.
 
 ### Install pipenv package manager
 Empress uses [pipenv](https://pipenv-fork.readthedocs.io/en/latest/) as its package manager to install dependencies. You can install pipenv using the terminal and typing in the command:
@@ -57,7 +57,7 @@ pipenv shell  # enter the virtual environment with dependencies installed
 Every time you restart the terminal, make sure you run `pipenv shell` before running empress script.
 
 ## Run graphical user interface (gui)
-Make sure you have already run `pipenv shell` in the empress folder. (Note empress will not work if you run `pipenv shell` outside of the empress folder and then change the directory to the empress folder afterward.)
+Make sure you have already run `pipenv shell` in the empress folder. (Note that empress will not work if you run `pipenv shell` outside of the empress folder and then change the directory to the empress folder afterward.)
 
 In the empress folder, type:
 ```bash
