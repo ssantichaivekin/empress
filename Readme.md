@@ -24,7 +24,12 @@ Command Line Interface:
 ## Install empress for development
 
 ### Install python
-Empress uses python version 3.7 and has not been set up to run on higher versions. If you don't have python3.7 installed in your computer, you can download the installer from [python.org website](https://www.python.org/downloads/release/python-378/). For macOS, choose the macOS 64-bit installer. For Windows, choose the Windows x86-64 executable installer. I could not find the installer for linux on python.org. Alternatively, you could download python3.7 from [Anaconda website](https://www.anaconda.com/products/individual#Downloads) or from your favorite package manager tool such as `apt-get`.
+Empress uses python version 3.7 and has not been set up to run on higher versions. You can check whether you have `python3.7` installed on your computer by typing the following command in the terminal:
+```bash
+python3.7 --version
+```
+
+If you don't have `python3.7` installed in your computer, you can download the installer from [python.org website](https://www.python.org/downloads/release/python-378/). For macOS, choose the macOS 64-bit installer. For Windows, choose the Windows x86-64 executable installer. I could not find the installer for linux on python.org. Alternatively, you could download python3.7 from [Anaconda website](https://www.anaconda.com/products/individual#Downloads) or from your favorite package manager tool such as `apt-get`.
 
 ### Install pipenv package manager
 Empress uses [pipenv](https://pipenv-fork.readthedocs.io/en/latest/) as its package manager to install dependencies. You can install pipenv by going to the terminal and type in the command:
