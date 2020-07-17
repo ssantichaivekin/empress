@@ -2,11 +2,15 @@
 
 import tkinter as tk
 from tkinter import messagebox
+# You have to import filedialog explicitly for it to work across platforms
+# see https://stackoverflow.com/a/36165227/2860949
+from tkinter import filedialog
 import os
 import sys
+import pathlib
+
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-import pathlib
 
 import empress
 from empress import input_reader
@@ -339,7 +343,7 @@ class App(tk.Frame):
         if self.load_files_var.get() == "Load host tree file":
             self.load_files_var.set("Load files")
             # initialdir is set to be the current working directory
-            input_file = tk.filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file",
+            input_file = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file",
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree")])
             if input_file != "":
                 try:
@@ -358,7 +362,7 @@ class App(tk.Frame):
         elif self.load_files_var.get() == "Load parasite tree file":
             self.load_files_var.set("Load files")
             # initialdir is set to be the same as that of the host file chosen by the user
-            input_file = tk.filedialog.askopenfilename(initialdir=pathlib.Path(self.host_file_path).parent, title="Select a parasite file",
+            input_file = filedialog.askopenfilename(initialdir=pathlib.Path(self.host_file_path).parent, title="Select a parasite file",
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree")])
             if input_file != "":
                 try:
@@ -374,7 +378,7 @@ class App(tk.Frame):
         elif self.load_files_var.get() == "Load mapping file":
             self.load_files_var.set("Load files")
             # initialdir is set to be the same as that of the host file chosen by the user
-            input_file = tk.filedialog.askopenfilename(initialdir=pathlib.Path(self.host_file_path).parent, title="Select a mapping file",
+            input_file = filedialog.askopenfilename(initialdir=pathlib.Path(self.host_file_path).parent, title="Select a mapping file",
                                                        filetypes=[("Tip mapping", "*.mapping")])
             if input_file != "":
                 try:
