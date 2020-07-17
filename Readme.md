@@ -28,6 +28,7 @@ Empress uses python version 3.7 and has not been set up to run on higher version
 ```bash
 python3.7 --version
 ```
+If the command gives you a python version (say, `3.7.8`) it means you have `python3.7` installed. If it says `command not found`, you have to follow the steps below to install `python3.7`.
 
 If you don't have `python3.7` installed in your computer, you can download the installer from [python.org website](https://www.python.org/downloads/release/python-378/). For macOS, choose the macOS 64-bit installer. For Windows, choose the Windows x86-64 executable installer. I could not find the installer for linux on python.org. Alternatively, you could download python3.7 from [Anaconda website](https://www.anaconda.com/products/individual#Downloads) or from your favorite package manager tool such as `apt-get`.
 
