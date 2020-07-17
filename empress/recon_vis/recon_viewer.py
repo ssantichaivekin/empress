@@ -6,7 +6,7 @@ Justin Jiang, Trenton Wesley
 from empress.recon_vis import recon, tree, utils, plot_tools, render_settings
 
 from typing import Union, Dict
-from math import e
+from math import atan, pi, e
 import matplotlib.pyplot as plt
 
 
@@ -86,8 +86,9 @@ def _set_offsets(tree: tree.Tree):
         if y_1 is None or node.layout.node_count == 0:
             node.layout.offset = render_settings.TRACK_OFFSET
         else:
-            node.layout.offset = abs(y_0 - y_1) / (node.layout.node_count + 3)
-
+            # Gives an offset based on the predicted number of horizontal tracks mapped to a host node
+            # COUNT_OFFSET artificially adds extra nodes/tracks to lower the offset and pull parasite nodes closer to the host node their mapped to
+            node.layout.offset = abs(y_0 - y_1) / (node.layout.node_count + render_settings.COUNT_OFFSET)
 
 def _render_host(fig: plot_tools.FigureWrapper, host_tree: tree.Tree, show_internal_labels: bool, font_size: float):
     """
@@ -278,8 +279,7 @@ def _fix_transfer(node: tree.Node, right_node: tree.Node, host_node: tree.Node, 
     node_col = node.layout.col
     #Checks to see if transfer is inconsistent and if the inconsistency can be fixed by sliding the transfer node down the host edge
     if min_col >= node_col and min_col < max_col and not(_is_sharing_track(node, host_node.name, recon_obj)):
-        node.layout.col = min_col + 0.5
-        node.set_layout(col=min_col + 0.5, x=min_col + 0.5)
+        node.set_layout(col=min_col+0.5, x=min_col+0.5)
 
 
 def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event: recon.Event, font_size: float, show_internal_labels: bool = False, show_freq: bool = False):
@@ -515,9 +515,9 @@ def _render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools
         fig.line(node_pos, mid_pos, render_settings.PARASITE_EDGE_COLOR)
         fig.line(mid_pos, right_pos, render_settings.PARASITE_EDGE_COLOR)
     else:
-        arrow_pos = plot_tools.Position((node_pos.x + right_pos.x) / 2, (node_pos.y + right_pos.y) / 2)
         transfer_edge_color = plot_tools.transparent_color(render_settings.PARASITE_EDGE_COLOR, render_settings.TRANSFER_TRANSPARENCY)
         fig.line(node_pos, right_pos, transfer_edge_color)
+        
 
 
 def _connect_child_to_parent(node: tree.Node, child_node: tree.Node, host_lookup: dict, recon_obj: recon.Reconciliation, fig: plot_tools.FigureWrapper,  stop_row: float = None):
@@ -578,7 +578,7 @@ def _event_color_shape(event: recon.Event):
         return render_settings.DUPLICATION_NODE_COLOR, render_settings.DUPLICATION_NODE_SHAPE
     if event.event_type is recon.EventType.TRANSFER:
         return render_settings.TRANSFER_NODE_COLOR, render_settings.TRANSFER_NODE_SHAPE
-    return plot_tools.BLACK
+    return None, None 
 
 
 def _set_host_node_layout(host_tree: tree.Tree):
