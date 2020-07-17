@@ -346,6 +346,7 @@ class App(tk.Frame):
                     self.recon_input.read_host(input_file)
                 except Exception as e:
                     messagebox.showinfo("Warning", "Error: " + str(e))
+                    return
                 self.host_file_path = input_file
                 # Force a sequence of loading host tree file first, and then parasite tree file, and then mapping file
                 self.load_files_dropdown['menu'].entryconfigure("Load parasite tree file", state = "disabled")
@@ -365,6 +366,7 @@ class App(tk.Frame):
                     self.recon_input.read_parasite(input_file)
                 except Exception as e:
                     messagebox.showinfo("Warning", "Error: " + str(e))
+                    return
                 self.parasite_file_path = input_file
                 self.refresh_when_reload_parasite()
                 self.update_parasite_info()
@@ -381,6 +383,7 @@ class App(tk.Frame):
                     self.recon_input.read_mapping(input_file)
                 except Exception as e:
                     messagebox.showinfo("Warning", "Error: " + str(e))
+                    return
                 self.mapping_file_path = input_file
                 self.refresh_when_reload_mapping()
                 self.update_mapping_info()
