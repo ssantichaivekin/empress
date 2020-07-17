@@ -754,12 +754,15 @@ class App(tk.Frame):
             SolutionSpaceWindow(self.view_solution_space_window)
 
     def open_window_reconciliations(self):
-        """Pop up a new tkinter window to display the reconciliations."""
+        """Pop up new tkinter windows to display the reconciliations."""
         if self.num_cluster is not None:
-            self.view_reconciliations_window = tk.Toplevel(self.master)
-            self.view_reconciliations_window.geometry("900x900")
-            self.view_reconciliations_window.title("View reconciliations")
-            ReconciliationsOnePerClusterWindow(self.view_reconciliations_window)
+            solution_number = 1
+            for solution in App.medians:
+                solution_window = tk.Toplevel(self.master)
+                solution_window.geometry("800x800")
+                solution_window.title("View reconciliations " + str(solution_number))
+                ReconciliationsOnePerClusterWindow(solution_window, solution)
+                solution_number = solution_number + 1
 
     def open_window_pvalue_histogram(self):
         """Pop up a new tkinter window to display the p-value histogram."""
@@ -772,7 +775,7 @@ class App(tk.Frame):
     def tanglegram_figure_on_closing(self):
         """Close and remove matplotlib figures when the tkinter window is destroyed."""
         self.fig_tanglegram.clear()
-        plt.close(self.fig_tanglegram)
+        #plt.close(self.fig_tanglegram)
         self.tanglegram_window.destroy()
 
 # View reconciliation space - Clusters
@@ -820,10 +823,10 @@ class ReconciliationsOneMPRWindow(tk.Frame):
         self.draw_one_MPR()
 
     def draw_one_MPR(self):
-        self.fig = App.recon_graph.median().draw(
+        self.one_mpr_fig = App.recon_graph.median().draw(
             show_internal_labels=self.show_internal_node_names_boolean, 
             show_freq=self.show_event_frequencies_boolean)
-        self.canvas = FigureCanvasTkAgg(self.fig, self.frame)
+        self.canvas = FigureCanvasTkAgg(self.one_mpr_fig, self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
@@ -847,38 +850,71 @@ class ReconciliationsOneMPRWindow(tk.Frame):
         show_event_frequencies_checkbutton.pack(side=tk.LEFT)
 
     def update_one_mpr(self):
+        # self.one_mpr_fig.clear()
+        # plt.close(self.one_mpr_fig)
         self.canvas.get_tk_widget().destroy()
-        self.fig = App.recon_graph.median().draw(
+        self.one_mpr_fig = App.recon_graph.median().draw(
             show_internal_labels=self.show_internal_node_names_boolean.get(),
             show_freq=self.show_event_frequencies_boolean.get()
         )
-        self.canvas = FigureCanvasTkAgg(self.fig, self.frame)
+        self.canvas = FigureCanvasTkAgg(self.one_mpr_fig, self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # View reconciliations - One per cluster
 class ReconciliationsOnePerClusterWindow(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, recon_solution):
         super().__init__(master)
+        self.recon_solution = recon_solution
         self.master = master
+        self.master.grid_rowconfigure(0, weight=5)
+        self.master.grid_rowconfigure(1, weight=1)
+        self.master.grid_columnconfigure(0, weight=1)
         self.frame = tk.Frame(self.master)
-        self.frame.pack(fill=tk.BOTH, expand=1)
-        self.frame.pack_propagate(False)
+        self.frame.grid(row=0, column=0, sticky="nsew")
+        self.frame.grid_propagate(False)
+        self.checkboxes_frame = tk.Frame(self.master)
+        self.checkboxes_frame.grid(row=1, column=0)
+        self.checkboxes_frame.grid_propagate(False)
+        self.create_checkboxes()
         self.draw_median_recons()
+
+    def create_checkboxes(self):
+        self.show_internal_node_names_boolean = tk.BooleanVar()
+        self.show_internal_node_names_boolean.set(tk.TRUE)
+        show_internal_node_names_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
+            text="Display internal node names", variable=self.show_internal_node_names_boolean, 
+            command=self.update_median_recons)
+        show_internal_node_names_checkbutton.pack(side=tk.LEFT)
+
+        self.show_event_frequencies_boolean = tk.BooleanVar()
+        self.show_event_frequencies_boolean.set(tk.TRUE)
+        show_event_frequencies_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
+            text="Display frequencies", variable=self.show_event_frequencies_boolean, 
+            command=self.update_median_recons)
+        show_event_frequencies_checkbutton.pack(side=tk.LEFT)
+
     def draw_median_recons(self):
-        if len(App.medians) == 1:
-            fig = App.medians[0].draw()
-        else:
-            fig, axs = plt.subplots(1, len(App.medians))
-            for i in range(len(App.medians)):
-                App.medians[i].draw_on(axs[i])
-        canvas = FigureCanvasTkAgg(fig, self.frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.recon_solution_fig = self.recon_solution.draw(
+            show_internal_labels=self.show_internal_node_names_boolean, 
+            show_freq=self.show_event_frequencies_boolean)
+        self.canvas = FigureCanvasTkAgg(self.recon_solution_fig, self.frame)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
-        toolbar = NavigationToolbar2Tk(canvas, self.frame)
+        toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
         toolbar.update()
-        canvas.get_tk_widget().pack(side=tk.TOP)
+        self.canvas.get_tk_widget().pack(side=tk.TOP)
+
+    def update_median_recons(self):
+        self.canvas.get_tk_widget().destroy()
+        self.recon_solution_fig = self.recon_solution.draw(
+            show_internal_labels=self.show_internal_node_names_boolean.get(),
+            show_freq=self.show_event_frequencies_boolean.get()
+        )
+        self.canvas = FigureCanvasTkAgg(self.recon_solution_fig, self.frame)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # p-value Histogram
 class PValueHistogramWindow(tk.Frame):
