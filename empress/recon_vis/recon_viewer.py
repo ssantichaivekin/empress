@@ -6,7 +6,7 @@ Justin Jiang, Trenton Wesley
 from empress.recon_vis import recon, tree, utils, plot_tools, render_settings
 
 from typing import Union, Dict
-from math import atan, pi, e
+import math
 import matplotlib.pyplot as plt
 
 
@@ -346,7 +346,7 @@ def _sigmoid(x: float):
     :param x: A number to be plugged into the function
     :return a sigmoid value based on the input value, x
     """
-    return (1 / (1 + e**(-x)))
+    return (1 / (1 + math.e**(-x)))
 
 
 def _render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict):
@@ -517,7 +517,6 @@ def _render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools
     else:
         transfer_edge_color = plot_tools.transparent_color(render_settings.PARASITE_EDGE_COLOR, render_settings.TRANSFER_TRANSPARENCY)
         fig.line(node_pos, right_pos, transfer_edge_color)
-        
 
 
 def _connect_child_to_parent(node: tree.Node, child_node: tree.Node, host_lookup: dict, recon_obj: recon.Reconciliation, fig: plot_tools.FigureWrapper,  stop_row: float = None):

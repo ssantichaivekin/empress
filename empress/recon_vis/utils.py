@@ -3,12 +3,10 @@ utils.py
 Utilities related to conversion between data types
 """
 
+from empress.recon_vis import recon
+from empress.recon_vis import tree
+
 from typing import Dict, Tuple, List
-from empress.recon_vis.recon import MappingNode, Reconciliation
-from empress.recon_vis.recon import Cospeciation, Duplication, Transfer, Loss, TipTip
-import empress.recon_vis.tree as tree
-from empress.recon_vis.tree import NodeLayout
-from empress.recon_vis.tree import TreeType
 from collections import OrderedDict
 from enum import Enum
 
@@ -71,7 +69,7 @@ def _dict_to_tree_helper(tree_dict, root_edge):
 # ReconGraph utilities
 
 
-def _find_roots(old_recon_graph) -> List[MappingNode]:
+def _find_roots(old_recon_graph) -> List[recon.MappingNode]:
     not_roots = set()
     for mapping in old_recon_graph:
         for event in old_recon_graph[mapping]:
@@ -109,7 +107,7 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_frequencies: Dict
     if len(roots) > 1:
         raise ValueError("old_recon has many roots")
     root = roots[0]
-    recon = Reconciliation(root)
+    recon_obj = recon.Reconciliation(root)
     event = None
     for mapping in old_recon:
         host, parasite = mapping
@@ -117,30 +115,30 @@ def dict_to_reconciliation(old_recon: Dict[Tuple, List], event_frequencies: Dict
             raise ValueError('old_recon mapping node has no or multiple events')
         event_tuple = old_recon[mapping][0]
         etype, left, right = event_tuple
-        mapping_node = MappingNode(host, parasite)
+        mapping_node = recon.MappingNode(host, parasite)
         if etype in 'SDT':
             left_parasite, left_host = left
             right_parasite, right_host = right
-            left_mapping = MappingNode(left_parasite, left_host)
-            right_mapping = MappingNode(right_parasite, right_host)
+            left_mapping = recon.MappingNode(left_parasite, left_host)
+            right_mapping = recon.MappingNode(right_parasite, right_host)
             if etype == 'S':
-                event = Cospeciation(left_mapping, right_mapping)
+                event = recon.Cospeciation(left_mapping, right_mapping)
             if etype == 'D':
-                event = Duplication(left_mapping, right_mapping)
+                event = recon.Duplication(left_mapping, right_mapping)
             if etype == 'T':
-                event = Transfer(left_mapping, right_mapping)
+                event = recon.Transfer(left_mapping, right_mapping)
         elif etype == 'L':
             child_parasite, child_host = left
-            child_mapping = MappingNode(child_parasite, child_host)
-            event = Loss(child_mapping)
+            child_mapping = recon.MappingNode(child_parasite, child_host)
+            event = recon.Loss(child_mapping)
         elif etype == 'C':
-            event = TipTip()
+            event = recon.TipTip()
         else:
             raise ValueError('%s not in "SDTLC"' % etype)
         if event_frequencies is not None:
             event._freq = event_frequencies[event_tuple]
-        recon.set_event(mapping_node, event)
-    return recon
+        recon_obj.set_event(mapping_node, event)
+    return recon_obj
 
 # Temporal ordering utilities
 
@@ -177,8 +175,8 @@ def build_trees_with_temporal_order(host_dict: dict, parasite_dict: dict, reconc
         if ordering_dict is not None:
             consistency_type = ConsistencyType.WEAK_CONSISTENCY
 
-    host_tree_object = dict_to_tree(host_dict, TreeType.HOST)
-    parasite_tree_object = dict_to_tree(parasite_dict, TreeType.PARASITE)
+    host_tree_object = dict_to_tree(host_dict, tree.TreeType.HOST)
+    parasite_tree_object = dict_to_tree(parasite_dict, tree.TreeType.PARASITE)
 
     # if there is a valid temporal ordering, we populate the layout with the order corresponding to the node
     if consistency_type != ConsistencyType.NO_CONSISTENCY:
@@ -188,8 +186,8 @@ def build_trees_with_temporal_order(host_dict: dict, parasite_dict: dict, reconc
             if max_order < ordering_dict[node]:
                 max_order = ordering_dict[node]
         leaf_order = max_order + 1
-        populate_nodes_with_order(host_tree_object.root_node, TreeType.HOST, ordering_dict, leaf_order)
-        populate_nodes_with_order(parasite_tree_object.root_node, TreeType.PARASITE, ordering_dict, leaf_order)
+        populate_nodes_with_order(host_tree_object.root_node, tree.TreeType.HOST, ordering_dict, leaf_order)
+        populate_nodes_with_order(parasite_tree_object.root_node, tree.TreeType.PARASITE, ordering_dict, leaf_order)
         return host_tree_object, parasite_tree_object, consistency_type
     else:
         return None, None, ConsistencyType.NO_CONSISTENCY
@@ -214,9 +212,9 @@ def create_parent_dict(host_dict: dict, parasite_dict: dict):
     return parent_dict
 
 
-def build_formatted_tree(tree):
+def build_formatted_tree(tree_dict):
     """
-    :param tree:  a tree dictionary
+    :param tree_dict:  a tree dictionary
     :return: A temporal graph that contains all the temporal relations implied by
              the tree. Each key is a node tuple of the form (name, type) where name
              is a string representing the name of a parasite or host tree INTERNAL 
@@ -225,14 +223,14 @@ def build_formatted_tree(tree):
              are the children of this node tuple in the tree.
     """
     tree_type = None
-    if 'pTop' in tree:
-        tree_type = TreeType.PARASITE
+    if 'pTop' in tree_dict:
+        tree_type = tree.TreeType.PARASITE
     else:
-        tree_type = TreeType.HOST
+        tree_type = tree.TreeType.HOST
 
     formatted_tree = {}
-    for edge_name in tree:
-        edge_four_tuple = tree[edge_name]
+    for edge_name in tree_dict:
+        edge_four_tuple = tree_dict[edge_name]
         # the temporal graph does not contain leaves as keys
         if _is_leaf_edge(edge_four_tuple):
             continue
@@ -290,10 +288,10 @@ def build_temporal_graph(host_dict: dict, parasite_dict: dict, reconciliation: d
             continue
         # if the node_mapping is not a leaf_mapping, we add the first relation
         if event_type != 'C':
-            temporal_graph[(parasite, TreeType.PARASITE)].append((host, TreeType.HOST))
+            temporal_graph[(parasite, tree.TreeType.PARASITE)].append((host, tree.TreeType.HOST))
         # if the node_mapping is not a mapping onto the root of host tree, we add the second relation
         if host_parent != 'Top':
-            temporal_graph[(host_parent, TreeType.HOST)].append((parasite, TreeType.PARASITE))
+            temporal_graph[(host_parent, tree.TreeType.HOST)].append((parasite, tree.TreeType.PARASITE))
         
         # if event is a transfer, then we add two more temporal relations
         if event_type == 'T' and add_strong_constraints:
@@ -301,10 +299,10 @@ def build_temporal_graph(host_dict: dict, parasite_dict: dict, reconciliation: d
             right_child_mapping = event_tuple[2]
             right_child_parasite, right_child_host = right_child_mapping
             # since a transfer event is horizontal, we have these two implied relations
-            temporal_graph[(parent[right_child_host], TreeType.HOST)].append((parasite, TreeType.PARASITE))
+            temporal_graph[(parent[right_child_host], tree.TreeType.HOST)].append((parasite, tree.TreeType.PARASITE))
             # the second relation is only added if the right child mapping is not a leaf mapping
             if right_child_mapping not in reconciliation or reconciliation[right_child_mapping][0][0]!='C':
-                temporal_graph[(right_child_parasite, TreeType.PARASITE)].append((host, TreeType.HOST))
+                temporal_graph[(right_child_parasite, tree.TreeType.PARASITE)].append((host, tree.TreeType.HOST))
 
     for node_tuple in temporal_graph:
         # we need to make sure the associated value in the dictionary does not contain repeated node tuples
@@ -389,7 +387,7 @@ def populate_nodes_with_order(tree_node, tree_type, ordering_dict, leaf_order):
     :param ordering_dict: a dictionary that maps node tuples to their temporal order as described in topological_order
     :param leaf_order: the temporal order we should assign to the leaves of the tree
     """
-    layout = NodeLayout()
+    layout = tree.NodeLayout()
     if tree_node.is_leaf:
         layout.col = leaf_order
         tree_node.layout = layout
