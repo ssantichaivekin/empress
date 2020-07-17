@@ -215,9 +215,9 @@ class App(tk.Frame):
         self.cost_space_window = None
         self.entire_space_window = None
         self.set_num_cluster_window = None
+        self.view_solution_space_window_after_setting_clusters = None
         self.one_MPR_window = None
-        self.view_solution_space_window = None
-        self.view_reconciliations_window = None
+        self.solution_window = None
         self.view_pvalue_histogram_window = None
     
     def refresh_when_reload_host(self):
@@ -315,14 +315,16 @@ class App(tk.Frame):
         if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
             self.set_num_cluster_window.destroy()
 
-        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
-            self.view_solution_space_window.destroy()
+        if self.view_solution_space_window_after_setting_clusters is not None and self.view_solution_space_window_after_setting_clusters.winfo_exists():
+            self.view_solution_space_window_after_setting_clusters.destroy()
 
         if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists():
             self.one_MPR_window.destroy()
 
-        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
-            self.view_reconciliations_window.destroy()
+        if self.num_cluster is not None:
+            for i in range(self.num_cluster):
+                if self.solution_window is not None and self.solution_window.winfo_exists():
+                    self.solution_window.destroy()
 
         if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
@@ -740,12 +742,28 @@ class App(tk.Frame):
             for i in range(len(clusters)):
                 App.medians.append(clusters[i].median())
 
-        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
-            self.view_solution_space_window.destroy()
-        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
-            self.view_reconciliations_window.destroy()
+        if self.view_solution_space_window_after_setting_clusters is not None and self.view_solution_space_window_after_setting_clusters.winfo_exists():
+            self.view_solution_space_window_after_setting_clusters.destroy()
+
+        if self.num_cluster is not None:
+            for i in range(self.num_cluster):
+                if self.solution_window is not None and self.solution_window.winfo_exists():
+                    self.solution_window.destroy()
+
         if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
+
+    def open_window_solution_space(self):
+        """Pop up a new tkinter window to display the solution space after entering the number of clusters."""
+        if self.num_cluster is not None:
+            self.view_solution_space_window_after_setting_clusters = tk.Toplevel(self.master)
+            self.view_solution_space_window_after_setting_clusters.geometry("900x900")
+            self.view_solution_space_window_after_setting_clusters.title("View reconciliation space")
+            # Bring the new tkinter window to the front
+            self.view_solution_space_window_after_setting_clusters.attributes('-topmost', True)
+            self.view_solution_space_window_after_setting_clusters.focus_force()
+            self.view_solution_space_window_after_setting_clusters.bind('<FocusIn>', self.OnFocusIn)
+            SolutionSpaceWindow(self.view_solution_space_window_after_setting_clusters)
 
     def select_from_view_reconciliations_dropdown(self, event):
         """When "View reconciliations" dropdown is clicked."""
@@ -765,31 +783,19 @@ class App(tk.Frame):
             self.view_reconciliations_var.set("View reconciliations")
             self.open_window_reconciliations()
 
-    def open_window_solution_space(self):
-        """Pop up a new tkinter window to display the solution space."""
-        if self.num_cluster is not None:
-            self.view_solution_space_window = tk.Toplevel(self.master)
-            self.view_solution_space_window.geometry("900x900")
-            self.view_solution_space_window.title("View reconciliation space")
-            # Bring the new tkinter window to the front
-            self.view_solution_space_window.attributes('-topmost', True)
-            self.view_solution_space_window.focus_force()
-            self.view_solution_space_window.bind('<FocusIn>', self.OnFocusIn)
-            SolutionSpaceWindow(self.view_solution_space_window)
-
     def open_window_reconciliations(self):
-        """Pop up new tkinter windows to display the reconciliations."""
+        """Pop up new tkinter windows to display one reconciliation per cluster."""
         if self.num_cluster is not None:
             solution_number = 1
             for solution in App.medians:
-                solution_window = tk.Toplevel(self.master)
-                solution_window.geometry("800x800")
-                solution_window.title("View reconciliations " + str(solution_number))
+                self.solution_window = tk.Toplevel(self.master)
+                self.solution_window.geometry("800x800")
+                self.solution_window.title("View reconciliations " + str(solution_number))
                 # Bring the new tkinter window to the front
-                solution_window.attributes('-topmost', True)
-                solution_window.focus_force()
-                solution_window.bind('<FocusIn>', self.OnFocusIn)
-                ReconciliationsOnePerClusterWindow(solution_window, solution)
+                self.solution_window.attributes('-topmost', True)
+                self.solution_window.focus_force()
+                self.solution_window.bind('<FocusIn>', self.OnFocusIn)
+                ReconciliationsOnePerClusterWindow(self.solution_window, solution)
                 solution_number = solution_number + 1
 
     def open_window_pvalue_histogram(self):
@@ -805,7 +811,7 @@ class App(tk.Frame):
         PValueHistogramWindow(self.view_pvalue_histogram_window)
 
     def OnFocusIn(self, event):
-        """To bring newly created tkinter window to the front."""
+        """Bring newly created tkinter window to the front until user interacts with it, i.e., taking focus.."""
         if type(event.widget).__name__ == 'Tk':
             event.widget.attributes('-topmost', False)
 
