@@ -90,6 +90,7 @@ def _set_offsets(tree: tree.Tree):
             # COUNT_OFFSET artificially adds extra nodes/tracks to lower the offset and pull parasite nodes closer to the host node their mapped to
             node.layout.offset = abs(y_0 - y_1) / (node.layout.node_count + render_settings.COUNT_OFFSET)
 
+
 def _render_host(fig: plot_tools.FigureWrapper, host_tree: tree.Tree, show_internal_labels: bool, font_size: float):
     """
     Renders the host tree
@@ -117,7 +118,7 @@ def _render_host_helper(fig: plot_tools.FigureWrapper, node: tree.Node, show_int
     """
     Helper function for rendering the host tree.
     :param fig: Figure object that visualizes trees using MatplotLib
-    :param node: host Node object that will be rendered
+    :param node: Host Node object that will be rendered
     :param show_internal_labels: Boolean that determines whether or not the internal labels are shown
     :param font_size: Font size for the text of the tips and internal nodes of the tree
     :param host_tree: Tree object representing a Host Tree
@@ -154,7 +155,7 @@ def _render_parasite(fig: plot_tools.FigureWrapper, parasite_tree: tree.Tree, re
     Render the parasite tree.
     :param fig: Figure object that visualizes trees using MatplotLib
     :param parasite_tree: Parasite tree represented as a Tree object
-    :param recon_obj: Reconciliation object
+    :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from a parasite tree to a host tree
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
     :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
     :param show_internal_labels: Boolean that determines whether or not the internal labels are shown
@@ -168,7 +169,7 @@ def _render_parasite(fig: plot_tools.FigureWrapper, parasite_tree: tree.Tree, re
 def _populate_host_tracks(node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict):
     """
     :param node: Node object
-    :param recon_obj: Reconciliation object
+    :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from  a parasite tree to a host tree
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
     """
     mapping_node = recon_obj.mapping_of(node.name)
@@ -204,8 +205,8 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
     """
     Helper function for rendering the parasite tree.
     :param fig: Figure object that visualizes trees using MatplotLib
-    :param node: Node object representing a parasite event
-    :param recon_obj: Reconciliation object
+    :param node: Node object representing the parasite event being rendered
+    :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from  a parasite tree to a host tree
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
     :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
     :param show_internal_labels: Boolean that determines whether or not the internal labels are shown
@@ -268,11 +269,11 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
 def _fix_transfer(node: tree.Node, right_node: tree.Node, host_node: tree.Node, host_lookup: dict, recon_obj: recon.Reconciliation):
     """
     Checks to see in tranfer node is inconsistent and the tries to fix node if it can be slid down the host edge
-    :param node: Node object representing a parasite event
+    :param node: Node object representing the parasite event being rendered
     :param node: Right node of the node object
     :param host_node: Node object represeting a host that the parasite node is mapped to
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
-    :param recon_obj: Reconciliation object
+    :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from  a parasite tree to a host tree
     """
     min_col = host_lookup[recon_obj.mapping_of(right_node.name).host].parent_node.layout.col
     max_col = host_node.layout.col
@@ -353,8 +354,8 @@ def _render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, r
     """
     Very basic branch drawing
     :param fig: Figure object that visualizes trees using MatplotLib
-    :param node: Node object
-    :param recon_obj: Reconciliation object
+    :param node: Node object representing the parasite event being rendered
+    :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from  a parasite tree to a host tree
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
     :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
     """
@@ -382,9 +383,9 @@ def _render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, r
 def _connect_children(node: tree.Node, host_lookup: dict, parasite_lookup: dict, recon_obj: recon.Reconciliation, fig: plot_tools.FigureWrapper):
     """
     Connects the children of a node
-    :param node: Node object
+    :param node: Node object representing a parasite event
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
-    :param recon_obj: Reconciliation object
+    :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from  a parasite tree to a host tree
     :param fig: Figure object that visualizes trees using MatplotLib
     """
     left_node, right_node = _get_children(node, recon_obj, parasite_lookup)
@@ -408,10 +409,10 @@ def _render_loss_branch(node_pos: plot_tools.Position, next_pos: plot_tools.Posi
 def _render_cospeciation_branch(node: tree.Node, host_lookup: dict, parasite_lookup: dict, recon_obj: recon.Reconciliation, fig: plot_tools.FigureWrapper):
     """
     Renders the cospeciation branch.
-    :param node: Node object
+    :param node: Node object representing the parasite event being rendered
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
     :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
-    :param recon_obj: Reconciliation object
+    :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from  a parasite tree to a host tree
     :param fig: Figure object that visualizes trees using MatplotLib
     """
     left_node, right_node = _get_children(node, recon_obj, parasite_lookup)
@@ -452,7 +453,7 @@ def _render_cospeciation_branch(node: tree.Node, host_lookup: dict, parasite_loo
 def _get_children(node: tree.Node, recon_obj: recon.Reconciliation, parasite_lookup: dict):
     """
     Gets the children of a node in the order they appear in the mapping node.
-    :param node: Node object
+    :param node: Node object representing a parasite event
     :param recon_obj: Reconciliation Object
     :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
     :return A tuple consisting of the left node and right node
@@ -488,9 +489,9 @@ def _render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools
     :param node_xy: x and y position of a node
     :param right_pos: x and y position of the right child of a node
     :param fig: Figure object that visualizes trees using MatplotLib
-    :param node: Node object
+    :param node: Node object representing the parasite event being rendered
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
-    :param recon_obj: Reconciliation object
+    :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from  a parasite tree to a host tree
     :param right_node: The right node object of node
     """
 
@@ -522,10 +523,10 @@ def _render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools
 def _connect_child_to_parent(node: tree.Node, child_node: tree.Node, host_lookup: dict, recon_obj: recon.Reconciliation, fig: plot_tools.FigureWrapper,  stop_row: float = None):
     """
     Connects a child node to its parent node
-    :param node: Node object
+    :param node: Node object representing a parasite event
     :param child_node: The child node object of a given node
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
-    :param recon_obj: Reconciliation object
+    :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from  a parasite tree to a host tree
     :param fig: Figure object that visualizes trees using MatplotLib
     :param stop_row: row number to stop line drawing on
     """
@@ -602,7 +603,7 @@ def _set_host_node_layout(host_tree: tree.Tree):
 def _set_internal_host_nodes(node: tree.Node):
     """
     Helper function for set_host_node_layout
-    :param node: Node object
+    :param node: Host Node object that will be rendered
     """
     if node.is_leaf:
         return

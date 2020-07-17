@@ -13,7 +13,7 @@ from matplotlib.textpath import TextPath
 from matplotlib.patches import PathPatch
 import matplotlib.patheffects as PathEffects
 
-from empress.recon_vis.render_settings import *
+from empress.recon_vis import render_settings
 
 LINEWIDTH = 2
 TEXTWIDTH = .3
@@ -26,11 +26,17 @@ TEXT_Z_ORDER = 2
 SIZE = 6
 TRANSFERSIZE = 10
 
-NODEFONTSIZE = 0.12
 FONTSIZE = 12
 
-DEFAULT_ALIGNMENT = 'bottom'
-
+DEFAULT_VERTICAL_ALIGNMENT = 'bottom'
+DEFAULT_VERTICAL_ALIGNMENT_2 = 'top'
+DEFAULT_HORIZONTAL_ALIGNMENT = 'right'
+DEFAULT_LOCATION = 'best'
+DEFAULT_LINESTYLE = '-'
+DEFAULT_TRIANGLE_LINESTYLE = 'None'
+DEFAULT_DOT_MARKER = 'o'
+CENTER = 'center'
+OFF = "off"
 
 def transparent_color(col: Tuple[int, int, int, float], alpha: float):
     return col[0:3] + (alpha,)
@@ -53,17 +59,16 @@ class FigureWrapper:
             self.axis = axes
         self.axis.autoscale()
         self.axis.margins(0.1)
-        self.axis.axis("off")
+        self.axis.axis(OFF)
         self.axis.set_title(title)
 
-    def set_legend(self, legend_elements: list, loc: str = 'best', fontsize: int = FONTSIZE, title: str = None):
+    def set_legend(self, legend_elements: list, loc: str = DEFAULT_LOCATION, fontsize: int = FONTSIZE, title: str = None):
         """
         create legend
         """
-
         self.axis.legend(handles=legend_elements, loc=loc, fontsize=fontsize, title=title)
-        
-    def line(self, point_1: Position, point_2: Position, col: tuple = BLACK, linestyle: str = '-'):
+
+    def line(self, point_1: Position, point_2: Position, col: tuple = render_settings.BLACK, linestyle: str = DEFAULT_LINESTYLE):
         """
         Draw line from point p1 to p2
         """
@@ -71,23 +76,23 @@ class FigureWrapper:
         x_2, y_2 = point_2
         self.axis.plot([x_1, x_2], [y_1, y_2], color=col, linewidth=LINEWIDTH, linestyle=linestyle, zorder=LINE_Z_ORDER)
 
-    def dot(self, point: Position, marker: str = 'o', col: tuple = BLACK):
+    def dot(self, point: Position, marker: str = DEFAULT_DOT_MARKER, col: tuple = render_settings.BLACK):
         """
         Plot dot at point p
         """
         self.axis.plot(point.x, point.y, marker, color=col, zorder=DOT_Z_ORDER)
-    
-    def text(self, point: tuple, string: str, col: tuple = RED, h_a: str = 'right'):
-        x, y = point
-        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment='top')
 
-    def text_v2(self, point: tuple, text: str, col: tuple = BLACK, size: float = SIZE, vertical_alignment: str = DEFAULT_ALIGNMENT, border_col: tuple = None):
+    def text(self, point: tuple, string: str, col: tuple = render_settings.RED, h_a: str = DEFAULT_HORIZONTAL_ALIGNMENT):
+        x, y = point
+        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment=DEFAULT_VERTICAL_ALIGNMENT_2)
+
+    def text_v2(self, point: tuple, text: str, col: tuple = render_settings.BLACK, size: float = SIZE, vertical_alignment: str = DEFAULT_VERTICAL_ALIGNMENT, border_col: tuple = None):
         """
         Plot text at s at point p
         """
         if text is not None:
-            if vertical_alignment == 'center':
-                point = (point[0], point[1] - size * CENTER_CONSTANT)
+            if vertical_alignment == CENTER:
+                point = (point[0], point[1] - size * render_settings.CENTER_CONSTANT)
 
             tp = TextPath(point, text, size=size)
             path_patch = PathPatch(tp, color=col, linewidth = TEXTWIDTH, zorder=TEXT_Z_ORDER)
@@ -95,14 +100,14 @@ class FigureWrapper:
                 path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
             self.fig.gca().add_patch(path_patch)
     
-    def triangle(self, point: Position, col: tuple = BLACK, markersize: int = TRANSFERSIZE, rotation: float = UP_ARROW_ROTATION):
+    def triangle(self, point: Position, col: tuple = render_settings.BLACK, markersize: int = TRANSFERSIZE, rotation: float = render_settings.UP_ARROW_ROTATION):
         """
         Draws a triangle in the desired position
         """
-        self.axis.plot(point.x, point.y, color=col, marker=(3, 0, rotation), markersize=TRANSFERSIZE, linestyle='None')
+        self.axis.plot(point.x, point.y, color=col, marker=(3, 0, rotation), markersize=TRANSFERSIZE, linestyle=DEFAULT_TRIANGLE_LINESTYLE)
 
     def show(self):
-        """ 
+        """
         Display figure
         """
         plt.figure(self.fig.number)
