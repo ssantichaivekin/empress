@@ -78,3 +78,5 @@ LEGEND_ELEMENTS = [
               colors=[LOSS_EDGE_COLOR], label='Loss')
 ]
 
+UP_ARROW_ROTATION = 0
+DOWN_ARROW_ROTATION = 180
