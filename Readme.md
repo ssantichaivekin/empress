@@ -1,23 +1,64 @@
-# HMC eMPRess Codebase for Spring 2020 Research
+# HMC Empress Codebase for Spring 2020 Research
 
 ## Overview
-eMPRess supports the following functionality:
+Empress supports the following functionality:
 * DTL Reconciliation - `reconcile`
 * Costscape - `costscape`
 * Pair-distance Histogram - `histogram`
 * Cluster MPR - `clumpr`
 
-## Installing Dependencies
-The package uses [pipenv](https://pipenv-fork.readthedocs.io/en/latest/) to install dependencies. Please refer to the Pipenv website on how to install pipenv.
+## Install empress 
 
-On the command line, run:
+Empress developer team wishes users a smooth and straightforward installation experience. We are packaging empress as an application that can be installed and run with one click. We will provide a link below when the installers becomes available. If you cannot find an installer for your platform, please use the [Install empress for development](#install-empress-for-development) instruction below.
+
+Graphical User Interface:
+- macOS: unavailable
+- linux: unavailable
+- windows: unavailable
+
+Command Line Interface:
+- macOS: unavailable
+- linux: unavailable
+- windows: unavailable
+
+## Install empress for development
+
+### Install python
+Empress uses python version 3.7 and has not been set up to run on higher versions. If you don't have python3.7 installed in your computer, you can download the installer from [python.org website](https://www.python.org/downloads/release/python-378/). For macOS, choose the macOS 64-bit installer. For Windows, choose the Windows x86-64 executable installer. I could not find the installer for linux on python.org. Alternatively, you could download python3.7 from [Anaconda website](https://www.anaconda.com/products/individual#Downloads) or from your favorite package manager tool such as `apt-get`.
+
+### Install pipenv package manager
+Empress uses [pipenv](https://pipenv-fork.readthedocs.io/en/latest/) as its package manager to install dependencies. You can install pipenv by going to the terminal and type in the command:
 ```bash
-pipenv install # create virtual environment and install dependencies
-pipenv shell # enter the virtual environment with dependencies installed
+pip3 install pipenv  # use python3 pip to install pipenv
+```
+
+### Download empress repository
+If you have `git` installed, you can download empress by typing in terminal
+```bash
+cd folder-you-want-to-install  # go to the folder you want to downlaod empress to
+git clone https://github.com/ssantichaivekin/empress.git
+```
+
+If you don't have `git` installed, you can [click on this link to download the zip file](https://github.com/ssantichaivekin/empress/archive/master.zip). Name the zip file `empress` instead of `empress-master` and unzip it to a location you want.
+
+### Use pipenv to install dependencies
+Go to terminal, run:
+```bash
+cd empress  # go to the empress folder you downloaded from last step
+pipenv install  # create virtual environment and install dependencies
+pipenv shell  # enter the virtual environment with dependencies installed
 ```
 Every time you restart the terminal, make sure you run `pipenv shell` before running empress script.
 
-## Running eMPRess
+## Run graphical user interface (gui)
+Make sure you have already run `pipenv shell` in the empress folder. Note this empress will not work if you run `pipenv shell` outside of empress folder and then changing directory to empress folder afterward.
+
+In the empress folder, type:
+```bash
+python empress_gui.py
+```
+
+## Run empress command line interface (cli)
 
 To see help, run:
 ```bash
