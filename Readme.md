@@ -39,7 +39,7 @@ pip3 install pipenv  # use python3 pip to install pipenv
 ```
 
 ### Download empress repository
-If you have `git` installed, you can download empress by typing in terminal
+If you have `git` installed, you can download empress by typing in the terminal
 ```bash
 cd folder-you-want-to-install  # go to the folder you want to downlaod empress to
 git clone https://github.com/ssantichaivekin/empress.git
