@@ -32,7 +32,7 @@ ROYAL_BLUE = (.3, .4, .9, 1)
 CYAN = (.3, .9, .75, 1)
 RED_BLUSH = (.882, .255, .412, 1)
 PRETTY_YELLOW = (.882, .725, .255, 1)
-ORANGE_ORANGE = (1.00, .502, 0	, 1)
+ORANGE_ORANGE = (1.00, .502, 0, 1)
 
 LEAF_NODE_COLOR = BLUE
 COSPECIATION_NODE_COLOR = ORANGE_ORANGE
@@ -68,13 +68,13 @@ PARASITE_NODE_BORDER_COLOR = BLACK
 TREE_TITLE = "Reconciliation"
 
 LEGEND_ELEMENTS = [
-                        Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation',
-                               markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
-                        Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication',
-                               markerfacecolor=DUPLICATION_NODE_COLOR, markersize=NODESIZE),
-                        Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer',
-                               markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),
-                        LineCollection([[(0, 0)]], linestyles=['dashed'],
-                                       colors=[LOSS_EDGE_COLOR], label='Loss')
-                  ]
+       Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation',
+              markerfacecolor=COSPECIATION_NODE_COLOR, markersize=NODESIZE),
+       Line2D([0], [0], marker=DUPLICATION_NODE_SHAPE, color='w', label='Duplication',
+              markerfacecolor=DUPLICATION_NODE_COLOR, markersize=NODESIZE),
+       Line2D([0], [0], marker=TRANSFER_NODE_SHAPE, color='w', label='Transfer',
+              markerfacecolor=TRANSFER_NODE_COLOR, markersize=NODESIZE),
+       LineCollection([[(0, 0)]], linestyles=['dashed'],
+              colors=[LOSS_EDGE_COLOR], label='Loss')
+]
 
