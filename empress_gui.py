@@ -345,7 +345,7 @@ class App(tk.Frame):
             # initialdir is set to be the current working directory
             input_file = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select a host file",
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree")])
-            if input_file != "":
+            if input_file:
                 try:
                     self.recon_input.read_host(input_file)
                 except Exception as e:
@@ -365,7 +365,7 @@ class App(tk.Frame):
             # initialdir is set to be the same as that of the host file chosen by the user
             input_file = filedialog.askopenfilename(initialdir=pathlib.Path(self.host_file_path).parent, title="Select a parasite file",
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree")])
-            if input_file != "":
+            if input_file:
                 try:
                     self.recon_input.read_parasite(input_file)
                 except Exception as e:
@@ -382,7 +382,7 @@ class App(tk.Frame):
             # initialdir is set to be the same as that of the host file chosen by the user
             input_file = filedialog.askopenfilename(initialdir=pathlib.Path(self.host_file_path).parent, title="Select a mapping file",
                                                        filetypes=[("Tip mapping", "*.mapping")])
-            if input_file != "":
+            if input_file:
                 try:
                     self.recon_input.read_mapping(input_file)
                 except Exception as e:
