@@ -106,6 +106,17 @@ class FigureWrapper:
         """
         self.axis.plot(point.x, point.y, color=col, marker=(3, 0, rotation), markersize=TRANSFERSIZE, linestyle=DEFAULT_TRIANGLE_LINESTYLE)
 
+    def arrow_segment(self, point_1: Position, point_2: Position, col: tuple = render_settings.BLACK):
+        """
+        Draws a line from point 1 to point 2 with an arrow in the middle
+        """
+        plt.plot((point_1.x, point_2.x), (point_1.y, point_2.y), linewidth=2, color=col)
+        arrow_length_x, arrow_length_y = (point_2.x - point_1.x) / 2, (point_2.y - point_1.y) / 2
+        plt.arrow(point_1.x, point_1.y, arrow_length_x, arrow_length_y, linewidth=2, 
+                  head_width=0.3, head_length=0.5, facecolor=col, edgecolor=col,
+                  length_includes_head=False)
+
+
     def show(self):
         """
         Display figure

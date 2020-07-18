@@ -521,6 +521,8 @@ def _render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools
         fig.line(mid_pos, right_pos, render_settings.PARASITE_EDGE_COLOR)
     else:
         transfer_edge_color = plot_tools.transparent_color(render_settings.PARASITE_EDGE_COLOR, render_settings.TRANSFER_TRANSPARENCY)
+
+        fig.arrow_segment(node_pos, right_pos, transfer_edge_color)
         fig.line(node_pos, right_pos, transfer_edge_color)
 
 
