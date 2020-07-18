@@ -259,6 +259,8 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
     # Checking to see if left node is mapped to the same host node as parent
     if node.layout.row == left_node.layout.row:
         node.set_layout(y=left_node.layout.y)
+    elif node.layout.row == right_node.layout.row:
+        node.set_layout(y=right_node.layout.y)
     elif event.event_type is recon.EventType.TRANSFER:
         node.layout.y = host_node.layout.y + host_node.layout.h_track * host_node.layout.offset
 
@@ -436,7 +438,8 @@ def _render_cospeciation_branch(node: tree.Node, host_lookup: dict, parasite_loo
     offset = host_node.layout.offset
     if host_node.left_node.name == left_host_node.name:
         _render_curved_line_to(node_pos, left_pos, fig)
-        host_node.layout.lower_v_track += (host_node.layout.x - node_pos.x) / offset
+        if host_node.layout.lower_v_track < (host_node.layout.x - node_pos.x) / offset:
+            host_node.layout.lower_v_track += (host_node.layout.x - node_pos.x) / offset + offset
     else:
         stop_row = host_node.left_node.layout.row
         _connect_child_to_parent(node, left_node, host_lookup, recon_obj, fig, stop_row=stop_row)
@@ -444,7 +447,8 @@ def _render_cospeciation_branch(node: tree.Node, host_lookup: dict, parasite_loo
     # Draw Right node
     if host_node.right_node.name == right_host_node.name:
         _render_curved_line_to(node_pos, right_pos, fig)
-        host_node.layout.upper_v_track += (host_node.layout.x - node_pos.x) / offset
+        if host_node.layout.upper_v_track < (host_node.layout.x - node_pos.x) / offset:
+            host_node.layout.upper_v_track += (host_node.layout.x - node_pos.x) / offset + offset
     else:
         stop_row = host_node.right_node.layout.row
         _connect_child_to_parent(node, right_node, host_lookup, recon_obj, fig, stop_row=stop_row)
