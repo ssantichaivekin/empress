@@ -221,7 +221,7 @@ class App(tk.Frame):
         self.set_num_cluster_window = None
         self.view_solution_space_window_after_setting_clusters = None
         self.one_MPR_window = None
-        self.solution_window = None
+        self.solution_window_one_per_cluster = None
         self.view_pvalue_histogram_window = None
     
     def refresh_when_reload_host(self):
@@ -325,10 +325,8 @@ class App(tk.Frame):
         if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists():
             self.one_MPR_window.destroy()
 
-        if self.num_cluster is not None:
-            for i in range(self.num_cluster):
-                if self.solution_window is not None and self.solution_window.winfo_exists():
-                    self.solution_window.destroy()
+        if self.solution_window_one_per_cluster is not None and self.solution_window_one_per_cluster.winfo_exists():
+            self.solution_window_one_per_cluster.destroy()
 
         if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
@@ -434,7 +432,7 @@ class App(tk.Frame):
         # Bring the new tkinter window to the front
         self.tanglegram_window.attributes('-topmost', True)
         self.tanglegram_window.focus_force()
-        self.tanglegram_window.bind('<FocusIn>', self.OnFocusIn)
+        self.tanglegram_window.bind('<FocusIn>', self.on_focus_in)
         # Creates a new frame
         tanglegram_frame = tk.Frame(self.tanglegram_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
@@ -458,7 +456,7 @@ class App(tk.Frame):
         # Bring the new tkinter window to the front
         self.cost_space_window.attributes('-topmost', True)
         self.cost_space_window.focus_force()
-        self.cost_space_window.bind('<FocusIn>', self.OnFocusIn)
+        self.cost_space_window.bind('<FocusIn>', self.on_focus_in)
         # Creates a new frame
         plt_frame = tk.Frame(self.cost_space_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
@@ -651,7 +649,7 @@ class App(tk.Frame):
             # Bring the new tkinter window to the front
             self.entire_space_window.attributes('-topmost', True)
             self.entire_space_window.focus_force()
-            self.entire_space_window.bind('<FocusIn>', self.OnFocusIn)
+            self.entire_space_window.bind('<FocusIn>', self.on_focus_in)
             # Creates a new frame
             plt_frame = tk.Frame(self.entire_space_window)
             plt_frame.pack(fill=tk.BOTH, expand=1)
@@ -678,7 +676,7 @@ class App(tk.Frame):
         # Bring the new tkinter window to the front
         self.set_num_cluster_window.attributes('-topmost', True)
         self.set_num_cluster_window.focus_force()
-        self.set_num_cluster_window.bind('<FocusIn>', self.OnFocusIn)
+        self.set_num_cluster_window.bind('<FocusIn>', self.on_focus_in)
         # Creates a new frame
         self.set_num_cluster_frame = tk.Frame(self.set_num_cluster_window)
         self.set_num_cluster_frame.pack(fill=tk.BOTH, expand=tk.YES)
@@ -751,10 +749,8 @@ class App(tk.Frame):
         if self.view_solution_space_window_after_setting_clusters is not None and self.view_solution_space_window_after_setting_clusters.winfo_exists():
             self.view_solution_space_window_after_setting_clusters.destroy()
 
-        if self.num_cluster is not None:
-            for i in range(self.num_cluster):
-                if self.solution_window is not None and self.solution_window.winfo_exists():
-                    self.solution_window.destroy()
+        if self.solution_window_one_per_cluster is not None and self.solution_window_one_per_cluster.winfo_exists():
+            self.solution_window_one_per_cluster.destroy()
 
         if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
@@ -768,7 +764,7 @@ class App(tk.Frame):
             # Bring the new tkinter window to the front
             self.view_solution_space_window_after_setting_clusters.attributes('-topmost', True)
             self.view_solution_space_window_after_setting_clusters.focus_force()
-            self.view_solution_space_window_after_setting_clusters.bind('<FocusIn>', self.OnFocusIn)
+            self.view_solution_space_window_after_setting_clusters.bind('<FocusIn>', self.on_focus_in)
             SolutionSpaceWindow(self.view_solution_space_window_after_setting_clusters)
 
     def select_from_view_reconciliations_dropdown(self, event):
@@ -782,7 +778,7 @@ class App(tk.Frame):
             # Bring the new tkinter window to the front
             self.one_MPR_window.attributes('-topmost', True)
             self.one_MPR_window.focus_force()
-            self.one_MPR_window.bind('<FocusIn>', self.OnFocusIn)
+            self.one_MPR_window.bind('<FocusIn>', self.on_focus_in)
             ReconciliationsOneMPRWindow(self.one_MPR_window)
 
         elif self.view_reconciliations_var.get() == "One per cluster":
@@ -793,15 +789,15 @@ class App(tk.Frame):
         """Pop up new tkinter windows to display one reconciliation per cluster."""
         if self.num_cluster is not None:
             solution_number = 1
-            for solution in App.medians:
-                self.solution_window = tk.Toplevel(self.master)
-                self.solution_window.geometry("800x800")
-                self.solution_window.title("View reconciliations " + str(solution_number))
+            for solution_index, solution in enumerate(App.medians):
+                self.solution_window_one_per_cluster = tk.Toplevel(self.master)
+                self.solution_window_one_per_cluster.geometry("800x800")
+                self.solution_window_one_per_cluster.title("View reconciliations " + str(solution_index + 1))
                 # Bring the new tkinter window to the front
-                self.solution_window.attributes('-topmost', True)
-                self.solution_window.focus_force()
-                self.solution_window.bind('<FocusIn>', self.OnFocusIn)
-                ReconciliationsOnePerClusterWindow(self.solution_window, solution)
+                self.solution_window_one_per_cluster.attributes('-topmost', True)
+                self.solution_window_one_per_cluster.focus_force()
+                self.solution_window_one_per_cluster.bind('<FocusIn>', self.on_focus_in)
+                ReconciliationsOnePerClusterWindow(self.solution_window_one_per_cluster, solution)
                 solution_number = solution_number + 1
 
     def open_window_pvalue_histogram(self):
@@ -813,10 +809,10 @@ class App(tk.Frame):
         # Bring the new tkinter window to the front
         self.view_pvalue_histogram_window.attributes('-topmost', True)
         self.view_pvalue_histogram_window.focus_force()
-        self.view_pvalue_histogram_window.bind('<FocusIn>', self.OnFocusIn)
+        self.view_pvalue_histogram_window.bind('<FocusIn>', self.on_focus_in)
         PValueHistogramWindow(self.view_pvalue_histogram_window)
 
-    def OnFocusIn(self, event):
+    def on_focus_in(self, event):
         """Bring newly created tkinter window to the front until user interacts with it, i.e., taking focus.."""
         if type(event.widget).__name__ == 'Tk':
             event.widget.attributes('-topmost', False)
