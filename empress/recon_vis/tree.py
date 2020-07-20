@@ -63,7 +63,6 @@ class Node:
             return self.layout.lower_v_track - 1
     
     def update_count(self):
-        print(self.name)
         self.layout.node_count += 1 
 
 
