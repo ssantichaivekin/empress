@@ -439,9 +439,8 @@ class App(tk.Frame):
         tanglegram_frame = tk.Frame(self.tanglegram_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
         tanglegram_frame.pack_propagate(False)
-        self.fig_tanglegram = self.recon_input.draw()
-        self.tanglegram_window.protocol("WM_DELETE_WINDOW", self.tanglegram_figure_on_closing)
-        canvas = FigureCanvasTkAgg(self.fig_tanglegram, tanglegram_frame)
+        fig = self.recon_input.draw()
+        canvas = FigureCanvasTkAgg(fig, tanglegram_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
@@ -822,12 +821,6 @@ class App(tk.Frame):
         if type(event.widget).__name__ == 'Tk':
             event.widget.attributes('-topmost', False)
 
-    def tanglegram_figure_on_closing(self):
-        """Close and remove matplotlib figures when the tkinter window is destroyed."""
-        self.fig_tanglegram.clear()
-        #plt.close(self.fig_tanglegram)
-        self.tanglegram_window.destroy()
-
 # View reconciliation space - Clusters
 class SolutionSpaceWindow(tk.Frame):
     def __init__(self, master):
@@ -900,8 +893,6 @@ class ReconciliationsOneMPRWindow(tk.Frame):
         show_event_frequencies_checkbutton.pack(side=tk.LEFT)
 
     def update_one_mpr(self):
-        # self.one_mpr_fig.clear()
-        # plt.close(self.one_mpr_fig)
         self.canvas.get_tk_widget().destroy()
         self.one_mpr_fig = App.recon_graph.median().draw(
             show_internal_labels=self.show_internal_node_names_boolean.get(),
@@ -975,6 +966,7 @@ class PValueHistogramWindow(tk.Frame):
         self.frame.pack(fill=tk.BOTH, expand=1)
         self.frame.pack_propagate(False)
         self.draw_p_value_histogram()
+
     def draw_p_value_histogram(self):
         canvas = FigureCanvasTkAgg(App.p_value_histogram, self.frame)
         canvas.draw()
@@ -989,12 +981,12 @@ class CustomEntry(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.entry = tk.Entry(self, *args, **kwargs)
         self.entry.pack(fill="both", expand=tk.TRUE, padx=1, pady=1)
-
         self.get = self.entry.get
         self.insert = self.entry.insert
 
     def set_border_color(self, color):
         self.configure(background=color)
+
     def validate(self, validate, validatecommand):
         self.entry.configure(validate=validate, validatecommand=validatecommand)
 
