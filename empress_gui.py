@@ -430,9 +430,10 @@ class App(tk.Frame):
         self.tanglegram_window.geometry("600x600")
         self.tanglegram_window.title("Tanglegram")
         # Bring the new tkinter window to the front
+        # https://stackoverflow.com/a/53644859/13698076
         self.tanglegram_window.attributes('-topmost', True)
         self.tanglegram_window.focus_force()
-        self.tanglegram_window.bind('<FocusIn>', self.on_focus_in)
+        self.tanglegram_window.bind('<FocusIn>', self.bring_to_front)
         # Creates a new frame
         tanglegram_frame = tk.Frame(self.tanglegram_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
@@ -454,9 +455,10 @@ class App(tk.Frame):
         self.cost_space_window.geometry("550x550")
         self.cost_space_window.title("Matplotlib Graph - Cost regions")
         # Bring the new tkinter window to the front
+        # https://stackoverflow.com/a/53644859/13698076
         self.cost_space_window.attributes('-topmost', True)
         self.cost_space_window.focus_force()
-        self.cost_space_window.bind('<FocusIn>', self.on_focus_in)
+        self.cost_space_window.bind('<FocusIn>', self.bring_to_front)
         # Creates a new frame
         plt_frame = tk.Frame(self.cost_space_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
@@ -647,9 +649,10 @@ class App(tk.Frame):
             self.entire_space_window.geometry("600x600")
             self.entire_space_window.title("Entire space")
             # Bring the new tkinter window to the front
+            # https://stackoverflow.com/a/53644859/13698076
             self.entire_space_window.attributes('-topmost', True)
             self.entire_space_window.focus_force()
-            self.entire_space_window.bind('<FocusIn>', self.on_focus_in)
+            self.entire_space_window.bind('<FocusIn>', self.bring_to_front)
             # Creates a new frame
             plt_frame = tk.Frame(self.entire_space_window)
             plt_frame.pack(fill=tk.BOTH, expand=1)
@@ -674,9 +677,10 @@ class App(tk.Frame):
         self.set_num_cluster_window.geometry("300x200")
         self.set_num_cluster_window.title("Set the number of clusters")
         # Bring the new tkinter window to the front
+        # https://stackoverflow.com/a/53644859/13698076
         self.set_num_cluster_window.attributes('-topmost', True)
         self.set_num_cluster_window.focus_force()
-        self.set_num_cluster_window.bind('<FocusIn>', self.on_focus_in)
+        self.set_num_cluster_window.bind('<FocusIn>', self.bring_to_front)
         # Creates a new frame
         self.set_num_cluster_frame = tk.Frame(self.set_num_cluster_window)
         self.set_num_cluster_frame.pack(fill=tk.BOTH, expand=tk.YES)
@@ -762,9 +766,10 @@ class App(tk.Frame):
             self.view_solution_space_window_after_setting_clusters.geometry("900x900")
             self.view_solution_space_window_after_setting_clusters.title("View reconciliation space")
             # Bring the new tkinter window to the front
+            # https://stackoverflow.com/a/53644859/13698076
             self.view_solution_space_window_after_setting_clusters.attributes('-topmost', True)
             self.view_solution_space_window_after_setting_clusters.focus_force()
-            self.view_solution_space_window_after_setting_clusters.bind('<FocusIn>', self.on_focus_in)
+            self.view_solution_space_window_after_setting_clusters.bind('<FocusIn>', self.bring_to_front)
             SolutionSpaceWindow(self.view_solution_space_window_after_setting_clusters)
 
     def select_from_view_reconciliations_dropdown(self, event):
@@ -776,9 +781,10 @@ class App(tk.Frame):
             self.one_MPR_window.geometry("600x600")
             self.one_MPR_window.title("One MPR")
             # Bring the new tkinter window to the front
+            # https://stackoverflow.com/a/53644859/13698076
             self.one_MPR_window.attributes('-topmost', True)
             self.one_MPR_window.focus_force()
-            self.one_MPR_window.bind('<FocusIn>', self.on_focus_in)
+            self.one_MPR_window.bind('<FocusIn>', self.bring_to_front)
             ReconciliationsOneMPRWindow(self.one_MPR_window)
 
         elif self.view_reconciliations_var.get() == "One per cluster":
@@ -794,9 +800,10 @@ class App(tk.Frame):
                 self.solution_window_one_per_cluster.geometry("800x800")
                 self.solution_window_one_per_cluster.title("View reconciliations " + str(solution_index + 1))
                 # Bring the new tkinter window to the front
+                # https://stackoverflow.com/a/53644859/13698076
                 self.solution_window_one_per_cluster.attributes('-topmost', True)
                 self.solution_window_one_per_cluster.focus_force()
-                self.solution_window_one_per_cluster.bind('<FocusIn>', self.on_focus_in)
+                self.solution_window_one_per_cluster.bind('<FocusIn>', self.bring_to_front)
                 ReconciliationsOnePerClusterWindow(self.solution_window_one_per_cluster, solution)
                 solution_number = solution_number + 1
 
@@ -807,12 +814,13 @@ class App(tk.Frame):
         self.view_pvalue_histogram_window.geometry("700x700")
         self.view_pvalue_histogram_window.title("p-value Histogram")
         # Bring the new tkinter window to the front
+        # https://stackoverflow.com/a/53644859/13698076
         self.view_pvalue_histogram_window.attributes('-topmost', True)
         self.view_pvalue_histogram_window.focus_force()
-        self.view_pvalue_histogram_window.bind('<FocusIn>', self.on_focus_in)
+        self.view_pvalue_histogram_window.bind('<FocusIn>', self.bring_to_front)
         PValueHistogramWindow(self.view_pvalue_histogram_window)
 
-    def on_focus_in(self, event):
+    def bring_to_front(self, event):
         """Bring newly created tkinter window to the front until user interacts with it, i.e., taking focus.."""
         if type(event.widget).__name__ == 'Tk':
             event.widget.attributes('-topmost', False)
