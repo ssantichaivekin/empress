@@ -9,9 +9,7 @@ a = Analysis(['../empress_gui.py'],
              pathex=['pyinstaller_spec'],
              binaries=[],
              datas=[("../assets", "./assets")],
-             # pkg_resources.py2_warn hidden import needed if setuptools>=45.0.0
-             # https://github.com/pypa/setuptools/issues/1963#issuecomment-574265532
-             hiddenimports=['pkg_resources.py2_warn'],
+             hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],

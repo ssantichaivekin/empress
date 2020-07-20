@@ -107,10 +107,7 @@ def plot_costs_on_axis(axes: Axes, cost_vectors, transfer_min, transfer_max, dup
     leg = axes.legend()
     for i in range(len(leg.legendHandles)):  # adjust legend marker thickness
         leg.legendHandles[i].set_linewidth(2.0)
-    if title is None:
-        axes.set_title("Event cost regions")
-    else:
-        axes.set_title("Costscape: %s" % title)
+    axes.set_title("Costscape: %s" % title)
 
 def plotcosts(CVlist, transfer_min, transfer_max, dup_min, dup_max, outfile,
               log=True, display=False, verbose=False):
