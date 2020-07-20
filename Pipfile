@@ -10,6 +10,9 @@ python_version = '3.7'
 biopython = '*'
 networkx = '*'
 pydot = '*'
+# Pyinstaller doesn't work with matplotlib 3.3.0
+# https://github.com/pyinstaller/pyinstaller/pull/5006
+# TODO: change to matplotlib = '*' after fix is released
 matplotlib = '==3.2.*'
 shapely = '*'
 numpy = '*'
@@ -17,4 +20,7 @@ numpy = '*'
 [dev-packages]
 coverage = '*'
 flake8 = "*"
-pyinstaller = "*"
+# Correctly locate macos python.org built-in tcl/tk
+# https://github.com/pyinstaller/pyinstaller/pull/5010
+# TODO: change to pyinstaller = '*' after fix is released
+pyinstaller = {git = "https://github.com/ssantichaivekin/pyinstaller.git", editable = true}
