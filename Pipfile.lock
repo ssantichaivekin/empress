@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "62492ec99f372418fdb57aa165e5e71ffede424df9d542660a7e16162f89a37e"
+            "sha256": "6f6ab30b61e9a032d21fb3e99d3767efde9b64b463c67103c283c639d613beaf"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -266,6 +266,7 @@
                 "sha256:0c436bc847e7b1d9bda0560351bf76d7caf930fb585a828d13608839ef42c432",
                 "sha256:c500f02867515e6c60a27875b408920d18332ddf96b4035ef03beddd782d4281"
             ],
+            "markers": "sys_platform == 'darwin' and sys_platform == 'darwin'",
             "version": "==1.14"
         },
         "mccabe": {
@@ -292,11 +293,9 @@
             "version": "==2.2.0"
         },
         "pyinstaller": {
-            "hashes": [
-                "sha256:3730fa80d088f8bb7084d32480eb87cbb4ddb64123363763cf8f2a1378c1c4b7"
-            ],
-            "index": "pypi",
-            "version": "==3.6"
+            "editable": true,
+            "git": "https://github.com/ssantichaivekin/pyinstaller.git",
+            "ref": "4b880a028b4583342ac3bf3f2f95ee240e05a323"
         },
         "zipp": {
             "hashes": [
