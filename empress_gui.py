@@ -219,9 +219,9 @@ class App(tk.Frame):
         self.cost_space_window = None
         self.entire_space_window = None
         self.set_num_cluster_window = None
+        self.view_solution_space_window_after_setting_clusters = None
         self.one_MPR_window = None
-        self.view_solution_space_window = None
-        self.view_reconciliations_window = None
+        self.solution_window = None
         self.view_pvalue_histogram_window = None
     
     def refresh_when_reload_host(self):
@@ -319,14 +319,16 @@ class App(tk.Frame):
         if self.set_num_cluster_window is not None and self.set_num_cluster_window.winfo_exists():
             self.set_num_cluster_window.destroy()
 
-        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
-            self.view_solution_space_window.destroy()
+        if self.view_solution_space_window_after_setting_clusters is not None and self.view_solution_space_window_after_setting_clusters.winfo_exists():
+            self.view_solution_space_window_after_setting_clusters.destroy()
 
         if self.one_MPR_window is not None and self.one_MPR_window.winfo_exists():
             self.one_MPR_window.destroy()
 
-        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
-            self.view_reconciliations_window.destroy()
+        if self.num_cluster is not None:
+            for i in range(self.num_cluster):
+                if self.solution_window is not None and self.solution_window.winfo_exists():
+                    self.solution_window.destroy()
 
         if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
@@ -429,12 +431,17 @@ class App(tk.Frame):
         self.tanglegram_window = tk.Toplevel(self.master)
         self.tanglegram_window.geometry("600x600")
         self.tanglegram_window.title("Tanglegram")
+        # Bring the new tkinter window to the front
+        self.tanglegram_window.attributes('-topmost', True)
+        self.tanglegram_window.focus_force()
+        self.tanglegram_window.bind('<FocusIn>', self.OnFocusIn)
         # Creates a new frame
         tanglegram_frame = tk.Frame(self.tanglegram_window)
         tanglegram_frame.pack(fill=tk.BOTH, expand=1)
         tanglegram_frame.pack_propagate(False)
-        fig = self.recon_input.draw()
-        canvas = FigureCanvasTkAgg(fig, tanglegram_frame)
+        self.fig_tanglegram = self.recon_input.draw()
+        self.tanglegram_window.protocol("WM_DELETE_WINDOW", self.tanglegram_figure_on_closing)
+        canvas = FigureCanvasTkAgg(self.fig_tanglegram, tanglegram_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
@@ -449,6 +456,10 @@ class App(tk.Frame):
         self.cost_space_window = tk.Toplevel(self.master)
         self.cost_space_window.geometry("550x550")
         self.cost_space_window.title("Matplotlib Graph - Cost regions")
+        # Bring the new tkinter window to the front
+        self.cost_space_window.attributes('-topmost', True)
+        self.cost_space_window.focus_force()
+        self.cost_space_window.bind('<FocusIn>', self.OnFocusIn)
         # Creates a new frame
         plt_frame = tk.Frame(self.cost_space_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
@@ -638,6 +649,10 @@ class App(tk.Frame):
             self.entire_space_window = tk.Toplevel(self.master)
             self.entire_space_window.geometry("600x600")
             self.entire_space_window.title("Entire space")
+            # Bring the new tkinter window to the front
+            self.entire_space_window.attributes('-topmost', True)
+            self.entire_space_window.focus_force()
+            self.entire_space_window.bind('<FocusIn>', self.OnFocusIn)
             # Creates a new frame
             plt_frame = tk.Frame(self.entire_space_window)
             plt_frame.pack(fill=tk.BOTH, expand=1)
@@ -661,6 +676,10 @@ class App(tk.Frame):
         self.set_num_cluster_window = tk.Toplevel(self.master)
         self.set_num_cluster_window.geometry("300x200")
         self.set_num_cluster_window.title("Set the number of clusters")
+        # Bring the new tkinter window to the front
+        self.set_num_cluster_window.attributes('-topmost', True)
+        self.set_num_cluster_window.focus_force()
+        self.set_num_cluster_window.bind('<FocusIn>', self.OnFocusIn)
         # Creates a new frame
         self.set_num_cluster_frame = tk.Frame(self.set_num_cluster_window)
         self.set_num_cluster_frame.pack(fill=tk.BOTH, expand=tk.YES)
@@ -730,12 +749,28 @@ class App(tk.Frame):
             for i in range(len(clusters)):
                 App.medians.append(clusters[i].median())
 
-        if self.view_solution_space_window is not None and self.view_solution_space_window.winfo_exists():
-            self.view_solution_space_window.destroy()
-        if self.view_reconciliations_window is not None and self.view_reconciliations_window.winfo_exists():
-            self.view_reconciliations_window.destroy()
+        if self.view_solution_space_window_after_setting_clusters is not None and self.view_solution_space_window_after_setting_clusters.winfo_exists():
+            self.view_solution_space_window_after_setting_clusters.destroy()
+
+        if self.num_cluster is not None:
+            for i in range(self.num_cluster):
+                if self.solution_window is not None and self.solution_window.winfo_exists():
+                    self.solution_window.destroy()
+
         if self.view_pvalue_histogram_window is not None and self.view_pvalue_histogram_window.winfo_exists():
             self.view_pvalue_histogram_window.destroy()
+
+    def open_window_solution_space(self):
+        """Pop up a new tkinter window to display the solution space after entering the number of clusters."""
+        if self.num_cluster is not None:
+            self.view_solution_space_window_after_setting_clusters = tk.Toplevel(self.master)
+            self.view_solution_space_window_after_setting_clusters.geometry("900x900")
+            self.view_solution_space_window_after_setting_clusters.title("View reconciliation space")
+            # Bring the new tkinter window to the front
+            self.view_solution_space_window_after_setting_clusters.attributes('-topmost', True)
+            self.view_solution_space_window_after_setting_clusters.focus_force()
+            self.view_solution_space_window_after_setting_clusters.bind('<FocusIn>', self.OnFocusIn)
+            SolutionSpaceWindow(self.view_solution_space_window_after_setting_clusters)
 
     def select_from_view_reconciliations_dropdown(self, event):
         """When "View reconciliations" dropdown is clicked."""
@@ -745,27 +780,30 @@ class App(tk.Frame):
             self.one_MPR_window = tk.Toplevel(self.master)
             self.one_MPR_window.geometry("600x600")
             self.one_MPR_window.title("One MPR")
+            # Bring the new tkinter window to the front
+            self.one_MPR_window.attributes('-topmost', True)
+            self.one_MPR_window.focus_force()
+            self.one_MPR_window.bind('<FocusIn>', self.OnFocusIn)
             ReconciliationsOneMPRWindow(self.one_MPR_window)
 
         elif self.view_reconciliations_var.get() == "One per cluster":
             self.view_reconciliations_var.set("View reconciliations")
             self.open_window_reconciliations()
 
-    def open_window_solution_space(self):
-        """Pop up a new tkinter window to display the solution space."""
-        if self.num_cluster is not None:
-            self.view_solution_space_window = tk.Toplevel(self.master)
-            self.view_solution_space_window.geometry("900x900")
-            self.view_solution_space_window.title("View reconciliation space")
-            SolutionSpaceWindow(self.view_solution_space_window)
-
     def open_window_reconciliations(self):
-        """Pop up a new tkinter window to display the reconciliations."""
+        """Pop up new tkinter windows to display one reconciliation per cluster."""
         if self.num_cluster is not None:
-            self.view_reconciliations_window = tk.Toplevel(self.master)
-            self.view_reconciliations_window.geometry("900x900")
-            self.view_reconciliations_window.title("View reconciliations")
-            ReconciliationsOnePerClusterWindow(self.view_reconciliations_window)
+            solution_number = 1
+            for solution in App.medians:
+                self.solution_window = tk.Toplevel(self.master)
+                self.solution_window.geometry("800x800")
+                self.solution_window.title("View reconciliations " + str(solution_number))
+                # Bring the new tkinter window to the front
+                self.solution_window.attributes('-topmost', True)
+                self.solution_window.focus_force()
+                self.solution_window.bind('<FocusIn>', self.OnFocusIn)
+                ReconciliationsOnePerClusterWindow(self.solution_window, solution)
+                solution_number = solution_number + 1
 
     def open_window_pvalue_histogram(self):
         """Pop up a new tkinter window to display the p-value histogram."""
@@ -773,7 +811,22 @@ class App(tk.Frame):
         self.view_pvalue_histogram_window = tk.Toplevel(self.master)
         self.view_pvalue_histogram_window.geometry("700x700")
         self.view_pvalue_histogram_window.title("p-value Histogram")
+        # Bring the new tkinter window to the front
+        self.view_pvalue_histogram_window.attributes('-topmost', True)
+        self.view_pvalue_histogram_window.focus_force()
+        self.view_pvalue_histogram_window.bind('<FocusIn>', self.OnFocusIn)
         PValueHistogramWindow(self.view_pvalue_histogram_window)
+
+    def OnFocusIn(self, event):
+        """Bring newly created tkinter window to the front until user interacts with it, i.e., taking focus.."""
+        if type(event.widget).__name__ == 'Tk':
+            event.widget.attributes('-topmost', False)
+
+    def tanglegram_figure_on_closing(self):
+        """Close and remove matplotlib figures when the tkinter window is destroyed."""
+        self.fig_tanglegram.clear()
+        #plt.close(self.fig_tanglegram)
+        self.tanglegram_window.destroy()
 
 # View reconciliation space - Clusters
 class SolutionSpaceWindow(tk.Frame):
@@ -820,10 +873,10 @@ class ReconciliationsOneMPRWindow(tk.Frame):
         self.draw_one_MPR()
 
     def draw_one_MPR(self):
-        self.fig = App.recon_graph.median().draw(
+        self.one_mpr_fig = App.recon_graph.median().draw(
             show_internal_labels=self.show_internal_node_names_boolean, 
             show_freq=self.show_event_frequencies_boolean)
-        self.canvas = FigureCanvasTkAgg(self.fig, self.frame)
+        self.canvas = FigureCanvasTkAgg(self.one_mpr_fig, self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
@@ -847,38 +900,71 @@ class ReconciliationsOneMPRWindow(tk.Frame):
         show_event_frequencies_checkbutton.pack(side=tk.LEFT)
 
     def update_one_mpr(self):
+        # self.one_mpr_fig.clear()
+        # plt.close(self.one_mpr_fig)
         self.canvas.get_tk_widget().destroy()
-        self.fig = App.recon_graph.median().draw(
+        self.one_mpr_fig = App.recon_graph.median().draw(
             show_internal_labels=self.show_internal_node_names_boolean.get(),
             show_freq=self.show_event_frequencies_boolean.get()
         )
-        self.canvas = FigureCanvasTkAgg(self.fig, self.frame)
+        self.canvas = FigureCanvasTkAgg(self.one_mpr_fig, self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # View reconciliations - One per cluster
 class ReconciliationsOnePerClusterWindow(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, recon_solution):
         super().__init__(master)
+        self.recon_solution = recon_solution
         self.master = master
+        self.master.grid_rowconfigure(0, weight=5)
+        self.master.grid_rowconfigure(1, weight=1)
+        self.master.grid_columnconfigure(0, weight=1)
         self.frame = tk.Frame(self.master)
-        self.frame.pack(fill=tk.BOTH, expand=1)
-        self.frame.pack_propagate(False)
+        self.frame.grid(row=0, column=0, sticky="nsew")
+        self.frame.grid_propagate(False)
+        self.checkboxes_frame = tk.Frame(self.master)
+        self.checkboxes_frame.grid(row=1, column=0)
+        self.checkboxes_frame.grid_propagate(False)
+        self.create_checkboxes()
         self.draw_median_recons()
+
+    def create_checkboxes(self):
+        self.show_internal_node_names_boolean = tk.BooleanVar()
+        self.show_internal_node_names_boolean.set(tk.TRUE)
+        show_internal_node_names_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
+            text="Display internal node names", variable=self.show_internal_node_names_boolean, 
+            command=self.update_median_recons)
+        show_internal_node_names_checkbutton.pack(side=tk.LEFT)
+
+        self.show_event_frequencies_boolean = tk.BooleanVar()
+        self.show_event_frequencies_boolean.set(tk.TRUE)
+        show_event_frequencies_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
+            text="Display frequencies", variable=self.show_event_frequencies_boolean, 
+            command=self.update_median_recons)
+        show_event_frequencies_checkbutton.pack(side=tk.LEFT)
+
     def draw_median_recons(self):
-        if len(App.medians) == 1:
-            fig = App.medians[0].draw()
-        else:
-            fig, axs = plt.subplots(1, len(App.medians))
-            for i in range(len(App.medians)):
-                App.medians[i].draw_on(axs[i])
-        canvas = FigureCanvasTkAgg(fig, self.frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.recon_solution_fig = self.recon_solution.draw(
+            show_internal_labels=self.show_internal_node_names_boolean, 
+            show_freq=self.show_event_frequencies_boolean)
+        self.canvas = FigureCanvasTkAgg(self.recon_solution_fig, self.frame)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
-        toolbar = NavigationToolbar2Tk(canvas, self.frame)
+        toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
         toolbar.update()
-        canvas.get_tk_widget().pack(side=tk.TOP)
+        self.canvas.get_tk_widget().pack(side=tk.TOP)
+
+    def update_median_recons(self):
+        self.canvas.get_tk_widget().destroy()
+        self.recon_solution_fig = self.recon_solution.draw(
+            show_internal_labels=self.show_internal_node_names_boolean.get(),
+            show_freq=self.show_event_frequencies_boolean.get()
+        )
+        self.canvas = FigureCanvasTkAgg(self.recon_solution_fig, self.frame)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # p-value Histogram
 class PValueHistogramWindow(tk.Frame):
