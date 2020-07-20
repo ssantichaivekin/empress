@@ -52,7 +52,7 @@ class TestTree(unittest.TestCase):
 
     def test_postorder_list(self):
         host_converted = dict_to_tree(self.host, tree.TreeType.HOST)
-        nodes = host_converted.postorder_list
+        nodes = host_converted.postorder_list()
         for node in nodes:
             self.assertTrue(isinstance(node, tree.Node))
         self.assertEqual(len(nodes), len(self.host))
