@@ -388,7 +388,7 @@ def populate_nodes_with_order(tree_node, tree_type, ordering_dict, leaf_order):
     :param leaf_order: the temporal order we should assign to the leaves of the tree
     """
     layout = tree.NodeLayout()
-    if tree_node.is_leaf:
+    if tree_node.is_leaf():
         layout.col = leaf_order
         tree_node.layout = layout
     else:

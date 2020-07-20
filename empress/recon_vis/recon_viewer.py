@@ -77,7 +77,7 @@ def _set_offsets(tree: tree.Tree):
         y_1 = None
         y_0 = node.layout.row
         for logical_pos in pos_dict:
-            if node.is_leaf:
+            if node.is_leaf():
                 if y_0 < logical_pos[0] and node.layout.col <= logical_pos[1]:
                     if y_1 is None or y_1 > logical_pos[0]:
                         y_1 = logical_pos[0]
@@ -127,7 +127,7 @@ def _render_host_helper(fig: plot_tools.FigureWrapper, node: tree.Node, show_int
 
     node_pos = plot_tools.Position(node.layout.x, node.layout.y)
 
-    if node.is_leaf:
+    if node.is_leaf():
         text_offset = (node_pos.x + render_settings.TIP_TEXT_OFFSET[0], node_pos.y + render_settings.TIP_TEXT_OFFSET[1])
         fig.dot(node_pos, col=render_settings.HOST_NODE_COLOR)
         if node.layout.node_count == 0:
@@ -183,14 +183,14 @@ def _populate_host_tracks(node: tree.Node, recon_obj: recon.Reconciliation, host
         if not(_is_sharing_track(node, host_name, recon_obj)):
             host_node.update_count()
 
-    if not(node.is_leaf):
+    if not(node.is_leaf()):
         _populate_host_tracks(node.left_node, recon_obj, host_lookup)
         _populate_host_tracks(node.right_node, recon_obj, host_lookup)
 
 
 def _is_sharing_track(node: tree.Node, host_name: str, recon_obj: recon.Reconciliation):
     """
-    Determines if a node is on its own track
+    Determines if a node is sharing it's horizontal track with its children
     :param node: Node object representing a parasite event
     :param host_name: Name of host node
     :param recon_obj: Reconciliation Object
@@ -237,7 +237,7 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
     node.set_layout(row=host_row, x=node.layout.col, y=host_y)
 
     # Render parasite node and recurse if not a leaf
-    if node.is_leaf:
+    if node.is_leaf():
         node.layout.y += host_node.iter_track(tree.Track.HORIZONTAL) * host_node.layout.offset
         _render_parasite_node(fig, node, event, font_size)
         return
@@ -299,7 +299,7 @@ def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event
     render_color, render_shape = _event_color_shape(event)
 
     fig.dot(node_pos, col=render_color, marker=render_shape)
-    if node.is_leaf:
+    if node.is_leaf():
         fig.text_v2((node.layout.x + render_settings.TIP_TEXT_OFFSET[0], node.layout.y + render_settings.TIP_TEXT_OFFSET[1]), node.name, render_color, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
         return
 
@@ -599,8 +599,8 @@ def _set_host_node_layout(host_tree: tree.Tree):
     logical_row_counter = 0
     for leaf in host_tree.leaf_list():
         leaf.layout.row = logical_row_counter
-        leaf.layout.x=leaf.layout.col           # This can be scaled if desired
-        leaf.layout.y=leaf.layout.row           # This can be scaled if desired
+        leaf.layout.x = leaf.layout.col           # This can be scaled if desired
+        leaf.layout.y= leaf.layout.row            # This can be scaled if desired
         logical_row_counter += 1
     # Helper function to assign row values, postorder traversal
     _set_internal_host_nodes(host_tree.root_node)
@@ -611,10 +611,10 @@ def _set_internal_host_nodes(node: tree.Node):
     Helper function for set_host_node_layout
     :param node: Host Node object that will be rendered
     """
-    if node.is_leaf:
+    if node.is_leaf():
         return
     _set_internal_host_nodes(node.left_node)
     _set_internal_host_nodes(node.right_node)
     node.layout.row = (node.left_node.layout.row + node.right_node.layout.row) / 2
-    node.layout.x=node.layout.col         # This can be scaled if desired
-    node.layout.y=node.layout.row         # This can be scaled if desired
+    node.layout.x = node.layout.col         # This can be scaled if desired
+    node.layout.y = node.layout.row         # This can be scaled if desired

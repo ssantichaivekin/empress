@@ -24,14 +24,10 @@ class Node:
         self.parent_node = None     # Node:  parent Node or None
         self.layout = None          # NodeLayout object: layout of this node
 
-    # The @property decorator allows this to be called as .is_leaf rather than .is_leaf()
-    @property
     def is_leaf(self):
         """ returns True iff this node is a leaf/tip of the tree """
         return self.left_node is None and self.right_node is None
 
-    # The @property decorator allows this to be called as .is_root rather than .is_root()
-    @property
     def is_root(self):
         """ returns True iff this node is the root of the tree """
         return self.parent_node is None
@@ -67,6 +63,7 @@ class Node:
             return self.layout.lower_v_track - 1
     
     def update_count(self):
+        print(self.name)
         self.layout.node_count += 1 
 
 
@@ -100,7 +97,7 @@ class Tree:
         return self._leaf_list_helper(self.root_node)
 
     def _leaf_list_helper(self, node):
-        if node.is_leaf:
+        if node.is_leaf():
             return [node]
         list1 = self._leaf_list_helper(node.left_node)
         list2 = self._leaf_list_helper(node.right_node)
@@ -128,13 +125,13 @@ class Tree:
 
     def _name_to_node_dict_helper(self, node, ntn_dict):
         ntn_dict[node.name] = node
-        if node.is_leaf:
+        if node.is_leaf():
             return
         self._name_to_node_dict_helper(node.left_node, ntn_dict)
         self._name_to_node_dict_helper(node.right_node, ntn_dict)
 
     def _postorder_list_helper(self, node):
-        if node.is_leaf:
+        if node.is_leaf():
             return [node]
         list1 = self._postorder_list_helper(node.left_node)
         list2 = self._postorder_list_helper(node.right_node)

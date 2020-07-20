@@ -36,7 +36,6 @@ DEFAULT_LINESTYLE = '-'
 DEFAULT_TRIANGLE_LINESTYLE = 'None'
 DEFAULT_DOT_MARKER = 'o'
 CENTER = 'center'
-OFF = "off"
 
 def transparent_color(col: Tuple[int, int, int, float], alpha: float):
     return col[0:3] + (alpha,)
@@ -59,7 +58,7 @@ class FigureWrapper:
             self.axis = axes
         self.axis.autoscale()
         self.axis.margins(0.1)
-        self.axis.axis(OFF)
+        self.axis.axis("off")
         self.axis.set_title(title)
 
     def set_legend(self, legend_elements: list, loc: str = DEFAULT_LOCATION, fontsize: int = FONTSIZE, title: str = None):

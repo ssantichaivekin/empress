@@ -56,7 +56,7 @@ def _render_helper_host(fig, node, show_internal_labels):
     Render helper for host tree
     """
     global _g_host_counter
-    if node.is_leaf:
+    if node.is_leaf():
 
         # set up layout for node (will be used later for drawing lines between nodes)
         leaf_layout = tree.NodeLayout()
@@ -106,7 +106,7 @@ def _render_helper_parasite(fig, node, show_internal_labels):
     Render helper for parasite tree
     """
     global _g_parasite_counter
-    if node.is_leaf:
+    if node.is_leaf():
         # set up layout for node (will be used later for drawing lines between nodes)
         leaf_layout = tree.NodeLayout()
         leaf_layout.col = VERTICAL_OFFSET
