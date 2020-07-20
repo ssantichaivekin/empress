@@ -280,7 +280,7 @@ def _fix_transfer(node: tree.Node, right_node: tree.Node, host_node: tree.Node, 
     min_col = host_lookup[recon_obj.mapping_of(right_node.name).host].parent_node.layout.col
     max_col = host_node.layout.col
     node_col = node.layout.col
-    #Checks to see if transfer is inconsistent and if the inconsistency can be fixed by sliding the transfer node down the host edge
+    # Checks to see if transfer is inconsistent and if the inconsistency can be fixed by sliding the transfer node down the host edge
     if min_col >= node_col and min_col < max_col and not(_is_sharing_track(node, host_node.name, recon_obj)):
         node.set_layout(col=min_col+0.5, x=min_col+0.5)
 
@@ -505,8 +505,8 @@ def _render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools
     # Check temporal consistency of transfer event
     if child_host_node.parent_node.layout.col < node.layout.col:
         # Draw right node, which is transfered
-        mid_pos = plot_tools.Position(node_pos.x, right_pos.y)          #xy coords of midpoint
-        y_midpoint = abs(mid_pos.y + node_pos.y) / 2         #value of midpoint between mid_xy and parent node
+        mid_pos = plot_tools.Position(node_pos.x, right_pos.y)  # xy coords of midpoint
+        y_midpoint = abs(mid_pos.y + node_pos.y) / 2  # value of midpoint between mid_xy and parent node
 
         # Determine if transfer is upwards or downwards, and draw triangle accordingly
         is_upwards = True if y_midpoint < mid_pos.y else False
@@ -599,8 +599,8 @@ def _set_host_node_layout(host_tree: tree.Tree):
     logical_row_counter = 0
     for leaf in host_tree.leaf_list():
         leaf.layout.row = logical_row_counter
-        leaf.layout.x = leaf.layout.col           # This can be scaled if desired
-        leaf.layout.y= leaf.layout.row            # This can be scaled if desired
+        leaf.layout.x = leaf.layout.col  # This can be scaled if desired
+        leaf.layout.y = leaf.layout.row  # This can be scaled if desired
         logical_row_counter += 1
     # Helper function to assign row values, postorder traversal
     _set_internal_host_nodes(host_tree.root_node)
@@ -616,5 +616,5 @@ def _set_internal_host_nodes(node: tree.Node):
     _set_internal_host_nodes(node.left_node)
     _set_internal_host_nodes(node.right_node)
     node.layout.row = (node.left_node.layout.row + node.right_node.layout.row) / 2
-    node.layout.x = node.layout.col         # This can be scaled if desired
-    node.layout.y = node.layout.row         # This can be scaled if desired
+    node.layout.x = node.layout.col  # This can be scaled if desired
+    node.layout.y = node.layout.row  # This can be scaled if desired
