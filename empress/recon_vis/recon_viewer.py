@@ -73,7 +73,7 @@ def _set_offsets(tree: tree.Tree):
     """
     pos_dict = tree.pos_dict
 
-    for node in tree.postorder_list:
+    for node in tree.postorder_list():
         y_1 = None
         y_0 = node.layout.row
         for logical_pos in pos_dict:
@@ -128,7 +128,7 @@ def _render_host_helper(fig: plot_tools.FigureWrapper, node: tree.Node, show_int
     node_pos = plot_tools.Position(node.layout.x, node.layout.y)
 
     if node.is_leaf():
-        text_offset = (node_pos.x + render_settings.TIP_TEXT_OFFSET[0], node_pos.y + render_settings.TIP_TEXT_OFFSET[1])
+        text_offset = (node_pos.x + render_settings.TIP_TEXT_OFFSET_X, node_pos.y)
         fig.dot(node_pos, col=render_settings.HOST_NODE_COLOR)
         if node.layout.node_count == 0:
             fig.text_v2(text_offset, node.name, render_settings.HOST_NODE_COLOR, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
@@ -138,7 +138,7 @@ def _render_host_helper(fig: plot_tools.FigureWrapper, node: tree.Node, show_int
         fig.dot(node_pos, col=render_settings.HOST_NODE_COLOR)  # Render host node
         if show_internal_labels:
             color = plot_tools.transparent_color(render_settings.HOST_NODE_COLOR, render_settings.INTERNAL_NODE_ALPHA)
-            text_xy = (node_pos.x + render_settings.INTERNAL_TEXT_OFFSET[0], node_pos.y + render_settings.INTERNAL_TEXT_OFFSET[1])
+            text_xy = (node_pos.x, node_pos.y)
             fig.text_v2(text_xy, node.name, color, size=font_size, border_col=render_settings.HOST_NODE_BORDER_COLOR)
         left_x, left_y = node.left_node.layout.x, node.left_node.layout.y
         right_x, right_y = node.right_node.layout.x, node.right_node.layout.y
@@ -238,7 +238,7 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
 
     # Render parasite node and recurse if not a leaf
     if node.is_leaf():
-        node.layout.y += host_node.iter_track(tree.Track.HORIZONTAL) * host_node.layout.offset
+        node.layout.y += host_node.get_and_update_track(tree.Track.HORIZONTAL) * host_node.layout.offset
         _render_parasite_node(fig, node, event, font_size)
         return
 
@@ -300,7 +300,7 @@ def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event
 
     fig.dot(node_pos, col=render_color, marker=render_shape)
     if node.is_leaf():
-        fig.text_v2((node.layout.x + render_settings.TIP_TEXT_OFFSET[0], node.layout.y + render_settings.TIP_TEXT_OFFSET[1]), node.name, render_color, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
+        fig.text_v2((node.layout.x + render_settings.TIP_TEXT_OFFSET_X, node.layout.y), node.name, render_color, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
         return
 
     text = ''
@@ -324,13 +324,7 @@ def _get_frequency_text(frequency: float):
     :param frequency: The frequency of an event
     :return a string that has the frequency as a percentage
     """
-    output = ''
-    for letter in str(frequency * 10**2):
-        if letter != '.':
-            output += letter
-        else:
-            return output
-    return output
+    return str(round(frequency * 100))
 
 
 def _calculate_font_size(num_tip_nodes: int):
@@ -427,7 +421,7 @@ def _render_cospeciation_branch(node: tree.Node, host_lookup: dict, parasite_loo
     host_node = host_lookup[mapping_node.host]
 
     # Update h_track
-    host_node.iter_track(tree.Track.HORIZONTAL)
+    host_node.get_and_update_track(tree.Track.HORIZONTAL)
 
     left_mapping_node = recon_obj.mapping_of(left_node.name)
     left_host_node = host_lookup[left_mapping_node.host]
@@ -521,7 +515,6 @@ def _render_transfer_branch(node_pos: plot_tools.Position, right_pos: plot_tools
         fig.line(mid_pos, right_pos, render_settings.PARASITE_EDGE_COLOR)
     else:
         transfer_edge_color = plot_tools.transparent_color(render_settings.PARASITE_EDGE_COLOR, render_settings.TRANSFER_TRANSPARENCY)
-
         fig.arrow_segment(node_pos, right_pos, transfer_edge_color)
         fig.line(node_pos, right_pos, transfer_edge_color)
 
@@ -547,12 +540,12 @@ def _connect_child_to_parent(node: tree.Node, child_node: tree.Node, host_lookup
     while host_node.layout.row != stop_row and host_node.parent_node:
         parent_node = host_node.parent_node
         if parent_node.layout.row < host_node.layout.row:
-            v_track = parent_node.iter_track(tree.Track.UPPER_VERTICAL)
+            v_track = parent_node.get_and_update_track(tree.Track.UPPER_VERTICAL)
         else:
-            v_track = parent_node.iter_track(tree.Track.LOWER_VERTICAL)
+            v_track = parent_node.get_and_update_track(tree.Track.LOWER_VERTICAL)
             while v_track < parent_node.layout.upper_v_track:
-                v_track = parent_node.iter_track(tree.Track.LOWER_VERTICAL)
-        h_track = parent_node.iter_track(tree.Track.HORIZONTAL)
+                v_track = parent_node.get_and_update_track(tree.Track.LOWER_VERTICAL)
+        h_track = parent_node.get_and_update_track(tree.Track.HORIZONTAL)
         offset = parent_node.layout.offset
 
         sub_parent_pos = plot_tools.Position(parent_node.layout.x - (offset * v_track), \

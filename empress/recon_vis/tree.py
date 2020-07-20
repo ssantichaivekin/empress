@@ -48,7 +48,7 @@ class Node:
         layout.x = x if x != None else layout.x
         layout.y = y if y != None else layout.y
 
-    def iter_track(self, track):
+    def get_and_update_track(self, track):
         """updates track number and returns previous track of host node"""
         if track == Track.HORIZONTAL:
             self.layout.h_track = self.layout.h_track + 1
@@ -104,9 +104,6 @@ class Tree:
         list1.extend(list2)
         return list1
 
-    # The @property decorator allows this to be called as .postorder_list
-    # rather than .postorder_list()
-    @property
     def postorder_list(self):
         """ returns list of all Nodes in postorder """
         return self._postorder_list_helper(self.root_node)
