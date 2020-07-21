@@ -10,6 +10,11 @@ class TreeType(Enum):
     HOST = 1
     PARASITE = 2
 
+class Track(Enum):
+    HORIZONTAL = 1
+    LOWER_VERTICAL = 2
+    UPPER_VERTICAL = 3
+
 class Node:
     """ Defines a node of a tree """
     def __init__(self, name):
@@ -30,6 +35,37 @@ class Node:
     def __repr__(self):
         return str(self.name)
 
+    def get_layout(self):
+        """ returns the four values listed in NodeLayout"""
+        layout = self.layout
+        return layout.row, layout.col, layout.x, layout.y
+
+    def set_layout(self, row=None, col=None, x=None, y=None):
+        """Sets the layout"""
+        layout = self.layout
+        layout.row = row if row != None else layout.row
+        layout.col = col if col != None else layout.col
+        layout.x = x if x != None else layout.x
+        layout.y = y if y != None else layout.y
+
+    def get_and_update_track(self, track):
+        """updates track number and returns previous track of host node"""
+        if track == Track.HORIZONTAL:
+            self.layout.h_track = self.layout.h_track + 1
+            return self.layout.h_track - 1
+        
+        if track == Track.UPPER_VERTICAL:
+            self.layout.upper_v_track += 1
+            return self.layout.upper_v_track - 1
+        
+        if track == Track.LOWER_VERTICAL:
+            self.layout.lower_v_track += 1
+            return self.layout.lower_v_track - 1
+    
+    def update_count(self):
+        self.layout.node_count += 1 
+
+
 class NodeLayout:
     """ Defines node layout attributes for rendering """
     def __init__(self):
@@ -37,8 +73,13 @@ class NodeLayout:
 
         # The self.col can be generated from a topological ordering of the temporal constraint graph
         self.col = None         # float: logical position of this Node in rendering
-        self.x = None           # int: x-coordinate for rendering
-        self.y = None           # int: y-coordinate for rendering
+        self.x = None           # float: x-coordinate for rendering
+        self.y = None           # float: y-coordinate for rendering
+        self.upper_v_track = 1  # float: track number for upper vertical host edges
+        self.lower_v_track = 1  # float: track number for lower vertical host edges
+        self.h_track = 1        # int: track number for horizontal host edges
+        self.node_count = 0     # int: Number of nodes mapped to node
+        self.offset = 0         # int: Offset between tracks of a node
 
 
 class Tree:
@@ -48,6 +89,7 @@ class Tree:
     def __init__(self):
         self.root_node = None       # Node:  Root Node of the Tree
         self.tree_type = None       # TreeType: HOST or PARASITE
+        self.pos_dict = {}
 
     def leaf_list(self):
         """ Returns list of leaf Nodes from left to right. """
