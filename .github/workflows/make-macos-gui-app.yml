@@ -18,9 +18,10 @@ jobs:
     - name: Install pipenv
       run: |
         pip3 install pipenv
-    - name: Install dependencies
+    - name: Install geos (Shapely Dependency)
       run: |
         brew install geos
+    - name: Install dependencies via pipenv
         PIP_NO_BINARY="shapely" python3 -m pipenv install --dev
     - name: Create macos app
       run: |
