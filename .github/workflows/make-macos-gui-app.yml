@@ -20,6 +20,7 @@ jobs:
         pip3 install pipenv
     - name: Install dependencies
       run: |
+        brew install geos
         PIP_NO_BINARY="shapely" pipenv install --dev
     - name: Create MacOS app
       run: |
