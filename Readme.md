@@ -130,7 +130,7 @@ $ python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconi
 For example, to run Pair-distance Histogram that outputs a csv file at `foo.csv`, outputs a histogram to `bar.pdf` and normalizes the y-axis, you run
 ```bash
 $ python empress_cli.py histogram examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
-                                  examples/heliconius_mapping.mapping -csv foo.csv --histogram bar.pdf --ynorm
+                                  examples/heliconius_mapping.mapping --csv foo.csv --histogram bar.pdf --ynorm
 ```
 
 ### Cluster MPR
@@ -149,5 +149,5 @@ $ python empress_cli.py histogram examples/heliconius_host.nwk examples/heliconi
 For example, to find at least 8 distinct parts of reconciliation-space before merging them into clusters, use `--nsplits 8`. To merge those splits into three clusters, use `-k 3`. The clusters are merged based on a cluster-distance that is calculated either using the average event support or the pairwise distance. To use the event support use `--support`. Finally, to get the median reconciliation of each of the three clusters, use `--median`. Putting it all together, the full command is
 ```bash
 $ python empress_cli.py cluster examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
-                                examples/heliconius_mapping.mapping clumpr 3 --median --n-splits 8 --support
+                                examples/heliconius_mapping.mapping 3 --median --n-splits 8 --support
 ```
