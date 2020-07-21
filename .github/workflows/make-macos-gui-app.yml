@@ -16,10 +16,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install pipenv
-      uses: dschep/install-pipenv-action@v1
+      run: |
+        pip3 install pipenv
     - name: Install dependencies
       run: |
-        PIP_NO_BINARY="shapely" pipenv install --dev
+        PIP_NO_BINARY="shapely" python3 -m pipenv install --dev
     - name: Create MacOS app
       run: |
         pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
