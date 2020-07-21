@@ -27,9 +27,9 @@ jobs:
         pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
     - name: Compress macos app
       run: |
-        zip -r macos_dist.zip ./dist
+        zip -r macos_empress_app.zip ./dist/empress.app
     - name: Upload executable
       uses: actions/upload-artifact@v2
       with:
         name: macos_empress_app
-        path: ./macos_dist.zip
+        path: ./macos_empress_app.zip
