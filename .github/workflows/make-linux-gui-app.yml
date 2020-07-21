@@ -10,8 +10,6 @@ jobs:
   build:
 
     runs-on: ubuntu-18.04
-    # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-10.15-Readme.md
-    # macos-10.15 already has python 3.7.8, no need to install
 
     steps:
     - uses: actions/checkout@v2
