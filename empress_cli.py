@@ -59,6 +59,8 @@ def main():
     elif args.command == "reconcile":
         cli_commands.reconcile.run_reconcile(args)
     elif args.command == "histogram":
+        if args.csv == "unset" and args.histogram == "unset":
+            parser.error("No action requested, add --csv or --histogram")
         cli_commands.histogram.run_histogram(args)
     elif args.command == "cluster":
         cli_commands.cluster.run_cluster(args)

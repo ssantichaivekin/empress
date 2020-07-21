@@ -65,6 +65,10 @@ def transform_hist(hist, omit_zeros, xnorm, ynorm, cumulative):
         hist_zero = histogram_display.omit_zeros(hist)
     else:
         hist_zero = hist
+    # Omitting zeros can cause the histogram to become empty - can just return
+    # early without normalization. Other functions assume histogram is nonempty.
+    if len(hist_zero) == 0:
+        return hist_zero, 1
     # Normalize the x values
     if xnorm:
         width = 1 / float(max(hist_zero.keys()))

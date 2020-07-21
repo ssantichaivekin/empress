@@ -119,10 +119,11 @@ def generate_frequencies_dict(preorder_mapping_node_list, recon_graph, gene_root
         # Normalize all of the event_frequencies by the number of MPRs
         # so that each frequency is out of 1
         for mapping_node in preorder_mapping_node_list:
+            node_frequencies[mapping_node] = node_frequencies[mapping_node] / float(count)
             for event in recon_graph[mapping_node]:
                 event_frequencies[event] = event_frequencies[event] / float(count)
 
-    return event_frequencies, count
+    return node_frequencies, event_frequencies, count
 
 
 def count_mprs(mapping_node, recon_graph, counts):
@@ -392,7 +393,7 @@ def get_median_graph(recon_graph, postorder_gene_tree, postorder_species_tree, g
     postorder_mapping_node_list = mapping_node_sort(postorder_gene_tree, postorder_species_tree,
                                                     list(recon_graph.keys()))
     # Find the dictionary for frequencies for the given mapping nodes and graph, and the given gene root
-    event_frequencies, _ = generate_frequencies_dict(postorder_mapping_node_list[::-1], recon_graph, gene_tree_root)
+    _, event_frequencies, _ = generate_frequencies_dict(postorder_mapping_node_list[::-1], recon_graph, gene_tree_root)
 
     # Now find the median and related info
     median_graph, n_meds, roots_for_median = compute_median(recon_graph, event_frequencies,
