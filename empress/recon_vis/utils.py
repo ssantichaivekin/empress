@@ -300,9 +300,6 @@ def build_temporal_graph(host_dict: dict, parasite_dict: dict, reconciliation: d
             right_child_parasite, right_child_host = right_child_mapping
             # since a transfer event is horizontal, we have these two implied relations
             temporal_graph[(parent[right_child_host], tree.TreeType.HOST)].append((parasite, tree.TreeType.PARASITE))
-            # the second relation is only added if the right child mapping is not a leaf mapping
-            if right_child_mapping not in reconciliation or reconciliation[right_child_mapping][0][0]!='C':
-                temporal_graph[(right_child_parasite, tree.TreeType.PARASITE)].append((host, tree.TreeType.HOST))
 
     for node_tuple in temporal_graph:
         # we need to make sure the associated value in the dictionary does not contain repeated node tuples
