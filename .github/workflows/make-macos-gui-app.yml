@@ -38,4 +38,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: macos_empress_app
-        path: ./macos_empress_app.zip
+        path: ./dist/macos_empress_app.zip
