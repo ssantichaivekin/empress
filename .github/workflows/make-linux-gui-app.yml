@@ -34,7 +34,7 @@ jobs:
         python3.7 -m pipenv install --dev
     - name: Create linux app
       run: |
-        pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
+        python3.7 -m pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
     - name: Compress linux app
       run: |
         zip -r linux_empress_app.zip ./dist/empress
