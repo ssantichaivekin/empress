@@ -4,6 +4,7 @@ Tester for render function
 """
 from pathlib import Path
 from draw import common
+from empress.miscs import input_generator
 
 from empress.recon_vis import recon_viewer
 import empress
@@ -52,6 +53,19 @@ def test_render_2():
     fig.save(filepath)
 
 test_render_2()
+
+def test_render_3():
+    host_leaves = parasite_leaves = 12
+    recon_input = input_generator.generate_random_recon_input(host_leaves, parasite_leaves)
+    recongraph = recon_input.reconcile(1, 1, 1)
+    reconciliation = recongraph.median()
+
+    fig = recon_viewer.render(recon_input.host_dict, recon_input.parasite_dict, reconciliation._reconciliation, 
+                                reconciliation.event_frequencies, show_internal_labels=True, show_freq=True)
+    filepath = Path(common.output_path).joinpath("test_render_3.png")
+    fig.save(filepath)
+
+test_render_3()
 
 def test_render_with_frequency_1():
     """
