@@ -248,9 +248,6 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
 
     left_node, right_node = _get_children(node, recon_obj, parasite_lookup)
 
-    if event.event_type is recon.EventType.TRANSFER:
-        _fix_transfer(node, right_node, host_node, host_lookup, recon_obj)
-
     _render_parasite_helper(fig, left_node, recon_obj, host_lookup,
         parasite_lookup, show_internal_labels, show_freq, font_size)
     _render_parasite_helper(fig, right_node, recon_obj, host_lookup,
@@ -263,26 +260,64 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
         node.set_layout(y=right_node.layout.y)
     elif event.event_type is recon.EventType.TRANSFER:
         node.layout.y = host_node.layout.y + host_node.layout.h_track * host_node.layout.offset
+    
+    min_col = host_lookup[recon_obj.mapping_of(right_node.name).host].parent_node.layout.col
+    #Checks to see if transfer node is inconsistent and if it can be fixed
+    if event.event_type is recon.EventType.TRANSFER and min_col >= node.layout.col:
+        _fix_transfer(node, left_node, right_node, host_node, host_lookup, parasite_lookup, recon_obj)
 
     _render_parasite_branches(fig, node, recon_obj, host_lookup, parasite_lookup)
     _render_parasite_node(fig, node, event, font_size, show_internal_labels, show_freq)
 
 
-def _fix_transfer(node: tree.Node, right_node: tree.Node, host_node: tree.Node, host_lookup: dict, recon_obj: recon.Reconciliation):
+def _fix_transfer(node: tree.Node, left_node, right_node: tree.Node, host_node: tree.Node, host_lookup: dict, parasite_lookup: dict, recon_obj: recon.Reconciliation, node_col: float = None, offset_number: int = 1):
     """
     Checks to see in tranfer node is inconsistent and the tries to fix node if it can be slid down the host edge
+    The tries to push a given node forward if possible to correct the assumed inconsistency
     :param node: Node object representing the parasite event being rendered
     :param node: Right node of the node object
+    :param left_node: Left node of the node object
+    :param right_node: Right node of the node object
     :param host_node: Node object represeting a host that the parasite node is mapped to
     :param host_lookup: Dictionary with host node names as the key and host node objects as the values
+    :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
     :param recon_obj: Reconciliation object that represents an edge-to-edge mapping from  a parasite tree to a host tree
+    :param node_col: Column of the node, used when function is called recursively to check the next available transfer spot
+    :param offset_number: Used to push node to an available transfer spot
     """
     min_col = host_lookup[recon_obj.mapping_of(right_node.name).host].parent_node.layout.col
     max_col = host_node.layout.col
     node_col = node.layout.col
+    max_col = min(host_node.layout.col, left_node.layout.col)
+    if not(node_col):
+        node_col = node.layout.col
+
     # Checks to see if transfer is inconsistent and if the inconsistency can be fixed by sliding the transfer node down the host edge
     if min_col >= node_col and min_col < max_col and not(_is_sharing_track(node, host_node.name, recon_obj)):
         node.set_layout(col=min_col+0.5, x=min_col+0.5)
+    if min_col < max_col:
+        new_value = min_col + render_settings.PUSHED_NODE_OFFSET * offset_number
+        if _is_col_taken(new_value, host_lookup, parasite_lookup):
+            _fix_transfer(node, left_node, right_node, host_node, host_lookup, parasite_lookup, recon_obj, node_col=new_value, offset_number = offset_number + 1)
+        else:
+            node.set_layout(col=new_value, x=new_value)
+
+
+def _is_col_taken(node_col, host_lookup, parasite_lookup):
+    """
+    Checks to see if a node is already in a given col
+    :param node_col: Column of a given node
+    :param host_lookup: Dictionary with host node names as the key and host node objects as the values
+    :param parasite_lookup: Dictionary with parasite node names as the key and parasite node objects as the values
+    :return True if there is already a node at the given column and False otherwise
+    """
+    for key in host_lookup:
+        if host_lookup[key].layout.col == node_col:
+            return True
+    for key in parasite_lookup:
+        if parasite_lookup[key].layout.col == node_col:
+            return True
+    return False
 
 
 def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event: recon.Event, font_size: float, show_internal_labels: bool = False, show_freq: bool = False):
