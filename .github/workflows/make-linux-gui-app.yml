@@ -13,14 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    # Use custom python version that works with tcl/tk
-    # https://github.com/LupusCoding/tkinterHelper/blob/master/.github/workflows/main.yml
     - name: Install python, tcl/tk, tkinter
       run: |
         sudo apt-get update
-        sudo apt-get install tk-dev python3-tk python3.7 python3-dev
-        sudo rm /usr/bin/python
-        sudo ln -s /usr/bin/python3.7 /usr/bin/python
+        sudo apt-get install tk-dev python3.7-dev python3.7-tk 
     - name: Install pipenv
       run: |
         python3.7 -m pip install pipenv
