@@ -18,7 +18,7 @@ jobs:
     - name: Install python, tcl/tk, tkinter
       run: |
         sudo apt-get update
-        sudo apt-get install tk-dev python3-tk python3.7
+        sudo apt-get install tk-dev python3-tk python3.7 python3-dev
         sudo rm /usr/bin/python
         sudo ln -s /usr/bin/python3.7 /usr/bin/python
     - name: Install pipenv
