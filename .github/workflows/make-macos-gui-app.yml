@@ -21,7 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         brew install geos
-        PIP_NO_BINARY="shapely" pipenv install --dev
+        PIP_NO_BINARY="shapely" python3 -m pipenv install --dev
     - name: Create macos app
       run: |
         pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
