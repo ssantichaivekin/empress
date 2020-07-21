@@ -22,11 +22,14 @@ jobs:
       run: |
         brew install geos
         PIP_NO_BINARY="shapely" pipenv install --dev
-    - name: Create MacOS app
+    - name: Create macos app
       run: |
         pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
-    - name: Upload draw examples
+  - name: Compress macos app
+      run: |
+        zip -r macos_dist.zip ./dist
+    - name: Upload executable
       uses: actions/upload-artifact@v2
       with:
         name: macos_empress_app
-        path: ./dist
+        path: ./macos_dist.zip
