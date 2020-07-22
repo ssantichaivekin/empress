@@ -17,19 +17,16 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install pipenv
       run: |
-        which pip3
-        pip3 install pipenv
+        python3.7 -m pip install pipenv
     - name: Install geos (Shapely Dependency)
       run: |
         brew install geos
     - name: Install dependencies via pipenv
       run: |
-        which python3
-        which pipenv
-        PIP_NO_BINARY="shapely" python3 -m pipenv install --dev
+        PIP_NO_BINARY="shapely" python3.7 -m pipenv install --dev
     - name: Create macos app
       run: |
-        pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
+        python3.7 -m pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
     # - name: Compress macos app
     #   run: |
     #     cd ./dist
