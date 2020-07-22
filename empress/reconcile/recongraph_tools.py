@@ -569,8 +569,6 @@ def reconcile_noninter(tree_data: _ReconInput, duplication: float, transfer: flo
     host, parasite, graph, num_recon, best_roots = reconcile(tree_data, duplication, transfer, loss)
     for i in [host, parasite, graph, num_recon, best_roots]:
         print((str(i) + '\n'))
-    # Save to a .csv
-    export_csv(csv, graph, best_roots, freqs)
 
 def node_search_order(graph, roots):
     extant_nodes = roots[:]
