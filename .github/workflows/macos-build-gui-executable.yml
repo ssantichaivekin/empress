@@ -11,13 +11,16 @@ jobs:
 
     runs-on: macos-10.15 
     # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-10.15-Readme.md
-    # macos-10.15 already has python 3.7.8, no need to install, refer to this version as python3.7
+    # macos-10.15 already has python 3.7.8.
 
     steps:
     - uses: actions/checkout@v2
     - name: Install pipenv
+      # pip3 might not refer to python3.7's pip. That's okay because pipenv install/run will use
+      # python3.7 for its virtual environment. This is safer than writing python3.7 -m pip because
+      # python3.7 in macos image is sometimes installed as python3.7m and not python3.7
       run: |
-        python3.7 -m pip install pipenv
+        pip3 install pipenv
     - name: Install geos (Shapely Dependency)
       run: |
         brew install geos
