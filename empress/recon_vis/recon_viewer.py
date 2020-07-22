@@ -378,7 +378,7 @@ def _sigmoid(x: float):
     :param x: A number to be plugged into the function
     :return a sigmoid value based on the input value, x
     """
-    return (1 / (1 + math.e**(-x)))
+    return (1.5 / (1 + math.e**(-x)))
 
 
 def _render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict):
