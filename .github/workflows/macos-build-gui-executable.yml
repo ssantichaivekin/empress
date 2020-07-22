@@ -1,4 +1,4 @@
-name: Create empress graphical user interface app in macos
+name: MacOS - Build GUI Executable
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
 
     runs-on: macos-10.15 
     # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-10.15-Readme.md
-    # macos-10.15 already has python 3.7.8, no need to install
+    # macos-10.15 already has python 3.7.8, no need to install, refer to this version as python3.7
 
     steps:
     - uses: actions/checkout@v2
@@ -22,13 +22,22 @@ jobs:
       run: |
         brew install geos
     - name: Install dependencies via pipenv
+      # Sometimes macOS 10.15 pipenv thinks it's already running in a virtual environment
+      # when it is actually not. PIPENV_IGNORE_VIRTUALENVS=1 forces pipenv to create a new
+      # virtual environment anyway.
+      # Shapely has bugs that occurs when it cannot link with the geos package properly.
+      # Forcing pip to install this with no binary PIP_NO_BINARY="shapely" fixes this problem.
       run: |
         export PIPENV_IGNORE_VIRTUALENVS=1
-        PIP_NO_BINARY="shapely" pipenv install --dev
+        pipenv install --dev
     - name: Create macos app
       run: |
         pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
     - name: Compress macos app
+      # actions/upload-artifact@v2 cannot upload symlinks correctly
+      # https://github.com/actions/upload-artifact/issues/92
+      # This can be fixed by zipping the folder before uploading. By doing this, we end up
+      # double-zipping the file, which is not optimal.
       run: |
         cd ./dist
         zip -r macos_empress_app.zip empress.app
