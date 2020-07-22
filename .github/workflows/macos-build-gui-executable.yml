@@ -17,11 +17,8 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.7.8'
+        python-version: '3.7.8' # this sets python to use the correct version
     - name: Install pipenv
-      # pip3 might not refer to python3.7's pip. That's okay because pipenv install/run will use
-      # python3.7 for its virtual environment. This is safer than writing python3.7 -m pip because
-      # python3.7 in macos image is sometimes installed as python3.7m and not python3.7
       run: |
         python -m pip install pipenv
     - name: Install geos (Shapely Dependency)
@@ -33,9 +30,10 @@ jobs:
       # virtual environment anyway.
       # Shapely has bugs that occurs when it cannot link with the geos package properly.
       # Forcing pip to install this with no binary PIP_NO_BINARY="shapely" fixes this problem.
+      # see https://github.com/ssantichaivekin/empress/issues/172
       run: |
         export PIPENV_IGNORE_VIRTUALENVS=1
-        python -m pipenv install --dev
+        PIP_NO_BINARY="shapely" python -m pipenv install --dev
     - name: Create macos app
       run: |
         pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
