@@ -1,0 +1,31 @@
+name: Create empress graphical user interface app in macos
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  
+jobs:
+  build:
+
+    runs-on: windows-2019
+    # https://github.com/actions/virtual-environments/blob/main/images/win/Windows2019-Readme.md
+    # windows-2019 already has python 3.7.8, no need to install
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install pipenv
+      run: |
+        python3 -m pip install pipenv
+    - name: Install dependencies via pipenv
+      run: |
+        python3 -m pipenv install --dev
+    - name: Create windows app
+      run: |
+        pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
+    - name: Upload executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows_empress_app
+        path: ./dist/empress
