@@ -28,12 +28,12 @@ jobs:
     - name: Create macos app
       run: |
         pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
-    # - name: Compress macos app
-    #   run: |
-    #     cd ./dist
-    #     zip -r macos_empress_app.zip empress.app
+    - name: Compress macos app
+      run: |
+        cd ./dist
+        zip -r macos_empress_app.zip empress.app
     - name: Upload executable
       uses: actions/upload-artifact@v2
       with:
         name: macos_empress_app
-        path: ./dist/empress.app/
+        path: ./dist/macos_empress_app.zip
