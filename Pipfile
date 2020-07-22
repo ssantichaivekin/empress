@@ -20,7 +20,5 @@ numpy = '*'
 [dev-packages]
 coverage = '*'
 flake8 = "*"
-# Correctly locate macos python.org built-in tcl/tk
-# https://github.com/pyinstaller/pyinstaller/pull/5010
-# TODO: change to pyinstaller = '*' after fix is released
-pyinstaller = {editable = true, git = "https://github.com/ssantichaivekin/pyinstaller.git", ref = "tcl-tk-macos-bugfix-frozen"}
+pywin32-ctypes = {version = "*", sys_platform = "== 'win32'"}
+pyinstaller = "*"
