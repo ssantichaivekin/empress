@@ -369,7 +369,7 @@ def _calculate_font_size(num_tip_nodes: int):
     :return the font size for the tips and internal nodes of a tree
     """
     x = (render_settings.START_SIZE - num_tip_nodes) / render_settings.STEP_SIZE
-    return _sigmoid(x)
+    return 1.5 * _sigmoid(x)
 
 
 def _sigmoid(x: float):
@@ -378,7 +378,7 @@ def _sigmoid(x: float):
     :param x: A number to be plugged into the function
     :return a sigmoid value based on the input value, x
     """
-    return (1.5 / (1 + math.e**(-x)))
+    return (1 / (1 + math.e**(-x)))
 
 
 def _render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict):
