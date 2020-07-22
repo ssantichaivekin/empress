@@ -31,10 +31,10 @@ jobs:
     - name: Create linux app
       run: |
         python3.7 -m pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
-    - name: Compress linux app
-      run: |
-        cd ./dist
-        zip -r linux_empress_app.zip ./empress
+    # - name: Compress linux app
+    #   run: |
+    #     cd ./dist
+    #     zip -r linux_empress_app.zip ./empress
     - name: Upload executable
       uses: actions/upload-artifact@v2
       with:
