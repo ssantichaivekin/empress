@@ -119,7 +119,8 @@ class ReconciliationWrapper(Drawable):
         return cospec_count, dup_count, trans_count, loss_count
 
     def export_csv(self, filename):
-        recongraph_tools.export_csv(filename, self._reconciliation, [self.root], self.event_frequencies)
+        recongraph_tools.export_csv(filename, self._reconciliation, [self.root],
+                self.event_frequencies, self.node_frequencies)
 
 class ReconGraphWrapper(Drawable):
     # TODO: Replace dict with ReconGraph type
