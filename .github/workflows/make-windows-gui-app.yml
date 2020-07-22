@@ -1,4 +1,4 @@
-name: Create empress graphical user interface app in windows
+name: Windows - Build GUI executable
 
 on:
   push:
@@ -12,6 +12,7 @@ jobs:
     runs-on: windows-2019
     # https://github.com/actions/virtual-environments/blob/main/images/win/Windows2019-Readme.md
     # windows-2019 already has python 3.7.8, no need to install
+    # python 3.7.8 is the only python installed -- refer to it as python
 
     steps:
     - uses: actions/checkout@v2
