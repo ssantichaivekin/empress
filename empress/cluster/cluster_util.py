@@ -148,7 +148,7 @@ def full_split_n(g, gene_root, n, mpr_count):
         elif len(gs) == mpr_count:
             break
         depth += 1
-    print(("Depth: {}".format(depth)))
+    #print(("Depth: {}".format(depth)))
     return gs
 
 def full_split(g, gene_root, depth):
@@ -630,9 +630,15 @@ def mk_count_mprs(gene_root):
         return recongraph_tools.count_mprs_wrapper(roots, g)
     return count_mprs
 
-#NOTE: unused
 def calc_improvement(big_k, little_k):
     # For Event Support
+    # Need to special-case little_k = 0
+    # For PDV, the score can be zero if there is only one MPR
+    if little_k == 0:
+        if big_k == 0:
+            return 1
+        else:
+            return float("inf")
     return big_k / float(little_k)
     # For PDV
     #return little_k / float(big_k)

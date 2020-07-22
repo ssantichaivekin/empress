@@ -165,9 +165,9 @@ def perform_clustering(tree_data, d, t, l, k, args):
         assert False
     # Visualization
     if args.pdv_vis:
-        pdv_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, args.filename)
+        pdv_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, args.parasite)
     if args.support_vis:
-        support_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, args.filename)
+        support_vis(species_tree, gene_tree, gene_root, recon_g, graphs, args, args.parasite)
     if args.medians:
         get_median = mk_get_median(gene_tree, species_tree, gene_root, best_roots)
         for i, g in enumerate(graphs):
