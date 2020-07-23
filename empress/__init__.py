@@ -2,7 +2,6 @@
 Wraps empress functionalities
 """
 from typing import Dict
-import matplotlib
 import sys
 
 from matplotlib import pyplot as plt
