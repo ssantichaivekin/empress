@@ -27,6 +27,6 @@ def solve(newick_data, transferMin, transferMax, dupMin, dupMax, optional):
     print("Elapsed time %.2f seconds" % elapsedTime)
     plotcosts.plotcosts(CVlist, transferMin, transferMax, dupMin, dupMax, \
                         optional.outfile, \
-                        optional.log, False)
+                        optional.log)
     if optional.outfile != "":
         print("Output written to file: ", optional.outfile)

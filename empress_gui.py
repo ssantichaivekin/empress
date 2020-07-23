@@ -9,7 +9,10 @@ import os
 import sys
 import pathlib
 
-import matplotlib.pyplot as plt
+import matplotlib
+# use tkinter backend, see # https://matplotlib.org/faq/usage_faq.html#what-is-a-backend
+matplotlib.use("tkagg")
+from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 import empress
