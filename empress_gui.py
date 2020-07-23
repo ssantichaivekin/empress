@@ -10,8 +10,8 @@ import sys
 import pathlib
 
 import matplotlib
-# use tkinter backend, see # https://matplotlib.org/faq/usage_faq.html#what-is-a-backend
-matplotlib.use("tkagg")
+# use tkinter backend, required for embedding in Tk canvas
+# see https://matplotlib.org/faq/usage_faq.html#what-is-a-backend
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 

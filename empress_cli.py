@@ -6,10 +6,6 @@
 
 import argparse
 
-import matplotlib
-# use agg backend, see # https://matplotlib.org/faq/usage_faq.html#what-is-a-backend
-matplotlib.use("agg")
-
 import cli_commands.cluster
 import cli_commands.cost_regions
 import cli_commands.histogram
