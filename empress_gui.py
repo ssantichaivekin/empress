@@ -9,7 +9,7 @@ import os
 import sys
 import pathlib
 
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 import empress
