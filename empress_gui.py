@@ -871,8 +871,8 @@ class ReconciliationsOneMPRWindow(tk.Frame):
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
-        toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
-        toolbar.update()
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
+        self.toolbar.update()
         self.canvas.get_tk_widget().pack(side=tk.TOP)
 
     def create_checkboxes(self):
@@ -892,6 +892,7 @@ class ReconciliationsOneMPRWindow(tk.Frame):
 
     def update_one_mpr(self):
         self.canvas.get_tk_widget().destroy()
+        self.toolbar.destroy()
         self.one_mpr_fig = App.recon_graph.median().draw(
             show_internal_labels=self.show_internal_node_names_boolean.get(),
             show_freq=self.show_event_frequencies_boolean.get()
@@ -899,6 +900,9 @@ class ReconciliationsOneMPRWindow(tk.Frame):
         self.canvas = FigureCanvasTkAgg(self.one_mpr_fig, self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # Recreate the toolbar
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
+        self.toolbar.update()
 
 # View reconciliations - One per cluster
 class ReconciliationsOnePerClusterWindow(tk.Frame):
@@ -941,12 +945,13 @@ class ReconciliationsOnePerClusterWindow(tk.Frame):
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
-        toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
-        toolbar.update()
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
+        self.toolbar.update()
         self.canvas.get_tk_widget().pack(side=tk.TOP)
 
     def update_median_recons(self):
         self.canvas.get_tk_widget().destroy()
+        self.toolbar.destroy()
         self.recon_solution_fig = self.recon_solution.draw(
             show_internal_labels=self.show_internal_node_names_boolean.get(),
             show_freq=self.show_event_frequencies_boolean.get()
@@ -954,6 +959,9 @@ class ReconciliationsOnePerClusterWindow(tk.Frame):
         self.canvas = FigureCanvasTkAgg(self.recon_solution_fig, self.frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # Recreate the toolbar
+        toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
+        toolbar.update()
 
 # p-value Histogram
 class PValueHistogramWindow(tk.Frame):
