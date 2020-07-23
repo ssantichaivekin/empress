@@ -369,7 +369,7 @@ def _calculate_font_size(num_tip_nodes: int):
     :return the font size for the tips and internal nodes of a tree
     """
     x = (render_settings.START_SIZE - num_tip_nodes) / render_settings.STEP_SIZE
-    return _sigmoid(x)
+    return 1.5 * _sigmoid(x)
 
 
 def _sigmoid(x: float):
