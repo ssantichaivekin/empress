@@ -582,13 +582,17 @@ class App(tk.Frame):
         if self.dup_cost is not None and self.trans_cost is not None and self.loss_cost is not None:
             # Enable the next button
             self.compute_reconciliations_btn.configure(state=tk.NORMAL)
-            self.disable_unaccessable_widgets()
             self.close_unnecessary_windows_if_opened()
         else:
             self.compute_reconciliations_btn.configure(state=tk.DISABLED)
 
     def display_recon_information(self):
         """Display numeric reconciliation results and close unnecessary windows."""
+        self.master.focus()  # remove focus from Entry and thus stop its validate command
+        self.close_unnecessary_windows_if_opened()
+        self.view_solution_space_dropdown.configure(state=tk.NORMAL)
+        self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
+        self.view_pvalue_histogram_btn.configure(state=tk.NORMAL)
         App.recon_graph = self.recon_input.reconcile(self.dup_cost, self.trans_cost, self.loss_cost)
         self.recon_count = App.recon_graph.n_recon
         self.cospec_count, self.dup_count, self.trans_count, self.loss_count = App.recon_graph.median().count_events()
@@ -631,11 +635,6 @@ class App(tk.Frame):
             self.loss_count_label.destroy()
             self.loss_count_label = tk.Label(self.recon_nums_frame, text=self.loss_count)
             self.loss_count_label.grid(row=4, column=1, sticky="w")
-
-        self.close_unnecessary_windows_if_opened()
-        self.view_solution_space_dropdown.configure(state=tk.NORMAL)
-        self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
-        self.view_pvalue_histogram_btn.configure(state=tk.NORMAL)
 
     def select_from_view_solution_space_dropdown(self, event):
         """When "View solution space" dropdown is clicked."""
