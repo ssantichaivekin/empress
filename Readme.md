@@ -102,8 +102,6 @@ Note: value in parenthesis denotes default value, asterisk denotes boolean flags
 * `-th` : Transfer high value (5)
 * `--outfile` : Name of output file. Must end in .pdf ("")
 * `--log` : Set graph to log scale*
-* `--display` : Display graph to screen*
-
 
 For example, the following example runs Costscape with duplication low value of 0.5, duplication high value of 10, transfer low value of 0.5, 
 and transfer high value of 10, that saves to a file called `foo.pdf` display it in log scale.
