@@ -22,7 +22,7 @@ def add_histogram_to_parser(histogram_parser: argparse.ArgumentParser):
                                   "total number of reconciliations")
     histogram_parser.add_argument("--cumulative", action="store_true",
                                   help="make the histogram cumulative")
-    histogram_parser.add_argument("--csv", metavar="<filename>", nargs=1,
+    histogram_parser.add_argument("--csv", metavar="<filename>",
                                   help="output the histogram as a .csv file at the path provided. If no filename is "
                                        "provided, outputs to a filename based on the input host file")
 
@@ -39,7 +39,7 @@ def add_histogram_to_parser(histogram_parser: argparse.ArgumentParser):
 def run_histogram(args):
     recon_input = empress.ReconInputWrapper.from_files(args.host, args.parasite, args.mapping)
     fname = Path(args.host)
-    cost_suffix = ".{}-{}-{}".format(args.dup_cost, args.trans_cost, args.loss_cost)
+    cost_suffix = "histogram.{}-{}-{}".format(args.dup_cost, args.trans_cost, args.loss_cost)
     # TODO: check that the specified path has a matplotlib-compatible extension?
     # If args is unset, use the original .newick file path but replace .newick with .pdf
     if args.histogram is None:
