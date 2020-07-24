@@ -96,7 +96,8 @@ def pdv_vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, tree_
     mk_get_hist = cluster_util.mk_get_pdv_hist
     plot_f = histogram_display.plot_histogram
     def get_max(l):
-        return max(l.keys()), max(l.values())
+        # Add 1 to x because of the 0 column
+        return max(l.keys()) + 1, max(l.values())
     vis(species_tree, gene_tree, gene_root, recon_g, cluster_gs, args, mk_get_hist, plot_f, get_max, tree_data)
 
 def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
