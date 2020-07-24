@@ -694,7 +694,7 @@ class App(tk.Frame):
         self.num_cluster_entry_box = CustomEntry(self.set_num_cluster_frame, width=3, textvariable=self.num_cluster_input)
         self.num_cluster_entry_box.set_border_color("green")
         self.num_cluster_entry_box.validate(validate="key", validatecommand=num_cluster_vcmd)
-        self.validate_num_cluster_input(1)
+        self.validate_num_cluster_input(self.num_cluster_entry_box.get())
         self.num_cluster_label.grid(row=0, column=0, sticky="e")
         self.num_cluster_entry_box.grid(row=0, column=1, sticky="w")
         self.num_cluster_error.grid(row=0, column=2)
