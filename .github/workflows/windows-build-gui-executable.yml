@@ -1,0 +1,32 @@
+name: Windows - Build GUI executable
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  
+jobs:
+  build:
+
+    runs-on: windows-2019
+    # https://github.com/actions/virtual-environments/blob/main/images/win/Windows2019-Readme.md
+    # windows-2019 already has python 3.7.8, no need to install
+    # python 3.7.8 is the only python installed -- refer to it as python
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install pipenv
+      run: |
+        python -m pip install pipenv
+    - name: Install dependencies via pipenv
+      run: |
+        python -m pipenv install --dev
+    - name: Create windows app
+      run: |
+        python -m pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
+    - name: Upload executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows_empress_app
+        path: ./dist/empress

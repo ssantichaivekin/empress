@@ -1,0 +1,46 @@
+name: Linux - Build GUI executable
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+    # Although ubuntu-18.04 has python 3.7.8 installed, this version
+    # is not the dev version so pyinstaller cannot copy the python
+    # executable and ship it with our app.
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install python, tcl/tk, tkinter
+      # Need to install python3.7-dev instead of python3.7
+      # so that pyinstaller can copy this python and ship it in
+      # in empress app.
+      # We need to specify python3.7-tk if we just write python3-tk
+      # it will install tcl/tk for another version of python.
+      run: |
+        sudo apt-get update
+        sudo apt-get install tk-dev python3.7-dev python3.7-tk 
+    - name: Install pipenv
+      # "python3.7 -m pip install [software]" is like running normal
+      # "pip install [software]" but this installs it to python3.7
+      run: |
+        python3.7 -m pip install pipenv
+    - name: Install geos (Shapely Dependency)
+      run: |
+        sudo apt-get install libgeos-dev
+    - name: Install dependencies via pipenv
+      run: |
+        python3.7 -m pipenv install --dev
+    - name: Create linux app
+      run: |
+        python3.7 -m pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
+    - name: Upload executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux_empress_app
+        path: ./dist/empress

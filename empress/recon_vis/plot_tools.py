@@ -1,31 +1,52 @@
 """
 plot_tools.py
 Plotting tools using matplotlib
-Modified June 26, 2020
 """
 
 # If matplotlib doesn't pop up a window, force it to use tkinter backend
 # matplotlib.use("tkagg")
-from typing import Union
-
+from typing import Union, NamedTuple, Tuple
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.collections import LineCollection
+from matplotlib.textpath import TextPath
+from matplotlib.patches import PathPatch
+import matplotlib.patheffects as PathEffects
 
-# Colors
-# Define new colors as 4-tuples of the form (r, g, b, 1) where
-# r, g, b are values between 0 and 1 indicating the amount of red, green, and blue.
-RED = (1, 0, 0, 1)
-MAROON = (0.5, 0, 0, 1)
-GREEN = (0, 0.5, 0, 1)
-BLUE = (0, 0, 1, 1)
-PURPLE = (0.5, 0, 0.5, 1)
-BLACK = (0, 0, 0, 1)
-GRAY = (0.5, 0.5, 0.5, 1)
+from empress.recon_vis import render_settings
+
 LINEWIDTH = 2
+TEXTWIDTH = .3
+BORDER_WIDTH = 1.2
+
+LINE_Z_ORDER = 0
+DOT_Z_ORDER = 1
+TEXT_Z_ORDER = 2
+
+SIZE = 6
+TRANSFERSIZE = 10
+
 FONTSIZE = 12
+
+DEFAULT_VERTICAL_ALIGNMENT = 'bottom'
+DEFAULT_VERTICAL_ALIGNMENT_2 = 'top'
+DEFAULT_HORIZONTAL_ALIGNMENT = 'right'
+DEFAULT_LOCATION = 'best'
+DEFAULT_LINESTYLE = '-'
+DEFAULT_TRIANGLE_LINESTYLE = 'None'
+DEFAULT_DOT_MARKER = 'o'
+CENTER = 'center'
+
+def transparent_color(col: Tuple[int, int, int, float], alpha: float):
+    return col[0:3] + (alpha,)
+
+class Position(NamedTuple):
+    x: int
+    y: int
 
 class FigureWrapper:
     """ Class definining plotting methods """
-    def __init__(self, title, axes: Union[plt.Axes, None] = None):
+    def __init__(self, title: str, axes: Union[plt.Axes, None] = None):
         """
         If axes is specified, draw on axes instead.
         """
@@ -40,33 +61,69 @@ class FigureWrapper:
         self.axis.axis("off")
         self.axis.set_title(title)
 
-    def line(self, point_1, point_2, col=BLACK, style = '-'):
+    def set_legend(self, legend_elements: list, loc: str = DEFAULT_LOCATION, fontsize: int = FONTSIZE, title: str = None):
+        """
+        create legend
+        """
+        self.axis.legend(handles=legend_elements, loc=loc, fontsize=fontsize, title=title)
+
+    def line(self, point_1: Position, point_2: Position, col: tuple = render_settings.BLACK, linestyle: str = DEFAULT_LINESTYLE):
         """
         Draw line from point p1 to p2
         """
         x_1, y_1 = point_1
         x_2, y_2 = point_2
-        self.axis.plot([x_1, x_2], [y_1, y_2], color=col, linewidth=LINEWIDTH, linestyle = style)
-    
-    def dot(self, point, col=BLACK):
+        self.axis.plot([x_1, x_2], [y_1, y_2], color=col, linewidth=LINEWIDTH, linestyle=linestyle, zorder=LINE_Z_ORDER)
+
+    def dot(self, point: Position, marker: str = DEFAULT_DOT_MARKER, col: tuple = render_settings.BLACK):
         """
         Plot dot at point p
         """
+        self.axis.plot(point.x, point.y, marker, color=col, zorder=DOT_Z_ORDER)
+
+    def text(self, point: tuple, string: str, col: tuple = render_settings.RED, h_a: str = DEFAULT_HORIZONTAL_ALIGNMENT):
         x, y = point
-        self.axis.plot(x, y, 'o', color=col)
+        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment=DEFAULT_VERTICAL_ALIGNMENT_2)
+
+    def text_v2(self, point: tuple, text: str, col: tuple = render_settings.BLACK, size: float = SIZE, vertical_alignment: str = DEFAULT_VERTICAL_ALIGNMENT, border_col: tuple = None):
+        """
+        Plot text at s at point p
+        """
+        if text is not None:
+            if vertical_alignment == CENTER:
+                point = (point[0], point[1] - size * render_settings.CENTER_CONSTANT)
+
+            tp = TextPath(point, text, size=size)
+            path_patch = PathPatch(tp, color=col, linewidth = TEXTWIDTH, zorder=TEXT_Z_ORDER)
+            if border_col:
+                path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
+            self.fig.gca().add_patch(path_patch)
     
-    def text(self, point, string, col=RED, h_a='right'):
-        x, y = point
-        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment='top')
+    def triangle(self, point: Position, col: tuple = render_settings.BLACK, markersize: int = TRANSFERSIZE, rotation: float = render_settings.UP_ARROW_ROTATION):
+        """
+        Draws a triangle in the desired position
+        """
+        self.axis.plot(point.x, point.y, color=col, marker=(3, 0, rotation), markersize=TRANSFERSIZE, linestyle=DEFAULT_TRIANGLE_LINESTYLE)
+
+    def arrow_segment(self, point_1: Position, point_2: Position, col: tuple = render_settings.BLACK):
+        """
+        Draws a line from point 1 to point 2 with an arrow in the middle
+        """
+        plt.plot((point_1.x, point_2.x), (point_1.y, point_2.y), linewidth=2, color=col)
+        arrow_length_x, arrow_length_y = (point_2.x - point_1.x) / 2, (point_2.y - point_1.y) / 2
+        plt.arrow(point_1.x, point_1.y, arrow_length_x, arrow_length_y, linewidth=2, 
+                  head_width=0.3, head_length=0.5, facecolor=col, edgecolor=col,
+                  length_includes_head=False)
+
 
     def show(self):
-        """ 
+        """
         Display figure
         """
         plt.figure(self.fig.number)
         plt.show()
 
-    def save(self, filename):
+    def save(self, filename: str):
         """
         Save figure to file
         """
