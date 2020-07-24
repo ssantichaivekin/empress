@@ -71,7 +71,11 @@ def transform_hist(hist, omit_zeros, xnorm, ynorm, cumulative):
         return hist_zero, 1
     # Normalize the x values
     if xnorm:
-        width = 1 / float(max(hist_zero.keys()))
+        denominator = float(max(hist_zero.keys()))
+        # The zero column should factor into the width if it exists
+        if not omit_zeros:
+            denominator += 1
+        width = 1 / denominator
         hist_xnorm = histogram_display.normalize_xvals(hist_zero)
     else:
         width = 1
