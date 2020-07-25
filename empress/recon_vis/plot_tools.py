@@ -65,7 +65,9 @@ class FigureWrapper:
         """
         create legend
         """
-        self.axis.legend(handles=legend_elements, loc=loc, fontsize=fontsize, title=title)
+        legend = self.axis.legend(handles=legend_elements, loc=loc, fontsize=fontsize, title=title)
+        title = legend.get_title()
+        title.set_fontsize(fontsize)
 
     def line(self, point_1: Position, point_2: Position, col: tuple = render_settings.BLACK, linestyle: str = DEFAULT_LINESTYLE):
         """
