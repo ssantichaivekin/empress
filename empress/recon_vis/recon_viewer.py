@@ -9,6 +9,7 @@ from typing import Union, Dict
 import math
 import matplotlib.pyplot as plt
 
+SPACES = 42  # Number of spaces for displaying horizontal offset of parasite tip leaf names
 
 def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequencies: Dict[tuple, float] = None, show_internal_labels: bool = False, 
            show_freq: bool = False, show_legend: bool = True, axes: Union[plt.Axes, None] = None):
@@ -335,7 +336,7 @@ def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event
 
     fig.dot(node_pos, col=render_color, marker=render_shape)
     if node.is_leaf():
-        fig.text_v2((node.layout.x + render_settings.TIP_TEXT_OFFSET_X, node.layout.y), node.name, render_color, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
+        fig.text_v2((node.layout.x + render_settings.TIP_TEXT_OFFSET_X, node.layout.y), "-"*SPACES+node.name, render_color, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
         return
 
     text = ''
@@ -369,7 +370,7 @@ def _calculate_font_size(num_tip_nodes: int):
     :return the font size for the tips and internal nodes of a tree
     """
     x = (render_settings.START_SIZE - num_tip_nodes) / render_settings.STEP_SIZE
-    return 1.5 * _sigmoid(x)
+    return 3.0 * _sigmoid(x)
 
 
 def _sigmoid(x: float):
@@ -378,7 +379,7 @@ def _sigmoid(x: float):
     :param x: A number to be plugged into the function
     :return a sigmoid value based on the input value, x
     """
-    return (1 / (1 + math.e**(-x)))
+    return (1 / (1 + math.e**(-0.8*x)))
 
 
 def _render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict):

@@ -81,13 +81,13 @@ class FigureWrapper:
         """
         self.axis.plot(point.x, point.y, marker, color=col, zorder=DOT_Z_ORDER)
 
-    def text(self, point: tuple, string: str, col: tuple = render_settings.RED, h_a: str = DEFAULT_HORIZONTAL_ALIGNMENT):
+    def text(self, point: tuple, string: str, col: tuple = render_settings.RED, size=FONTSIZE, h_a: str = DEFAULT_HORIZONTAL_ALIGNMENT):
         x, y = point
-        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment=DEFAULT_VERTICAL_ALIGNMENT_2)
-
+        self.axis.text(x, y, string, color=col, fontsize = size, horizontalalignment=h_a, verticalalignment=DEFAULT_VERTICAL_ALIGNMENT_2)
+    
     def text_v2(self, point: tuple, text: str, col: tuple = render_settings.BLACK, size: float = SIZE, vertical_alignment: str = DEFAULT_VERTICAL_ALIGNMENT, border_col: tuple = None):
         """
-        Plot text at s at point p
+        Plot text string s at point p
         """
         if text is not None:
             if vertical_alignment == CENTER:
