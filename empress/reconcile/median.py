@@ -68,7 +68,7 @@ def mapping_node_sort(ordered_gene_node_list, ordered_species_node_list, mapping
     return sorted_list
 
 
-def generate_frequencies_dict(preorder_mapping_node_list, recon_graph, gene_root, normalize=True):
+def generate_frequencies_dict(preorder_mapping_node_list, recon_graph, gene_root, normalize=False):
     """
     Computes frequencies for every event
     :param preorder_mapping_node_list: A list of all mapping nodes in DTLReconGraph in double preorder
