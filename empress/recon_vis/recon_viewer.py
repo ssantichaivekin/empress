@@ -9,8 +9,6 @@ from typing import Union, Dict
 import math
 import matplotlib.pyplot as plt
 
-SPACES = 42  # Number of spaces for displaying horizontal offset of parasite tip leaf names
-
 def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequencies: Dict[tuple, float] = None, show_internal_labels: bool = False, 
            show_freq: bool = False, show_legend: bool = True, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
@@ -52,8 +50,10 @@ def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequen
     # Sets the offsets between tracks on each host node
     _set_offsets(host_tree)
 
+    # Determine the length of the longest string in the host tree's leaf list
+    longest_host_name = max([len(leaf.name) for leaf in host_tree.leaf_list()])
     # Render Parasite Tree
-    _render_parasite(fig, parasite_tree, recon_obj, host_lookup, parasite_lookup, show_internal_labels, show_freq, font_size)
+    _render_parasite(fig, parasite_tree, recon_obj, host_lookup, parasite_lookup, show_internal_labels, show_freq, font_size, longest_host_name)
 
     return fig
 
@@ -151,7 +151,7 @@ def _render_host_helper(fig: plot_tools.FigureWrapper, node: tree.Node, show_int
         _render_host_helper(fig, node.right_node, show_internal_labels, font_size, host_tree)
 
 
-def _render_parasite(fig: plot_tools.FigureWrapper, parasite_tree: tree.Tree, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, font_size: float):
+def _render_parasite(fig: plot_tools.FigureWrapper, parasite_tree: tree.Tree, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, font_size: float, longest_host_name: int):
     """
     Render the parasite tree.
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -162,9 +162,10 @@ def _render_parasite(fig: plot_tools.FigureWrapper, parasite_tree: tree.Tree, re
     :param show_internal_labels: Boolean that determines whether or not the internal labels are shown
     :param show_freq: Boolean that determines wheter or not the frequencies are shown
     :param font_size: Font size for the text of the tips and internal nodes of the tree
+    :param longest_host_name: The number of symbols in the longest host tree tip name
     """
     root = parasite_tree.root_node
-    _render_parasite_helper(fig, root, recon_obj, host_lookup, parasite_lookup, show_internal_labels, show_freq, font_size)
+    _render_parasite_helper(fig, root, recon_obj, host_lookup, parasite_lookup, show_internal_labels, show_freq, font_size, longest_host_name)
 
 
 def _populate_host_tracks(node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict):
@@ -202,7 +203,7 @@ def _is_sharing_track(node: tree.Node, host_name: str, recon_obj: recon.Reconcil
     return host_name == left_host_name or host_name == right_host_name
 
 
-def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, font_size: float):
+def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, font_size: float, longest_host_name : int):
     """
     Helper function for rendering the parasite tree.
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -213,6 +214,7 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
     :param show_internal_labels: Boolean that determines whether or not the internal labels are shown
     :param show_freq: Boolean that determines wheter or not the frequencies are shown
     :param font_size: Font size for the text of the tips and internal nodes of the tree
+    :param longest_host_name: The number of symbols in the longest host tree tip name
     """
     # mapping_node is of type MappingNode which associates
     # a parasite to a host in a reconciliation
@@ -240,7 +242,7 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
     # Render parasite node and recurse if not a leaf
     if node.is_leaf():
         node.layout.y += host_node.get_and_update_track(tree.Track.HORIZONTAL) * host_node.layout.offset
-        _render_parasite_node(fig, node, event, font_size)
+        _render_parasite_node(fig, node, event, font_size, longest_host_name)
         return
 
     # If the Node is in their own track, change their position
@@ -250,9 +252,9 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
     left_node, right_node = _get_children(node, recon_obj, parasite_lookup)
 
     _render_parasite_helper(fig, left_node, recon_obj, host_lookup,
-        parasite_lookup, show_internal_labels, show_freq, font_size)
+        parasite_lookup, show_internal_labels, show_freq, font_size, longest_host_name)
     _render_parasite_helper(fig, right_node, recon_obj, host_lookup,
-        parasite_lookup, show_internal_labels, show_freq, font_size)
+        parasite_lookup, show_internal_labels, show_freq, font_size, longest_host_name)
 
     # Checking to see if left node is mapped to the same host node as parent
     if node.layout.row == left_node.layout.row:
@@ -268,7 +270,7 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
         _fix_transfer(node, left_node, right_node, host_node, host_lookup, parasite_lookup, recon_obj)
 
     _render_parasite_branches(fig, node, recon_obj, host_lookup, parasite_lookup)
-    _render_parasite_node(fig, node, event, font_size, show_internal_labels, show_freq)
+    _render_parasite_node(fig, node, event, font_size, longest_host_name, show_internal_labels, show_freq)
 
 
 def _fix_transfer(node: tree.Node, left_node, right_node: tree.Node, host_node: tree.Node, host_lookup: dict, parasite_lookup: dict, recon_obj: recon.Reconciliation, node_col: float = None, offset_number: int = 1):
@@ -321,7 +323,7 @@ def _is_col_taken(node_col, host_lookup, parasite_lookup):
     return False
 
 
-def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event: recon.Event, font_size: float, show_internal_labels: bool = False, show_freq: bool = False):
+def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event: recon.Event, font_size: float, longest_host_name : int, show_internal_labels: bool = False, show_freq: bool = False):
     """
     Renders a single parasite node
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -330,13 +332,15 @@ def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event
     :param font_size: Font size for text
     :param show_internal_labels: Boolean that determines whether or not the internal labels are shown
     :param show_freq: Boolean that determines wheter or not the frequencies are shown
+    :param longest_host_name: The number of symbols in the longest host tree tip name
     """
+
     node_pos = plot_tools.Position(node.layout.x, node.layout.y)
     render_color, render_shape = _event_color_shape(event)
 
     fig.dot(node_pos, col=render_color, marker=render_shape)
     if node.is_leaf():
-        fig.text_v2((node.layout.x + render_settings.TIP_TEXT_OFFSET_X, node.layout.y), "-"*SPACES+node.name, render_color, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
+        fig.text_v2((node.layout.x + render_settings.TIP_TEXT_OFFSET_X, node.layout.y), "-"*(3+longest_host_name)+node.name, render_color, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
         return
 
     text = ''
@@ -370,7 +374,7 @@ def _calculate_font_size(num_tip_nodes: int):
     :return the font size for the tips and internal nodes of a tree
     """
     x = (render_settings.START_SIZE - num_tip_nodes) / render_settings.STEP_SIZE
-    return 3.0 * _sigmoid(x)
+    return 3.0 * _sigmoid(x)  # 3.0 is a magic value that can be adjusted
 
 
 def _sigmoid(x: float):
@@ -379,7 +383,7 @@ def _sigmoid(x: float):
     :param x: A number to be plugged into the function
     :return a sigmoid value based on the input value, x
     """
-    return (1 / (1 + math.e**(-0.8*x)))
+    return (1 / (1 + math.e**(-0.8*x)))  # 0.8 is a magic value that can be adjusted
 
 
 def _render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict):

@@ -8,6 +8,7 @@ Plotting tools using matplotlib
 from typing import Union, NamedTuple, Tuple
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib import rcParams
 from matplotlib.collections import LineCollection
 from matplotlib.textpath import TextPath
 from matplotlib.patches import PathPatch
@@ -60,6 +61,7 @@ class FigureWrapper:
         self.axis.margins(0.1)
         self.axis.axis("off")
         self.axis.set_title(title)
+        rcParams['font.family'] = 'monospace'
 
     def set_legend(self, legend_elements: list, loc: str = DEFAULT_LOCATION, fontsize: int = FONTSIZE, title: str = None):
         """
