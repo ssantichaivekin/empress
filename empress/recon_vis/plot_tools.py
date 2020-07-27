@@ -12,6 +12,7 @@ from matplotlib import rcParams
 from matplotlib.collections import LineCollection
 from matplotlib.textpath import TextPath
 from matplotlib.patches import PathPatch
+from matplotlib import font_manager
 import matplotlib.patheffects as PathEffects
 
 from empress.recon_vis import render_settings
@@ -61,7 +62,6 @@ class FigureWrapper:
         self.axis.margins(0.1)
         self.axis.axis("off")
         self.axis.set_title(title)
-        rcParams['font.family'] = 'monospace'
 
     def set_legend(self, legend_elements: list, loc: str = DEFAULT_LOCATION, fontsize: int = FONTSIZE, title: str = None):
         """
@@ -89,13 +89,14 @@ class FigureWrapper:
     
     def text_v2(self, point: tuple, text: str, col: tuple = render_settings.BLACK, size: float = SIZE, vertical_alignment: str = DEFAULT_VERTICAL_ALIGNMENT, border_col: tuple = None):
         """
-        Plot text string s at point p
+        Plot text string s at point p in monospace font
         """
         if text is not None:
             if vertical_alignment == CENTER:
                 point = (point[0], point[1] - size * render_settings.CENTER_CONSTANT)
 
-            tp = TextPath(point, text, size=size)
+            mono_property = font_manager.FontProperties(family='monospace')
+            tp = TextPath(point, text, size=size, prop=mono_property)
             path_patch = PathPatch(tp, color=col, linewidth = TEXTWIDTH, zorder=TEXT_Z_ORDER)
             if border_col:
                 path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])

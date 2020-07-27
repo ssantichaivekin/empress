@@ -66,7 +66,7 @@ INTERNAL_NODE_ALPHA = 0.7
 HOST_NODE_BORDER_COLOR = WHITE
 PARASITE_NODE_BORDER_COLOR = BLACK
 
-TREE_TITLE = "Reconciliation"
+TREE_TITLE = ""
 
 LEGEND_ELEMENTS = [
        Line2D([0], [0], marker= COSPECIATION_NODE_SHAPE, color='w', label='Cospeciation',
