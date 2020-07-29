@@ -84,6 +84,7 @@ def _render_helper_host(fig, node, show_internal_labels):
         # create layout for current node
         node.layout = tree.NodeLayout()
         node.layout.col = min(right_layout.col, left_layout.col) - HORIZONTAL_SPACING
+        # If this node has a leaf child, extend the length of the branch to allow extra spacing to render label
         if node.right_node.is_leaf() or node.left_node.is_leaf():
             node.layout.col -= EXTRA_SPACING_FOR_LABEL
         y_avg = (right_layout.row + left_layout.row) / 2
@@ -135,6 +136,7 @@ def _render_helper_parasite(fig, node, show_internal_labels):
         # create layout for current node
         node.layout = tree.NodeLayout()
         node.layout.col = max(left_layout.col, right_layout.col) + HORIZONTAL_SPACING
+        # If this node has a leaf child, extend the length of the branch to allow extra spacing to render label
         if node.right_node.is_leaf() or node.left_node.is_leaf():
             node.layout.col += EXTRA_SPACING_FOR_LABEL
         y_avg = (right_layout.row + left_layout.row) / 2

@@ -9,6 +9,9 @@ from typing import Union, Dict
 import math
 import matplotlib.pyplot as plt
 
+FONT_SIZE_STRETCH = 3.0     # Parameter used in _calculate_font_size
+SIGMOID_SCALE = 0.8         # Parameter used in _sigmoid
+
 def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequencies: Dict[tuple, float] = None, show_internal_labels: bool = False, 
            show_freq: bool = False, show_legend: bool = True, axes: Union[plt.Axes, None] = None):
     """ Renders a reconciliation using matplotlib
@@ -130,6 +133,7 @@ def _render_host_helper(fig: plot_tools.FigureWrapper, node: tree.Node, show_int
 
     if node.is_leaf():
         text_offset = (node_pos.x + render_settings.TIP_TEXT_OFFSET_X, node_pos.y)
+        # Uncomment if we wish to render dots at leaves:
         # fig.dot(node_pos, col=render_settings.HOST_NODE_COLOR)
         if node.layout.node_count == 0:
             fig.text_v2(text_offset, node.name, render_settings.HOST_NODE_COLOR, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
@@ -151,7 +155,9 @@ def _render_host_helper(fig: plot_tools.FigureWrapper, node: tree.Node, show_int
         _render_host_helper(fig, node.right_node, show_internal_labels, font_size, host_tree)
 
 
-def _render_parasite(fig: plot_tools.FigureWrapper, parasite_tree: tree.Tree, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, font_size: float, longest_host_name: int):
+def _render_parasite(fig: plot_tools.FigureWrapper, parasite_tree: tree.Tree, recon_obj: recon.Reconciliation,  
+        host_lookup: dict, parasite_lookup: dict, show_internal_labels: bool, show_freq: bool, 
+        font_size: float, longest_host_name: int):
     """
     Render the parasite tree.
     :param fig: Figure object that visualizes trees using MatplotLib
@@ -375,7 +381,7 @@ def _calculate_font_size(num_tip_nodes: int):
     :return the font size for the tips and internal nodes of a tree
     """
     x = (render_settings.START_SIZE - num_tip_nodes) / render_settings.STEP_SIZE
-    return 3.0 * _sigmoid(x)  # 3.0 is a magic value that can be adjusted
+    return FONT_SIZE_STRETCH * _sigmoid(x)  # 3.0 is a magic value that can be adjusted
 
 
 def _sigmoid(x: float):
@@ -384,7 +390,7 @@ def _sigmoid(x: float):
     :param x: A number to be plugged into the function
     :return a sigmoid value based on the input value, x
     """
-    return (1 / (1 + math.e**(-0.8*x)))  # 0.8 is a magic value that can be adjusted
+    return (1 / (1 + math.e**(-SIGMOID_SCALE*x)))  # 0.8 is a magic value that can be adjusted
 
 
 def _render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict):
