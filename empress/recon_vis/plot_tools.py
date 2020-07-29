@@ -17,7 +17,7 @@ import matplotlib.patheffects as PathEffects
 
 from empress.recon_vis import render_settings
 
-LINEWIDTH = 2
+LINEWIDTH = 1
 TEXTWIDTH = .3
 BORDER_WIDTH = 1.2
 

@@ -130,7 +130,7 @@ def _render_host_helper(fig: plot_tools.FigureWrapper, node: tree.Node, show_int
 
     if node.is_leaf():
         text_offset = (node_pos.x + render_settings.TIP_TEXT_OFFSET_X, node_pos.y)
-        fig.dot(node_pos, col=render_settings.HOST_NODE_COLOR)
+        # fig.dot(node_pos, col=render_settings.HOST_NODE_COLOR)
         if node.layout.node_count == 0:
             fig.text_v2(text_offset, node.name, render_settings.HOST_NODE_COLOR, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
         else:
@@ -338,7 +338,7 @@ def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event
     node_pos = plot_tools.Position(node.layout.x, node.layout.y)
     render_color, render_shape = _event_color_shape(event)
 
-    fig.dot(node_pos, col=render_color, marker=render_shape)
+    # fig.dot(node_pos, col=render_color, marker=render_shape)
     if node.is_leaf():
         fig.text_v2((node.layout.x + render_settings.TIP_TEXT_OFFSET_X, node.layout.y), "-"*(3+longest_host_name)+node.name, render_color, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
         return
