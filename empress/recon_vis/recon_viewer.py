@@ -133,8 +133,6 @@ def _render_host_helper(fig: plot_tools.FigureWrapper, node: tree.Node, show_int
 
     if node.is_leaf():
         text_offset = (node_pos.x + render_settings.TIP_TEXT_OFFSET_X, node_pos.y)
-        # Uncomment if we wish to render dots at leaves:
-        # fig.dot(node_pos, col=render_settings.HOST_NODE_COLOR)
         if node.layout.node_count == 0:
             fig.text_v2(text_offset, node.name, render_settings.HOST_NODE_COLOR, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
         else:
