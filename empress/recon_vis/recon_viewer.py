@@ -338,11 +338,12 @@ def _render_parasite_node(fig: plot_tools.FigureWrapper,  node: tree.Node, event
     node_pos = plot_tools.Position(node.layout.x, node.layout.y)
     render_color, render_shape = _event_color_shape(event)
 
-    # fig.dot(node_pos, col=render_color, marker=render_shape)
+
     if node.is_leaf():
         fig.text_v2((node.layout.x + render_settings.TIP_TEXT_OFFSET_X, node.layout.y), "-"*(3+longest_host_name)+node.name, render_color, size=font_size, vertical_alignment=render_settings.TIP_ALIGNMENT)
         return
 
+    fig.dot(node_pos, col=render_color, marker=render_shape)
     text = ''
     text_color = plot_tools.transparent_color(render_color, render_settings.INTERNAL_NODE_ALPHA)
     if show_internal_labels and show_freq:
