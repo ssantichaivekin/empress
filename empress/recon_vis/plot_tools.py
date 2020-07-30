@@ -8,14 +8,16 @@ Plotting tools using matplotlib
 from typing import Union, NamedTuple, Tuple
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib import rcParams
 from matplotlib.collections import LineCollection
 from matplotlib.textpath import TextPath
 from matplotlib.patches import PathPatch
+from matplotlib import font_manager
 import matplotlib.patheffects as PathEffects
 
 from empress.recon_vis import render_settings
 
-LINEWIDTH = 2
+LINEWIDTH = 1
 TEXTWIDTH = .3
 BORDER_WIDTH = 1.2
 
@@ -81,19 +83,20 @@ class FigureWrapper:
         """
         self.axis.plot(point.x, point.y, marker, color=col, zorder=DOT_Z_ORDER)
 
-    def text(self, point: tuple, string: str, col: tuple = render_settings.RED, h_a: str = DEFAULT_HORIZONTAL_ALIGNMENT):
+    def text(self, point: tuple, string: str, col: tuple = render_settings.RED, size=FONTSIZE, h_a: str = DEFAULT_HORIZONTAL_ALIGNMENT):
         x, y = point
-        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment=DEFAULT_VERTICAL_ALIGNMENT_2)
-
+        self.axis.text(x, y, string, color=col, fontsize = size, horizontalalignment=h_a, verticalalignment=DEFAULT_VERTICAL_ALIGNMENT_2)
+    
     def text_v2(self, point: tuple, text: str, col: tuple = render_settings.BLACK, size: float = SIZE, vertical_alignment: str = DEFAULT_VERTICAL_ALIGNMENT, border_col: tuple = None):
         """
-        Plot text at s at point p
+        Plot text string s at point p in monospace font
         """
         if text is not None:
             if vertical_alignment == CENTER:
                 point = (point[0], point[1] - size * render_settings.CENTER_CONSTANT)
 
-            tp = TextPath(point, text, size=size)
+            mono_property = font_manager.FontProperties(family='monospace')
+            tp = TextPath(point, text, size=size, prop=mono_property)
             path_patch = PathPatch(tp, color=col, linewidth = TEXTWIDTH, zorder=TEXT_Z_ORDER)
             if border_col:
                 path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
