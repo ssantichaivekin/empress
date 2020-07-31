@@ -14,7 +14,7 @@ The main program for computing a clustering of the MPR-space is `ClusterMain.py`
 
 * `--support` or `--pdv` specifies the objective function, the average event support or average pairwise distance respectively.
 
-* `--depth` or `--nmprs` specify how to choose the depth. `--depth` explicitly specifies how far down to go whereas `--nmprs` specifies a number of splits to start with, and goes down to the first depth level that yields at least that many splits. When comparing statistics across multiple data, using `--nmprs` gives a more fair comparison since the initial choices of events may be placed farther down in one of the graphs. When looking at a single `.newick` file, the approach that makes the most sense is to explicitly increase depth until the improvement flatlines, at which point the important events have probably been separated by the algorithm.
+* `--depth` or `--n-splits` specify how to choose the depth. `--depth` explicitly specifies how far down to go whereas `--n-splits` specifies a number of splits to start with, and goes down to the first depth level that yields at least that many splits. When comparing statistics across multiple data, using `--n-splits` gives a more fair comparison since the initial choices of events may be placed farther down in one of the graphs. When looking at a single `.newick` file, the approach that makes the most sense is to explicitly increase depth until the improvement flatlines, at which point the important events have probably been separated by the algorithm.
 
 * `--pdv-vis` or `--support-vis` specify a visualization type. If neither is used, no visualization will be generated. `--pdv-vis` generates the Pairwise Distance Vector for the original reconciliation graph and for each of the clusters found. `--support-vis` generates a histogram of event supports for the original recon graph and each cluster.
 
@@ -34,15 +34,15 @@ The main program for computing a clustering of the MPR-space is `ClusterMain.py`
 
 * `--support` or `--pdv` as above
 
-* `--depth` or `--nmprs` as above
+* `--depth` or `--n-splits` as above
 
 * `--output` specifies a file to store the output. This is useful when generating multiple types of plot from the same data, debugging the script, or when looking at certain characteristics of the data. Note that the saved data for a given analysis only works with that analysis. Output files should be named accordingly so that it is easy to remember which data belongs with which analysis.
 
-Note that some of these parameters may not be used in certain of the tests. For example `--nmprs` is ignored when doing the sensitivity to N analysis because that test analyzes the clustering for multiple values of N.
+Note that some of these parameters may not be used in certain of the tests. For example `--n-splits` is ignored when doing the sensitivity to N analysis because that test analyzes the clustering for multiple values of N.
 
 #### Analyses
 
-* `--s1s2` clusters according to a single objective function and then evaluates on both so that the two evaluations can be correlated. This serves as a way to measure the similarity between two objective functions: If theimprovement from one objective is highly correlated with the improvement from the other objective, then each objective can largely substitute for the other.
+* `--s1s2` clusters according to a single objective function and then evaluates on both so that the two evaluations can be correlated. This serves as a way to measure the similarity between two objective functions: If the improvement from one objective is highly correlated with the improvement from the other objective, then each objective can largely substitute for the other.
 
 * `--ni` determines the sensitivity to the value of N, the number of initial clusters. This is useful for understanding what the best value of N is.
 
