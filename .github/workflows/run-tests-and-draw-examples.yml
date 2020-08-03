@@ -49,12 +49,8 @@ jobs:
     - name: Run cluster example in Readme.md
       run: |
         pipenv run python empress_cli.py cluster examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping 3 --median --n-splits 4 --support
-    - name: Run draw examples for empress wrapper
-      run: |
-        pipenv run python -m draw.draw_empress_wrapper
-    - name: Run draw examples for recon viewer
-      run: |
-        pipenv run python -m draw.draw_recon_viewer
+    - name: Run draw examples
+        pipenv run python -m unittest discover --start-directory ./test/draw --pattern "draw_*.py"
     - name: Upload draw examples
       uses: actions/upload-artifact@v2
       with:
