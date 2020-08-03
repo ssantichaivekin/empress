@@ -104,7 +104,7 @@ def plot_costs_on_axis(axes: Axes, cost_vectors, transfer_min, transfer_max, dup
             except:
                 raise Exception("cost vector (%s) has invalid region (%s)" % (str(cost_vector), str(type(region))))
 
-    leg = axes.legend()
+    leg = axes.legend(loc="upper right")
     for i in range(len(leg.legendHandles)):  # adjust legend marker thickness
         leg.legendHandles[i].set_linewidth(2.0)
     if title is None:
