@@ -67,9 +67,7 @@ class FigureWrapper:
         """
         create legend
         """
-        legend = self.axis.legend(handles=legend_elements, loc=loc, fontsize=fontsize, title=title)
-        title = legend.get_title()
-        title.set_fontsize(fontsize)
+        self.axis.legend(handles=legend_elements, loc=loc, title=title, fontsize=fontsize, title_fontsize=fontsize)
 
     def line(self, point_1: Position, point_2: Position, col: tuple = render_settings.BLACK, linestyle: str = DEFAULT_LINESTYLE):
         """
@@ -85,13 +83,13 @@ class FigureWrapper:
         """
         self.axis.plot(point.x, point.y, marker, color=col, zorder=DOT_Z_ORDER)
 
-    def text(self, point: tuple, string: str, col: tuple = render_settings.RED, h_a: str = DEFAULT_HORIZONTAL_ALIGNMENT):
+    def text(self, point: tuple, string: str, col: tuple = render_settings.RED, size=FONTSIZE, h_a: str = DEFAULT_HORIZONTAL_ALIGNMENT):
         x, y = point
-        self.axis.text(x, y, string, color=col, fontsize=FONTSIZE, horizontalalignment=h_a, verticalalignment=DEFAULT_VERTICAL_ALIGNMENT_2)
+        self.axis.text(x, y, string, color=col, fontsize = size, horizontalalignment=h_a, verticalalignment=DEFAULT_VERTICAL_ALIGNMENT_2)
 
     def text_v2(self, point: tuple, text: str, col: tuple = render_settings.BLACK, size: float = SIZE, vertical_alignment: str = DEFAULT_VERTICAL_ALIGNMENT, border_col: tuple = None):
         """
-        Plot text at s at point p
+        Plot text string s at point p in monospace font
         """
         if text is not None:
             if vertical_alignment == CENTER:
@@ -99,14 +97,14 @@ class FigureWrapper:
 
             mono_property = font_manager.FontProperties(family='monospace')
             tp = TextPath(point, text, size=size, prop=mono_property)
-            path_patch = PathPatch(tp, color=col, linewidth=TEXTWIDTH, zorder=TEXT_Z_ORDER)
+            path_patch = PathPatch(tp, color=col, linewidth = TEXTWIDTH, zorder=TEXT_Z_ORDER)
             if border_col:
                 path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
             self.fig.gca().add_patch(path_patch)
     
     def triangle(self, point: Position, col: tuple = render_settings.BLACK, markersize: int = TRANSFERSIZE, rotation: float = render_settings.UP_ARROW_ROTATION):
         """
-        Plot text string s at point p in monospace font
+        Draws a triangle in the desired position
         """
         self.axis.plot(point.x, point.y, color=col, marker=(3, 0, rotation), markersize=TRANSFERSIZE, linestyle=DEFAULT_TRIANGLE_LINESTYLE)
 
@@ -122,7 +120,7 @@ class FigureWrapper:
 
 
     def show(self):
-        """ 
+        """
         Display figure
         """
         plt.figure(self.fig.number)
