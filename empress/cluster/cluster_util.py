@@ -148,7 +148,7 @@ def full_split_n(g, gene_root, n, mpr_count):
         elif len(gs) == mpr_count:
             break
         depth += 1
-    print(("Depth: {}".format(depth)))
+    #print(("Depth: {}".format(depth)))
     return gs
 
 def full_split(g, gene_root, depth):
