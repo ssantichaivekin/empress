@@ -480,7 +480,7 @@ def combine(split_gs, g_score, k, mpr_counter):
     # the second is for k+1 clusters, etc.
     return split_gs, scores[::-1], local_scores[::-1]
 
-def cluster_graph_n(graph, gene_root, score, n, mpr_count, k, max_splits):
+def cluster_graph_n(graph, gene_root, score, n, mpr_count, k, max_splits=None):
     """
     Find k clusters within MPRs of g by first finding at least n splits
     then merging them by WAS.
@@ -496,13 +496,14 @@ def cluster_graph_n(graph, gene_root, score, n, mpr_count, k, max_splits):
     """
     # First split the graph
     gs = full_split_n(graph, gene_root, n, mpr_count)
-    if len(gs) > max_splits:
+    if max_splits is not None and len(gs) > max_splits:
+        print("Too many splits: {}".format(len(gs)))
         return None
     mpr_counter = mk_count_mprs(gene_root)
     # Then recombine those splits until we have k graphs
     return combine(gs, score, k, mpr_counter)
 
-def cluster_graph(graph, gene_root, distance, depth, k, max_splits):
+def cluster_graph(graph, gene_root, distance, depth, k, max_splits=None):
     """
     Find k clusters within MPRs of g using a depth-splitting method
     then merging by WAS.
@@ -511,7 +512,8 @@ def cluster_graph(graph, gene_root, distance, depth, k, max_splits):
     """
     # First split the graph
     gs = full_split(graph, gene_root, depth)
-    if len(gs) > max_splits:
+    if max_splits is not None and len(gs) > max_splits:
+        print("Too many splits: {}".format(len(gs)))
         return None
     mpr_counter = mk_count_mprs(gene_root)
     # Then recombine those splits until we have k graphs

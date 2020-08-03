@@ -8,14 +8,16 @@ Plotting tools using matplotlib
 from typing import Union, NamedTuple, Tuple
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib import rcParams
 from matplotlib.collections import LineCollection
 from matplotlib.textpath import TextPath
 from matplotlib.patches import PathPatch
+from matplotlib import font_manager
 import matplotlib.patheffects as PathEffects
 
 from empress.recon_vis import render_settings
 
-LINEWIDTH = 2
+LINEWIDTH = 1
 TEXTWIDTH = .3
 BORDER_WIDTH = 1.2
 
@@ -95,15 +97,16 @@ class FigureWrapper:
             if vertical_alignment == CENTER:
                 point = (point[0], point[1] - size * render_settings.CENTER_CONSTANT)
 
-            tp = TextPath(point, text, size=size)
-            path_patch = PathPatch(tp, color=col, linewidth = TEXTWIDTH, zorder=TEXT_Z_ORDER)
+            mono_property = font_manager.FontProperties(family='monospace')
+            tp = TextPath(point, text, size=size, prop=mono_property)
+            path_patch = PathPatch(tp, color=col, linewidth=TEXTWIDTH, zorder=TEXT_Z_ORDER)
             if border_col:
                 path_patch.set_path_effects([PathEffects.withStroke(linewidth=BORDER_WIDTH, foreground=border_col)])
             self.fig.gca().add_patch(path_patch)
     
     def triangle(self, point: Position, col: tuple = render_settings.BLACK, markersize: int = TRANSFERSIZE, rotation: float = render_settings.UP_ARROW_ROTATION):
         """
-        Draws a triangle in the desired position
+        Plot text string s at point p in monospace font
         """
         self.axis.plot(point.x, point.y, color=col, marker=(3, 0, rotation), markersize=TRANSFERSIZE, linestyle=DEFAULT_TRIANGLE_LINESTYLE)
 
@@ -113,13 +116,13 @@ class FigureWrapper:
         """
         plt.plot((point_1.x, point_2.x), (point_1.y, point_2.y), linewidth=2, color=col)
         arrow_length_x, arrow_length_y = (point_2.x - point_1.x) / 2, (point_2.y - point_1.y) / 2
-        plt.arrow(point_1.x, point_1.y, arrow_length_x, arrow_length_y, linewidth=2, 
+        plt.arrow(point_1.x, point_1.y, arrow_length_x, arrow_length_y, linewidth=2,
                   head_width=0.3, head_length=0.5, facecolor=col, edgecolor=col,
                   length_includes_head=False)
 
 
     def show(self):
-        """
+        """ 
         Display figure
         """
         plt.figure(self.fig.number)

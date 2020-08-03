@@ -17,10 +17,6 @@ def solve(newick_data, transferMin, transferMax, dupMin, dupMax, optional):
     hostTree = newick_data.host_dict
     parasiteTree = newick_data.parasite_dict
     tip_mapping = newick_data.tip_mapping
-    if optional.outfile == "":
-        display = True
-    else:
-        display = optional.display
 
     print("Reconciling trees...")
     startTime = time.time()
@@ -31,6 +27,6 @@ def solve(newick_data, transferMin, transferMax, dupMin, dupMax, optional):
     print("Elapsed time %.2f seconds" % elapsedTime)
     plotcosts.plotcosts(CVlist, transferMin, transferMax, dupMin, dupMax, \
                         optional.outfile, \
-                        optional.log, display)
+                        optional.log)
     if optional.outfile != "":
         print("Output written to file: ", optional.outfile)

@@ -24,3 +24,7 @@ __pycache__/
 
 # Exclude assets
 !assets/*.gif
+
+# Executables
+build/
+dist/

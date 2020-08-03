@@ -11,6 +11,8 @@ from empress.recon_vis import utils, plot_tools, tree, render_settings
 VERTICAL_OFFSET = 20
 HORIZONTAL_SPACING = 10
 LEAF_SPACING = 5
+EXTRA_SPACING_FOR_LABEL = 50
+FONTSIZE = 9
 
 # global variables
 _g_host_counter = 0
@@ -68,10 +70,10 @@ def _render_helper_host(fig, node, show_internal_labels):
 
         # plot node using leaf_layout
         plot_loc = (leaf_layout.col, leaf_layout.row)
-        fig.text(plot_loc, node.name, col=render_settings.BLUE, h_a='left')
+        textbox = fig.text(plot_loc, node.name, size=FONTSIZE, col=render_settings.BLUE, h_a='right')
 
     else:
-        # recursively call helper funciton on child nodes
+        # recursively call helper function on child nodes
         _render_helper_host(fig, node.left_node, show_internal_labels)
         _render_helper_host(fig, node.right_node, show_internal_labels)
 
@@ -82,13 +84,16 @@ def _render_helper_host(fig, node, show_internal_labels):
         # create layout for current node
         node.layout = tree.NodeLayout()
         node.layout.col = min(right_layout.col, left_layout.col) - HORIZONTAL_SPACING
+        # If this node has a leaf child, extend the length of the branch to allow extra spacing to render label
+        if node.right_node.is_leaf() or node.left_node.is_leaf():
+            node.layout.col -= EXTRA_SPACING_FOR_LABEL
         y_avg = (right_layout.row + left_layout.row) / 2
         node.layout.row = y_avg
 
         # plot node using node_layout
         current_loc = (node.layout.col, node.layout.row)
         if show_internal_labels:
-            fig.text(current_loc, node.name, col=render_settings.BLUE, h_a='left')
+            fig.text(current_loc, node.name, size=FONTSIZE, col=render_settings.BLUE, h_a='left')
 
         # draw line from current node to left node
         left_loc = (left_layout.col, left_layout.row)
@@ -117,7 +122,7 @@ def _render_helper_parasite(fig, node, show_internal_labels):
 
         # plot node using leaf_layout
         plot_loc = (leaf_layout.col, leaf_layout.row)
-        fig.text(plot_loc, node.name, col=render_settings.BLUE, h_a='right')
+        fig.text(plot_loc, node.name, size=FONTSIZE, col=render_settings.BLUE, h_a='left')
 
     else:
         # recursively call helper funciton on child nodes
@@ -131,13 +136,16 @@ def _render_helper_parasite(fig, node, show_internal_labels):
         # create layout for current node
         node.layout = tree.NodeLayout()
         node.layout.col = max(left_layout.col, right_layout.col) + HORIZONTAL_SPACING
+        # If this node has a leaf child, extend the length of the branch to allow extra spacing to render label
+        if node.right_node.is_leaf() or node.left_node.is_leaf():
+            node.layout.col += EXTRA_SPACING_FOR_LABEL
         y_avg = (right_layout.row + left_layout.row) / 2
         node.layout.row = y_avg
 
         # plot node using node_layout
         current_loc = (node.layout.col, node.layout.row)
         if show_internal_labels:
-            fig.text(current_loc, node.name, col=render_settings.BLUE, h_a='right')
+            fig.text(current_loc, node.name, size=FONTSIZE, col=render_settings.BLUE, h_a='right')
 
         # draw line from current node to left node
         left_loc = (left_layout.col, left_layout.row)

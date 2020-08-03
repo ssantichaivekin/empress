@@ -20,9 +20,6 @@ def add_cost_regions_to_parser(cost_regions_parser: argparse.ArgumentParser):
                                      help="name of output file, ending with .pdf")
     cost_regions_parser.add_argument("--log", action="store_true",
                                      help="set display to log scale")
-    cost_regions_parser.add_argument("--display", action="store_true",
-                                     help="display output on screen")
-
 
 def run_cost_regions(args):
     recon_input = empress.ReconInputWrapper.from_files(args.host, args.parasite, args.mapping)

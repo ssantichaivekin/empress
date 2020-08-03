@@ -2,15 +2,8 @@
 Wraps empress functionalities
 """
 from typing import Dict
-import matplotlib
 import sys
-# the tkagg backend is for pop-up windows, and will not work in environments
-# without graphics such as a remote server. Refer to issue #49
-try:
-    matplotlib.use("tkagg")
-except ImportError:
-    print("Using Agg backend: will not be able to create pop-up windows.", file=sys.stderr)
-    matplotlib.use("Agg")
+
 from matplotlib import pyplot as plt
 from typing import List, Tuple
 from abc import ABC, abstractmethod
@@ -152,7 +145,7 @@ class ReconGraphWrapper(Drawable):
         """
         recongraph_visualization.visualize_and_save(self.recongraph, fname)
 
-    def stats(self, num_trials: int = 50):
+    def stats(self, num_trials: int = 100):
         _, costs, p = statistics.stats(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost, num_trials)
         return costs, p
 
@@ -196,7 +189,7 @@ class ReconGraphWrapper(Drawable):
 
         score = cluster_util.mk_pdv_score(host_tree, parasite_tree, parasite_root)
 
-        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, parasite_root, score, 4, n, 200)
+        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, parasite_root, score, 4, n)
         new_graphs = []
         for graph in graphs:
             roots = _find_roots(graph)

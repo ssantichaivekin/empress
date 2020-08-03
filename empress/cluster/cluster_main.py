@@ -114,8 +114,10 @@ def mk_get_median(gene_tree, species_tree, gene_root, best_roots):
         :param graph <dict> - the input graph
         :return random_median <dict> - the median
         """
+        # Only some of the best roots will be involved in a given graph
+        roots = [r for r in best_roots if r in graph]
         median_graph, n_meds, median_roots = median.get_median_graph(
-                graph, gene_tree, species_tree, gene_root, best_roots)
+                graph, gene_tree, species_tree, gene_root, roots)
         med_counts = median.get_med_counts(median_graph, median_roots)
         random_median = median.choose_random_median_wrapper(median_graph, median_roots, med_counts)
         return random_median
@@ -158,9 +160,9 @@ def perform_clustering(tree_data, d, t, l, k, args):
     score = mk_score(species_tree, gene_tree, gene_root)
     # Actually perform the clustering
     if args.depth is not None:
-        graphs, scores, _ = cluster_util.cluster_graph(recon_g, gene_root, score, args.depth, k, 200)
+        graphs, scores, _ = cluster_util.cluster_graph(recon_g, gene_root, score, args.depth, k)
     elif args.n_splits is not None:
-        graphs, scores, _ = cluster_util.cluster_graph_n(recon_g, gene_root, score, args.n_splits, mpr_count, k, 200)
+        graphs, scores, _ = cluster_util.cluster_graph_n(recon_g, gene_root, score, args.n_splits, mpr_count, k)
     else:
         assert False
     # Visualization

@@ -65,6 +65,8 @@ def test_render_3():
     filepath = Path(common.output_path).joinpath("test_render_3.png")
     fig.save(filepath)
 
+test_render_3()
+
 def test_render_with_frequency_1():
     """
     render a reconciliation and displays the frequency of events in the reconciliation
