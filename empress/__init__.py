@@ -126,7 +126,7 @@ class ReconGraphWrapper(Drawable):
         self.roots = roots
         self.event_frequencies = event_frequencies
 
-    def draw_on(self, axes: plt.Axes):
+    def draw_on(self, axes: plt.Axes, y_label=True):
         """
         Draw Pairwise Distance Histogram on axes
         """
@@ -137,7 +137,7 @@ class ReconGraphWrapper(Drawable):
         hist = histogram_alg.diameter_algorithm(
             host_tree, parasite_tree, parasite_tree_root, self.recongraph, self.recongraph,
             False, False)
-        histogram_display.plot_histogram_to_ax(axes, hist.histogram_dict)
+        histogram_display.plot_histogram_to_ax(axes, hist.histogram_dict, y_label)
 
     def draw_graph_to_file(self, fname):
         """

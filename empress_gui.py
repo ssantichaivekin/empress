@@ -835,8 +835,15 @@ class SolutionSpaceWindow(tk.Frame):
         else:
             fig, axs = plt.subplots(len(App.clusters_list), len(App.clusters_list))
             for i in range(len(App.clusters_list)):
-                for j in range(len(App.clusters_list[i])):
-                    App.clusters_list[i][j].draw_on(axs[i,j])
+                for j in range(len(App.clusters_list)):
+                    if j < len(App.clusters_list[i]):
+                        y_label = (j == 0)
+                        App.clusters_list[i][j].draw_on(axs[i,j], y_label)
+                    # Delete unnecessary axes. The graph will be roughly triangular, with
+                    # lower rows displaying more clusters. This removes axes from the upper
+                    # rows in order to achieve that.
+                    else:
+                        axs[i,j].remove()
 
         canvas = FigureCanvasTkAgg(fig, self.frame)
         canvas.draw()
