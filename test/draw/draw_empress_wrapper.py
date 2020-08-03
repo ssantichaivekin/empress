@@ -4,7 +4,7 @@
 import empress
 import matplotlib.pyplot as plt
 from pathlib import Path
-from draw import common
+from test.draw import common
 
 common.create_output_folder()
 

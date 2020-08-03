@@ -3,7 +3,7 @@ render_test1.py
 Tester for render function
 """
 from pathlib import Path
-from draw import common
+from test.draw import common
 from empress.miscs import input_generator
 
 from empress.recon_vis import recon_viewer
