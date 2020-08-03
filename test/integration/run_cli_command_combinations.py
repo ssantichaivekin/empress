@@ -42,7 +42,7 @@ def input_value(option):
     else:
         return None
 
-def run_command(command: str, n_tests: int, fail_fast = True):
+def run_command(command: str, n_tests: int, fail_fast=True):
     """
     :param command: the functionality to test
     :param n_tests: upper limit on number of tests to run for the command
