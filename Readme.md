@@ -41,7 +41,7 @@ pip3 install pipenv  # use python3 pip to install pipenv
 ### Download empress repository
 If you have `git` installed, you can download empress by typing in the terminal
 ```bash
-cd folder-you-want-to-install  # go to the folder you want to downlaod empress to
+cd folder-you-want-to-install  # go to the folder you want to download empress to
 git clone https://github.com/ssantichaivekin/empress.git
 ```
 
@@ -116,13 +116,13 @@ $ python empress_cli.py cost-regions examples/heliconius_host.nwk examples/helic
 * `-t` : Transfer cost (3)
 * `-l` : Lost cost (1)
 
-For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 0, you run
+For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 1, you run
 ```bash
 $ python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
-                                  examples/heliconius_mapping.mapping -d 4 -t 2 -l 0
+                                  examples/heliconius_mapping.mapping -d 4 -t 2 -l 1
 ```
 
-### Pair distance Histogram
+### Pairwise Distance Histogram
 * `-d` : Duplication cost (2)
 * `-t` : Transfer cost (3)
 * `-l` : Lost cost (1)
@@ -135,25 +135,25 @@ $ python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconi
 * `--stats` : Output statistics including the total number of MPRs, the diameter of MPR-space, and the average distance between MPRs*
 * `--time` : Time the diameter algorithm*
 
-For example, to run Pair-distance Histogram that outputs a csv file at `foo.csv`, outputs a histogram to `bar.pdf` and normalizes the y-axis, you run
+For example, to run Pairwise Distance Histogram that outputs a csv file at `foo.csv`, outputs a histogram to `bar.pdf` and normalizes the y-axis, you run
 ```bash
 $ python empress_cli.py histogram examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
                                   examples/heliconius_mapping.mapping --csv foo.csv --histogram bar.pdf --ynorm
 ```
 
-### Cluster MPR
+### Clustering
 * `-d` : Duplication cost (2)
 * `-t` : Transfer cost (3)
 * `-l` : Lost cost (1)
 * `--median` : Print out medians of each cluster
 * `--depth` : How far down to split the graph before clustering
-* `--nsplits` : As an alternative to passing the depth directly, split the reconciliation graph into at least n distinct pieces before merging
-* `--pdv-vis` : Visualize the resulting clusters using the PDV*
+* `--n-splits` : As an alternative to passing the depth directly, split the reconciliation graph into at least n distinct pieces before merging
+* `--pdv-vis` : Visualize the resulting clusters using the pairwise distance vector*
 * `--support-vis` : Visualize the resulting clusters using a histogram of the event supports*
 * `--pdv` : Use the weighted average distance to evaluate clusters*
 * `--support` : Use the weighted average event support to evaluate clusters*
 
-For example, to find at least 8 distinct parts of reconciliation-space before merging them into clusters, use `--nsplits 8`. The clusters are merged based on a cluster-distance that is calculated either using the average event support or the pairwise distance. To use the event support use `--support`. Finally, to get the median reconciliation of each of the three clusters, use `--median`. Putting it all together, the full command is
+For example, to find at least 8 distinct parts of reconciliation-space before merging them into clusters, use `--n-splits 8`. The clusters are merged based on a cluster-distance that is calculated either using the average event support or the pairwise distance. To use the event support use `--support`. Finally, to get the median reconciliation of each of the three clusters, use `--median`. Putting it all together, the full command is
 ```bash
 $ python empress_cli.py cluster examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
                                 examples/heliconius_mapping.mapping 3 --median --n-splits 8 --support
