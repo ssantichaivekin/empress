@@ -34,4 +34,3 @@ else:
     print(n_failed_tests, "tests failed")
     # Exit with error code to fail ci
     sys.exit(1)
-
