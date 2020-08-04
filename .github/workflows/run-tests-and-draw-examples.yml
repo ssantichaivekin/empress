@@ -52,6 +52,9 @@ jobs:
     - name: Run p-value example in Readme.md
       run: |
         pipenv run python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping -d 4 -t 2 -l 1
+    - name: Run tanglegram example in Readme.md
+      run: |
+        pipenv run python empress_cli.py tanglegram examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping
     - name: Run draw examples for empress wrapper
       run: |
         pipenv run python -m draw.draw_empress_wrapper
