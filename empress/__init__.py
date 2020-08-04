@@ -24,6 +24,7 @@ from empress.recon_vis import recon_viewer
 from empress.recon_vis import tanglegram
 
 CLUSTER_NSPLITS = 16
+STATS_TRIALS = 100
 
 def _find_roots(old_recon_graph) -> list:
     not_roots = set()
@@ -147,17 +148,17 @@ class ReconGraphWrapper(Drawable):
         """
         recongraph_visualization.visualize_and_save(self.recongraph, fname)
 
-    def stats(self, num_trials: int = 100):
+    def stats(self, num_trials: int = STATS_TRIALS):
         _, costs, p = statistics.stats(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost, num_trials)
         return costs, p
 
-    def draw_stats_on(self, ax: plt.Axes):
-        costs, p = self.stats()
+    def draw_stats_on(self, ax: plt.Axes, num_trials: int = STATS_TRIALS):
+        costs, p = self.stats(num_trials)
         statistics.draw_stats(ax, self.total_cost, costs, p)
 
-    def draw_stats(self):
+    def draw_stats(self, num_trials: int = STATS_TRIALS):
         figure, ax = plt.subplots(1, 1)
-        self.draw_stats_on(ax)
+        self.draw_stats_on(ax, num_trials)
         return figure
 
     def median(self) -> ReconciliationWrapper:
