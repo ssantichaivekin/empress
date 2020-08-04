@@ -64,7 +64,7 @@ def run_command(command: str, n_tests: int, fail_fast=True):
         num_clusters = "3"
     elif command == "p-value":
         options_for_command = options_for_pvalue
-    elif command = "tanglegram":
+    elif command == "tanglegram":
         options_for_command = options_for_tanglegram
     else:
         raise RuntimeError("command [%s] not recognized" % command)
