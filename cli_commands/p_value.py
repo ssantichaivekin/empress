@@ -16,11 +16,11 @@ def run_p_value(args):
     cost_suffix = ".pvalue.{}-{}-{}".format(args.dup_cost, args.loss_cost, args.trans_cost)
     if args.outfile is None:
         host_filepath = Path(args.host)
-        out_filepath = host_filepath.with_suffix(cost_suffix + ".pdf")
+        outfile = host_filepath.with_suffix(cost_suffix + ".pdf")
     else:
-        out_filepath = args.filename
+        outfile = args.outfile
     ax = plt.gca()
     recongraph = recon_input.reconcile(args.dup_cost, args.trans_cost, args.loss_cost)
     recongraph.draw_stats_on(ax)
-    plt.savefig(out_filepath)
+    plt.savefig(outfile)
     plt.close()
