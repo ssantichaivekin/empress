@@ -163,6 +163,10 @@ $ python empress_cli.py cluster examples/heliconius_host.nwk examples/heliconius
 * `-d` : Duplication cost (2)
 * `-t` : Transfer cost (3)
 * `-l` : Loss cost (1)
-* `--filename` : The desired filename for the output graph*
+* `--outfile` : The desired filename for the output graph
 
 This tests the hypothesis that the optimal cost was obtained by a random tip mapping by sampling random tip mappings and checking the cost. The output is a histogram that shows the distribution of scores from random mappings, the score from the known mapping, and the p-value.
+```bash
+$ python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+                                examples/heliconius_mapping.mapping -d 4 -t 2 -l 1
+```
