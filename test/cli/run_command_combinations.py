@@ -1,3 +1,5 @@
+"""Run some or all of possbile command line arguments for the cli"""
+
 import itertools
 import subprocess
 import argparse
@@ -66,8 +68,8 @@ def run_command(command: str, n_tests: int, fail_fast=True):
     total_combinations = list(powerset(options_for_command))[:n_tests]
 
     for selected_options in total_combinations:
-        # example command : python empress_cli.py reconcile <host_file> <parasite_file> <mapping_file>
-        command_args = ["python", cli_filename, command, example_host, example_parasite, example_mapping]
+        # example command : pipenv run python empress_cli.py reconcile <host_file> <parasite_file> <mapping_file>
+        command_args = ["pipenv", "run", "python", cli_filename, command, example_host, example_parasite, example_mapping]
         for option in selected_options:
             command_args.append(option)
             if input_value(option) is not None:
