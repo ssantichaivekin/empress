@@ -114,7 +114,7 @@ $ python empress_cli.py cost-regions examples/heliconius_host.nwk examples/helic
 ### DTL Reconciliation
 * `-d` : Duplication cost (2)
 * `-t` : Transfer cost (3)
-* `-l` : Lost cost (1)
+* `-l` : Loss cost (1)
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 1, you run
 ```bash
@@ -125,7 +125,7 @@ $ python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconi
 ### Pairwise Distance Histogram
 * `-d` : Duplication cost (2)
 * `-t` : Transfer cost (3)
-* `-l` : Lost cost (1)
+* `-l` : Loss cost (1)
 * `--histogram` : Name of output file. If no filename is provided, outputs to a filename based on the input tree data file
 * `--xnorm` : Normalize the x-axis so that the distances range between 0 and 1*
 * `--ynorm` : Normalize the y-axis so that the distances range between 0 and 1*
@@ -144,7 +144,7 @@ $ python empress_cli.py histogram examples/heliconius_host.nwk examples/heliconi
 ### Clustering
 * `-d` : Duplication cost (2)
 * `-t` : Transfer cost (3)
-* `-l` : Lost cost (1)
+* `-l` : Loss cost (1)
 * `--median` : Print out medians of each cluster
 * `--depth` : How far down to split the graph before clustering
 * `--n-splits` : As an alternative to passing the depth directly, split the reconciliation graph into at least n distinct pieces before merging
@@ -157,4 +157,25 @@ For example, to find at least 8 distinct parts of reconciliation-space before me
 ```bash
 $ python empress_cli.py cluster examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
                                 examples/heliconius_mapping.mapping 3 --median --n-splits 8 --support
+```
+
+### P-Value Histogram
+* `-d` : Duplication cost (2)
+* `-t` : Transfer cost (3)
+* `-l` : Loss cost (1)
+* `--outfile` : The desired filename for the output graph
+
+This tests the hypothesis that the optimal cost was obtained by a random tip mapping by sampling random tip mappings and checking the cost. The output is a histogram that shows the distribution of scores from random mappings, the score from the known mapping, and the p-value.
+```bash
+$ python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+                                examples/heliconius_mapping.mapping -d 4 -t 2 -l 1
+```
+
+### Tanglegram
+* `--outfile` : The desired filename for the output graph
+
+View a tanglegram of the given files, showing the tip mapping.
+```bash
+$ python empress_cli.py tanglegram examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+                                   examples/heliconius_mapping.mapping
 ```

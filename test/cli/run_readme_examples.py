@@ -18,6 +18,8 @@ readme_commands = {
     "cluster example": "pipenv run python empress_cli.py cluster examples/heliconius_host.nwk "
                        "examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping "
                        "3 --median --n-splits 4 --support",
+    "tanglegram example": "python empress_cli.py tanglegram examples/heliconius_host.nwk "
+                          "examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping",
 }
 
 n_failed_tests = 0

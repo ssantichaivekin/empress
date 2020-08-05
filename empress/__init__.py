@@ -23,6 +23,8 @@ from empress.cluster import cluster_util
 from empress.recon_vis import recon_viewer
 from empress.recon_vis import tanglegram
 
+CLUSTER_NSPLITS = 16
+
 def _find_roots(old_recon_graph) -> list:
     not_roots = set()
     for mapping in old_recon_graph:
@@ -126,7 +128,7 @@ class ReconGraphWrapper(Drawable):
         self.roots = roots
         self.event_frequencies = event_frequencies
 
-    def draw_on(self, axes: plt.Axes):
+    def draw_on(self, axes: plt.Axes, y_label=True):
         """
         Draw Pairwise Distance Histogram on axes
         """
@@ -137,7 +139,7 @@ class ReconGraphWrapper(Drawable):
         hist = histogram_alg.diameter_algorithm(
             host_tree, parasite_tree, parasite_tree_root, self.recongraph, self.recongraph,
             False, False)
-        histogram_display.plot_histogram_to_ax(axes, hist.histogram_dict)
+        histogram_display.plot_histogram_to_ax(axes, hist.histogram_dict, y_label)
 
     def draw_graph_to_file(self, fname):
         """
@@ -188,8 +190,12 @@ class ReconGraphWrapper(Drawable):
             cluster_util.get_tree_info(self.recon_input, self.dup_cost, self.trans_cost, self.loss_cost)
 
         score = cluster_util.mk_pdv_score(host_tree, parasite_tree, parasite_root)
+        n_splits = CLUSTER_NSPLITS
+        # If the user asks for more clusters, we need to find at least that many splits
+        if n_splits < n:
+            n_splits = n
 
-        graphs, scores, _ = cluster_util.cluster_graph(self.recongraph, parasite_root, score, 4, n)
+        graphs, scores, _ = cluster_util.cluster_graph_n(self.recongraph, parasite_root, score, n_splits, mpr_count, n)
         new_graphs = []
         for graph in graphs:
             roots = _find_roots(graph)
