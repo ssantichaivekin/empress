@@ -587,6 +587,20 @@ def node_search_order(graph, roots):
                 extant_nodes.append(e_child2)
         yield node
 
+def event_str(event_type):
+    if event_type == "C":
+        return "Contemporaneous"
+    elif event_type == "S":
+        return "Cospeciation"
+    elif event_type == "D":
+        return "Duplication"
+    elif event_type == "T":
+        return "Transfer"
+    elif event_type == "L":
+        return "Loss"
+    else:
+        assert False, "Invalid event type: {}".format(event_type)
+
 def export_csv(filename: str, graph: int, best_roots: list, event_freqs: Dict[tuple, float], node_freqs: Dict[tuple, float]):
     with open(filename, "w") as csvfile:
         w = csv.writer(csvfile)
@@ -595,6 +609,6 @@ def export_csv(filename: str, graph: int, best_roots: list, event_freqs: Dict[tu
             h = node[1]
             map_freq = node_freqs[node]
             for event in graph[node]:
-                event_type = event[0]
+                event_type = event_str(event[0])
                 event_freq = event_freqs[event]
                 w.writerow([p, h, event_type, map_freq, event_freq])
