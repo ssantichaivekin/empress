@@ -14,6 +14,8 @@ options_for_histogram = ["-d", "-t", "-l", "--histogram", "--xnorm", "--ynorm", 
                          "--csv", "--stats", "--time"]
 options_for_cluster = ["-d", "-t", "-l", "--medians", "--depth", "--n-splits", "--pdv-vis", "--support-vis",
                        "--pdv", "--support"]
+options_for_pvalue = ["-d", "-t", "-l", "--outfile"]
+options_for_tanglegram = ["--outfile"]
 
 # copied from https://docs.python.org/3/library/itertools.html#itertools-recipes
 def powerset(iterable):
@@ -36,7 +38,7 @@ def input_value(option):
     elif option == "--histogram":
         return "test_cli_output_histogram.pdf"
     elif option == "--outfile":
-        return "test_cli_output_cost_regions.pdf"
+        return "test_cli_output_outfile.pdf"
     elif option in ["--depth", "--n-splits"]:
         return "2"
     else:
@@ -60,6 +62,10 @@ def run_command(command: str, n_tests: int, fail_fast=True):
     elif command == "cluster":
         options_for_command = options_for_cluster
         num_clusters = "3"
+    elif command == "p-value":
+        options_for_command = options_for_pvalue
+    elif command == "tanglegram":
+        options_for_command = options_for_tanglegram
     else:
         raise RuntimeError("command [%s] not recognized" % command)
 
@@ -119,3 +125,5 @@ if __name__ == '__main__':
     run_command("reconcile", args.tests_per_group)
     run_command("histogram", args.tests_per_group)
     run_command("cluster", args.tests_per_group)
+    run_command("p-value", args.tests_per_group)
+    run_command("tanglegram", args.tests_per_group)
