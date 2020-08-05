@@ -19,8 +19,7 @@ def run_p_value(args):
         outfile = host_filepath.with_suffix(cost_suffix + ".pdf")
     else:
         outfile = args.outfile
-    ax = plt.gca()
     recongraph = recon_input.reconcile(args.dup_cost, args.trans_cost, args.loss_cost)
-    recongraph.draw_stats_on(ax)
-    plt.savefig(outfile)
-    plt.close()
+    fig = recongraph.draw_stats()
+    fig.savefig(outfile)
+    plt.close(fig)
