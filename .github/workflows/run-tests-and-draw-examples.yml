@@ -38,7 +38,7 @@ jobs:
 #    see: https://github.com/ssantichaivekin/empress/issues/196
     - name: Run cli integration test
       run: |
-        pipenv run python test/cli/run_command_combinations.py
+        pipenv run python test/cli/run_command_combinations.py 100
     - name: Run draw examples for empress wrapper
       run: |
         pipenv run python -m draw.draw_empress_wrapper
