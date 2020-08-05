@@ -177,6 +177,6 @@ $ python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius
 
 View a tanglegram of the given files, showing the tip mapping.
 ```bash
-$ python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
-                                examples/heliconius_mapping.mapping
+$ python empress_cli.py tanglegram examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+                                   examples/heliconius_mapping.mapping
 ```
