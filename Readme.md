@@ -115,7 +115,7 @@ $ python empress_cli.py cost-regions examples/heliconius_host.nwk examples/helic
 * `-d` : Duplication cost (2)
 * `-t` : Transfer cost (3)
 * `-l` : Loss cost (1)
-* `--outfile` : Path to the output file
+* `--csv` : Path to the output file. Must end in `.csv`
 * `--graph` : Output the entire reconciliation graph, rather than a single median MPR
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 1, you run
