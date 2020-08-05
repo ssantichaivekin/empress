@@ -19,7 +19,6 @@ def run_tanglegram(args):
         outfile = host_filepath.with_suffix(suffix + ".pdf")
     else:
         outfile = args.outfile
-    ax = plt.gca()
-    recon_input.draw_on(ax)
-    plt.savefig(outfile)
-    plt.close()
+    fig = recon_input.draw()
+    fig.savefig(outfile)
+    plt.close(fig)
