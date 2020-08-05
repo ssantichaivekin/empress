@@ -170,3 +170,12 @@ This tests the hypothesis that the optimal cost was obtained by a random tip map
 $ python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
                                 examples/heliconius_mapping.mapping -d 4 -t 2 -l 1
 ```
+
+### Tanglegram
+* `--outfile` : The desired filename for the output graph
+
+View a tanglegram of the given files, showing the tip mapping.
+```bash
+$ python empress_cli.py tanglegram examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
+                                   examples/heliconius_mapping.mapping
+```

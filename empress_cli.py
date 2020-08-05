@@ -11,6 +11,7 @@ import cli_commands.cost_regions
 import cli_commands.histogram
 import cli_commands.reconcile
 import cli_commands.p_value
+import cli_commands.tanglegram
 
 def main():
     parser = argparse.ArgumentParser(
@@ -47,7 +48,7 @@ def main():
     cli_commands.histogram.add_histogram_to_parser(histogram_parser)
 
     # Cluster
-    cluster_description = "Find cluster of reconciliations with similar properties given duplication, transfer, " \
+    cluster_description = "Find clusters of reconciliations with similar properties given duplication, transfer, " \
                           "and loss costs."
     cluster_parser = subparsers.add_parser(
         'cluster', description=cluster_description, help=cluster_description.lower().rstrip('.'),
@@ -64,6 +65,14 @@ def main():
     )
     cli_commands.p_value.add_p_value_to_parser(p_value_parser)
 
+    # Tanglegram
+    tanglegram_description = "View a tanglegram which shows the tip mapping between the two trees."
+    tanglegram_parser = subparsers.add_parser(
+            'tanglegram', description=tanglegram_description, help=tanglegram_description.lower().rstrip("."),
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    cli_commands.tanglegram.add_tanglegram_to_parser(tanglegram_parser)
+
     # Determine which command we should run and run it
     args = parser.parse_args()
 
@@ -77,7 +86,8 @@ def main():
         cli_commands.cluster.run_cluster(args)
     elif args.command == "p-value":
         cli_commands.p_value.run_p_value(args)
-
+    elif args.command == "tanglegram":
+        cli_commands.tanglegram.run_tanglegram(args)
 
 if __name__ == "__main__":
     main()
