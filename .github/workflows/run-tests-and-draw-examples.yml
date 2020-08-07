@@ -34,8 +34,6 @@ jobs:
     - name: Run cli readme examples
       run: |
         pipenv run python test/cli/run_readme_examples.py
-#    Enable after all tests pass
-#    see: https://github.com/ssantichaivekin/empress/issues/196
     - name: Run cli integration test
       run: |
         pipenv run python test/cli/run_command_combinations.py 100
