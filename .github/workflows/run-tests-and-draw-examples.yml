@@ -57,10 +57,7 @@ jobs:
         pipenv run python empress_cli.py tanglegram examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping
     - name: Run draw examples for empress wrapper
       run: |
-        pipenv run python -m draw.draw_empress_wrapper
-    - name: Run draw examples for recon viewer
-      run: |
-        pipenv run python -m draw.draw_recon_viewer
+        pipenv run python -m unittest discover --start-directory ./test/draw --pattern "draw_*.py"
     - name: Upload draw examples
       uses: actions/upload-artifact@v2
       with:
