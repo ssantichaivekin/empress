@@ -17,7 +17,7 @@ def add_cluster_to_parser(cluster_parser: argparse.ArgumentParser):
     depth_or_n = cluster_parser.add_mutually_exclusive_group(required=True)
     depth_or_n.add_argument("--depth", type=int, metavar="<tree_depth>",
                             help="how far down to split the graph before clustering")
-    depth_or_n.add_argument("--n-splits", type=int, metavar="<tree_depth>",
+    depth_or_n.add_argument("--n-splits", type=int, metavar="<splits>",
                             help="find at least n splits before combining the splits into clusters")
 
     # What visualizations to produce

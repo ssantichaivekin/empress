@@ -78,33 +78,33 @@ python empress_cli.py <command> --help
 
 On the command line, the structure of the inputs is:    
 ```bash
-python empress_cli.py <command> hostfile parasitefile mappingfile 
+python empress_cli.py <command> hostfile parasitefile mappingfile <additional-arguments>
 ```
 
-For example, to run Costscape with default parameters, you run:
+For example, to run cost-regions with default parameters, you run:
 ```bash
-python empress_cli.py cost-regions hostfile parasitefile mappingfile 
+python empress_cli.py cost-regions hostfile parasitefile mappingfile <additional-arguments>
 ```
 
-Note that to run cluster, there is an additional input for the number of clusters:
+Note that to run cluster, there is an additional positional input: the number of clusters:
 ```bash
-python empress_cli.py cluster hostfile parasitefile mappingfile number_of_clusters
+python empress_cli.py cluster hostfile parasitefile mappingfile number_of_clusters <additional-arguments>
 ```
 
 For specific parameters of each functionality, consult the list below:
 
 ## List of Parameters
-Note: value in parenthesis denotes default value, asterisk denotes boolean flags
-### Costscape
-* `-dl` : Duplication low value (1)
-* `-dh` : Duplication high value (5)
-* `-tl` : Transfer low value (1)
-* `-th` : Transfer high value (5)
-* `--outfile` : Name of output file. Must end in .pdf ("")
-* `--log` : Set graph to log scale*
 
-For example, the following example runs Costscape with duplication low value of 0.5, duplication high value of 10, transfer low value of 0.5, 
-and transfer high value of 10, that saves to a file called `foo.pdf` display it in log scale.
+### Cost-Regions
+* `-dl <duplication_low>`, `--duplication-low <duplication_low>`:  duplication low floating point value for cost regions viewer window (default: 1.0)
+* `-dh <duplication_high>`, `--duplication-high <duplication_high>`: duplication high floating point value for cost regions viewer window (default: 5.0)
+* `-tl <transfer_low>`, `--transfer-low <transfer_low>`: transfer low floating point value for cost regions viewer window (default: 1.0)
+* `-th <transfer_high>`, `--transfer-high <transfer_high>`: transfer high floating point value for cost regions viewer window (default: 5.0)
+* `--outfile <output_file>` : path to output file ending with .pdf, (default: generated filename at same location as the host file)
+* `--log` : set both axes to use log scale (default: False)
+
+For example, the following example runs Cost-Regions with duplication low value of 0.5, duplication high value of 10, transfer low value of 0.5, 
+and transfer high value of 10, that saves to a file called `costscape-example-img.pdf` at the current location with axes displayed in log scale.
 ```bash
 $ python empress_cli.py cost-regions examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
                                      examples/heliconius_mapping.mapping -tl 0.5 -th 10 -dl 0.5 -dh 10 \
@@ -112,9 +112,9 @@ $ python empress_cli.py cost-regions examples/heliconius_host.nwk examples/helic
 ```
 
 ### DTL Reconciliation
-* `-d` : Duplication cost (2)
-* `-t` : Transfer cost (3)
-* `-l` : Loss cost (1)
+* `-d <duplication_cost>`, `--dup-cost <duplication_cost>`: floating point cost incurred on each duplication event (default: 2.0)
+* `-t <transfer_cost>`, `--trans-cost <transfer_cost>`: floating point cost incurred on each transfer event (default: 3.0)
+* `-l <loss_cost>`, `--loss-cost <loss_cost>`: floating point cost incurred on each loss event (default: 1.0)
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 1, you run
 ```bash
@@ -123,35 +123,36 @@ $ python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconi
 ```
 
 ### Pairwise Distance Histogram
-* `-d` : Duplication cost (2)
-* `-t` : Transfer cost (3)
-* `-l` : Loss cost (1)
-* `--histogram` : Name of output file. If no filename is provided, outputs to a filename based on the input tree data file
-* `--xnorm` : Normalize the x-axis so that the distances range between 0 and 1*
-* `--ynorm` : Normalize the y-axis so that the distances range between 0 and 1*
-* `--omit-zeros` : Omit the zero column of the histogram, which will always be the total number of reconciliations*
-* `--cumulative` : Make the histogram cumulative*
-* `--csv` : Output the histogram as a .csv file at the path provided. If no filename is provided, outputs to a filename based on the input tree data file*
-* `--stats` : Output statistics including the total number of MPRs, the diameter of MPR-space, and the average distance between MPRs*
-* `--time` : Time the diameter algorithm*
+* `-d <duplication_cost>`, `--dup-cost <duplication_cost>`: floating point cost incurred on each duplication event (default: 2.0)
+* `-t <transfer_cost>`, `--trans-cost <transfer_cost>`: floating point cost incurred on each transfer event (default: 3.0)
+* `-l <loss_cost>`, `--loss-cost <loss_cost>`: floating point cost incurred on each loss event (default: 1.0)
+* `--histogram-pdf <filename>`:  output the histogram pdf image at the path provided. If no filename is provided, outputs to a filename based on the input host file
+* `--xnorm`: normalize the x-axis so that the distances range (default: False)
+* `--ynorm`: normalize the y-axis so that the histogram is a probability distribution (default: False)
+* `--omit-zeros`:  omit the zero column of the histogram, which will always be the total number of reconciliations (default: False)
+* `--cumulative`:  make the histogram cumulative (default: False)
+* `--csv <filename>`: output the histogram as a .csv file at the path provided. If no filename is provided, outputs to a filename based on the input host file (default: unset)
+* `--stats`: output statistics including the total number of MPRs, the diameter of MPR-space, and the average distance between MPRs (default: False)
+* `--time`: time the diameter algorithm (default: False)
 
-For example, to run Pairwise Distance Histogram that outputs a csv file at `foo.csv`, outputs a histogram to `bar.pdf` and normalizes the y-axis, you run
+For example, to run Pairwise Distance Histogram that outputs a csv file at `histogram_example_output_csv.csv`, outputs a histogram to `histogram_example_output_img.pdf` and normalizes the y-axis, you run
 ```bash
 $ python empress_cli.py histogram examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
-                                  examples/heliconius_mapping.mapping --csv foo.csv --histogram bar.pdf --ynorm
+                                  examples/heliconius_mapping.mapping --csv histogram_example_output_csv.csv 
+-                                 -histogram-pdf histogram_example_output_img.pdf --ynorm
 ```
 
 ### Clustering
-* `-d` : Duplication cost (2)
-* `-t` : Transfer cost (3)
-* `-l` : Loss cost (1)
-* `--median` : Print out medians of each cluster
-* `--depth` : How far down to split the graph before clustering
-* `--n-splits` : As an alternative to passing the depth directly, split the reconciliation graph into at least n distinct pieces before merging
-* `--pdv-vis` : Visualize the resulting clusters using the pairwise distance vector*
-* `--support-vis` : Visualize the resulting clusters using a histogram of the event supports*
-* `--pdv` : Use the weighted average distance to evaluate clusters*
-* `--support` : Use the weighted average event support to evaluate clusters*
+* `-d <duplication_cost>`, `--dup-cost <duplication_cost>`: floating point cost incurred on each duplication event (default: 2.0)
+* `-t <transfer_cost>`, `--trans-cost <transfer_cost>`: floating point cost incurred on each transfer event (default: 3.0)
+* `-l <loss_cost>`, `--loss-cost <loss_cost>`: floating point cost incurred on each loss event (default: 1.0)
+* `--median`: whether or not to print out medians for each cluster (default: False)
+* `--depth <tree_depth>`: how far down to split the graph before clustering 
+* `--n-split <splits>` : find at least n splits before combining the splits
+* `--pdv-vis` : visualize the resulting clusters using the Pairwise Distance (default: False)
+* `--support-vis` : visualize the resulting clusters using event supports (default: False)
+* `--pdv` : use the weighted average distance to evaluate clusters (default: False)
+* `--support` : use the weighted average event support to evaluate clusters (default: False)
 
 For example, to find at least 8 distinct parts of reconciliation-space before merging them into clusters, use `--n-splits 8`. The clusters are merged based on a cluster-distance that is calculated either using the average event support or the pairwise distance. To use the event support use `--support`. Finally, to get the median reconciliation of each of the three clusters, use `--median`. Putting it all together, the full command is
 ```bash
@@ -160,10 +161,10 @@ $ python empress_cli.py cluster examples/heliconius_host.nwk examples/heliconius
 ```
 
 ### P-Value Histogram
-* `-d` : Duplication cost (2)
-* `-t` : Transfer cost (3)
-* `-l` : Loss cost (1)
-* `--outfile` : The desired filename for the output graph
+* `-d <duplication_cost>`, `--dup-cost <duplication_cost>`: floating point cost incurred on each duplication event (default: 2.0)
+* `-t <transfer_cost>`, `--trans-cost <transfer_cost>`: floating point cost incurred on each transfer event (default: 3.0)
+* `-l <loss_cost>`, `--loss-cost <loss_cost>`: floating point cost incurred on each loss event (default: 1.0)
+* `--outfile`: output the p-value test drawing at the path provided. If no filename is provided, outputs to a filename based on the input host file.
 
 This tests the hypothesis that the optimal cost was obtained by a random tip mapping by sampling random tip mappings and checking the cost. The output is a histogram that shows the distribution of scores from random mappings, the score from the known mapping, and the p-value.
 ```bash
@@ -172,7 +173,7 @@ $ python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius
 ```
 
 ### Tanglegram
-* `--outfile` : The desired filename for the output graph
+* `--outfile` : Output the tanglegram drawing at the path provided. If no filename is provided, outputs to a filename based on the input host file.
 
 View a tanglegram of the given files, showing the tip mapping.
 ```bash

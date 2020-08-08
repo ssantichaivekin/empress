@@ -10,9 +10,9 @@ def add_histogram_to_parser(histogram_parser: argparse.ArgumentParser):
     cli_commands._shared_utils.add_recon_input_args_to_parser(histogram_parser)
     cli_commands._shared_utils.add_dtl_costs_to_parser(histogram_parser)
 
-    histogram_parser.add_argument("--histogram", metavar="<filename>", default="unset",
-                                  nargs="?", help="output the histogram at the path provided. If no filename is "
-                                                  "provided, outputs to a filename based on the input host file")
+    histogram_parser.add_argument("--histogram-pdf", metavar="<filename>", default="unset",
+                                  nargs="?", help="output the histogram pdf image at the path provided. If no filename "
+                                                  "is provided, outputs to a filename based on the input host file")
     histogram_parser.add_argument("--xnorm", action="store_true",
                                   help="normalize the x-axis so that the distances range between 0 and 1")
     histogram_parser.add_argument("--ynorm", action="store_true",
@@ -41,11 +41,11 @@ def run_histogram(args):
     fname = Path(args.host)
     cost_suffix = ".{}-{}-{}".format(args.dup_cost, args.trans_cost, args.loss_cost)
     # If args is unset, use the original .newick file path but replace .newick with .pdf
-    if args.histogram is None:
-        args.histogram = str(fname.with_suffix(cost_suffix + ".pdf"))
+    if args.histogram_pdf is None:
+        args.histogram_pdf = str(fname.with_suffix(cost_suffix + ".pdf"))
     # If it wasn't set by the arg parser, then set it to None (the option wasn't present)
-    elif args.histogram == "unset":
-        args.histogram = None
+    elif args.histogram_pdf == "unset":
+        args.histogram_pdf = None
     # TODO: check that the specified path has a matplotlib-compatible extension?
     # Do the same for .csv
     if args.csv is None:
