@@ -115,7 +115,11 @@ def plot_costs_on_axis(axes: Axes, cost_vectors, transfer_min, transfer_max, dup
 def plotcosts(CVlist, transfer_min, transfer_max, dup_min, dup_max, outfile,
               log=True, verbose=False):
     figure, ax = plt.subplots(1, 1)
+    if outfile is None:
+        title = ""
+    else:
+        title = outfile
     plot_costs_on_axis(ax, CVlist, transfer_min, transfer_max, dup_min, dup_max,
-                       outfile, log, verbose)
-    if outfile != "":
+                       title, log, verbose)
+    if outfile is not None:
         plt.savefig(outfile, format="pdf")

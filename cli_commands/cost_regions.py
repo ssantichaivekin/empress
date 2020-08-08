@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 
 import empress
 from empress.xscape import costscape
@@ -16,12 +17,17 @@ def add_cost_regions_to_parser(cost_regions_parser: argparse.ArgumentParser):
                                      type=float, help="transfer low value for cost regions viewer window")
     cost_regions_parser.add_argument("-th", "--transfer-high", metavar="<transfer_high>", default=5,
                                      type=float, help="transfer high value for cost regions viewer window")
-    cost_regions_parser.add_argument("--outfile", metavar="<output_file>", default="",
+    cost_regions_parser.add_argument("--outfile", metavar="<output_file>", default=None,
                                      help="name of output file, ending with .pdf")
     cost_regions_parser.add_argument("--log", action="store_true",
                                      help="set display to log scale")
 
 def run_cost_regions(args):
     recon_input = empress.ReconInputWrapper.from_files(args.host, args.parasite, args.mapping)
+    if args.outfile is None:
+        host_filepath = Path(args.host)
+        outfile = host_filepath.with_suffix(".cost-regions.pdf")
+    else:
+        outfile = args.outfile
     costscape.solve(recon_input, args.duplication_low, args.duplication_high, args.transfer_low, args.transfer_high,
-                    args)
+                    outfile, args.log)
