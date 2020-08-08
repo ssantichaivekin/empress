@@ -115,8 +115,8 @@ $ python empress_cli.py cost-regions examples/heliconius_host.nwk examples/helic
 * `-d <duplication_cost>`, `--dup-cost <duplication_cost>`: floating point cost incurred on each duplication event (default: 2.0)
 * `-t <transfer_cost>`, `--trans-cost <transfer_cost>`: floating point cost incurred on each transfer event (default: 3.0)
 * `-l <loss_cost>`, `--loss-cost <loss_cost>`: floating point cost incurred on each loss event (default: 1.0)
-* `--csv` : Path to the output file. Must end in `.csv`
-* `--graph` : Output the entire reconciliation graph, rather than a single median MPR
+* `--csv <filename>` : output the reconciliation as a .csv file at the path provided. If no filename is provided, outputs to a filename based on the input host file
+* `--graph` : instead of outputting a random median, output the entire reconciliation graph (default: False)
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 1, you run
 ```bash
