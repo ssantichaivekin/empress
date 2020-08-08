@@ -17,7 +17,7 @@ def add_cost_regions_to_parser(cost_regions_parser: argparse.ArgumentParser):
                                      type=float, help="transfer low value for cost regions viewer window")
     cost_regions_parser.add_argument("-th", "--transfer-high", metavar="<transfer_high>", default=5,
                                      type=float, help="transfer high value for cost regions viewer window")
-    cost_regions_parser.add_argument("--outfile", metavar="<output_file>", default=None, required=True,
+    cost_regions_parser.add_argument("--outfile", metavar="<output_file>", default=None,
                                      help="name of output file, ending with .pdf")
     cost_regions_parser.add_argument("--log", action="store_true",
                                      help="set display to log scale")
