@@ -510,7 +510,8 @@ class App(tk.Frame):
         # self.trans_input is tk.DoubleVar(), initialized to be 1.00
         self.trans_entry_box = CustomEntry(self.costs_frame, width=4, textvariable=self.trans_input)
         self.trans_entry_box.set_border_color("green")
-        self.trans_entry_box.validate(validate="all", validatecommand=trans_vcmd)
+        self.trans_entry_box.validate(validate="key", validatecommand=trans_vcmd)
+        print(self.trans_entry_box.keys())
         self.trans_entry_box.grid(row=1, column=1, sticky="w")
         self.validate_trans_input(str(self.trans_entry_box.get()))  # validate for the initialization of self.trans_input to be 1.0
 
@@ -522,7 +523,7 @@ class App(tk.Frame):
         # self.loss_input is tk.DoubleVar(), initialized to be 1.00
         self.loss_entry_box = CustomEntry(self.costs_frame, width=4, textvariable=self.loss_input)
         self.loss_entry_box.set_border_color("green")
-        self.loss_entry_box.validate(validate="all", validatecommand=loss_vcmd)
+        self.loss_entry_box.validate(validate="key", validatecommand=loss_vcmd)
         self.loss_entry_box.grid(row=2, column=1, sticky="w")
         self.validate_loss_input(str(self.loss_entry_box.get()))  # validate for the initialization of self.loss_input to be 1.00
     
