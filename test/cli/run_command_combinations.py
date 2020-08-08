@@ -1,3 +1,5 @@
+"""Run some or all of possbile command line arguments for the cli"""
+
 import itertools
 import subprocess
 import argparse
@@ -8,13 +10,13 @@ example_parasite = "examples/heliconius_parasite.nwk"
 example_mapping = "examples/heliconius_mapping.mapping"
 
 list_of_commands = ["cost-regions", "reconcile", "histogram", "cluster"]
-options_for_reconcile = ["-d", "-t", "-l"]
+options_for_reconcile = ["-d", "-t", "-l", "--csv", "--graph"]
 options_for_cost_regions = ["-dl", "-tl", "-dh", "-th", "--log", "--outfile"]
 options_for_histogram = ["-d", "-t", "-l", "--histogram", "--xnorm", "--ynorm", "--omit-zeros", "--cumulative",
                          "--csv", "--stats", "--time"]
 options_for_cluster = ["-d", "-t", "-l", "--medians", "--depth", "--n-splits", "--pdv-vis", "--support-vis",
                        "--pdv", "--support"]
-options_for_pvalue = ["-d", "-t", "-l", "--outfile"]
+options_for_pvalue = ["-d", "-t", "-l", "--outfile", "--n-samples"]
 options_for_tanglegram = ["--outfile"]
 
 # copied from https://docs.python.org/3/library/itertools.html#itertools-recipes
@@ -41,6 +43,9 @@ def input_value(option):
         return "test_cli_output_outfile.pdf"
     elif option in ["--depth", "--n-splits"]:
         return "2"
+    elif option == "--n-samples":
+        # default for this is 100
+        return "50"
     else:
         return None
 
@@ -72,8 +77,8 @@ def run_command(command: str, n_tests: int, fail_fast=True):
     total_combinations = list(powerset(options_for_command))[:n_tests]
 
     for selected_options in total_combinations:
-        # example command : python empress_cli.py reconcile <host_file> <parasite_file> <mapping_file>
-        command_args = ["python", cli_filename, command, example_host, example_parasite, example_mapping]
+        # example command : pipenv run python empress_cli.py reconcile <host_file> <parasite_file> <mapping_file>
+        command_args = ["pipenv", "run", "python", cli_filename, command, example_host, example_parasite, example_mapping]
         for option in selected_options:
             command_args.append(option)
             if input_value(option) is not None:

@@ -115,12 +115,15 @@ $ python empress_cli.py cost-regions examples/heliconius_host.nwk examples/helic
 * `-d` : Duplication cost (2)
 * `-t` : Transfer cost (3)
 * `-l` : Loss cost (1)
+* `--csv` : Path to the output file. Must end in `.csv`
+* `--graph` : Output the entire reconciliation graph, rather than a single median MPR
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 1, you run
 ```bash
 $ python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
                                   examples/heliconius_mapping.mapping -d 4 -t 2 -l 1
 ```
+Outputs a `.csv` file that enumerates the events and mappings for a median MPR. Each row of this table has an entry corresponding to a mapping between a parasite node and a gene node, and an event associated with that node. It has the folloing items in order: parasite node, host node, event type, node frequency, event frequency. The node frequency is the frequency with which that parasite is mapped to that host among all MPRs. The event frequency is the frequency with which that specific event occurs.
 
 ### Pairwise Distance Histogram
 * `-d` : Duplication cost (2)
