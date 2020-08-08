@@ -143,6 +143,7 @@ For example, to run Pairwise Distance Histogram that outputs a csv file at `foo.
 $ python empress_cli.py histogram examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
                                   examples/heliconius_mapping.mapping --csv foo.csv --histogram bar.pdf --ynorm
 ```
+CSV output has rows with two values each. The first value on each row is the distance (measured using the symmetric set difference between the event sets), and the second value is the number of MPR pairs that are that far apart from each other.
 
 ### Clustering
 * `-d` : Duplication cost (2)
