@@ -110,7 +110,7 @@ def compute_pdv(filename, tree_data, d, t, l, args):
     hist, elapsed = calc_histogram(tree_data, d, t, l, args.time)
     hist = hist.histogram_dict
     if args.time:
-        print("Time spent: {}".format(elapsed))
+        print("Time spent: {} Seconds".format(elapsed))
     # Calculate the statistics (with zeros)
     if args.stats:
         n_mprs = hist[0]

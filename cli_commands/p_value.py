@@ -10,6 +10,8 @@ def add_p_value_to_parser(p_value_parser: argparse.ArgumentParser):
     p_value_parser.add_argument("--outfile", metavar="<filename>",
                                 help="Output the p-value test drawing at the path provided. If no filename is "
                                 "provided, outputs to a filename based on the input host file.")
+    p_value_parser.add_argument("--n-samples", metavar="<number of samples>", type=int,
+                                help="Number of random mappings to sample.", default=100)
 
 def run_p_value(args):
     recon_input = empress.ReconInputWrapper.from_files(args.host, args.parasite, args.mapping)
@@ -20,6 +22,6 @@ def run_p_value(args):
     else:
         outfile = args.outfile
     recongraph = recon_input.reconcile(args.dup_cost, args.trans_cost, args.loss_cost)
-    fig = recongraph.draw_stats()
+    fig = recongraph.draw_stats(args.n_samples)
     fig.savefig(outfile)
     plt.close(fig)

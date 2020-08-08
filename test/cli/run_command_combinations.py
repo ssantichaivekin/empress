@@ -16,7 +16,7 @@ options_for_histogram = ["-d", "-t", "-l", "--histogram", "--xnorm", "--ynorm", 
                          "--csv", "--stats", "--time"]
 options_for_cluster = ["-d", "-t", "-l", "--medians", "--depth", "--n-splits", "--pdv-vis", "--support-vis",
                        "--pdv", "--support"]
-options_for_pvalue = ["-d", "-t", "-l", "--outfile"]
+options_for_pvalue = ["-d", "-t", "-l", "--outfile", "--n-samples"]
 options_for_tanglegram = ["--outfile"]
 
 # copied from https://docs.python.org/3/library/itertools.html#itertools-recipes
@@ -43,6 +43,9 @@ def input_value(option):
         return "test_cli_output_outfile.pdf"
     elif option in ["--depth", "--n-splits"]:
         return "2"
+    elif option == "--n-samples":
+        # default for this is 100
+        return "50"
     else:
         return None
 

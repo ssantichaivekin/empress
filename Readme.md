@@ -144,6 +144,7 @@ $ python empress_cli.py histogram examples/heliconius_host.nwk examples/heliconi
                                   examples/heliconius_mapping.mapping --csv histogram_example_output_csv.csv 
 -                                 -histogram-pdf histogram_example_output_img.pdf --ynorm
 ```
+CSV output has rows with two values each. The first value on each row is the distance (measured using the symmetric set difference between the event sets), and the second value is the number of MPR pairs that are that far apart from each other.
 
 ### Clustering
 * `-d <duplication_cost>`, `--dup-cost <duplication_cost>`: floating point cost incurred on each duplication event (default: 2.0)
@@ -168,11 +169,12 @@ $ python empress_cli.py cluster examples/heliconius_host.nwk examples/heliconius
 * `-t <transfer_cost>`, `--trans-cost <transfer_cost>`: floating point cost incurred on each transfer event (default: 3.0)
 * `-l <loss_cost>`, `--loss-cost <loss_cost>`: floating point cost incurred on each loss event (default: 1.0)
 * `--outfile`: output the p-value test drawing at the path provided. If no filename is provided, outputs to a filename based on the input host file.
+* `--n-samples` : the number of random tip mappings to sample (default: 100)
 
 This tests the hypothesis that the optimal cost was obtained by a random tip mapping by sampling random tip mappings and checking the cost. The output is a histogram that shows the distribution of scores from random mappings, the score from the known mapping, and the p-value.
 ```bash
 $ python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
-                                examples/heliconius_mapping.mapping -d 4 -t 2 -l 1
+                                examples/heliconius_mapping.mapping -d 4 -t 2 -l 1 --n-samples 200
 ```
 
 ### Tanglegram

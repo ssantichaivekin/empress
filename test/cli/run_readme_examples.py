@@ -21,6 +21,9 @@ readme_commands = {
                        "3 --median --n-splits 4 --support",
     "tanglegram example": "python empress_cli.py tanglegram examples/heliconius_host.nwk "
                           "examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping",
+    "p-value example": "python empress_cli.py p-value examples/heliconius_host.nwk "
+                       "examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping "
+                       "-d 4 -t 2 -l 1 --n-samples 200",
 }
 
 n_failed_tests = 0
