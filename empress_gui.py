@@ -205,7 +205,7 @@ class App(tk.Frame):
             *self.view_reconciliations_options, command=self.select_from_view_reconciliations_dropdown)
         self.view_reconciliations_dropdown.configure(width=15)
         self.view_reconciliations_dropdown.configure(state=tk.DISABLED)
-        self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state = "disabled")
+        self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state="disabled")
         self.view_reconciliations_dropdown.grid(row=5, column=0)
 
     def init_view_pvalue_histogram(self):
@@ -331,6 +331,7 @@ class App(tk.Frame):
     def disable_unaccessable_widgets(self):
         self.view_solution_space_dropdown.configure(state=tk.DISABLED)
         self.view_reconciliations_dropdown.configure(state=tk.DISABLED)
+        self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state=tk.DISABLED)
         self.view_pvalue_histogram_btn.configure(state=tk.DISABLED)
 
     def load_input_files(self, event):
@@ -511,7 +512,6 @@ class App(tk.Frame):
         self.trans_entry_box = CustomEntry(self.costs_frame, width=4, textvariable=self.trans_input)
         self.trans_entry_box.set_border_color("green")
         self.trans_entry_box.validate(validate="key", validatecommand=trans_vcmd)
-        print(self.trans_entry_box.keys())
         self.trans_entry_box.grid(row=1, column=1, sticky="w")
         self.validate_trans_input(str(self.trans_entry_box.get()))  # validate for the initialization of self.trans_input to be 1.0
 
@@ -695,7 +695,7 @@ class App(tk.Frame):
         self.num_cluster_entry_box = CustomEntry(self.set_num_cluster_frame, width=3, textvariable=self.num_cluster_input)
         self.num_cluster_entry_box.set_border_color("green")
         self.num_cluster_entry_box.validate(validate="key", validatecommand=num_cluster_vcmd)
-        self.validate_num_cluster_input(1)
+        self.validate_num_cluster_input(self.num_cluster_entry_box.get())
         self.num_cluster_label.grid(row=0, column=0, sticky="e")
         self.num_cluster_entry_box.grid(row=0, column=1, sticky="w")
         self.num_cluster_error.grid(row=0, column=2)
@@ -704,7 +704,7 @@ class App(tk.Frame):
         """The number of clusters is only allowed to be an integer that >= 1 and <= the number of MPRs."""
         try:
             val = int(input_after_change)
-            if val >= 1 and val <= self.recon_count:
+            if 1 <= val <= self.recon_count:
                 self.num_cluster = val
                 self.num_cluster_entry_box.set_border_color("green")
                 self.enter_num_clusters_btn.configure(state=tk.NORMAL)
@@ -720,14 +720,14 @@ class App(tk.Frame):
         if self.num_cluster is not None:
             self.num_cluster_entry_box.set_border_color("green")
             self.enter_num_clusters_btn.configure(state=tk.NORMAL)
-            self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
-            self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state=tk.NORMAL)
         return True # return True means allowing the change to happen
 
     def click_on_enter_num_clusters_btn(self):
         """Compute cluster histograms and median reconciliations, and open a new tkinter window to show the solution space."""
         self.compute_recon_solutions()
         self.open_window_solution_space()
+        self.view_reconciliations_dropdown.configure(state=tk.NORMAL)
+        self.view_reconciliations_dropdown['menu'].entryconfigure("One per cluster", state=tk.NORMAL)
 
     def compute_recon_solutions(self):
         """Compute cluster histograms and median reconciliations and store them in variables to draw later."""
@@ -736,17 +736,14 @@ class App(tk.Frame):
         # App.clusters_list[0] contains App.recon_graph.cluster(1) and so on
         # Each App.clusters_list[num] is a list of ReconGraph
         App.clusters_list = []
-        for num in range(self.num_cluster):
-            App.clusters_list.append(App.recon_graph.cluster(num+1))
+        for cluster_size in range(1, self.num_cluster + 1):
+            App.clusters_list.append(App.recon_graph.cluster(cluster_size))
 
         # Compute medians for a specific self.num_cluster
+        clusters = App.clusters_list[-1]
         App.medians = []
-        if self.num_cluster == 1:
-            App.medians.append(App.recon_graph.median())
-        else:
-            clusters = App.recon_graph.cluster(self.num_cluster)
-            for i in range(len(clusters)):
-                App.medians.append(clusters[i].median())
+        for recongraph in clusters:
+            App.medians.append(recongraph.median())
 
         if self.solution_space_for_clusters_window is not None and self.solution_space_for_clusters_window.winfo_exists():
             self.solution_space_for_clusters_window.destroy()
@@ -788,19 +785,16 @@ class App(tk.Frame):
 
     def open_window_reconciliations(self):
         """Pop up new tkinter windows to display one reconciliation per cluster."""
-        if self.num_cluster is not None:
-            solution_number = 1
-            for solution_index, solution in enumerate(App.medians):
-                self.view_reconciliations_for_clusters_window  = tk.Toplevel(self.master)
-                self.view_reconciliations_for_clusters_window .geometry("800x800")
-                self.view_reconciliations_for_clusters_window .title("View reconciliations " + str(solution_index + 1))
-                # Bring the new tkinter window to the front
-                # https://stackoverflow.com/a/53644859/13698076
-                self.view_reconciliations_for_clusters_window .attributes('-topmost', True)
-                self.view_reconciliations_for_clusters_window .focus_force()
-                self.view_reconciliations_for_clusters_window .bind('<FocusIn>', self.bring_to_front)
-                ReconciliationsOnePerClusterWindow(self.view_reconciliations_for_clusters_window , solution)
-                solution_number = solution_number + 1
+        for solution_index, solution in enumerate(App.medians):
+            self.view_reconciliations_for_clusters_window = tk.Toplevel(self.master)
+            self.view_reconciliations_for_clusters_window.geometry("800x800")
+            self.view_reconciliations_for_clusters_window.title("View reconciliations " + str(solution_index + 1))
+            # Bring the new tkinter window to the front
+            # https://stackoverflow.com/a/53644859/13698076
+            self.view_reconciliations_for_clusters_window.attributes('-topmost', True)
+            self.view_reconciliations_for_clusters_window.focus_force()
+            self.view_reconciliations_for_clusters_window.bind('<FocusIn>', self.bring_to_front)
+            ReconciliationsOnePerClusterWindow(self.view_reconciliations_for_clusters_window , solution)
 
     def open_window_pvalue_histogram(self):
         """Pop up a new tkinter window to display the p-value histogram."""
