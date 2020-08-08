@@ -54,7 +54,7 @@ class TestEmpressWrappers(unittest.TestCase):
             ('n6', 'm6'): [('C', (None, None), (None, None))],
             ('n3', 'm4'): [('S', ('n4', 'm5'), ('n6', 'm6'))]
         }
-        reconciliation = empress.ReconciliationWrapper(recon_dict, None, None, None, None, None, None, None)
+        reconciliation = empress.ReconciliationWrapper(recon_dict, None, None, None, None, None, None, None, None)
         cospec_count, dup_count, trans_count, loss_count = reconciliation.count_events()
         self.assertEqual(cospec_count, 1)
         self.assertEqual(dup_count, 0)

@@ -115,12 +115,15 @@ $ python empress_cli.py cost-regions examples/heliconius_host.nwk examples/helic
 * `-d <duplication_cost>`, `--dup-cost <duplication_cost>`: floating point cost incurred on each duplication event (default: 2.0)
 * `-t <transfer_cost>`, `--trans-cost <transfer_cost>`: floating point cost incurred on each transfer event (default: 3.0)
 * `-l <loss_cost>`, `--loss-cost <loss_cost>`: floating point cost incurred on each loss event (default: 1.0)
+* `--csv` : Path to the output file. Must end in `.csv`
+* `--graph` : Output the entire reconciliation graph, rather than a single median MPR
 
 For example, to run DTL Reconciliation with duplication cost of 4, transfer cost of 2 and lost cost of 1, you run
 ```bash
 $ python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconius_parasite.nwk \
                                   examples/heliconius_mapping.mapping -d 4 -t 2 -l 1
 ```
+Outputs a `.csv` file that enumerates the events and mappings for a median MPR. Each row of this table has an entry corresponding to a mapping between a parasite node and a gene node, and an event associated with that node. It has the folloing items in order: parasite node, host node, event type, node frequency, event frequency. The node frequency is the frequency with which that parasite is mapped to that host among all MPRs. The event frequency is the frequency with which that specific event occurs.
 
 ### Pairwise Distance Histogram
 * `-d <duplication_cost>`, `--dup-cost <duplication_cost>`: floating point cost incurred on each duplication event (default: 2.0)
@@ -173,7 +176,7 @@ $ python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius
 ```
 
 ### Tanglegram
-* `--outfile` : Output the tanglegram drawing at the path provided. If no filename is provided, outputs to a filename based on the input host file.
+* `--outfile` : output the tanglegram drawing at the path provided. If no filename is provided, outputs to a filename based on the input host file.
 
 View a tanglegram of the given files, showing the tip mapping.
 ```bash

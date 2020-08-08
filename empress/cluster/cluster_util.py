@@ -551,7 +551,7 @@ def avg_event_support(species_tree, gene_tree, g, gene_root):
     """
     # Compute the event support for each event
     preorder_mapping_nodes = median.mapping_node_sort(gene_tree, species_tree, list(g.keys()))
-    event_support, count = \
+    _, event_support, _ = \
         median.generate_frequencies_dict(list(reversed(preorder_mapping_nodes)), g, gene_root)
     # Take the average over each event
     total_support = 0
@@ -603,7 +603,7 @@ def event_support_hist(species_tree, gene_tree, gene_root, graph):
     :return bins <array float> - RHS of each bin (see numpy.histogram)
     """
     preorder_mapping_nodes = median.mapping_node_sort(gene_tree, species_tree, list(graph.keys()))
-    event_support, count = \
+    _, event_support, _ = \
         median.generate_frequencies_dict(list(reversed(preorder_mapping_nodes)), graph, gene_root)
     supports = list(event_support.values())
     hist, bins = np.histogram(supports, bins=20, range=(0,1))

@@ -23,8 +23,8 @@
 # equal to 2. Also, smaller functionality was added in early July, including the ability to calculate the
 # mean and median numbers of event nodes per mapping node.
 
-import sys
-from typing import Tuple, Iterator
+import sys, csv
+from typing import Tuple, Iterator, Dict
 
 from numpy import mean
 from numpy import median as md
@@ -562,11 +562,53 @@ def reconcile_inter(tree_data: _ReconInput):
 
 
 # This should be called in empress_cli.py when the user already supplied the DTL values
-def reconcile_noninter(tree_data: _ReconInput, duplication: float, transfer: float, loss: float):
+def reconcile_noninter(tree_data: _ReconInput, duplication: float, transfer: float, loss: float, csv: str):
     """ 
     :param tree_data <_ReconInput> : Output of newickFormatReader.getInput()
     """
-    result = reconcile(tree_data, duplication, transfer, loss)
-    for i in range(len(result)):
-        print((str(result[i]) + '\n'))
+    host, parasite, graph, num_recon, best_roots = reconcile(tree_data, duplication, transfer, loss)
+    for i in [host, parasite, graph, num_recon, best_roots]:
+        print((str(i) + '\n'))
 
+def node_search_order(graph, roots):
+    extant_nodes = roots[:]
+    processed_nodes = set(roots)
+    while len(extant_nodes) != 0:
+        node = extant_nodes.pop()
+        events = graph[node]
+        for e in events:
+            e_child1 = e[1]
+            e_child2 = e[2]
+            if e_child1 is not None and e_child1 != (None, None) and e_child1 not in processed_nodes:
+                processed_nodes.add(e_child1)
+                extant_nodes.append(e_child1)
+            if e_child2 is not None and e_child2 != (None, None) and e_child2 not in processed_nodes:
+                processed_nodes.add(e_child2)
+                extant_nodes.append(e_child2)
+        yield node
+
+def event_str(event_type):
+    if event_type == "C":
+        return "Contemporaneous"
+    elif event_type == "S":
+        return "Cospeciation"
+    elif event_type == "D":
+        return "Duplication"
+    elif event_type == "T":
+        return "Transfer"
+    elif event_type == "L":
+        return "Loss"
+    else:
+        assert False, "Invalid event type: {}".format(event_type)
+
+def export_csv(filename: str, graph: int, best_roots: list, event_freqs: Dict[tuple, float], node_freqs: Dict[tuple, float]):
+    with open(filename, "w") as csvfile:
+        w = csv.writer(csvfile)
+        for node in node_search_order(graph, best_roots):
+            p = node[0]
+            h = node[1]
+            map_freq = node_freqs[node]
+            for event in graph[node]:
+                event_type = event_str(event[0])
+                event_freq = event_freqs[event]
+                w.writerow([p, h, event_type, map_freq, event_freq])

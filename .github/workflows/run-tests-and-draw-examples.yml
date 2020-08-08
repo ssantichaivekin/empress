@@ -31,36 +31,15 @@ jobs:
     - name: Run unittests
       run: |
         pipenv run python -m unittest
-    - name: Run empress_cli help
+    - name: Run cli readme examples
       run: |
-        pipenv run python empress_cli.py --help
-    - name: Run cost-regions help
+        pipenv run python test/cli/run_readme_examples.py
+    - name: Run cli integration test
       run: |
-        pipenv run python empress_cli.py cost-regions --help
-    - name: Run cost region example in Readme.md
-      run: |
-        pipenv run python empress_cli.py cost-regions examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping -tl 0.5 -th 10 -dl 0.5 -dh 10 --outfile costscape-example-img.pdf --log
-    - name: Run reconcile example in Readme.md
-      run: |
-        pipenv run python empress_cli.py reconcile examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping -d 4 -t 2 -l 0
-    - name: Run distance pair histogram example in Readme.md
-      run: |
-        pipenv run python empress_cli.py histogram examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping --csv histogram_example_output_csv.csv --histogram-pdf histogram_example_output_img.pdf --ynorm
-    - name: Run cluster example in Readme.md
-      run: |
-        pipenv run python empress_cli.py cluster examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping 3 --median --n-splits 4 --support
-    - name: Run p-value example in Readme.md
-      run: |
-        pipenv run python empress_cli.py p-value examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping -d 4 -t 2 -l 1
-    - name: Run tanglegram example in Readme.md
-      run: |
-        pipenv run python empress_cli.py tanglegram examples/heliconius_host.nwk examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping
+        pipenv run python test/cli/run_command_combinations.py 100
     - name: Run draw examples for empress wrapper
       run: |
-        pipenv run python -m draw.draw_empress_wrapper
-    - name: Run draw examples for recon viewer
-      run: |
-        pipenv run python -m draw.draw_recon_viewer
+        pipenv run python -m unittest discover --start-directory ./test/draw --pattern "draw_*.py"
     - name: Upload draw examples
       uses: actions/upload-artifact@v2
       with:
