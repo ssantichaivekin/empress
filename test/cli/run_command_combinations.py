@@ -10,7 +10,7 @@ example_parasite = "examples/heliconius_parasite.nwk"
 example_mapping = "examples/heliconius_mapping.mapping"
 
 list_of_commands = ["cost-regions", "reconcile", "histogram", "cluster"]
-options_for_reconcile = ["-d", "-t", "-l"]
+options_for_reconcile = ["-d", "-t", "-l", "--csv", "--graph"]
 options_for_cost_regions = ["-dl", "-tl", "-dh", "-th", "--log", "--outfile"]
 options_for_histogram = ["-d", "-t", "-l", "--histogram", "--xnorm", "--ynorm", "--omit-zeros", "--cumulative",
                          "--csv", "--stats", "--time"]
