@@ -630,9 +630,15 @@ def mk_count_mprs(gene_root):
         return recongraph_tools.count_mprs_wrapper(roots, g)
     return count_mprs
 
-#NOTE: unused
 def calc_improvement(big_k, little_k):
     # For Event Support
+    # Need to special-case little_k = 0
+    # For PDV, the score can be zero if there is only one MPR
+    if little_k == 0:
+        if big_k == 0:
+            return 1
+        else:
+            return float("inf")
     return big_k / float(little_k)
     # For PDV
     #return little_k / float(big_k)
