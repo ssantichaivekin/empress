@@ -962,8 +962,8 @@ class ReconciliationsOnePerClusterWindow(tk.Frame):
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # Recreate the toolbar
-        toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
-        toolbar.update()
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
+        self.toolbar.update()
 
 # p-value Histogram
 class PValueHistogramWindow(tk.Frame):
