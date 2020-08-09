@@ -14,7 +14,8 @@ readme_commands = {
                          "-d 4 -t 2 -l 0",
     "distance pair histogram example": "pipenv run python empress_cli.py histogram examples/heliconius_host.nwk "
                                        "examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping "
-                                       "--csv foo.csv --histogram bar.pdf --ynorm",
+                                       "--csv histogram_example_output_csv.csv "
+                                       "--histogram-pdf histogram_example_output_img.pdf --ynorm",
     "cluster example": "pipenv run python empress_cli.py cluster examples/heliconius_host.nwk "
                        "examples/heliconius_parasite.nwk examples/heliconius_mapping.mapping "
                        "3 --median --n-splits 4 --support",

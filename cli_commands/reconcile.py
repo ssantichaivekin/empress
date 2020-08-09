@@ -9,10 +9,10 @@ def add_reconcile_to_parser(reconcile_parser: argparse.ArgumentParser):
     cli_commands._shared_utils.add_recon_input_args_to_parser(reconcile_parser)
     cli_commands._shared_utils.add_dtl_costs_to_parser(reconcile_parser)
     reconcile_parser.add_argument("--csv", metavar="<filename>",
-            help="Output the reconciliation as a .csv file at the path provided. "
-            "If no filename is provided, outputs to a filename based on the input host file.")
+                                  help="output the reconciliation as a .csv file at the path provided. If no "
+                                       "filename is provided, outputs to a filename based on the input host file")
     reconcile_parser.add_argument("--graph", action="store_true",
-            help="Instead of outputting a random median, output the entire reconciliation graph.")
+                                  help="instead of outputting a random median, output the entire reconciliation graph")
     
 
 def run_reconcile(args):

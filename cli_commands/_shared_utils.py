@@ -11,11 +11,11 @@ def add_recon_input_args_to_parser(parser: argparse.ArgumentParser):
 
 def add_dtl_costs_to_parser(parser: argparse.ArgumentParser):
     parser.add_argument("-d", "--dup-cost", type=float, metavar="<duplication_cost>",
-                        default=2, help="cost incurred on each duplication event")
+                        default=2.0, help="floating point cost incurred on each duplication event")
     parser.add_argument("-t", "--trans-cost", type=float, metavar="<transfer_cost>",
-                        default=3, help="cost incurred on  each transfer event")
+                        default=3.0, help="floating point cost incurred on  each transfer event")
     parser.add_argument("-l", "--loss-cost", type=float, metavar="<loss_cost>",
-                        default=1, help="cost incurred on each loss event")
+                        default=1.0, help="floating point cost incurred on each loss event")
 
 def set_csv_path(args, command_str):
     fname = Path(args.parasite)

@@ -8,7 +8,7 @@ def add_p_value_to_parser(p_value_parser: argparse.ArgumentParser):
     cli_commands._shared_utils.add_recon_input_args_to_parser(p_value_parser)
     cli_commands._shared_utils.add_dtl_costs_to_parser(p_value_parser)
     p_value_parser.add_argument("--outfile", metavar="<filename>",
-                                help="Output the p-value test at the path provided. If no filename is "
+                                help="Output the p-value test drawing at the path provided. If no filename is "
                                 "provided, outputs to a filename based on the input host file.")
     p_value_parser.add_argument("--n-samples", metavar="<number of samples>", type=int,
                                 help="Number of random mappings to sample.", default=100)
