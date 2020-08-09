@@ -267,11 +267,12 @@ def _render_parasite_helper(fig: plot_tools.FigureWrapper,  node: tree.Node, rec
         node.set_layout(y=right_node.layout.y)
     elif event.event_type is recon.EventType.TRANSFER:
         node.layout.y = host_node.layout.y + host_node.layout.h_track * host_node.layout.offset
-    
-    min_col = host_lookup[recon_obj.mapping_of(right_node.name).host].parent_node.layout.col
+
     #Checks to see if transfer node is inconsistent and if it can be fixed
-    if event.event_type is recon.EventType.TRANSFER and min_col >= node.layout.col:
-        _fix_transfer(node, left_node, right_node, host_node, host_lookup, parasite_lookup, recon_obj)
+    if event.event_type is recon.EventType.TRANSFER:
+        min_col = host_lookup[recon_obj.mapping_of(right_node.name).host].parent_node.layout.col
+        if min_col >= node.layout.col:
+            _fix_transfer(node, left_node, right_node, host_node, host_lookup, parasite_lookup, recon_obj)
 
     _render_parasite_branches(fig, node, recon_obj, host_lookup, parasite_lookup)
     _render_parasite_node(fig, node, event, font_size, longest_host_name, show_internal_labels, show_freq)
