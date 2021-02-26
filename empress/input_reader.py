@@ -137,6 +137,7 @@ class _ReconInput:
         """
 
         tree = Phylo.read(StringIO(newick_string), "newick")
+        _ReconInput._name_unnamed_nodes(tree, tree_type)
         distance_dict = tree.depths(unit_branch_lengths=True)
         # Get the actual distance annotations (zero for unannotated trees)
         D = {}
@@ -153,6 +154,18 @@ class _ReconInput:
             name = clade.name
             real_distance_dict[name] = dist
         return tree_dict, real_distance_dict
+    
+    @staticmethod
+    def _name_unnamed_nodes(tree: Phylo.Newick.Tree, tree_type: str):
+        count = 0
+        for clade in tree.find_clades():
+            if clade.name is None:
+                if tree_type == "host":
+                    new_name = "_h{}".format(count)
+                else:
+                    new_name = "_p{}".format(count)
+                clade.name = new_name
+                count += 1
 
     @staticmethod
     def _build_tree(dfs_list):
