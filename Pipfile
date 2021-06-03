@@ -10,10 +10,7 @@ python_version = '3.7'
 biopython = '*'
 networkx = '*'
 pydot = '*'
-# Pyinstaller doesn't work with matplotlib 3.3.0
-# https://github.com/pyinstaller/pyinstaller/pull/5006
-# TODO: change to matplotlib = '*' after fix is released
-matplotlib = '==3.2.*'
+matplotlib = '*'
 shapely = '*'
 numpy = '*'
 
