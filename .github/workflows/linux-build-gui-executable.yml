@@ -35,7 +35,7 @@ jobs:
         sudo apt-get install libgeos-dev
     - name: Install dependencies via pipenv
       run: |
-        python -m pipenv lock --keep-outdated
+        python3.7 -m pipenv lock --keep-outdated
         python3.7 -m pipenv install --dev
     - name: Create linux app
       run: |
