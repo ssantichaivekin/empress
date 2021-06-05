@@ -29,6 +29,7 @@ jobs:
       # "python3.7 -m pip install [software]" is like running normal
       # "pip install [software]" but this installs it to python3.7
       run: |
+        python -m pipenv lock --keep-outdated
         python3.7 -m pip install pipenv
     - name: Install geos (Shapely Dependency)
       run: |
