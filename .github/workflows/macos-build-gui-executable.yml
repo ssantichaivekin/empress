@@ -33,7 +33,9 @@ jobs:
       # see https://github.com/ssantichaivekin/empress/issues/172
       run: |
         export PIPENV_IGNORE_VIRTUALENVS=1
-        PIP_NO_BINARY="shapely" python -m pipenv install --dev
+        export PIP_NO_BINARY="shapely"
+        python -m pipenv lock --keep-outdated
+        python -m pipenv install --dev
     - name: Create macos app
       run: |
         pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
