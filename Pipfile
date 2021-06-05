@@ -18,4 +18,5 @@ numpy = '*'
 coverage = '*'
 flake8 = "*"
 pywin32-ctypes = {version = "*", sys_platform = "== 'win32'"}
+pefile = {version = "*", sys_platform = "== 'win32'"}
 pyinstaller = "*"
