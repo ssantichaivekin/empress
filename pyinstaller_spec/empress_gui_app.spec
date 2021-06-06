@@ -55,7 +55,7 @@ app = BUNDLE(coll,
                  'NSPrincipalClass': 'NSApplication',
                  # Enable Siri and Spotlight to search this app
                  'CFBundleName': 'Empress DTL Computational Biology Tool',
-                 # Allow notorization
-                 'com.apple.security.cs.allow-unsigned-executable-memory': True,
+                 # Set bundle id so gatekeeper can find it
+                 'CFBundleIdentifier': 'com.hmc.empress',
              }
             )
