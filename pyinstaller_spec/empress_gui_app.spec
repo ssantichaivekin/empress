@@ -48,5 +48,7 @@ app = BUNDLE(coll,
              info_plist={
                  'NSPrincipalClass': 'NSApplication',  # Enable retina display
                  'CFBundleName': 'Empress DTL Computational Biology Tool',  # Enable Siri
+                 # Forces macOS to open this app in light mode
+                 'NSRequiresAquaSystemAppearance': True,
              }
             )
