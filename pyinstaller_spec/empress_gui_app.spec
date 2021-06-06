@@ -22,6 +22,8 @@ a = Analysis(['../empress_gui.py'],
              noarchive=False)
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
+
+# Windows and Linux
 exe = EXE(pyz,
           a.scripts,
           [],
@@ -33,6 +35,7 @@ exe = EXE(pyz,
           upx=True,
           icon='../assets/jane_icon.ico',
           console=False)
+
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -41,12 +44,18 @@ coll = COLLECT(exe,
                upx=True,
                upx_exclude=[],
                name='empress')
+
+# macOS
 app = BUNDLE(coll,
              name='empress.app',
              icon='../assets/jane_icon.icns',
              bundle_identifier=None,
              info_plist={
-                 'NSPrincipalClass': 'NSApplication',  # Enable retina display
-                 'CFBundleName': 'Empress DTL Computational Biology Tool',  # Enable Siri
+                 # Enable retina display
+                 'NSPrincipalClass': 'NSApplication',
+                 # Enable Siri and Spotlight to search this app
+                 'CFBundleName': 'Empress DTL Computational Biology Tool',
+                 # Allow notorization
+                 'com.apple.security.cs.allow-unsigned-executable-memory': True,
              }
             )
