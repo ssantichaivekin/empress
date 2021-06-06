@@ -316,6 +316,29 @@ class TestUtils(unittest.TestCase):
                             if ordering_dict is not None:
                                 self.check_topological_order(temporal_graph, ordering_dict)
                 count += 1
+    
+    def test_check_topological_order_with_host_and_parasite_same_node_names(self):
+        host = {
+            'hTop': ('Top', 'a', ('a', 'm1'), ('a', 'm2')),
+            ('a', 'm1'): ('a', 'm1', None, None),
+            ('a', 'm2'): ('a', 'm2', None, None)
+        }
+
+        parasite = {
+            'pTop': ('Top', 'a', ('a', 'n1'), ('a', 'n2')),
+            ('a', 'n1'): ('a', 'n1', None, None),
+            ('a', 'n2'): ('a', 'n2', None, None)
+        }
+
+        reconciliation = {
+            ('a', 'a'): [('S', ('n1', 'm1'), ('n2', 'm2'))], 
+            ('n1', 'm1'): [('C', (None, None), (None, None))], 
+            ('n2', 'm2'): [('C', (None, None), (None, None))]
+        }
+
+        temporal_graph = utils.build_temporal_graph(host, parasite, reconciliation)
+        ordering_dict = utils.topological_order(temporal_graph)
+        self.check_topological_order(temporal_graph, ordering_dict)
 
 if __name__ == '__main__':
     unittest.main()
