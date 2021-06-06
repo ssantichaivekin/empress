@@ -8,6 +8,7 @@ block_cipher = None
 a = Analysis(['../empress_gui.py'],
              pathex=['pyinstaller_spec'],
              binaries=[],
+             # copy data from ../assets to ./assets in the executable folder
              datas=[("../assets", "./assets")],
              # pkg_resources.py2_warn hidden import needed if setuptools>=45.0.0
              # https://github.com/pypa/setuptools/issues/1963#issuecomment-574265532
@@ -30,7 +31,8 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=False )
+          icon='../assets/jane_icon.ico',
+          console=False)
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -41,7 +43,7 @@ coll = COLLECT(exe,
                name='empress')
 app = BUNDLE(coll,
              name='empress.app',
-             icon=None,
+             icon='../assets/jane_icon.icns',
              bundle_identifier=None,
              info_plist={
                  'NSPrincipalClass': 'NSApplication',  # Enable retina display
