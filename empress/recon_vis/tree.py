@@ -3,9 +3,9 @@ tree.py
 Defines classes related to host and parasite nodes and trees
 """
 
-from enum import Enum
+from enum import IntEnum, Enum
 
-class TreeType(Enum):
+class TreeType(IntEnum):
     """ Defines type of the tree """
     HOST = 1
     PARASITE = 2
