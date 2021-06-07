@@ -56,6 +56,6 @@ app = BUNDLE(coll,
                  # Enable Siri and Spotlight to search this app
                  'CFBundleName': 'Empress DTL Computational Biology Tool',
                  # Set bundle id so gatekeeper can find it
-                 'CFBundleIdentifier': 'com.hmc.empress',
+                 'CFBundleIdentifier': 'edu.hmc.empress',
              }
             )

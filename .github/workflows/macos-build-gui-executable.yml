@@ -18,12 +18,15 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: '3.7.8' # this sets python to use the correct version
+
     - name: Install pipenv
       run: |
         python -m pip install pipenv
+
     - name: Install geos (Shapely Dependency)
       run: |
         brew install geos
+
     - name: Install dependencies via pipenv
       # Sometimes macOS 10.15 pipenv thinks it's already running in a virtual environment
       # when it is actually not. PIPENV_IGNORE_VIRTUALENVS=1 forces pipenv to create a new
@@ -36,17 +39,57 @@ jobs:
         export PIP_NO_BINARY="shapely"
         python -m pipenv lock --keep-outdated
         python -m pipenv install --dev
+
     - name: Create macos app
       run: |
         pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
-    - name: Compress macos app
-      # actions/upload-artifact@v2 cannot upload symlinks correctly
-      # https://github.com/actions/upload-artifact/issues/92
-      # This can be fixed by zipping the folder before uploading. By doing this, we end up
-      # double-zipping the file, which is not optimal.
+
+    - name: Codesign and notarize app
+      # Codesign and notarize app so that we don't have to go to Security and Privacy to
+      # allow the app to run.
+      # see https://docs.github.com/en/actions/guides/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+      # see https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
+      # see https://haim.dev/posts/2020-08-08-python-macos-app/
+      env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.MACOS_BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.MACOS_BUILD_P12_PASSWORD }}
       run: |
-        cd ./dist
-        zip -r macos_empress_app.zip empress.app
+        # create variables
+        KEYCHAIN_PASSWORD=this-password-is-temporary-so-you-can-use-anything
+        CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+        # import certificate from secrets
+        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
+
+        # create temporary keychain with 600 seconds timeout
+        security create-keychain -p $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
+        security set-keychain-settings -lut 600 $KEYCHAIN_PATH
+        security unlock-keychain -p $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
+
+        # import certificate to keychain
+        security import $CERTIFICATE_PATH -P $P12_PASSWORD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security list-keychain -d user -s $KEYCHAIN_PATH
+
+    - name: Codesign macOS app
+      run: |
+        # turn off prompts for codesign and xcrun
+        security set-key-partition-list -S apple-tool:,apple:,codesign:,xcrun: -s -k $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
+
+        # sign the application
+        codesign -s Developer -v --deep --timestamp --entitlements ./pyinstaller_spec/macos_entitlements.plist -o runtime ./dist/empress.app
+
+    - name: Compress macos app
+      run: |
+        ditto -c -k --keepParent ./dist/empress.app ./dist/macos_empress_app.zip
+
+    - name: Send macOS app to Apple's notarizatation service
+      env:
+          APPLE_USERNAME: ${{ secrets.APPLE_USERNAME }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+      run: |
+        xcrun altool --notarize-app -t osx -f ./dist/macos_empress_app.zip -u $APPLE_USERNAME -p $APPLE_APP_SPECIFIC_PASSWORD --primary-bundle-id edu.hmc.cs.empress
+
     - name: Upload executable
       uses: actions/upload-artifact@v2
       with:
