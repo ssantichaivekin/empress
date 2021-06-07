@@ -12,7 +12,12 @@ jobs:
     runs-on: macos-10.15 
     # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-10.15-Readme.md
     # macos-10.15 already has python 3.7.8, no need to install, refer to this version as python3.7
-
+    env:
+      BUILD_CERTIFICATE_BASE64: ${{ secrets.MACOS_BUILD_CERTIFICATE_BASE64 }}
+      P12_PASSWORD: ${{ secrets.MACOS_BUILD_P12_PASSWORD }}
+      KEYCHAIN_PASSWORD: this-password-is-temporary-so-you-can-use-anything
+      CERTIFICATE_PATH: ./certificate.p12
+      KEYCHAIN_PATH: ./app-signing.keychain-db
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
@@ -50,14 +55,7 @@ jobs:
       # see https://docs.github.com/en/actions/guides/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       # see https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
       # see https://haim.dev/posts/2020-08-08-python-macos-app/
-      env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.MACOS_BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.MACOS_BUILD_P12_PASSWORD }}
       run: |
-        echo "create variables"
-        KEYCHAIN_PASSWORD=this-password-is-temporary-so-you-can-use-anything
-        CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
-        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
         echo "import certificate from secrets"
         echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
