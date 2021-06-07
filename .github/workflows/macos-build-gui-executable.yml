@@ -68,6 +68,10 @@ jobs:
         security unlock-keychain -p $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
 
         echo "import certificate to keychain"
+        echo $P12_PASSWORD | wc
+        echo $KEYCHAIN_PATH
+        echo $CERTIFICATE_PATH
+        security import --help
         security import $CERTIFICATE_PATH -P $P12_PASSWORD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
         security list-keychain -d user -s $KEYCHAIN_PATH
 
