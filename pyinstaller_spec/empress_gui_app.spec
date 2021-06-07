@@ -57,5 +57,7 @@ app = BUNDLE(coll,
                  'CFBundleName': 'Empress DTL Computational Biology Tool',
                  # Set bundle id so gatekeeper can find it
                  'CFBundleIdentifier': 'edu.hmc.empress',
+                 # Forces macOS to open this app in light mode
+                 'NSRequiresAquaSystemAppearance': True,
              }
             )
