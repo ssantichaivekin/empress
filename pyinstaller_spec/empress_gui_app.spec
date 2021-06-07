@@ -56,7 +56,7 @@ app = BUNDLE(coll,
                  # Enable Siri and Spotlight to search this app
                  'CFBundleName': 'Empress DTL Computational Biology Tool',
                  # Set bundle id so gatekeeper can find it
-                 'CFBundleIdentifier': 'edu.hmc.empress',
+                 'CFBundleIdentifier': 'edu.hmc.cs.empress',
                  # Forces macOS to open this app in light mode
                  'NSRequiresAquaSystemAppearance': True,
              }
