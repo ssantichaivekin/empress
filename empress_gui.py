@@ -860,7 +860,7 @@ class TanglegramWindow(tk.Frame):
     
     def draw_tanglegram(self):
         self.fig = App.recon_input.draw(
-            node_font_size=self.font_size
+            node_font_size=self.font_size.get()
         )
         self.canvas = FigureCanvasTkAgg(self.fig, self.tanglegram_frame)
         self.canvas.draw()
@@ -935,6 +935,9 @@ class ReconciliationFrame(tk.Frame):
         self.show_event_frequencies = tk.BooleanVar(value=True)
         self.create_show_event_frequencies_checkbox()
 
+        self.show_legend = tk.BooleanVar(value=False)
+        self.create_show_legend_checkbox()
+
         self.font_size_var = tk.DoubleVar(value=0.3)
         self.font_size = 0.3
         self.create_font_size_editor()
@@ -956,6 +959,14 @@ class ReconciliationFrame(tk.Frame):
             variable=self.show_event_frequencies,
             command=self.update_reconciliation)
         show_event_frequencies_checkbutton.pack(side=tk.LEFT)
+
+    def create_show_legend_checkbox(self):
+        show_legend_checkbutton = tk.Checkbutton(
+            master=self.config_frame,
+            text="Display legend",
+            variable=self.show_legend,
+            command=self.update_reconciliation)
+        show_legend_checkbutton.pack(side=tk.LEFT)
 
     def create_font_size_editor(self):
         font_size_label = tk.Label(
@@ -995,8 +1006,9 @@ class ReconciliationFrame(tk.Frame):
 
     def draw_reconciliation(self):
         self.reconciliation_fig = self.reconciliation.draw(
-            show_internal_labels=self.show_internal_node_names,
-            show_freq=self.show_event_frequencies,
+            show_internal_labels=self.show_internal_node_names.get(),
+            show_freq=self.show_event_frequencies.get(),
+            show_legend=self.show_legend.get(),
             node_font_size=self.font_size
         )
         self.canvas = FigureCanvasTkAgg(self.reconciliation_fig, self.reconciliation_frame)
