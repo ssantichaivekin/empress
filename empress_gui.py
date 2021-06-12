@@ -128,7 +128,7 @@ class App(tk.Frame):
         self.host_tree_info = tk.Label(self.input_info_frame)
         self.parasite_tree_info = tk.Label(self.input_info_frame)
         self.mapping_info = tk.Label(self.input_info_frame)
-        self.recon_input = empress.ReconInputWrapper()
+        App.recon_input = empress.ReconInputWrapper()
         self.first_time_loading_files = True
         self.need_to_reset = True
 
@@ -226,39 +226,39 @@ class App(tk.Frame):
     
     def refresh_when_reload_host(self):
         if self.first_time_loading_files:
-            self.recon_input.read_host(self.host_file_path)
+            App.recon_input.read_host(self.host_file_path)
             self.host_tree_info.destroy()
         else:
             if self.need_to_reset:
                 self.reset()
-            self.recon_input.read_host(self.host_file_path)
+            App.recon_input.read_host(self.host_file_path)
             self.host_tree_info.destroy()
             self.parasite_tree_info.destroy()
             self.mapping_info.destroy()
     
     def refresh_when_reload_parasite(self):
         if self.first_time_loading_files:
-            self.recon_input.read_parasite(self.parasite_file_path)
+            App.recon_input.read_parasite(self.parasite_file_path)
             self.parasite_tree_info.destroy()
         else:
             if self.need_to_reset:
                 self.reset()
-            self.recon_input.read_host(self.host_file_path)
-            self.recon_input.read_parasite(self.parasite_file_path)
+            App.recon_input.read_host(self.host_file_path)
+            App.recon_input.read_parasite(self.parasite_file_path)
             self.parasite_tree_info.destroy()
             self.mapping_info.destroy()
     
     def refresh_when_reload_mapping(self):
         if self.first_time_loading_files:
-            self.recon_input.read_mapping(self.mapping_file_path)
+            App.recon_input.read_mapping(self.mapping_file_path)
             self.mapping_info.destroy()
             self.first_time_loading_files = False
         else:
             if self.need_to_reset:
                 self.reset()
-            self.recon_input.read_host(self.host_file_path)
-            self.recon_input.read_parasite(self.parasite_file_path)
-            self.recon_input.read_mapping(self.mapping_file_path)
+            App.recon_input.read_host(self.host_file_path)
+            App.recon_input.read_parasite(self.parasite_file_path)
+            App.recon_input.read_mapping(self.mapping_file_path)
             self.mapping_info.destroy()  
             self.need_to_reset = True  
 
@@ -266,7 +266,7 @@ class App(tk.Frame):
         App.recon_graph = None
         App.clusters_list = []
         App.medians = None
-        self.recon_input = empress.ReconInputWrapper()
+        App.recon_input = empress.ReconInputWrapper()
         self.view_cost_space_btn.configure(state=tk.DISABLED)
         self.view_tanglegram_btn.configure(state=tk.DISABLED)
 
@@ -345,7 +345,7 @@ class App(tk.Frame):
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree"), ("All Files", "*")])
             if input_file:
                 try:
-                    self.recon_input.read_host(input_file)
+                    App.recon_input.read_host(input_file)
                 except Exception as e:
                     messagebox.showinfo("Warning", "Error: " + str(e))
                     return
@@ -365,7 +365,7 @@ class App(tk.Frame):
                                                        filetypes=[("Newick Trees", "*.nwk *.newick *.tree"), ("All Files", "*")])
             if input_file:
                 try:
-                    self.recon_input.read_parasite(input_file)
+                    App.recon_input.read_parasite(input_file)
                 except Exception as e:
                     messagebox.showinfo("Warning", "Error: " + str(e))
                     return
@@ -382,14 +382,14 @@ class App(tk.Frame):
                                                        filetypes=[("Tip mapping", "*.mapping"), ("All Files", "*")])
             if input_file:
                 try:
-                    self.recon_input.read_mapping(input_file)
+                    App.recon_input.read_mapping(input_file)
                 except Exception as e:
                     messagebox.showinfo("Warning", "Error: " + str(e))
                     return
                 self.mapping_file_path = input_file
                 self.refresh_when_reload_mapping()
                 self.update_mapping_info()
-                if self.recon_input.is_complete():
+                if App.recon_input.is_complete():
                     self.view_tanglegram_btn.configure(state=tk.NORMAL)
                     self.view_cost_space_btn.configure(state=tk.NORMAL)
                     self.compute_reconciliations_btn.configure(state=tk.NORMAL)
@@ -399,10 +399,10 @@ class App(tk.Frame):
     def compute_tree_tips(self, tree_type):
         """Compute the number of tips for the host tree and parasite tree inputs."""
         if tree_type == "host tree":
-            host_tree_object = dict_to_tree(self.recon_input.host_dict, tree.TreeType.HOST)
+            host_tree_object = dict_to_tree(App.recon_input.host_dict, tree.TreeType.HOST)
             return len(host_tree_object.leaf_list())
         elif tree_type == "parasite tree":
-            parasite_tree_object = dict_to_tree(self.recon_input.parasite_dict, tree.TreeType.PARASITE)
+            parasite_tree_object = dict_to_tree(App.recon_input.parasite_dict, tree.TreeType.PARASITE)
             return len(parasite_tree_object.leaf_list())
 
     def update_host_info(self):
@@ -430,20 +430,11 @@ class App(tk.Frame):
         # Bring the new tkinter window to the front
         # https://stackoverflow.com/a/53644859/13698076
         self.tanglegram_window.attributes('-topmost', True)
+
         self.tanglegram_window.focus_force()
         self.tanglegram_window.bind('<FocusIn>', self.bring_to_front)
         # Creates a new frame
-        tanglegram_frame = tk.Frame(self.tanglegram_window)
-        tanglegram_frame.pack(fill=tk.BOTH, expand=1)
-        tanglegram_frame.pack_propagate(False)
-        fig = self.recon_input.draw()
-        canvas = FigureCanvasTkAgg(fig, tanglegram_frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        # The toolbar allows the user to zoom in/out, drag the graph and save the graph
-        toolbar = NavigationToolbar2Tk(canvas, tanglegram_frame)
-        toolbar.update()
-        canvas.get_tk_widget().pack(side=tk.TOP)
+        TanglegramWindow(self.tanglegram_window)
 
     def plot_cost_regions(self):
         """Plot the cost regions using matplotlib and embed the graph in a tkinter window."""
@@ -461,7 +452,7 @@ class App(tk.Frame):
         plt_frame = tk.Frame(self.cost_space_window)
         plt_frame.pack(fill=tk.BOTH, expand=1)
         plt_frame.pack_propagate(False)
-        cost_regions = self.recon_input.compute_cost_regions(0.5, 10, 0.5, 10)
+        cost_regions = App.recon_input.compute_cost_regions(0.5, 10, 0.5, 10)
         fig = cost_regions.draw()  # creates matplotlib figure
         canvas = FigureCanvasTkAgg(fig, plt_frame)
         canvas.draw()
@@ -590,7 +581,7 @@ class App(tk.Frame):
 
     def display_recon_information(self):
         """Display numeric reconciliation results and close unnecessary windows."""
-        App.recon_graph = self.recon_input.reconcile(self.dup_cost, self.trans_cost, self.loss_cost)
+        App.recon_graph = App.recon_input.reconcile(self.dup_cost, self.trans_cost, self.loss_cost)
         self.recon_count = App.recon_graph.n_recon
         self.cospec_count, self.dup_count, self.trans_count, self.loss_count = App.recon_graph.median().count_events()
         if not self.recon_info_displayed:
@@ -767,34 +758,29 @@ class App(tk.Frame):
     def select_from_view_reconciliations_dropdown(self, event):
         """When "View reconciliations" dropdown is clicked."""
         if self.view_reconciliations_var.get() == "One MPR":
-            self.view_reconciliations_var.set("View reconciliations")
-            # Creates a new tkinter window
-            self.one_MPR_window = tk.Toplevel(self.master)
-            self.one_MPR_window.geometry("600x600")
-            self.one_MPR_window.title("One MPR")
-            # Bring the new tkinter window to the front
-            # https://stackoverflow.com/a/53644859/13698076
-            self.one_MPR_window.attributes('-topmost', True)
-            self.one_MPR_window.focus_force()
-            self.one_MPR_window.bind('<FocusIn>', self.bring_to_front)
-            ReconciliationsOneMPRWindow(self.one_MPR_window)
+            self.view_reconciliations_var.set("View reconciliation")
+            self.create_reconciliation_window(
+                title="View Reconciliation",
+                reconciliation=App.recon_graph.median()
+            )
 
         elif self.view_reconciliations_var.get() == "One per cluster":
             self.view_reconciliations_var.set("View reconciliations")
-            self.open_window_reconciliations()
+            for index, reconciliation in enumerate(App.medians):
+                self.create_reconciliation_window(
+                    title=f'View Reconciliation #{index}',
+                    reconciliation=reconciliation
+                )
 
-    def open_window_reconciliations(self):
-        """Pop up new tkinter windows to display one reconciliation per cluster."""
-        for solution_index, solution in enumerate(App.medians):
-            self.view_reconciliations_for_clusters_window = tk.Toplevel(self.master)
-            self.view_reconciliations_for_clusters_window.geometry("800x800")
-            self.view_reconciliations_for_clusters_window.title("View reconciliations " + str(solution_index + 1))
-            # Bring the new tkinter window to the front
-            # https://stackoverflow.com/a/53644859/13698076
-            self.view_reconciliations_for_clusters_window.attributes('-topmost', True)
-            self.view_reconciliations_for_clusters_window.focus_force()
-            self.view_reconciliations_for_clusters_window.bind('<FocusIn>', self.bring_to_front)
-            ReconciliationsOnePerClusterWindow(self.view_reconciliations_for_clusters_window , solution)
+    def create_reconciliation_window(self, title: str, reconciliation: empress.ReconciliationWrapper):
+        window = tk.Toplevel(self.master)
+        window.geometry("800x800")
+        window.title(title)
+
+        window.attributes('-topmost', True)
+        window.focus_force()
+        window.bind('<FocusIn>', self.bring_to_front)
+        ReconciliationFrame(master=window, reconciliation=reconciliation)
 
     def open_window_pvalue_histogram(self):
         """Pop up a new tkinter window to display the p-value histogram."""
@@ -813,6 +799,83 @@ class App(tk.Frame):
         """Bring newly created tkinter window to the front until user interacts with it, i.e., taking focus.."""
         if type(event.widget).__name__ == 'Tk':
             event.widget.attributes('-topmost', False)
+
+class TanglegramWindow(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master
+        self.master.grid_rowconfigure(0, weight=5)
+        self.master.grid_rowconfigure(1, weight=1)
+        self.master.grid_columnconfigure(0, weight=1)
+
+        self.tanglegram_frame = tk.Frame(self.master)
+        self.tanglegram_frame.grid(row=0, column=0, sticky="nsew")
+        self.tanglegram_frame.grid_propagate(False)
+
+        self.config_frame = tk.Frame(self.master)
+        self.config_frame.grid(row=1, column=0)
+        self.config_frame.grid_propagate(False)
+
+        self.font_size_var = tk.DoubleVar(value=9)
+        self.font_size = 9
+        self.create_font_size_editor()
+
+        self.draw_tanglegram()
+    
+    def create_font_size_editor(self):
+        font_size_label = tk.Label(
+            master=self.config_frame, 
+            text="Font size:"
+        )
+        font_size_label.pack(side=tk.LEFT)
+
+        self.font_size_entry = CustomEntry(
+            master=self.config_frame, 
+            width=3, 
+            textvariable=self.font_size_var
+        )
+        self.font_size_entry.set_border_color("green")
+        validatecommand = (self.register(self.font_size_validate_and_get), '%P')
+        self.font_size_entry.validate(validate="key", validatecommand=validatecommand)
+        self.font_size_entry.pack(side=tk.LEFT)
+
+        redraw_button = tk.Button(
+            master=self.config_frame,
+            text="Redraw tanglegram", 
+            command=self.update_tanglegram
+        )
+        redraw_button.pack(side=tk.LEFT)
+
+    def font_size_validate_and_get(self, input_after_change: str):
+        try:
+            input_val = float(input_after_change)
+            if input_val >= 0:
+                self.font_size = input_val
+                self.font_size_entry.set_border_color("green")
+            else: 
+                self.font_size_entry.set_border_color("red")
+        except ValueError:
+            self.font_size_entry.set_border_color("red")
+        return True  # return True means allowing the change to happen
+    
+    def draw_tanglegram(self):
+        self.fig = App.recon_input.draw(
+            node_font_size=self.font_size
+        )
+        self.canvas = FigureCanvasTkAgg(self.fig, self.tanglegram_frame)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # The toolbar allows the user to zoom in/out, drag the graph and save the graph
+        self.toolbar = NavigationToolbar2Tk(
+            canvas=self.canvas, 
+            window=self.tanglegram_frame
+        )
+        self.toolbar.update()
+    
+    def update_tanglegram(self):
+        self.canvas.get_tk_widget().destroy()
+        self.toolbar.destroy()
+        self.draw_tanglegram()
 
 # View reconciliation space - Clusters
 class SolutionSpaceWindow(tk.Frame):
@@ -848,122 +911,106 @@ class SolutionSpaceWindow(tk.Frame):
         toolbar.update()
         canvas.get_tk_widget().pack(side=tk.TOP)
 
-# View reconciliations - One MPR
-class ReconciliationsOneMPRWindow(tk.Frame):
-    def __init__(self, master):
+class ReconciliationFrame(tk.Frame):
+    def __init__(self, master: tk.Toplevel, reconciliation: empress.ReconciliationWrapper):
         super().__init__(master)
         self.master = master
+        self.reconciliation = reconciliation
+
         self.master.grid_rowconfigure(0, weight=5)
         self.master.grid_rowconfigure(1, weight=1)
         self.master.grid_columnconfigure(0, weight=1)
-        self.frame = tk.Frame(self.master)
-        self.frame.grid(row=0, column=0, sticky="nsew")
-        self.frame.grid_propagate(False)
-        self.checkboxes_frame = tk.Frame(self.master)
-        self.checkboxes_frame.grid(row=1, column=0)
-        self.checkboxes_frame.grid_propagate(False)
-        self.create_checkboxes()
-        self.draw_one_MPR()
 
-    def draw_one_MPR(self):
-        self.one_mpr_fig = App.recon_graph.median().draw(
-            show_internal_labels=self.show_internal_node_names_boolean, 
-            show_freq=self.show_event_frequencies_boolean)
-        self.canvas = FigureCanvasTkAgg(self.one_mpr_fig, self.frame)
+        self.reconciliation_frame = tk.Frame(self.master)
+        self.reconciliation_frame.grid(row=0, column=0, sticky="nsew")
+        self.reconciliation_frame.grid_propagate(False)
+        
+        self.config_frame = tk.Frame(self.master)
+        self.config_frame.grid(row=1, column=0)
+        self.config_frame.grid_propagate(False)
+
+        self.show_internal_node_names = tk.BooleanVar(value=True)
+        self.create_show_internal_node_names_checkbox()
+
+        self.show_event_frequencies = tk.BooleanVar(value=True)
+        self.create_show_event_frequencies_checkbox()
+
+        self.font_size_var = tk.DoubleVar(value=0.3)
+        self.font_size = 0.3
+        self.create_font_size_editor()
+
+        self.draw_reconciliation()
+
+    def create_show_internal_node_names_checkbox(self):
+        show_internal_node_names_checkbutton = tk.Checkbutton(
+            master=self.config_frame,
+            text="Display internal node names",
+            variable=self.show_internal_node_names,
+            command=self.update_reconciliation)
+        show_internal_node_names_checkbutton.pack(side=tk.LEFT)
+
+    def create_show_event_frequencies_checkbox(self):
+        show_event_frequencies_checkbutton = tk.Checkbutton(
+            master=self.config_frame,
+            text="Display event frequencies",
+            variable=self.show_event_frequencies,
+            command=self.update_reconciliation)
+        show_event_frequencies_checkbutton.pack(side=tk.LEFT)
+
+    def create_font_size_editor(self):
+        font_size_label = tk.Label(
+            master=self.config_frame,
+            text="Font size:"
+        )
+        font_size_label.pack(side=tk.LEFT)
+
+        self.font_size_entry = CustomEntry(
+            master=self.config_frame,
+            width=3,
+            textvariable=self.font_size_var
+        )
+        self.font_size_entry.set_border_color("green")
+        validatecommand = (self.register(self.font_size_validate_and_get), '%P')
+        self.font_size_entry.validate(validate="key", validatecommand=validatecommand)
+        self.font_size_entry.pack(side=tk.LEFT)
+
+        redraw_button = tk.Button(
+            master=self.config_frame,
+            text="Redraw reconciliation",
+            command=self.update_reconciliation
+        )
+        redraw_button.pack(side=tk.LEFT)
+
+    def font_size_validate_and_get(self, input_after_change: str):
+        try:
+            input_val = float(input_after_change)
+            if input_val >= 0:
+                self.font_size = input_val
+                self.font_size_entry.set_border_color("green")
+            else:
+                self.font_size_entry.set_border_color("red")
+        except ValueError:
+            self.font_size_entry.set_border_color("red")
+        return True  # return True means allowing the change to happen
+
+    def draw_reconciliation(self):
+        self.reconciliation_fig = self.reconciliation.draw(
+            show_internal_labels=self.show_internal_node_names,
+            show_freq=self.show_event_frequencies,
+            node_font_size=self.font_size
+        )
+        self.canvas = FigureCanvasTkAgg(self.reconciliation_fig, self.reconciliation_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         # The toolbar allows the user to zoom in/out, drag the graph and save the graph
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.reconciliation_frame)
         self.toolbar.update()
         self.canvas.get_tk_widget().pack(side=tk.TOP)
 
-    def create_checkboxes(self):
-        self.show_internal_node_names_boolean = tk.BooleanVar()
-        self.show_internal_node_names_boolean.set(tk.TRUE)
-        show_internal_node_names_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
-            text="Display internal node names", variable=self.show_internal_node_names_boolean, 
-            command=self.update_one_mpr)
-        show_internal_node_names_checkbutton.pack(side=tk.LEFT)
-
-        self.show_event_frequencies_boolean = tk.BooleanVar()
-        self.show_event_frequencies_boolean.set(tk.TRUE)
-        show_event_frequencies_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
-            text="Display frequencies", variable=self.show_event_frequencies_boolean, 
-            command=self.update_one_mpr)
-        show_event_frequencies_checkbutton.pack(side=tk.LEFT)
-
-    def update_one_mpr(self):
+    def update_reconciliation(self):
         self.canvas.get_tk_widget().destroy()
         self.toolbar.destroy()
-        self.one_mpr_fig = App.recon_graph.median().draw(
-            show_internal_labels=self.show_internal_node_names_boolean.get(),
-            show_freq=self.show_event_frequencies_boolean.get()
-        )
-        self.canvas = FigureCanvasTkAgg(self.one_mpr_fig, self.frame)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        # Recreate the toolbar
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
-        self.toolbar.update()
-
-# View reconciliations - One per cluster
-class ReconciliationsOnePerClusterWindow(tk.Frame):
-    def __init__(self, master, recon_solution):
-        super().__init__(master)
-        self.recon_solution = recon_solution
-        self.master = master
-        self.master.grid_rowconfigure(0, weight=5)
-        self.master.grid_rowconfigure(1, weight=1)
-        self.master.grid_columnconfigure(0, weight=1)
-        self.frame = tk.Frame(self.master)
-        self.frame.grid(row=0, column=0, sticky="nsew")
-        self.frame.grid_propagate(False)
-        self.checkboxes_frame = tk.Frame(self.master)
-        self.checkboxes_frame.grid(row=1, column=0)
-        self.checkboxes_frame.grid_propagate(False)
-        self.create_checkboxes()
-        self.draw_median_recons()
-
-    def create_checkboxes(self):
-        self.show_internal_node_names_boolean = tk.BooleanVar()
-        self.show_internal_node_names_boolean.set(tk.TRUE)
-        show_internal_node_names_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
-            text="Display internal node names", variable=self.show_internal_node_names_boolean, 
-            command=self.update_median_recons)
-        show_internal_node_names_checkbutton.pack(side=tk.LEFT)
-
-        self.show_event_frequencies_boolean = tk.BooleanVar()
-        self.show_event_frequencies_boolean.set(tk.TRUE)
-        show_event_frequencies_checkbutton = tk.Checkbutton(self.checkboxes_frame, 
-            text="Display frequencies", variable=self.show_event_frequencies_boolean, 
-            command=self.update_median_recons)
-        show_event_frequencies_checkbutton.pack(side=tk.LEFT)
-
-    def draw_median_recons(self):
-        self.recon_solution_fig = self.recon_solution.draw(
-            show_internal_labels=self.show_internal_node_names_boolean, 
-            show_freq=self.show_event_frequencies_boolean)
-        self.canvas = FigureCanvasTkAgg(self.recon_solution_fig, self.frame)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        # The toolbar allows the user to zoom in/out, drag the graph and save the graph
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
-        self.toolbar.update()
-        self.canvas.get_tk_widget().pack(side=tk.TOP)
-
-    def update_median_recons(self):
-        self.canvas.get_tk_widget().destroy()
-        self.toolbar.destroy()
-        self.recon_solution_fig = self.recon_solution.draw(
-            show_internal_labels=self.show_internal_node_names_boolean.get(),
-            show_freq=self.show_event_frequencies_boolean.get()
-        )
-        self.canvas = FigureCanvasTkAgg(self.recon_solution_fig, self.frame)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        # Recreate the toolbar
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame)
-        self.toolbar.update()
+        self.draw_reconciliation()
 
 # p-value Histogram
 class PValueHistogramWindow(tk.Frame):
@@ -985,8 +1032,8 @@ class PValueHistogramWindow(tk.Frame):
         canvas.get_tk_widget().pack(side=tk.TOP)
 
 class CustomEntry(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
-        tk.Frame.__init__(self, parent)
+    def __init__(self, master, *args, **kwargs):
+        tk.Frame.__init__(self, master)
         self.entry = tk.Entry(self, *args, **kwargs)
         self.entry.pack(fill="both", expand=tk.TRUE, padx=1, pady=1)
         self.get = self.entry.get
