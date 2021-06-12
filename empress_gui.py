@@ -9,11 +9,12 @@ import os
 import sys
 import pathlib
 
+import matplotlib
+matplotlib.rcParams['savefig.format'] = 'pdf'  # default save format
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 import empress
-from empress import input_reader
 from empress.recon_vis.utils import dict_to_tree
 from empress.recon_vis import tree
 
