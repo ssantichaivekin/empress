@@ -53,18 +53,18 @@ class Drawable(ABC):
     """
 
     @abstractmethod
-    def draw_on(self, axes: plt.Axes):
+    def draw_on(self, axes: plt.Axes, **kwargs):
         """
         Draw self on matplotlib Axes
         """
         pass
 
-    def draw(self) -> plt.Figure:
+    def draw(self, **kwargs) -> plt.Figure:
         """
         Draw self as matplotlib Figure.
         """
         figure, ax = plt.subplots(1, 1)
-        self.draw_on(ax)
+        self.draw_on(ax, **kwargs)
         return figure
 
 
@@ -249,11 +249,11 @@ class ReconInputWrapper(_ReconInput, Drawable):
     def __init__(self, *args, **kwargs):
         _ReconInput.__init__(self, *args, **kwargs)
 
-    def draw_on(self, ax: plt.Axes):
+    def draw_on(self, ax: plt.Axes, node_font_size=9):
         """
         This draws the tanglegram.
         """
-        tanglegram.render(self.host_dict, self.parasite_dict, self.tip_mapping, True, ax)
+        tanglegram.render(self.host_dict, self.parasite_dict, self.tip_mapping, True, ax, node_font_size=node_font_size)
 
     def compute_cost_regions(self, transfer_min: float, transfer_max: float,
                              dup_min: float, dup_max: float) -> CostRegionsWrapper:
