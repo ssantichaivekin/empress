@@ -12,8 +12,16 @@ import matplotlib.pyplot as plt
 FONT_SIZE_STRETCH = 3.0     # Parameter used in _calculate_font_size
 SIGMOID_SCALE = 0.8         # Parameter used in _sigmoid
 
-def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequencies: Dict[tuple, float] = None, show_internal_labels: bool = False, 
-           show_freq: bool = False, show_legend: bool = True, axes: Union[plt.Axes, None] = None):
+def render(host_dict: dict,
+           parasite_dict: dict,
+           recon_dict: dict,
+           event_frequencies: Dict[tuple, float] = None,
+           show_internal_labels: bool = False,
+           show_freq: bool = False,
+           show_legend: bool = True,
+           node_font_size: float = 0.3,
+           axes: Union[plt.Axes, None] = None,
+           ):
     """ Renders a reconciliation using matplotlib
     :param host_dict:  Host tree represented in dictionary format
     :param parasite_dict:  Parasite tree represented in dictionary format
@@ -36,9 +44,7 @@ def render(host_dict: dict, parasite_dict: dict, recon_dict: dict, event_frequen
     if show_legend:
         _create_legend(fig, consistency_type)
 
-    # Calculates font sizes
-    num_tip_nodes = len(host_tree.leaf_list()) + len(parasite_tree.leaf_list())
-    font_size = _calculate_font_size(num_tip_nodes)
+    font_size = node_font_size
 
     root = parasite_tree.root_node
     host_lookup = host_tree.name_to_node_dict()
@@ -371,25 +377,6 @@ def _get_frequency_text(frequency: float):
     :return a string that has the frequency as a percentage
     """
     return str(round(frequency * 100))
-
-
-def _calculate_font_size(num_tip_nodes: int):
-    """
-    Calculates the font_size
-    :param num_tip_nodes: Number of tip nodes in a tree
-    :return the font size for the tips and internal nodes of a tree
-    """
-    x = (render_settings.START_SIZE - num_tip_nodes) / render_settings.STEP_SIZE
-    return FONT_SIZE_STRETCH * _sigmoid(x)  # 3.0 is a magic value that can be adjusted
-
-
-def _sigmoid(x: float):
-    """
-    sigmoid Function
-    :param x: A number to be plugged into the function
-    :return a sigmoid value based on the input value, x
-    """
-    return (1 / (1 + math.e**(-SIGMOID_SCALE*x)))  # 0.8 is a magic value that can be adjusted
 
 
 def _render_parasite_branches(fig: plot_tools.FigureWrapper,  node: tree.Node, recon_obj: recon.Reconciliation, host_lookup: dict, parasite_lookup: dict):
