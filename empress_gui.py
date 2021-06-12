@@ -860,7 +860,7 @@ class TanglegramWindow(tk.Frame):
     
     def draw_tanglegram(self):
         self.fig = App.recon_input.draw(
-            node_font_size=self.font_size.get()
+            node_font_size=self.font_size
         )
         self.canvas = FigureCanvasTkAgg(self.fig, self.tanglegram_frame)
         self.canvas.draw()
