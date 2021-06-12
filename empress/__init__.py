@@ -96,6 +96,7 @@ class ReconciliationWrapper(Drawable):
                 axes: plt.Axes,
                 show_internal_labels: bool = False,
                 show_freq: bool = True,
+                show_legend: bool = False,
                 node_font_size: float = 0.3,
                 ):
         recon_viewer.render(
@@ -105,6 +106,7 @@ class ReconciliationWrapper(Drawable):
             self.event_frequencies,
             show_internal_labels=show_internal_labels,
             show_freq=show_freq,
+            show_legend=show_legend,
             node_font_size=node_font_size,
             axes=axes
         )

@@ -18,7 +18,7 @@ def render(host_dict: dict,
            event_frequencies: Dict[tuple, float] = None,
            show_internal_labels: bool = False,
            show_freq: bool = False,
-           show_legend: bool = True,
+           show_legend: bool = False,
            node_font_size: float = 0.3,
            axes: Union[plt.Axes, None] = None,
            ):
