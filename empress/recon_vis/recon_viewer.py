@@ -6,6 +6,7 @@ Justin Jiang, Trenton Wesley
 from empress.recon_vis import recon, tree, utils, plot_tools, render_settings
 
 from typing import Union, Dict
+import textwrap
 import math
 import matplotlib.pyplot as plt
 
@@ -35,14 +36,15 @@ def render(host_dict: dict,
     host_tree, parasite_tree, consistency_type = utils.build_trees_with_temporal_order(host_dict, parasite_dict, recon_dict)
     recon_obj = utils.dict_to_reconciliation(recon_dict, event_frequencies)
 
-    # Checks to see if the trees(or reconciliation) are empty
-    if host_tree is None or parasite_tree is None or recon_obj is None:
-        return None
-
     fig = plot_tools.FigureWrapper(render_settings.TREE_TITLE, axes)
 
     if show_legend:
         _create_legend(fig, consistency_type)
+
+    # Checks to see if the trees(or reconciliation) are empty
+    if host_tree is None or parasite_tree is None or recon_obj is None:
+        _print_inconsistent_text(fig, node_font_size)
+        return fig
 
     font_size = node_font_size
 
@@ -65,6 +67,24 @@ def render(host_dict: dict,
     _render_parasite(fig, parasite_tree, recon_obj, host_lookup, parasite_lookup, show_internal_labels, show_freq, font_size, longest_host_name)
 
     return fig
+
+def _print_inconsistent_text(fig: plot_tools.FigureWrapper, fontsize: float):
+    errormsg = textwrap.dedent("""\
+        The reconciliation that empress is trying to plot 
+        is temporally incosistent.
+
+        Empress employs a fast reconciliation algorithm 
+        that sometimes produce time travels in the 
+        reconciliation. This happens a lot with larger 
+        trees, especially ones that do not have obvious 
+        reconciliations. Our drawing algorithm currently
+        does not support drawing time travels, so you are
+        seeing this error message.
+        """)
+    fig.axis.text(0, 0, errormsg, 
+        horizontalalignment="center",
+        verticalalignment="center"
+    )
 
 
 def _create_legend(fig: plot_tools.FigureWrapper, consistency_type: str):
