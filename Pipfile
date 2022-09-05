@@ -17,4 +17,4 @@ numpy = '*'
 [dev-packages]
 coverage = '*'
 flake8 = "*"
-pyinstaller = "*"
+pyinstaller = "~=4.3"
