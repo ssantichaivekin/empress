@@ -44,6 +44,10 @@ jobs:
         export PIP_NO_BINARY="shapely"
         python -m pipenv install --dev
 
+    - name: Create macos app
+      run: |
+        pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
+
     - name: Import codesign certificate to keychain
       # Codesign and notarize app so that we don't have to go to Security and Privacy to
       # allow the app to run.
@@ -64,17 +68,13 @@ jobs:
         security import $CERTIFICATE_PATH -P $P12_PASSWORD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
         security list-keychain -d user -s $KEYCHAIN_PATH
 
-    - name: Create macos app
+    - name: Codesign macOS app
       run: |
-        pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec --codesign-identity "Developer ID Application: Santi Santichaivekin (M54SBHVQL6)"
+        echo "turn off prompts for codesign and xcrun"
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
 
-    # - name: Codesign macOS app
-    #   run: |
-    #     echo "turn off prompts for codesign and xcrun"
-    #     security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
-
-    #     echo "sign the application"
-    #     codesign -s Developer -v --deep --timestamp --entitlements ./pyinstaller_spec/macos_entitlements.plist -o runtime ./dist/empress.app
+        echo "sign the application"
+        codesign -s Developer -v --deep --timestamp --entitlements ./pyinstaller_spec/macos_entitlements.plist -o runtime ./dist/empress.app
 
     - name: Compress macos app
       run: |
