@@ -68,13 +68,13 @@ jobs:
         security import $CERTIFICATE_PATH -P $P12_PASSWORD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
         security list-keychain -d user -s $KEYCHAIN_PATH
 
-    - name: Codesign macOS app
-      run: |
-        echo "turn off prompts for codesign and xcrun"
-        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
+    # - name: Codesign macOS app
+    #   run: |
+    #     echo "turn off prompts for codesign and xcrun"
+    #     security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
 
-        echo "sign the application"
-        codesign -s Developer -v --deep --timestamp --entitlements ./pyinstaller_spec/macos_entitlements.plist -o runtime ./dist/empress.app
+    #     echo "sign the application"
+    #     codesign -s Developer -v --deep --timestamp --entitlements ./pyinstaller_spec/macos_entitlements.plist -o runtime ./dist/empress.app
 
     - name: Compress macos app
       run: |
