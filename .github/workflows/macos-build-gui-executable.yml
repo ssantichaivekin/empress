@@ -44,10 +44,6 @@ jobs:
         export PIP_NO_BINARY="shapely"
         python -m pipenv install --dev
 
-    - name: Create macos app
-      run: |
-        pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
-
     - name: Import codesign certificate to keychain
       # Codesign and notarize app so that we don't have to go to Security and Privacy to
       # allow the app to run.
@@ -67,6 +63,10 @@ jobs:
         echo "import certificate to keychain"
         security import $CERTIFICATE_PATH -P $P12_PASSWORD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
         security list-keychain -d user -s $KEYCHAIN_PATH
+
+    - name: Create macos app
+      run: |
+        pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
 
     # - name: Codesign macOS app
     #   run: |
