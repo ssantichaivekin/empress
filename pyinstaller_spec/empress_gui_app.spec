@@ -49,7 +49,8 @@ coll = COLLECT(exe,
 app = BUNDLE(coll,
              name='empress.app',
              icon='../assets/jane_icon.icns',
-             bundle_identifier=None,
+             bundle_identifier='edu.hmc.cs.empress',
+             codesign_identity='87EFE6231020BE4E2369398BE843373342EBDEEA',
              info_plist={
                  # Enable retina display
                  'NSPrincipalClass': 'NSApplication',

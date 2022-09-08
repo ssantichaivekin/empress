@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: macos-10.15 
+    runs-on: macos-latest
     # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-10.15-Readme.md
     # macos-10.15 already has python 3.7.8, no need to install, refer to this version as python3.7
     env:
@@ -42,12 +42,7 @@ jobs:
       run: |
         export PIPENV_IGNORE_VIRTUALENVS=1
         export PIP_NO_BINARY="shapely"
-        python -m pipenv lock --keep-outdated
         python -m pipenv install --dev
-
-    - name: Create macos app
-      run: |
-        pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
 
     - name: Import codesign certificate to keychain
       # Codesign and notarize app so that we don't have to go to Security and Privacy to
@@ -69,13 +64,17 @@ jobs:
         security import $CERTIFICATE_PATH -P $P12_PASSWORD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
         security list-keychain -d user -s $KEYCHAIN_PATH
 
-    - name: Codesign macOS app
+    - name: Create macos app
       run: |
-        echo "turn off prompts for codesign and xcrun"
-        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
+        pipenv run pyinstaller pyinstaller_spec/empress_gui_app.spec
 
-        echo "sign the application"
-        codesign -s Developer -v --deep --timestamp --entitlements ./pyinstaller_spec/macos_entitlements.plist -o runtime ./dist/empress.app
+    # - name: Codesign macOS app
+    #   run: |
+    #     echo "turn off prompts for codesign and xcrun"
+    #     security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
+
+    #     echo "sign the application"
+    #     codesign -s Developer -v --deep --timestamp --entitlements ./pyinstaller_spec/macos_entitlements.plist -o runtime ./dist/empress.app
 
     - name: Compress macos app
       run: |
