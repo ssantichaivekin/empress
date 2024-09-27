@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     # Although ubuntu-18.04 has python 3.7.8 installed, this version
     # is not the dev version so pyinstaller cannot copy the python
     # executable and ship it with our app.
@@ -23,6 +23,7 @@ jobs:
       # We need to specify python3.7-tk if we just write python3-tk
       # it will install tcl/tk for another version of python.
       run: |
+        sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt-get update
         sudo apt-get install tk-dev python3.7-dev python3.7-tk 
     - name: Install pipenv
