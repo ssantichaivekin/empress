@@ -21,7 +21,7 @@ jobs:
         python -m pip install pipenv
     - name: Install dependencies via pipenv
       run: |
-        python -m pipenv lock --keep-outdated
+        python -m pipenv lock
         python -m pipenv install --dev
     - name: Create windows app
       run: |

@@ -42,7 +42,7 @@ jobs:
       run: |
         export PIPENV_IGNORE_VIRTUALENVS=1
         export PIP_NO_BINARY="shapely"
-        python -m pipenv lock --keep-outdated
+        python -m pipenv lock
         python -m pipenv install --dev
 
     - name: Create macos app
