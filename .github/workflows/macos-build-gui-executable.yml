@@ -22,7 +22,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.7.8' # this sets python to use the correct version
+        python-version: '3.7' # this sets python to use the correct version
 
     - name: Install pipenv
       run: |
