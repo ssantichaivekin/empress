@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     # Although ubuntu-18.04 has python 3.7.8 installed, this version
     # is not the dev version so pyinstaller cannot copy the python
     # executable and ship it with our app.
