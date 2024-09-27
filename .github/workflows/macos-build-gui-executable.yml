@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: macos-10.15 
+    runs-on: macos-14
     # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-10.15-Readme.md
     # macos-10.15 already has python 3.7.8, no need to install, refer to this version as python3.7
     env:
