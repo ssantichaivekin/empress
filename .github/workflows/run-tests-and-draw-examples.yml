@@ -23,7 +23,6 @@ jobs:
       uses: dschep/install-pipenv-action@v1
     - name: Install dependencies
       run: |
-        pipenv lock
         pipenv install --dev
     - name: Lint with flake8
       run: |
