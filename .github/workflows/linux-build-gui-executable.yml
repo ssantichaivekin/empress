@@ -25,7 +25,7 @@ jobs:
       run: |
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt-get update
-        sudo apt-get install tk-dev python3.7-dev python3.7-tk 
+        sudo apt-get install tk-dev python3.7-dev python3.7-tk python3.7-distutils
     - name: Install pipenv
       # "python3.7 -m pip install [software]" is like running normal
       # "pip install [software]" but this installs it to python3.7
