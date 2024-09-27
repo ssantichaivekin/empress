@@ -89,7 +89,7 @@ jobs:
         xcrun altool --notarize-app -t osx -f ./dist/macos_empress_app.zip -u $APPLE_USERNAME -p $APPLE_APP_SPECIFIC_PASSWORD --primary-bundle-id edu.hmc.cs.empress
 
     - name: Upload executable
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: macos_empress_app
         path: ./dist/macos_empress_app.zip
